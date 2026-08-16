@@ -16,10 +16,35 @@
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-500 to-indigo-600 flex items-center justify-center font-bold text-xl shadow-lg shadow-pink-500/20">QR</div>
         <span class="text-xl font-extrabold tracking-tight">QRGate<span class="text-pink-500">.</span></span>
       </div>
-      <div class="flex items-center gap-4">
-        <button id="authActionBtn" onclick="handleGoogleLogin()" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-5 py-2.5 rounded-xl transition shadow-lg shadow-pink-600/35">
-          Sign In / Register
-        </button>
+
+      <!-- RIGHT HEADER: AUTH BUTTON OR PROFILE ICON DROPDOWN -->
+      <div class="relative flex items-center gap-4">
+        <div id="authContainer">
+          <!-- Dynamically populated based on login state -->
+          <button onclick="handleGoogleLogin()" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-5 py-2.5 rounded-xl transition shadow-lg shadow-pink-600/35 text-sm">
+            Sign In / Register
+          </button>
+        </div>
+
+        <!-- PROFILE ICON WITH DROPDOWN (Hidden by default until logged in) -->
+        <div id="profileDropdownContainer" class="hidden relative">
+          <button onclick="toggleProfileMenu()" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-sm text-white focus:outline-none ring-2 ring-pink-500/50" id="userAvatarBtn">
+            U
+          </button>
+          
+          <!-- Dropdown Menu -->
+          <div id="profileMenu" class="hidden absolute right-0 mt-3 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl py-2 z-50 text-slate-200">
+            <div class="px-4 py-2 border-b border-slate-800 mb-1">
+              <p class="text-xs font-bold text-slate-100 truncate" id="menuUserName">User</p>
+              <p class="text-[10px] text-slate-400 truncate" id="menuUserEmail">user@email.com</p>
+            </div>
+            <a href="events.html" class="block px-4 py-2 text-sm hover:bg-slate-800 text-slate-300 hover:text-white transition">📊 Event Manager Dashboard</a>
+            <a href="scanner.html" class="block px-4 py-2 text-sm hover:bg-slate-800 text-slate-300 hover:text-white transition">📱 Gate QR Scanner</a>
+            <a href="admin.html" id="adminLinkMenu" class="hidden block px-4 py-2 text-sm hover:bg-slate-800 text-pink-400 hover:text-pink-300 transition">🛠️ Admin Panel</a>
+            <div class="border-t border-slate-800 my-1"></div>
+            <button onclick="handleSignOut()" class="w-full text-left px-4 py-2 text-sm hover:bg-red-500/10 text-red-400 transition">Sign Out</button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -37,7 +62,9 @@
       <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-10">
         The ultimate multi-tenant platform for organizers. Real-time scanning, multi-person capacity ticket management, role controls, and secure analytics.
       </p>
-      <div class="flex justify-center gap-4">
+      
+      <!-- CONDITIONAL HERO CTA -->
+      <div class="flex justify-center gap-4" id="heroCtaContainer">
         <button onclick="handleGoogleLogin()" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-8 py-4 rounded-xl text-lg transition shadow-xl shadow-pink-600/25">
           Get Started Free →
         </button>
@@ -94,11 +121,57 @@
       if (error) alert('Login error: ' + error.message);
     }
 
+    async function handleSignOut() {
+      await supabaseClient.auth.signOut();
+      window.location.reload();
+    }
+
+    function toggleProfileMenu() {
+      const menu = document.getElementById('profileMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    // Close dropdown if clicking outside
+    window.addEventListener('click', function(e) {
+      const dropdown = document.getElementById('profileMenu');
+      const btn = document.getElementById('userAvatarBtn');
+      if (dropdown && btn && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
+
     async function checkAuth() {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (session) {
-        document.getElementById('authActionBtn').innerText = 'Go to Dashboard →';
-        document.getElementById('authActionBtn').onclick = () => { window.location.href = 'events.html'; };
+        // Hide standard login button, show profile icon dropdown
+        document.getElementById('authContainer').classList.add('hidden');
+        document.getElementById('profileDropdownContainer').classList.remove('hidden');
+
+        // Fetch tenant details for name/email/admin check
+        const { data: tenant } = await supabaseClient
+          .from('tenants')
+          .select('full_name, is_admin')
+          .eq('owner_id', session.user.id)
+          .maybeSingle();
+
+        const displayName = tenant?.full_name || session.user.email;
+        document.getElementById('menuUserName').innerText = displayName;
+        document.getElementById('menuUserEmail').innerText = session.user.email;
+        document.getElementById('userAvatarBtn').innerText = displayName.charAt(0).toUpperCase();
+
+        if (tenant?.is_admin === true) {
+          document.getElementById('adminLinkMenu').classList.remove('hidden');
+        }
+
+        // Update Hero CTA Button to Go to Dashboard
+        document.getElementById('heroCtaContainer').innerHTML = `
+          <a href="events.html" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-8 py-4 rounded-xl text-lg transition shadow-xl shadow-pink-600/25">
+            Open Dashboard →
+          </a>
+          <a href="scanner.html" class="bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-200 font-bold px-8 py-4 rounded-xl text-lg transition">
+            Open Gate Scanner 📱
+          </a>
+        `;
       }
     }
     checkAuth();
