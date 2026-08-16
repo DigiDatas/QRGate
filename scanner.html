@@ -90,11 +90,11 @@
         
         resultBox.classList.remove('hidden');
         resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-blue-50 border-blue-200 border';
-        resultTitle.innerText = 'Processing Ticket...';
+        resultTitle.innerText = 'Verifying Ticket...';
         resultTitle.className = 'text-xl font-bold mb-2 text-blue-800';
-        resultMessage.innerText = 'Updating database...';
+        resultMessage.innerText = 'Checking database records...';
 
-        // 1. Find the guest by their ID
+        // 1. Fetch guest record
         const { data, error } = await supabaseClient
           .from('guests')
           .select('*')
@@ -105,28 +105,34 @@
           resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-red-50 border-red-200 border';
           resultTitle.innerText = 'Invalid Ticket ❌';
           resultTitle.className = 'text-xl font-bold mb-2 text-red-800';
-          resultMessage.innerText = `Ticket ID not recognized in database.`;
+          resultMessage.innerText = `This ticket does not exist in the database.`;
           return;
         }
 
-        // 2. Automatically update the check-in count in Supabase
-        const newCount = (data.checked_in_count || 0) + 1;
-        
+        // 2. DUPLICATE SCAN PROTECTION
+        if ((data.checked_in_count || 0) > 0) {
+          resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-orange-50 border-orange-200 border';
+          resultTitle.innerText = '⚠️ Already Checked In!';
+          resultTitle.className = 'text-xl font-bold mb-2 text-orange-800';
+          resultMessage.innerText = `Warning: ${data.guest_name} has already used this ticket! (Count: ${data.checked_in_count})`;
+          return;
+        }
+
+        // 3. FIRST TIME CHECK-IN
         const { error: updateError } = await supabaseClient
           .from('guests')
-          .update({ checked_in_count: newCount })
+          .update({ checked_in_count: 1 })
           .eq('id', decodedText);
 
         if (updateError) {
-          resultBox.className = 'p-4 rounded-md text-center shadow-inner-yellow bg-yellow-50 border-yellow-200 border';
-          resultTitle.innerText = 'Warning ⚠️';
-          resultMessage.innerText = 'Guest found, but failed to update check-in counter.';
+          resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-yellow-50 border-yellow-200 border';
+          resultTitle.innerText = 'Error ⚠️';
+          resultMessage.innerText = 'Guest found, but failed to log check-in.';
         } else {
-          // SUCCESS!
           resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-green-50 border-green-200 border';
           resultTitle.innerText = 'Access Granted ✅';
           resultTitle.className = 'text-xl font-bold mb-2 text-green-800';
-          resultMessage.innerText = `Welcome, ${data.guest_name || 'Guest'}! (Checked in: ${newCount} time(s))`;
+          resultMessage.innerText = `Welcome, ${data.guest_name}! Checked in successfully.`;
         }
 
       }).catch((err) => {
