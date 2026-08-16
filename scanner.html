@@ -129,9 +129,14 @@
           resultTitle.innerText = 'Error ⚠️';
           resultMessage.innerText = 'Guest found, but failed to log check-in.';
         } else {
-          resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-green-50 border-green-200 border';
-          resultTitle.innerText = 'Access Granted ✅';
-          resultTitle.className = 'text-xl font-bold mb-2 text-green-800';
+          // SUCCESS! Color code and badge label based on ticket tier
+          let badgeColor = 'bg-green-100 text-green-800 border-green-200';
+          if (data.ticket_tier === 'VIP') badgeColor = 'bg-purple-100 text-purple-800 border-purple-200';
+          if (data.ticket_tier === 'Speaker') badgeColor = 'bg-blue-100 text-blue-800 border-blue-200';
+
+          resultBox.className = `p-4 rounded-md text-center shadow-inner ${badgeColor} border`;
+          resultTitle.innerText = `Access Granted (${data.ticket_tier || 'General'}) ✅`;
+          resultTitle.className = 'text-xl font-bold mb-2';
           resultMessage.innerText = `Welcome, ${data.guest_name}! Checked in successfully.`;
         }
 
