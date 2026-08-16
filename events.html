@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Guests - QR Event Manager</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 p-4 md:p-10 font-sans text-gray-800">
+
+  <div class="max-w-2xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-md mt-6">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold text-gray-900">Guest List Manager</h1>
+      <a href="index.html" class="text-blue-600 hover:underline">← Back to Dashboard</a>
+    </div>
+
+    <!-- Add New Guest Form -->
+    <div class="bg-gray-50 p-4 rounded-md border mb-6">
+      <h2 class="font-bold text-lg mb-3">Add New Guest</h2>
+      <div class="flex flex-col md:flex-row gap-3">
+        <input type="text" id="guestNameInput" placeholder="Guest Full Name" class="flex-1 border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <button id="addGuestBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 font-semibold transition">
+          Add Guest & Generate ID
+        </button>
+      </div>
+    </div>
+
+    <!-- Guest List Table View -->
+    <h2 class="font-bold text-lg mb-3">Registered Guests</h2>
+    <div class="overflow-x-auto border rounded-md">
+      <table class="w-full text-left border-collapse bg-white">
+        <thead>
+          <tr class="bg-gray-100 border-b text-sm text-gray-600">
+            <th class="p-3">Guest Name</th>
+            <th class="p-3">Ticket ID (UUID)</th>
+            <th class="p-3">Checked In</th>
+          </tr>
+        </thead>
+        <tbody id="guestTableBody">
+          <tr>
+            <td colspan="3" class="p-4 text-center text-gray-500">Loading guests...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // Paste your real project keys here
+    const SUPABASE_URL = 'https://wpqpqlwjprtwoblhvenw.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_89l1fu6nVSWxGVOH-g1dQw_i99aUXt9';
+    
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Check auth protection
+    async function init() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        window.location.href = 'index.html';
+      } else {
+        fetchGuests();
+      }
+    }
+
+    // Load Guests from Database
+    async function fetchGuests() {
+      const { data, error } = await supabaseClient
+        .from('guests')
+        .select('*')
+        .order('guest_name', { ascending: true });
+
+      const tbody = document.getElementById('guestTableBody');
+      tbody.innerHTML = '';
+
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-gray-500">No guests found yet. Add one above!</td></tr>`;
+        return;
+      }
+
+      data.forEach(guest => {
+        const row = document.createElement('tr');
+        row.className = 'border-b hover:bg-gray-50 text-sm';
+        row.innerHTML = `
+          <td class="p-3 font-medium">${guest.guest_name || 'Unnamed'}</td>
+          <td class="p-3 font-mono text-xs text-gray-500">${guest.id}</td>
+          <td class="p-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-bold">${guest.checked_in_count || 0}</span></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Add Guest Handler
+    document.getElementById('addGuestBtn').addEventListener('click', async () => {
+      const name = document.getElementById('guestNameInput').value.trim();
+      if (!name) {
+        alert('Please enter a guest name.');
+        return;
+      }
+
+      const { error } = await supabaseClient
+        .from('guests')
+        .insert([{ guest_name: name, allowed_capacity: 1, checked_in_count: 0 }]);
+
+      if (error) {
+        alert('Error adding guest: ' + error.message);
+      } else {
+        document.getElementById('guestNameInput').value = '';
+        fetchGuests(); // Refresh the list instantly
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>
