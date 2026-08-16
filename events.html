@@ -22,6 +22,7 @@
       <h2 class="font-bold text-lg mb-3">Select Event</h2>
       <div class="flex flex-col md:flex-row gap-3 mb-3">
         <input type="text" id="eventNameInput" placeholder="New Event Name" class="flex-1 border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <input type="datetime-local" id="eventExpireInput" class="border p-2 rounded bg-white text-sm" title="Event Expiry Date">
         <button id="addEventBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 font-semibold transition">
           Create Event
         </button>
@@ -126,16 +127,62 @@
       fetchGuests();
     }
 
+    // Create Event Handler with Expiration & Approval Status
     document.getElementById('addEventBtn').addEventListener('click', async () => {
       const name = document.getElementById('eventNameInput').value.trim();
-      if (!name) return alert('Enter event name.');
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      await supabaseClient.from('events').insert([{ event_name: name, total_capacity: 100, tenant_id: session.user.id }]);
-      document.getElementById('eventNameInput').value = '';
-      fetchEvents();
-    });
+      const expiresAt = document.getElementById('eventExpireInput').value; // Optional date picker
+      
+      if (!name) {
+        alert('Please enter an event name.');
+        return;
+      }
 
-    document.getElementById('eventSelect').addEventListener('change', fetchGuests);
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        alert("You must be logged in.");
+        return;
+      }
+      const userId = session.user.id;
+
+      // Check tenant profile
+      let { data: tenantData } = await supabaseClient.from('tenants').select('id, payment_status').eq('owner_id', userId).maybeSingle();
+      let tenantId;
+
+      if (!tenantData) {
+        const { data: newTenant } = await supabaseClient
+          .from('tenants')
+          .insert([{ owner_id: userId, company_name: 'My Organization', payment_status: 'Pending', email: session.user.email }])
+          .select('id')
+          .single();
+        tenantId = newTenant.id;
+      } else {
+        tenantId = tenantData.id;
+        // Check if tenant payment is active/paid
+        if (tenantData.payment_status !== 'Paid') {
+          alert('Your account payment status is Pending. Please contact admin to activate event creation.');
+          return;
+        }
+      }
+
+      // Create Event (Defaults to NOT approved, waiting for admin)
+      const { error } = await supabaseClient
+        .from('events')
+        .insert([{ 
+          event_name: name, 
+          total_capacity: 100, 
+          tenant_id: tenantId,
+          is_approved: false, // Requires Admin approval
+          expires_at: expiresAt ? new Date(expiresAt).toISOString() : null
+        }]);
+
+      if (error) {
+        alert('Error creating event: ' + error.message);
+      } else {
+        document.getElementById('eventNameInput').value = '';
+        alert('Event created successfully! Waiting for Admin approval.');
+        fetchEvents();
+      }
+    });
 
     async function fetchGuests() {
       const eventId = document.getElementById('eventSelect').value;
@@ -175,18 +222,38 @@
       document.getElementById('statRate').innerText = total > 0 ? Math.round((checkedIn / total) * 100) + '%' : '0%';
     }
 
+    // Add Guest Handler with Approval, Expiration, and Capacity Rules
     document.getElementById('addGuestBtn').addEventListener('click', async () => {
       const name = document.getElementById('guestNameInput').value.trim();
       const tier = document.getElementById('guestTierInput').value;
+      const capacity = parseInt(document.getElementById('guestCapacityInput').value) || 1;
       const eventId = document.getElementById('eventSelect').value;
       
       if (!name || !eventId) return alert('Enter guest name and select event.');
 
+      // 1. Verify if event is approved and not expired
+      const { data: eventData, error: eventErr } = await supabaseClient
+        .from('events')
+        .select('is_approved, expires_at')
+        .eq('id', eventId)
+        .single();
+
+      if (eventErr || !eventData.is_approved) {
+        alert('Action Blocked: This event has not been approved by the Admin yet.');
+        return;
+      }
+
+      if (eventData.expires_at && new Date(eventData.expires_at) < new Date()) {
+        alert('Action Blocked: This event has expired and is now disabled.');
+        return;
+      }
+
+      // 2. Insert Guest with multi-person allowed_capacity
       const { error } = await supabaseClient.from('guests').insert([{ 
         guest_name: name, 
         event_id: eventId, 
         ticket_tier: tier,
-        allowed_capacity: 1, 
+        allowed_capacity: capacity, 
         checked_in_count: 0 
       }]);
 
@@ -194,6 +261,7 @@
         alert('Error adding guest: ' + error.message);
       } else {
         document.getElementById('guestNameInput').value = '';
+        document.getElementById('guestCapacityInput').value = '1';
         fetchGuests();
       }
     });
