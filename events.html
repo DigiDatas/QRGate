@@ -362,6 +362,7 @@
       data.forEach(e => {
         const opt = document.createElement('option');
         opt.value = e.id;
+        opt.dataset.approved = e.is_approved; // <-- Stores approval status
         opt.textContent = `${e.event_name} (${e.is_approved ? 'Approved' : 'Pending Admin'})`;
         select.appendChild(opt);
       });
@@ -394,12 +395,18 @@
 
     // Fetch Guests
     async function fetchGuests() {
-      const eventId = document.getElementById('eventSelect').value;
+      const eventSelect = document.getElementById('eventSelect');
+      const eventId = eventSelect.value;
       const tbody = document.getElementById('guestTableBody');
+      
       if (!eventId) {
         tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-500">Please select an event.</td></tr>`;
         return;
       }
+
+      // Check if the currently selected event is approved
+      const selectedOption = eventSelect.options[eventSelect.selectedIndex];
+      const isEventApproved = selectedOption.dataset.approved === 'true';
 
       const { data, error } = await supabaseClient.from('guests').select('*').eq('event_id', eventId).order('guest_name');
       tbody.innerHTML = '';
@@ -412,6 +419,11 @@
         data.forEach(g => {
           const isCompleted = (g.checked_in_count || 0) >= (g.allowed_capacity || 1);
           if (isCompleted) checkedIn++;
+
+          // Conditionally render the button based on event approval
+          const actionButton = isEventApproved 
+            ? `<button onclick="showTicket('${g.id}', '${encodeURIComponent(g.guest_name)}', '${encodeURIComponent(g.ticket_tier || 'General')}', ${g.allowed_capacity || 1})" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold transition border border-slate-700">View QR</button>`
+            : `<button disabled class="bg-slate-800/40 text-slate-500 px-3 py-1.5 rounded-xl text-xs font-semibold border border-slate-700/30 cursor-not-allowed" title="Waiting for Admin Approval">Pending Admin</button>`;
 
           const row = document.createElement('tr');
           row.className = 'hover:bg-slate-800/40 transition border-b border-slate-800/50';
@@ -427,7 +439,7 @@
               </span>
             </td>
             <td class="p-4 text-center">
-              <button onclick="showTicket('${g.id}', '${encodeURIComponent(g.guest_name)}', '${encodeURIComponent(g.ticket_tier || 'General')}', ${g.allowed_capacity || 1})" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold transition border border-slate-700">View QR</button>
+              ${actionButton}
             </td>
           `;
           tbody.appendChild(row);
