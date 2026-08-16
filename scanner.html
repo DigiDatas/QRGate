@@ -97,47 +97,58 @@
         // 1. Fetch guest record
         const { data, error } = await supabaseClient
           .from('guests')
-          .select('*')
+          .select('*, events(is_approved, expires_at)')
           .eq('id', decodedText)
           .single(); 
 
         if (error || !data) {
           resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-red-50 border-red-200 border';
           resultTitle.innerText = 'Invalid Ticket ❌';
-          resultTitle.className = 'text-xl font-bold mb-2 text-red-800';
           resultMessage.innerText = `This ticket does not exist in the database.`;
           return;
         }
 
-        // 2. DUPLICATE SCAN PROTECTION
-        if ((data.checked_in_count || 0) > 0) {
-          resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-orange-50 border-orange-200 border';
-          resultTitle.innerText = '⚠️ Already Checked In!';
-          resultTitle.className = 'text-xl font-bold mb-2 text-orange-800';
-          resultMessage.innerText = `Warning: ${data.guest_name} has already used this ticket! (Count: ${data.checked_in_count})`;
+        // 2. CHECK EVENT APPROVAL & EXPIRATION RULES
+        if (!data.events || !data.events.is_approved) {
+          resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-red-50 border-red-200 border';
+          resultTitle.innerText = 'Event Not Approved ❌';
+          resultMessage.innerText = `This event is pending admin approval.`;
           return;
         }
 
-        // 3. FIRST TIME CHECK-IN
+        if (data.events.expires_at && new Date(data.events.expires_at) < new Date()) {
+          resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-red-50 border-red-200 border';
+          resultTitle.innerText = 'Event Expired 🔒';
+          resultMessage.innerText = `This event time window has closed.`;
+          return;
+        }
+
+        // 3. MULTI-SCAN CAPACITY CHECK (e.g. 5 persons allowed)
+        const allowed = data.allowed_capacity || 1;
+        const currentChecked = data.checked_in_count || 0;
+
+        if (currentChecked >= allowed) {
+          resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-orange-50 border-orange-200 border';
+          resultTitle.innerText = '⚠️ Fully Checked In (Duplicate)';
+          resultMessage.innerText = `Warning: All ${allowed} entries for ${data.guest_name} have already been used!`;
+          return;
+        }
+
+        // 4. INCREMENT SCAN COUNT
+        const newCount = currentChecked + 1;
         const { error: updateError } = await supabaseClient
           .from('guests')
-          .update({ checked_in_count: 1 })
+          .update({ checked_in_count: newCount })
           .eq('id', decodedText);
 
         if (updateError) {
           resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-yellow-50 border-yellow-200 border';
           resultTitle.innerText = 'Error ⚠️';
-          resultMessage.innerText = 'Guest found, but failed to log check-in.';
+          resultMessage.innerText = 'Failed to update check-in count.';
         } else {
-          // SUCCESS! Color code and badge label based on ticket tier
-          let badgeColor = 'bg-green-100 text-green-800 border-green-200';
-          if (data.ticket_tier === 'VIP') badgeColor = 'bg-purple-100 text-purple-800 border-purple-200';
-          if (data.ticket_tier === 'Speaker') badgeColor = 'bg-blue-100 text-blue-800 border-blue-200';
-
-          resultBox.className = `p-4 rounded-md text-center shadow-inner ${badgeColor} border`;
-          resultTitle.innerText = `Access Granted (${data.ticket_tier || 'General'}) ✅`;
-          resultTitle.className = 'text-xl font-bold mb-2';
-          resultMessage.innerText = `Welcome, ${data.guest_name}! Checked in successfully.`;
+          resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-green-50 border-green-200 border';
+          resultTitle.innerText = `Access Granted (${newCount}/${allowed}) ✅`;
+          resultMessage.innerText = `Welcome, ${data.guest_name}! Entry logged (${newCount} of ${allowed}).`;
         }
 
       }).catch((err) => {
