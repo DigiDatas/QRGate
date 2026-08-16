@@ -179,21 +179,94 @@
     </main>
   </div>
 
-  <!-- QR CODE MODAL POPUP (Styled for Dark Mode but keeps QR white for scanning) -->
-  <div id="qrModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center relative">
-      <h3 id="modalGuestName" class="font-bold text-xl text-slate-100 mb-2">Ticket Pass</h3>
-      <p id="modalTicketId" class="text-xs font-mono text-slate-500 mb-6 break-all"></p>
-      
-      <!-- White background strictly for QR readability by scanners -->
-      <div class="bg-white p-4 rounded-xl inline-block mb-6 shadow-inner">
-        <div id="qrcode" class="flex justify-center"></div>
+  <!-- QR CODE MODAL POPUP (Boarding Pass Style) -->
+  <div id="qrModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
+    
+    <div class="flex flex-col items-center w-full max-w-sm">
+      <!-- THE TICKET -->
+      <div id="ticketContainer" class="w-full bg-white rounded-2xl shadow-2xl overflow-hidden relative flex flex-col">
+        
+        <!-- TOP COLORED SECTION -->
+        <div class="bg-gradient-to-br from-indigo-900 to-indigo-700 text-white p-6 relative">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <p class="text-[10px] text-indigo-300 uppercase tracking-widest mb-1 font-bold">Event Pass</p>
+              <h2 id="bpEventName" class="text-2xl font-bold tracking-tight leading-tight truncate w-56">Event Name</h2>
+            </div>
+            <div class="text-right">
+              <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                <span class="text-xs">🎟️</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-between border-t border-white/20 pt-3">
+            <div>
+              <p class="text-[9px] text-indigo-300 uppercase font-bold">Date</p>
+              <p id="bpEventDate" class="text-xs font-semibold">Valid Entry</p>
+            </div>
+            <div class="text-right">
+              <p class="text-[9px] text-indigo-300 uppercase font-bold">Location</p>
+              <p class="text-xs font-semibold">Main Gate</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- WHITE BODY SECTION (Top Part) -->
+        <div class="bg-white px-6 pt-6 pb-2 text-slate-800">
+          <div class="flex justify-between mb-4">
+            <div>
+              <p class="text-[10px] text-slate-400 uppercase font-bold">Guest Name</p>
+              <p id="bpGuestName" class="text-lg font-bold text-slate-900 leading-tight">Name Here</p>
+            </div>
+            <div class="text-right">
+              <p class="text-[10px] text-slate-400 uppercase font-bold">Tier</p>
+              <p id="bpTier" class="text-lg font-extrabold text-pink-600 leading-tight uppercase">VIP</p>
+            </div>
+          </div>
+          <div>
+            <p class="text-[10px] text-slate-400 uppercase font-bold">Ticket ID</p>
+            <p id="bpTicketId" class="text-xs font-mono text-slate-500 truncate">...</p>
+          </div>
+        </div>
+
+        <!-- PERFORATION LINE -->
+        <div class="relative h-8 bg-white flex items-center justify-center">
+          <!-- Left Cutout (Matches backdrop color) -->
+          <div class="absolute left-[-12px] w-6 h-6 bg-slate-900 rounded-full z-10 shadow-inner"></div>
+          <!-- Right Cutout (Matches backdrop color) -->
+          <div class="absolute right-[-12px] w-6 h-6 bg-slate-900 rounded-full z-10 shadow-inner"></div>
+          <!-- Dashed Line -->
+          <div class="w-full border-t-2 border-dashed border-slate-200 mx-4 relative z-0 flex items-center justify-center">
+              <span class="absolute bg-white px-2 text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em]">Boarding Pass</span>
+          </div>
+        </div>
+
+        <!-- WHITE BODY SECTION (Bottom Part with QR) -->
+        <div class="bg-white px-6 pb-6 flex justify-between items-end">
+          <!-- Details left -->
+          <div class="space-y-4 pb-1">
+            <div>
+              <p class="text-[10px] text-slate-400 uppercase font-bold">Admit</p>
+              <p id="bpCapacity" class="text-sm font-bold text-slate-800">1 Person</p>
+            </div>
+            <div>
+              <p class="text-[10px] text-slate-400 uppercase font-bold">Status</p>
+              <p class="text-sm font-bold text-green-600">Valid</p>
+            </div>
+          </div>
+          <!-- QR right -->
+          <div class="flex flex-col items-center">
+            <div id="qrcode" class="p-2 bg-white border-2 border-slate-100 rounded-xl shadow-sm"></div>
+          </div>
+        </div>
       </div>
-      
-      <div class="flex gap-3">
-        <button id="downloadQrBtn" class="bg-pink-600 hover:bg-pink-500 text-white px-4 py-2.5 rounded-xl flex-1 font-bold transition shadow-lg shadow-pink-600/20">Download</button>
-        <button onclick="closeModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2.5 rounded-xl flex-1 font-semibold transition border border-slate-700">Close</button>
+
+      <!-- OUTSIDE ACTION BUTTONS -->
+      <div class="flex gap-3 w-full mt-6">
+        <button id="downloadQrBtn" class="bg-pink-600 hover:bg-pink-500 text-white px-4 py-3 rounded-xl flex-1 font-bold transition shadow-lg shadow-pink-600/20">Download QR</button>
+        <button onclick="closeModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-3 rounded-xl flex-1 font-semibold transition border border-slate-700">Close</button>
       </div>
+
     </div>
   </div>
 
@@ -354,7 +427,7 @@
               </span>
             </td>
             <td class="p-4 text-center">
-              <button onclick="showTicket('${g.id}', '${g.guest_name}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold transition border border-slate-700">View QR</button>
+              <button onclick="showTicket('${g.id}', '${encodeURIComponent(g.guest_name)}', '${encodeURIComponent(g.ticket_tier || 'General')}', ${g.allowed_capacity || 1})" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold transition border border-slate-700">View QR</button>
             </td>
           `;
           tbody.appendChild(row);
@@ -392,24 +465,44 @@
       }
     });
 
-    // QR Code Generation
-    function showTicket(id, name) {
-      document.getElementById('modalGuestName').innerText = name;
-      document.getElementById('modalTicketId').innerText = 'ID: ' + id;
+    // QR Code Modal Generation (Boarding Pass Style)
+    function showTicket(id, encodedName, encodedTier, capacity) {
+      const name = decodeURIComponent(encodedName);
+      const tier = decodeURIComponent(encodedTier);
       
+      // Grab the active event name from the dropdown
+      const eventSelect = document.getElementById('eventSelect');
+      const eventName = eventSelect.options[eventSelect.selectedIndex].text.split(' (')[0];
+      
+      // Populate Ticket Text
+      document.getElementById('bpEventName').innerText = eventName;
+      document.getElementById('bpGuestName').innerText = name;
+      document.getElementById('bpTier').innerText = tier;
+      document.getElementById('bpCapacity').innerText = capacity + (capacity > 1 ? ' Persons' : ' Person');
+      document.getElementById('bpTicketId').innerText = id;
+      
+      // Generate QR Code
       const qrContainer = document.getElementById('qrcode');
       qrContainer.innerHTML = '';
-      new QRCode(qrContainer, { text: id, width: 160, height: 160, colorDark : "#000000", colorLight : "#ffffff" });
+      new QRCode(qrContainer, { 
+        text: id, 
+        width: 100, 
+        height: 100, 
+        colorDark : "#1e293b", // Slate-800 color to match theme
+        colorLight : "#ffffff" 
+      });
 
+      // Handle Download
       document.getElementById('downloadQrBtn').onclick = function() {
         const canvas = qrContainer.querySelector('canvas');
         if (canvas) {
           const link = document.createElement('a');
           link.href = canvas.toDataURL("image/png");
-          link.download = `${name.replace(/\s+/g, '_')}_Ticket.png`;
+          link.download = `${name.replace(/\s+/g, '_')}_Ticket_QR.png`;
           link.click();
         }
       };
+      
       document.getElementById('qrModal').classList.remove('hidden');
     }
 
