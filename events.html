@@ -52,6 +52,12 @@
       <h2 class="font-bold text-lg mb-3">Add Guest to Active Event</h2>
       <div class="flex flex-col md:flex-row gap-3">
         <input type="text" id="guestNameInput" placeholder="Guest Full Name" class="flex-1 border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <select id="guestTierInput" class="border p-2 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="General">General Admission</option>
+          <option value="VIP">VIP</option>
+          <option value="Speaker">Speaker</option>
+          <option value="Staff">Staff</option>
+        </select>
         <button id="addGuestBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 font-semibold transition">
           Add Guest
         </button>
@@ -171,11 +177,25 @@
 
     document.getElementById('addGuestBtn').addEventListener('click', async () => {
       const name = document.getElementById('guestNameInput').value.trim();
+      const tier = document.getElementById('guestTierInput').value;
       const eventId = document.getElementById('eventSelect').value;
+      
       if (!name || !eventId) return alert('Enter guest name and select event.');
-      await supabaseClient.from('guests').insert([{ guest_name: name, event_id: eventId, allowed_capacity: 1, checked_in_count: 0 }]);
-      document.getElementById('guestNameInput').value = '';
-      fetchGuests();
+
+      const { error } = await supabaseClient.from('guests').insert([{ 
+        guest_name: name, 
+        event_id: eventId, 
+        ticket_tier: tier,
+        allowed_capacity: 1, 
+        checked_in_count: 0 
+      }]);
+
+      if (error) {
+        alert('Error adding guest: ' + error.message);
+      } else {
+        document.getElementById('guestNameInput').value = '';
+        fetchGuests();
+      }
     });
 
     // QR Modal Handler
