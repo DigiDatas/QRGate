@@ -1,1 +1,70 @@
-hi world
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>QR Event Manager Dashboard</title>
+  
+  <!-- 1. Bring in Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- 2. Bring in Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+</head>
+<body class="bg-gray-100 p-10 font-sans text-gray-800">
+
+  <div class="max-w-xl mx-auto bg-white p-6 rounded-lg shadow-md text-center">
+    <h1 class="text-2xl font-bold mb-4">Welcome to QR Event Manager</h1>
+    
+    <div id="auth-section">
+      <button id="loginBtn" class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700">
+        Log In with Google
+      </button>
+    </div>
+
+    <div id="dashboard-section" class="hidden mt-6 text-left">
+      <p id="user-email" class="text-green-600 font-semibold mb-4"></p>
+      <button id="logoutBtn" class="bg-red-500 text-white px-4 py-2 rounded shadow hover:bg-red-600">
+        Log Out
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // 3. Connect to your Supabase Project
+    // IMPORTANT: Replace these with your actual URL and Anon Key!
+    const SUPABASE_URL = 'https://YOUR-PROJECT-URL.supabase.co';
+    const SUPABASE_ANON_KEY = 'YOUR-LONG-ANON-KEY';
+    
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // 4. Handle Google Login
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      await supabase.auth.signInWithOAuth({
+        provider: 'google'
+      });
+    });
+
+    // 5. Handle Logout
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.reload(); // Reload the page to show the login button again
+    });
+
+    // 6. Check if user is logged in on page load
+    async function checkUser() {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        // User is logged in! Hide login button, show dashboard
+        document.getElementById('auth-section').classList.add('hidden');
+        document.getElementById('dashboard-section').classList.remove('hidden');
+        document.getElementById('user-email').innerText = 'Logged in as: ' + session.user.email;
+      }
+    }
+    
+    checkUser();
+  </script>
+
+</body>
+</html>
