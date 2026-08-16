@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Registration - QRGate</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+  <div class="max-w-md w-full bg-white p-8 rounded-xl shadow-lg">
+    <div id="registerFormContainer">
+      <h1 id="eventNameTitle" class="text-2xl font-extrabold text-gray-900 mb-2 text-center">Event Registration</h1>
+      <p class="text-sm text-gray-500 mb-6 text-center">Fill out the form below to secure your digital pass.</p>
+
+      <div class="mb-4">
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Your Full Name</label>
+        <input type="text" id="regName" placeholder="e.g. Riyas Moosa" class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Select Ticket Tier</label>
+        <select id="regTier" class="w-full border p-3 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          <option value="General">General Admission</option>
+          <option value="VIP">VIP Pass</option>
+          <option value="Speaker">Speaker Pass</option>
+        </select>
+      </div>
+
+      <button id="submitRegBtn" class="w-full bg-blue-600 text-white font-bold p-3 rounded-lg hover:bg-blue-700 transition">
+        Register & Get Ticket
+      </button>
+    </div>
+
+    <!-- SUCCESS TICKET VIEW (Hidden by default) -->
+    <div id="ticketSuccessContainer" class="hidden text-center">
+      <div class="bg-green-100 text-green-800 p-3 rounded-lg font-bold mb-4">Registration Successful! 🎉</div>
+      <h3 id="successGuestName" class="text-xl font-bold text-gray-800 mb-1"></h3>
+      <p id="successTier" class="text-sm text-blue-600 font-semibold mb-4"></p>
+      
+      <div id="publicQrcode" class="flex justify-center mb-4 p-4 bg-gray-50 border rounded-lg"></div>
+      
+      <p class="text-xs text-gray-500 mb-6">Take a screenshot of this QR code or download it to present at the entrance gate.</p>
+      
+      <button onclick="location.reload()" class="w-full bg-gray-800 text-white font-bold p-3 rounded-lg hover:bg-gray-900">
+        Register Another Guest
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://wpqpqlwjprtwoblhvenw.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_89l1fu6nVSWxGVOH-g1dQw_i99aUXt9';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Grab the ?event=UUID from the URL string
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventId = urlParams.get('event');
+
+    async function initPage() {
+      if (!eventId) {
+        document.getElementById('eventNameTitle').innerText = "Invalid Event Link";
+        document.getElementById('registerFormContainer').innerHTML = `<p class="text-center text-red-500 mt-4">No event specified in the link. Please check your URL.</p>`;
+        return;
+      }
+
+      // Fetch event name to display publicly
+      const { data, error } = await supabaseClient.from('events').select('event_name').eq('id', eventId).single();
+      if (data) {
+        document.getElementById('eventNameTitle').innerText = data.event_name;
+      } else {
+        document.getElementById('eventNameTitle').innerText = "Event Not Found";
+      }
+    }
+
+    document.getElementById('submitRegBtn').addEventListener('click', async () => {
+      const name = document.getElementById('regName').value.trim();
+      const tier = document.getElementById('regTier').value;
+
+      if (!name) {
+        alert('Please enter your full name.');
+        return;
+      }
+
+      // Insert guest into Supabase publicly
+      const { data, error } = await supabaseClient
+        .from('guests')
+        .insert([{ 
+          guest_name: name, 
+          event_id: eventId, 
+          ticket_tier: tier,
+          allowed_capacity: 1, 
+          checked_in_count: 0 
+        }])
+        .select('id')
+        .single();
+
+      if (error) {
+        alert('Registration failed: ' + error.message);
+      } else {
+        // Hide form, show ticket pass with QR code generated instantly!
+        document.getElementById('registerFormContainer').classList.add('hidden');
+        document.getElementById('ticketSuccessContainer').classList.remove('hidden');
+        
+        document.getElementById('successGuestName').innerText = name;
+        document.getElementById('successTier').innerText = `${tier} Ticket`;
+
+        new QRCode(document.getElementById("publicQrcode"), { 
+          text: data.id, 
+          width: 180, 
+          height: 180 
+        });
+      }
+    });
+
+    initPage();
+  </script>
+</body>
+</html>
