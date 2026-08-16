@@ -97,27 +97,27 @@
         resultMessage.innerText = 'Please wait...';
 
         // 3. Query your Supabase database!
-        // We look inside the 'tickets' table to find a matching QR code
+        // We look inside the 'guests' table to find a matching ID
         const { data, error } = await supabaseClient
-          .from('tickets')
+          .from('guests')
           .select('*')
-          .eq('qr_code', decodedText)
-          .single(); // We only want one exact match
+          .eq('id', decodedText) // The QR code text must match the guest's ID
+          .single(); 
 
         // 4. Handle the results
         if (error || !data) {
-          // TICKET NOT FOUND
+          // GUEST NOT FOUND
           resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-red-50 border-red-200 border';
           resultTitle.innerText = 'Invalid Ticket ❌';
           resultTitle.className = 'text-xl font-bold mb-2 text-red-800';
-          resultMessage.innerText = `No record found for: ${decodedText}`;
+          resultMessage.innerText = `No guest record found.`;
         } else {
-          // TICKET FOUND!
+          // GUEST FOUND!
           resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-green-50 border-green-200 border';
           resultTitle.innerText = 'Ticket Verified ✅';
           resultTitle.className = 'text-xl font-bold mb-2 text-green-800';
           
-          // Show the guest's name if we have it in the database
+          // Show the guest's name from your database column
           const guestName = data.guest_name ? data.guest_name : 'Guest';
           resultMessage.innerText = `${guestName} is good to go!`;
         }
