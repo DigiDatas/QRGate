@@ -54,31 +54,32 @@
     const SUPABASE_URL = 'https://abcdefghijklmnop.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_89l1fu6nVSWxGVOH-g1dQw_i99aUXt9';
     
-    
+   
+    // 2. Create the connection and name it supabaseClient
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // 4. Handle Google Login with Redirect
+    // 3. Handle Google Login
     document.getElementById('loginBtn').addEventListener('click', async () => {
-      await supabase.auth.signInWithOAuth({
+      await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          // This forces Google to send them exactly back to your GitHub page
           redirectTo: 'https://digidatas.github.io/QRGate/'
         }
       });
     });
 
-    // 5. Handle Logout
+    // 4. Handle Logout
     document.getElementById('logoutBtn').addEventListener('click', async () => {
-      await supabase.auth.signOut();
+      await supabaseClient.auth.signOut();
       window.location.reload(); 
     });
 
-    // 6. Check if user is logged in when the page loads
+    // 5. Check if user is logged in when the page loads
     async function checkUser() {
-      const { data: { session } } = await supabase.auth.getSession();
+      // Notice we are using supabaseClient here now!
+      const { data: { session } } = await supabaseClient.auth.getSession();
       
       if (session) {
-        // User is logged in! Hide login button, show dashboard
         document.getElementById('auth-section').classList.add('hidden');
         document.getElementById('dashboard-section').classList.remove('hidden');
         document.getElementById('user-email').innerText = 'Welcome back, ' + session.user.email;
