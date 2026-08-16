@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Scanner - QR Event Manager</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- HTML5 QR Code Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+  
+</head>
+<body class="bg-gray-100 p-4 md:p-10 font-sans text-gray-800">
+
+  <div class="max-w-xl mx-auto bg-white p-6 rounded-lg shadow-md mt-10">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold text-gray-900">Ticket Scanner</h1>
+      <a href="index.html" class="text-blue-600 hover:underline">← Back to Dashboard</a>
+    </div>
+
+    <!-- The Box Where the Camera Will Show -->
+    <div id="reader" class="w-full mb-6 rounded border-2 border-gray-300 overflow-hidden"></div>
+
+    <!-- The Results Box -->
+    <div id="result-box" class="hidden p-4 rounded-md text-center shadow-inner">
+      <h2 id="result-title" class="text-xl font-bold mb-2"></h2>
+      <p id="result-message" class="text-gray-700"></p>
+      <button id="scanAgainBtn" class="mt-4 bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-900 w-full">
+        Scan Next Ticket
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // 1. YOUR KEYS (Paste the exact same ones you used in index.html)
+    const SUPABASE_URL = 'https://wpqpqlwjprtwoblhvenw.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_89l1fu6nVSWxGVOH-g1dQw_i99aUXt9';
+    
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // 2. Variables for the Scanner
+    let html5QrcodeScanner;
+    const resultBox = document.getElementById('result-box');
+    const resultTitle = document.getElementById('result-title');
+    const resultMessage = document.getElementById('result-message');
+    const readerDiv = document.getElementById('reader');
+
+    // 3. Security Check: Are they logged in?
+    async function checkAuth() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        alert("You must be logged in to use the scanner.");
+        window.location.href = 'index.html';
+      } else {
+        startScanner(); // Only turn on the camera if they are logged in!
+      }
+    }
+
+    // 4. Start the Camera
+    function startScanner() {
+      // Hide the result box if it was open
+      resultBox.classList.add('hidden');
+      readerDiv.classList.remove('hidden');
+
+      // Initialize the scanner
+      html5QrcodeScanner = new Html5QrcodeScanner(
+        "reader",
+        { fps: 10, qrbox: {width: 250, height: 250} },
+        /* verbose= */ false
+      );
+      
+      html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    }
+
+    // 5. What happens when a QR code is successfully read?
+    async function onScanSuccess(decodedText, decodedResult) {
+      // Stop the camera temporarily so it doesn't scan the same ticket twice
+      html5QrcodeScanner.clear();
+      readerDiv.classList.add('hidden');
+      
+      // Show "Loading..." while we check the database
+      resultBox.classList.remove('hidden');
+      resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-yellow-50 border-yellow-200 border';
+      resultTitle.innerText = 'Checking Ticket...';
+      resultTitle.className = 'text-xl font-bold mb-2 text-yellow-800';
+      resultMessage.innerText = `QR Payload: ${decodedText}`;
+
+      // This is where we will write the code to check Supabase later!
+    }
+
+    // 6. What happens if the scan fails (ignore this, it fails every frame until it finds a code)
+    function onScanFailure(error) {
+      // console.warn(`Code scan error = ${error}`);
+    }
+
+    // 7. Reset button
+    document.getElementById('scanAgainBtn').addEventListener('click', () => {
+      startScanner();
+    });
+
+    // Run the security check on page load
+    checkAuth();
+  </script>
+
+</body>
+</html>
