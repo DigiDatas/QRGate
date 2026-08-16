@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - QRGate</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 p-4 md:p-10 font-sans text-gray-800">
+
+  <div class="max-w-6xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-md mt-6">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-extrabold text-gray-900">🛠️ Platform Admin Dashboard</h1>
+      <a href="index.html" class="text-blue-600 hover:underline font-semibold">← Back to Dashboard</a>
+    </div>
+
+    <!-- TABS -->
+    <div class="flex border-b mb-6">
+      <button onclick="switchTab('tenants')" id="tabTenantsBtn" class="py-2 px-4 font-bold border-b-2 border-blue-600 text-blue-600">Manage Tenants</button>
+      <button onclick="switchTab('events')" id="tabEventsBtn" class="py-2 px-4 font-bold text-gray-500">Approve Events</button>
+    </div>
+
+    <!-- TENANTS SECTION -->
+    <div id="tenantsSection">
+      <h2 class="text-xl font-bold mb-4">Registered Tenants & Payment Status</h2>
+      <div class="overflow-x-auto border rounded-md">
+        <table class="w-full text-left border-collapse bg-white">
+          <thead>
+            <tr class="bg-gray-100 border-b text-sm text-gray-600">
+              <th class="p-3">Company / Name</th>
+              <th class="p-3">Email</th>
+              <th class="p-3">Phone</th>
+              <th class="p-3">Payment Status</th>
+              <th class="p-3 text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="tenantTableBody">
+            <tr><td colspan="5" class="p-4 text-center text-gray-500">Loading tenants...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- EVENTS APPROVAL SECTION -->
+    <div id="eventsSection" class="hidden">
+      <h2 class="text-xl font-bold mb-4">Event Approval & Expiration Control</h2>
+      <div class="overflow-x-auto border rounded-md">
+        <table class="w-full text-left border-collapse bg-white">
+          <thead>
+            <tr class="bg-gray-100 border-b text-sm text-gray-600">
+              <th class="p-3">Event Name</th>
+              <th class="p-3">Tenant ID</th>
+              <th class="p-3">Expires At</th>
+              <th class="p-3">Approval Status</th>
+              <th class="p-3 text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="eventTableBody">
+            <tr><td colspan="5" class="p-4 text-center text-gray-500">Loading events...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://wpqpqlwjprtwoblhvenw.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_89l1fu6nVSWxGVOH-g1dQw_i99aUXt9';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function initAdmin() {
+      await loadTenants();
+      await loadEvents();
+    }
+
+    function switchTab(tab) {
+      if (tab === 'tenants') {
+        document.getElementById('tenantsSection').classList.remove('hidden');
+        document.getElementById('eventsSection').classList.add('hidden');
+        document.getElementById('tabTenantsBtn').className = 'py-2 px-4 font-bold border-b-2 border-blue-600 text-blue-600';
+        document.getElementById('tabEventsBtn').className = 'py-2 px-4 font-bold text-gray-500';
+      } else {
+        document.getElementById('eventsSection').classList.remove('hidden');
+        document.getElementById('tenantsSection').classList.add('hidden');
+        document.getElementById('tabEventsBtn').className = 'py-2 px-4 font-bold border-b-2 border-blue-600 text-blue-600';
+        document.getElementById('tabTenantsBtn').className = 'py-2 px-4 font-bold text-gray-500';
+      }
+    }
+
+    // Load Tenants from Database
+    async function loadTenants() {
+      const { data, error } = await supabaseClient.from('tenants').select('*');
+      const tbody = document.getElementById('tenantTableBody');
+      tbody.innerHTML = '';
+
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">No tenants registered yet.</td></tr>`;
+        return;
+      }
+
+      data.forEach(t => {
+        const isPaid = t.payment_status === 'Paid';
+        const row = document.createElement('tr');
+        row.className = 'border-b text-sm';
+        row.innerHTML = `
+          <td class="p-3 font-medium">${t.company_name || 'N/A'}</td>
+          <td class="p-3 text-gray-600">${t.email || 'N/A'}</td>
+          <td class="p-3 text-gray-600">${t.phone || 'N/A'}</td>
+          <td class="p-3">
+            <span class="${isPaid ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'} px-2 py-1 rounded text-xs font-bold">
+              ${t.payment_status || 'Pending'}
+            </span>
+          </td>
+          <td class="p-3 text-center">
+            <button onclick="togglePayment('${t.id}', '${t.payment_status}')" class="bg-gray-800 text-white px-3 py-1 rounded text-xs font-semibold hover:bg-black">
+              Toggle Payment
+            </button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Toggle Payment Status
+    async function togglePayment(tenantId, currentStatus) {
+      const newStatus = currentStatus === 'Paid' ? 'Pending' : 'Paid';
+      const { error } = await supabaseClient.from('tenants').update({ payment_status: newStatus }).eq('id', tenantId);
+      if (error) alert('Error updating payment: ' + error.message);
+      else loadTenants();
+    }
+
+    // Load Events for Approval
+    async function loadEvents() {
+      const { data, error } = await supabaseClient.from('events').select('*').order('event_name');
+      const tbody = document.getElementById('eventTableBody');
+      tbody.innerHTML = '';
+
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">No events found.</td></tr>`;
+        return;
+      }
+
+      data.forEach(e => {
+        const isApproved = e.is_approved === true;
+        const isExpired = e.expires_at && new Date(e.expires_at) < new Date();
+
+        const row = document.createElement('tr');
+        row.className = 'border-b text-sm';
+        row.innerHTML = `
+          <td class="p-3 font-medium">${e.event_name}</td>
+          <td class="p-3 font-mono text-xs text-gray-500">${e.tenant_id.substring(0,8)}...</td>
+          <td class="p-3 text-xs text-gray-600">${e.expires_at ? new Date(e.expires_at).toLocaleString() : 'No Limit'}</td>
+          <td class="p-3">
+            <span class="${isApproved ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} px-2 py-1 rounded text-xs font-bold">
+              ${isApproved ? 'Approved' : 'Pending Approval'}
+            </span>
+            ${isExpired ? '<span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs ml-1">Expired</span>' : ''}
+          </td>
+          <td class="p-3 text-center">
+            <button onclick="toggleApproval('${e.id}', ${isApproved})" class="${isApproved ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white px-3 py-1 rounded text-xs font-semibold">
+              ${isApproved ? 'Revoke Approval' : 'Approve Event'}
+            </button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Toggle Event Approval
+    async function toggleApproval(eventId, currentApproval) {
+      const { error } = await supabaseClient.from('events').update({ is_approved: !currentApproval }).eq('id', eventId);
+      if (error) alert('Error updating approval: ' + error.message);
+      else loadEvents();
+    }
+
+    initAdmin();
+  </script>
+</body>
+</html>
