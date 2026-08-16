@@ -21,7 +21,7 @@
       <div class="relative flex items-center gap-4">
         <div id="authContainer">
           <!-- Dynamically populated based on login state -->
-          <button onclick="handleGoogleLogin()" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-5 py-2.5 rounded-xl transition shadow-lg shadow-pink-600/35 text-sm">
+          <button onclick="openAuthModal()" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-5 py-2.5 rounded-xl transition shadow-lg shadow-pink-600/35 text-sm">
             Sign In / Register
           </button>
         </div>
@@ -65,7 +65,7 @@
       
       <!-- CONDITIONAL HERO CTA -->
       <div class="flex justify-center gap-4" id="heroCtaContainer">
-        <button onclick="handleGoogleLogin()" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-8 py-4 rounded-xl text-lg transition shadow-xl shadow-pink-600/25">
+        <button onclick="openAuthModal()" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-8 py-4 rounded-xl text-lg transition shadow-xl shadow-pink-600/25">
           Get Started Free →
         </button>
         <a href="#features" class="bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-200 font-bold px-8 py-4 rounded-xl text-lg transition">
@@ -102,6 +102,54 @@
       </div>
     </div>
   </section>
+<!-- AUTHENTICATION MODAL -->
+  <div id="authModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4 opacity-0 transition-opacity duration-300">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md p-8 relative shadow-2xl transform scale-95 transition-transform duration-300" id="authModalContent">
+      <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-slate-500 hover:text-white transition bg-slate-950 p-2 rounded-full border border-slate-800 hover:border-pink-500">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+      
+      <div class="text-center mb-8">
+        <div class="w-12 h-12 mx-auto rounded-xl bg-gradient-to-tr from-pink-500 to-indigo-600 flex items-center justify-center font-bold text-xl shadow-lg shadow-pink-500/20 mb-4">QR</div>
+        <h2 class="text-2xl font-bold text-white mb-1">Welcome Back</h2>
+        <p class="text-slate-400 text-sm">Sign in to manage your events and gates.</p>
+      </div>
+
+      <!-- Google Login Button -->
+      <button onclick="executeGoogleLogin()" class="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-100 text-gray-900 font-bold py-3 px-4 rounded-xl transition mb-6 shadow-lg">
+        <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="Google">
+        Continue with Google
+      </button>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div class="h-px bg-slate-800 flex-1"></div>
+        <span class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Or sign in with email</span>
+        <div class="h-px bg-slate-800 flex-1"></div>
+      </div>
+
+      <!-- Email/Password (Placeholders for UI) -->
+      <div class="space-y-4 mb-6">
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Email Address</label>
+          <input type="email" placeholder="you@example.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-pink-500 text-slate-200 transition">
+        </div>
+        <div>
+          <div class="flex justify-between mb-1">
+            <label class="block text-xs font-semibold text-slate-400">Password</label>
+            <a href="#" onclick="alert('Password reset coming soon!')" class="text-xs text-pink-500 hover:text-pink-400 transition">Forgot Password?</a>
+          </div>
+          <input type="password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-pink-500 text-slate-200 transition">
+        </div>
+        <button onclick="alert('Email login is currently disabled. Please use Continue with Google.')" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3 px-4 rounded-xl transition shadow-lg shadow-pink-600/25">
+          Sign In
+        </button>
+      </div>
+
+      <p class="text-center text-sm text-slate-400">
+        Don't have an account? <a href="#" onclick="alert('Sign up is currently disabled. Please use Continue with Google.')" class="text-pink-500 hover:text-pink-400 font-bold transition">Sign Up</a>
+      </p>
+    </div>
+  </div>
 
   <!-- FOOTER -->
   <footer class="py-12 border-t border-slate-950 text-center text-slate-500 text-sm">
@@ -113,11 +161,38 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_89l1fu6nVSWxGVOH-g1dQw_i99aUXt9';
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    async function handleGoogleLogin() {
+    // MODAL CONTROLS
+    function openAuthModal() {
+      const modal = document.getElementById('authModal');
+      const content = document.getElementById('authModalContent');
+      modal.classList.remove('hidden');
+      // Small delay to allow CSS transitions to trigger
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        content.classList.remove('scale-95');
+      }, 10);
+    }
+
+    function closeAuthModal() {
+      const modal = document.getElementById('authModal');
+      const content = document.getElementById('authModalContent');
+      modal.classList.add('opacity-0');
+      content.classList.add('scale-95');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    }
+
+    // THE ACTUAL GOOGLE LOGIN EXECUTION
+    async function executeGoogleLogin() {
       const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
-        // Hardcode the exact GitHub Pages URL here so it never gets lost!
-        options: { redirectTo: 'https://digidatas.github.io/QRGate/index.html' }
+        options: { 
+          redirectTo: 'https://digidatas.github.io/QRGate/index.html',
+          queryParams: {
+            prompt: 'select_account' // Forces Google to show the account selection screen!
+          }
+        }
       });
       if (error) alert('Login error: ' + error.message);
     }
