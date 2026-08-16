@@ -160,19 +160,29 @@
         document.getElementById('menuUserEmail').innerText = session.user.email;
         document.getElementById('userAvatarBtn').innerText = displayName.charAt(0).toUpperCase();
 
+        // SMART ROUTING: Change Hero Buttons based on Admin Status
         if (tenant?.is_admin === true) {
           document.getElementById('adminLinkMenu').classList.remove('hidden');
+          // Admin View
+          document.getElementById('heroCtaContainer').innerHTML = `
+            <a href="admin.html" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-8 py-4 rounded-xl text-lg transition shadow-xl shadow-indigo-600/25">
+              Open Admin Panel 🛠️
+            </a>
+            <a href="events.html" class="bg-pink-600 border border-pink-500 hover:bg-pink-500 text-white font-bold px-8 py-4 rounded-xl text-lg transition shadow-xl">
+              Event Manager Dashboard
+            </a>
+          `;
+        } else {
+          // Regular Organizer View
+          document.getElementById('heroCtaContainer').innerHTML = `
+            <a href="events.html" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-8 py-4 rounded-xl text-lg transition shadow-xl shadow-pink-600/25">
+              Open Dashboard →
+            </a>
+            <a href="scanner.html" class="bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-200 font-bold px-8 py-4 rounded-xl text-lg transition">
+              Open Gate Scanner 📱
+            </a>
+          `;
         }
-
-        // Update Hero CTA Button to Go to Dashboard
-        document.getElementById('heroCtaContainer').innerHTML = `
-          <a href="events.html" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-8 py-4 rounded-xl text-lg transition shadow-xl shadow-pink-600/25">
-            Open Dashboard →
-          </a>
-          <a href="scanner.html" class="bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-200 font-bold px-8 py-4 rounded-xl text-lg transition">
-            Open Gate Scanner 📱
-          </a>
-        `;
       }
     }
     checkAuth();
