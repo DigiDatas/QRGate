@@ -3,122 +3,196 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Event & Guest Manager - QRGate</title>
+  <title>Event Manager Dashboard - QRGate</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
-<body class="bg-gray-100 p-4 md:p-10 font-sans text-gray-800">
+<body class="bg-slate-950 text-slate-100 font-sans antialiased flex h-screen overflow-hidden">
 
-  <div class="max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-md mt-6">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold text-gray-900">Event & Guest Manager</h1>
-      <a href="index.html" class="text-blue-600 hover:underline font-medium">← Home / Landing Page</a>
-    </div>
-
-    <!-- TENANT ONBOARDING PROFILE FORM (Hidden if profile exists) -->
-    <div id="tenantProfileCard" class="hidden bg-yellow-50 border border-yellow-300 p-4 rounded-md mb-6">
-      <h2 class="font-bold text-lg text-yellow-900 mb-2">Complete Your Tenant Profile</h2>
-      <p class="text-xs text-yellow-700 mb-4">Please provide your details before creating events.</p>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-        <input type="text" id="profileCompany" placeholder="Business / Company Name" class="border p-2 rounded bg-white">
-        <input type="text" id="profileName" placeholder="Your Full Name" class="border p-2 rounded bg-white">
-        <input type="text" id="profilePhone" placeholder="Mobile Number (e.g. +966...)" class="border p-2 rounded bg-white md:col-span-2">
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="w-72 bg-slate-900 border-r border-slate-800 flex flex-col justify-between hidden md:flex">
+    <div>
+      <!-- Brand Logo -->
+      <div class="h-20 flex items-center px-6 gap-3 border-b border-slate-800">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-500 to-indigo-600 flex items-center justify-center font-bold text-lg shadow-lg shadow-pink-500/20">QR</div>
+        <span class="text-lg font-extrabold tracking-tight">QRGate<span class="text-pink-500">.</span></span>
       </div>
-      <button id="saveProfileBtn" class="bg-yellow-600 text-white px-4 py-2 rounded font-semibold hover:bg-yellow-700 w-full">Save Profile</button>
-    </div>
 
-    <!-- EVENT SELECTOR & CREATOR -->
-    <div class="bg-gray-50 p-4 rounded-md border mb-6">
-      <h2 class="font-bold text-lg mb-3">1. Create or Select Event</h2>
-      <div class="flex flex-col gap-3 mb-3">
-        <input type="text" id="eventNameInput" placeholder="New Event Name (e.g. Tech Expo 2026)" class="w-full border p-2 rounded bg-white">
-        <div class="flex flex-col md:flex-row gap-3">
-          <div class="flex-1">
-            <label class="block text-xs font-semibold text-gray-600 mb-1">Total Event Capacity</label>
-            <input type="number" id="eventCapacityInput" value="100" min="1" class="w-full border p-2 rounded bg-white">
-          </div>
-          <div class="flex-1">
-            <label class="block text-xs font-semibold text-gray-600 mb-1">Event Expiry Date & Time</label>
-            <input type="datetime-local" id="eventExpireInput" class="w-full border p-2 rounded bg-white text-sm">
-          </div>
-        </div>
-        <button id="addEventBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 font-semibold transition">
-          Create Event (Pending Admin Approval)
+      <!-- Navigation Links -->
+      <nav class="p-4 space-y-1">
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-pink-600 text-white font-semibold shadow-lg shadow-pink-600/20 transition">
+          <span>📊 Event Manager Portal</span>
+        </a>
+        <a href="scanner.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 font-medium transition">
+          <span>📱 Gate QR Scanner</span>
+        </a>
+        <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 font-medium transition">
+          <span>🏠 Return to Home</span>
+        </a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT AREA -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    
+    <!-- TOP HEADER -->
+    <header class="h-20 bg-slate-950 border-b border-slate-800 flex items-center justify-between px-6 shrink-0">
+      <!-- Search Bar (Visual) -->
+      <div class="relative w-96 hidden lg:block">
+        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">🔍</span>
+        <input type="text" placeholder="Search events or guests..." class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-pink-500 text-slate-200 placeholder-slate-500 transition">
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-4 ml-auto">
+        <button class="relative p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition">
+          🔔<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-pink-500"></span>
         </button>
-      </div>
-      <select id="eventSelect" class="w-full border p-2 rounded bg-white">
-        <option value="">-- Loading events... --</option>
-      </select>
-    </div>
 
-    <!-- ADD GUEST FORM -->
-    <div class="bg-gray-50 p-4 rounded-md border mb-6">
-      <h2 class="font-bold text-lg mb-3">2. Add Guest to Active Event</h2>
-      <div class="flex flex-col md:flex-row gap-3">
-        <input type="text" id="guestNameInput" placeholder="Guest Full Name" class="flex-1 border p-2 rounded bg-white">
-        <div class="w-32">
-          <label class="block text-xs font-semibold text-gray-600 mb-1">Persons Count</label>
-          <input type="number" id="guestCapacityInput" value="1" min="1" max="50" class="w-full border p-2 rounded bg-white" title="Number of people included in this pass">
+        <!-- User Profile -->
+        <div class="flex items-center gap-3 pl-4 border-l border-slate-800">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-sm" id="userAvatar">O</div>
+          <div class="hidden sm:block text-left">
+            <p class="text-xs font-bold text-slate-200" id="userNameDisplay">Organizer</p>
+            <p class="text-[10px] text-slate-500" id="userEmailDisplay">loading@email.com</p>
+          </div>
+          <button onclick="handleSignOut()" class="ml-2 bg-slate-900 border border-slate-800 hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400 text-slate-400 px-3 py-2 rounded-xl text-xs font-semibold transition">
+            Sign Out
+          </button>
         </div>
-        <div class="w-36">
-          <label class="block text-xs font-semibold text-gray-600 mb-1">Ticket Tier</label>
-          <select id="guestTierInput" class="w-full border p-2 rounded bg-white">
-            <option value="General">General</option>
-            <option value="VIP">VIP</option>
-            <option value="Speaker">Speaker</option>
+      </div>
+    </header>
+
+    <!-- DASHBOARD SCROLLABLE AREA -->
+    <main class="flex-1 overflow-y-auto p-6 md:p-10 space-y-8 bg-slate-950">
+      
+      <!-- TENANT ONBOARDING PROFILE FORM (Hidden if profile exists) -->
+      <div id="tenantProfileCard" class="hidden bg-yellow-500/10 border border-yellow-500/30 p-6 rounded-2xl mb-6">
+        <h2 class="font-bold text-lg text-yellow-400 mb-2">Complete Your Organizer Profile</h2>
+        <p class="text-sm text-yellow-200/70 mb-4">Please provide your details before creating events.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <input type="text" id="profileCompany" placeholder="Business / Company Name" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-yellow-500 transition">
+          <input type="text" id="profileName" placeholder="Your Full Name" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-yellow-500 transition">
+          <input type="text" id="profilePhone" placeholder="Mobile Number (e.g. +966...)" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-yellow-500 transition md:col-span-2">
+        </div>
+        <button id="saveProfileBtn" class="bg-yellow-600 hover:bg-yellow-500 text-white px-6 py-3 rounded-xl font-semibold transition w-full shadow-lg shadow-yellow-600/20">Save Profile</button>
+      </div>
+
+      <!-- LIVE ANALYTICS SUMMARY BAR -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Total Registered Guests</p>
+          <p id="statTotal" class="text-3xl font-extrabold text-slate-100">0</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Checked In (Gate Scans)</p>
+          <p id="statCheckedIn" class="text-3xl font-extrabold text-green-400">0</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Attendance Rate</p>
+          <p id="statRate" class="text-3xl font-extrabold text-purple-400">0%</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <!-- 1. EVENT MANAGER CARD -->
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+          <h2 class="font-bold text-lg text-slate-100 mb-4">1. Select or Create Event</h2>
+          
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Active Events List</label>
+          <select id="eventSelect" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-pink-500 transition mb-6">
+            <option value="">-- Loading events... --</option>
           </select>
-        </div>
-        <div class="flex items-end">
-          <button id="addGuestBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 font-semibold transition">Add Guest</button>
-        </div>
-      </div>
-    </div>
 
-    <!-- LIVE ANALYTICS SUMMARY BAR -->
-    <div class="grid grid-cols-3 gap-4 mb-6">
-      <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg text-center">
-        <p class="text-xs text-blue-600 font-bold uppercase">Total Registered</p>
-        <p id="statTotal" class="text-2xl font-extrabold text-blue-900">0</p>
-      </div>
-      <div class="bg-green-50 border border-green-200 p-4 rounded-lg text-center">
-        <p class="text-xs text-green-600 font-bold uppercase">Checked In</p>
-        <p id="statCheckedIn" class="text-2xl font-extrabold text-green-900">0</p>
-      </div>
-      <div class="bg-purple-50 border border-purple-200 p-4 rounded-lg text-center">
-        <p class="text-xs text-purple-600 font-bold uppercase">Attendance Rate</p>
-        <p id="statRate" class="text-2xl font-extrabold text-purple-900">0%</p>
-      </div>
-    </div>
+          <div class="pt-6 border-t border-slate-800">
+            <h3 class="font-semibold text-sm text-slate-300 mb-3">Create New Event</h3>
+            <div class="space-y-3">
+              <input type="text" id="eventNameInput" placeholder="New Event Name (e.g. Tech Expo 2026)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-pink-500 transition">
+              <div class="flex gap-3">
+                <div class="flex-1">
+                  <label class="block text-xs font-semibold text-slate-500 mb-1">Total Capacity</label>
+                  <input type="number" id="eventCapacityInput" value="100" min="1" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-pink-500 transition">
+                </div>
+                <div class="flex-1">
+                  <label class="block text-xs font-semibold text-slate-500 mb-1">Expiry Date & Time</label>
+                  <input type="datetime-local" id="eventExpireInput" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-pink-500 transition">
+                </div>
+              </div>
+              <button id="addEventBtn" class="w-full bg-slate-800 hover:bg-slate-700 text-white px-4 py-3 rounded-xl font-semibold transition border border-slate-700 mt-2">
+                Create Event (Pending Admin Approval)
+              </button>
+            </div>
+          </div>
+        </div>
 
-    <!-- GUEST LIST TABLE -->
-    <h2 class="font-bold text-lg mb-3">Registered Guests</h2>
-    <div class="overflow-x-auto border rounded-md">
-      <table class="w-full text-left border-collapse bg-white">
-        <thead>
-          <tr class="bg-gray-100 border-b text-sm text-gray-600">
-            <th class="p-3">Guest Name</th>
-            <th class="p-3">Tier / Persons</th>
-            <th class="p-3">Status</th>
-            <th class="p-3 text-center">Action</th>
-          </tr>
-        </thead>
-        <tbody id="guestTableBody">
-          <tr><td colspan="4" class="p-4 text-center text-gray-500">Select an event.</td></tr>
-        </tbody>
-      </table>
-    </div>
+        <!-- 2. ADD GUEST CARD -->
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+          <h2 class="font-bold text-lg text-slate-100 mb-4">2. Issue Guest Pass</h2>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Guest Full Name</label>
+              <input type="text" id="guestNameInput" placeholder="Enter name..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-pink-500 transition">
+            </div>
+            <div class="flex gap-4">
+              <div class="flex-1">
+                <label class="block text-xs font-semibold text-slate-400 mb-1">Persons Included</label>
+                <input type="number" id="guestCapacityInput" value="1" min="1" max="50" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-pink-500 transition" title="Number of people allowed on this QR code">
+              </div>
+              <div class="flex-1">
+                <label class="block text-xs font-semibold text-slate-400 mb-1">Ticket Tier</label>
+                <select id="guestTierInput" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-pink-500 transition">
+                  <option value="General">General</option>
+                  <option value="VIP">VIP</option>
+                  <option value="Speaker">Speaker</option>
+                </select>
+              </div>
+            </div>
+            <button id="addGuestBtn" class="w-full bg-pink-600 hover:bg-pink-500 text-white px-4 py-3 rounded-xl font-bold transition shadow-lg shadow-pink-600/25 mt-2">
+              Generate QR Pass
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GUEST LIST TABLE -->
+      <div class="mt-8">
+        <h2 class="text-xl font-bold tracking-tight text-slate-100 mb-4">Registered Guests & Status</h2>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase bg-slate-900/50">
+                <th class="p-4">Guest Name</th>
+                <th class="p-4">Tier / Scans</th>
+                <th class="p-4">Status</th>
+                <th class="p-4 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="guestTableBody" class="divide-y divide-slate-800/60 text-sm text-slate-300">
+              <tr><td colspan="4" class="p-6 text-center text-slate-500">Please select an event above.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
   </div>
 
-  <!-- QR CODE MODAL POPUP -->
-  <div id="qrModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-    <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
-      <h3 id="modalGuestName" class="font-bold text-xl mb-4">Ticket Pass</h3>
-      <div id="qrcode" class="flex justify-center mb-4"></div>
-      <p id="modalTicketId" class="text-xs font-mono text-gray-500 mb-6 break-all"></p>
-      <div class="flex gap-2">
-        <button id="downloadQrBtn" class="bg-green-600 text-white px-4 py-2 rounded flex-1 hover:bg-green-700 font-bold">Download QR</button>
-        <button onclick="closeModal()" class="bg-gray-800 text-white px-4 py-2 rounded flex-1 hover:bg-gray-900">Close</button>
+  <!-- QR CODE MODAL POPUP (Styled for Dark Mode but keeps QR white for scanning) -->
+  <div id="qrModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center relative">
+      <h3 id="modalGuestName" class="font-bold text-xl text-slate-100 mb-2">Ticket Pass</h3>
+      <p id="modalTicketId" class="text-xs font-mono text-slate-500 mb-6 break-all"></p>
+      
+      <!-- White background strictly for QR readability by scanners -->
+      <div class="bg-white p-4 rounded-xl inline-block mb-6 shadow-inner">
+        <div id="qrcode" class="flex justify-center"></div>
+      </div>
+      
+      <div class="flex gap-3">
+        <button id="downloadQrBtn" class="bg-pink-600 hover:bg-pink-500 text-white px-4 py-2.5 rounded-xl flex-1 font-bold transition shadow-lg shadow-pink-600/20">Download</button>
+        <button onclick="closeModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2.5 rounded-xl flex-1 font-semibold transition border border-slate-700">Close</button>
       </div>
     </div>
   </div>
@@ -136,10 +210,13 @@
         window.location.href = 'index.html';
         return;
       }
+      
+      // Update Header Info
+      document.getElementById('userEmailDisplay').innerText = session.user.email;
+      
       await checkTenantProfile(session);
     }
 
-    // 1. Check Tenant Profile Onboarding
     async function checkTenantProfile(session) {
       const userId = session.user.id;
       const userEmail = session.user.email;
@@ -161,228 +238,188 @@
         currentTenantId = tenant ? tenant.id : null;
       } else {
         currentTenantId = tenant.id;
+        document.getElementById('userNameDisplay').innerText = tenant.full_name;
+        document.getElementById('userAvatar').innerText = tenant.full_name.charAt(0).toUpperCase();
         await fetchEvents();
       }
     }
 
-    // Save Profile Handler
+    // Save Profile Logic
     document.getElementById('saveProfileBtn').addEventListener('click', async () => {
       const { data: { session } } = await supabaseClient.auth.getSession();
       const company = document.getElementById('profileCompany').value.trim();
       const name = document.getElementById('profileName').value.trim();
       const phone = document.getElementById('profilePhone').value.trim();
 
-      if (!company || !name || !phone) {
-        alert('Please fill out all fields.');
-        return;
-      }
+      if (!company || !name || !phone) return alert('Please fill out all fields.');
 
       const userId = session.user.id;
       const email = session.user.email;
 
-      // Upsert tenant record
-      const { data, error } = await supabaseClient
-        .from('tenants')
-        .upsert([{ 
-          owner_id: userId, 
-          company_name: company, 
-          full_name: name, 
-          phone: phone, 
-          email: email,
-          payment_status: 'Pending'
-        }], { onConflict: 'owner_id' })
-        .select('id')
-        .single();
+      // Check existing to update or insert
+      const { data: existingTenant } = await supabaseClient.from('tenants').select('id').eq('owner_id', userId).maybeSingle();
 
-      if (error) {
-        alert('Error saving profile: ' + error.message);
+      if (existingTenant) {
+        await supabaseClient.from('tenants').update({ company_name: company, full_name: name, phone: phone }).eq('id', existingTenant.id);
+        currentTenantId = existingTenant.id;
       } else {
+        const { data } = await supabaseClient.from('tenants').insert([{ owner_id: userId, company_name: company, full_name: name, phone: phone, email: email, payment_status: 'Pending' }]).select('id').single();
         currentTenantId = data.id;
-        document.getElementById('tenantProfileCard').classList.add('hidden');
-        alert('Profile saved successfully!');
-        fetchEvents();
       }
+
+      document.getElementById('tenantProfileCard').classList.add('hidden');
+      document.getElementById('userNameDisplay').innerText = name;
+      document.getElementById('userAvatar').innerText = name.charAt(0).toUpperCase();
+      fetchEvents();
     });
 
-    // 2. Fetch Events (Only for the logged-in tenant)
+    // Fetch Events for Dropdown
     async function fetchEvents() {
       if (!currentTenantId) return;
-      
-      // Filter events by the current tenant's ID
-      const { data } = await supabaseClient
-        .from('events')
-        .select('*')
-        .eq('tenant_id', currentTenantId)
-        .order('event_name');
-
+      const { data } = await supabaseClient.from('events').select('*').eq('tenant_id', currentTenantId).order('event_name');
       const select = document.getElementById('eventSelect');
       select.innerHTML = '';
       
       if (!data || data.length === 0) {
-        select.innerHTML = `<option value="">No events found. Create one above!</option>`;
-        document.getElementById('guestTableBody').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">Create an event first.</td></tr>`;
+        select.innerHTML = `<option value="">No events found. Create one below!</option>`;
+        document.getElementById('guestTableBody').innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-500">Create an event first.</td></tr>`;
         return;
       }
       
       data.forEach(e => {
         const opt = document.createElement('option');
         opt.value = e.id;
-        opt.textContent = `${e.event_name} (${e.is_approved ? 'Approved' : 'Pending Approval'})`;
+        opt.textContent = `${e.event_name} (${e.is_approved ? 'Approved' : 'Pending Admin'})`;
         select.appendChild(opt);
       });
-      
       fetchGuests();
     }
 
-    // Create Event Handler
+    // Create Event
     document.getElementById('addEventBtn').addEventListener('click', async () => {
-      if (!currentTenantId) {
-        alert('Please complete your tenant profile first.');
-        return;
-      }
+      if (!currentTenantId) return alert('Complete profile first.');
       const name = document.getElementById('eventNameInput').value.trim();
       const capacity = parseInt(document.getElementById('eventCapacityInput').value) || 100;
       const expiresAt = document.getElementById('eventExpireInput').value;
 
-      if (!name) return alert('Enter an event name.');
+      if (!name) return alert('Enter event name.');
 
       const { error } = await supabaseClient.from('events').insert([{ 
-        event_name: name, 
-        total_capacity: capacity, 
-        tenant_id: currentTenantId,
-        is_approved: false,
-        expires_at: expiresAt ? new Date(expiresAt).toISOString() : null
+        event_name: name, total_capacity: capacity, tenant_id: currentTenantId, is_approved: false, expires_at: expiresAt ? new Date(expiresAt).toISOString() : null
       }]);
 
-      if (error) {
-        alert('Error creating event: ' + error.message);
-      } else {
+      if (error) alert('Error: ' + error.message);
+      else {
         document.getElementById('eventNameInput').value = '';
         document.getElementById('eventExpireInput').value = '';
-        alert('Event created successfully! Waiting for Admin approval.');
         fetchEvents();
+        alert('Event Created! Awaiting Admin Approval.');
       }
     });
 
     document.getElementById('eventSelect').addEventListener('change', fetchGuests);
 
-    // 3. Fetch Guests for Selected Event
+    // Fetch Guests
     async function fetchGuests() {
       const eventId = document.getElementById('eventSelect').value;
       const tbody = document.getElementById('guestTableBody');
       if (!eventId) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">Please select an event.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-500">Please select an event.</td></tr>`;
         return;
       }
 
       const { data, error } = await supabaseClient.from('guests').select('*').eq('event_id', eventId).order('guest_name');
       tbody.innerHTML = '';
-
       let total = 0, checkedIn = 0;
 
       if (error || !data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">No guests found for this event.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-500">No guests yet. Add one above!</td></tr>`;
       } else {
         total = data.length;
         data.forEach(g => {
-          const isCheckedIn = (g.checked_in_count || 0) >= (g.allowed_capacity || 1);
-          if (isCheckedIn) checkedIn++;
+          const isCompleted = (g.checked_in_count || 0) >= (g.allowed_capacity || 1);
+          if (isCompleted) checkedIn++;
 
           const row = document.createElement('tr');
-          row.className = 'border-b hover:bg-gray-50 text-sm';
+          row.className = 'hover:bg-slate-800/40 transition border-b border-slate-800/50';
           row.innerHTML = `
-            <td class="p-3 font-medium">${g.guest_name}</td>
-            <td class="p-3 text-xs"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold">${g.ticket_tier || 'General'}</span> (${g.checked_in_count || 0}/${g.allowed_capacity || 1} scanned)</td>
-            <td class="p-3"><span class="${isCheckedIn ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'} px-2 py-1 rounded text-xs font-bold">${isCheckedIn ? 'Completed' : 'Active'}</span></td>
-            <td class="p-3 text-center">
-              <button onclick="showTicket('${g.id}', '${g.guest_name}')" class="bg-blue-100 text-blue-700 px-3 py-1 rounded text-xs font-bold hover:bg-blue-200">View QR</button>
+            <td class="p-4 font-medium text-slate-200">${g.guest_name}</td>
+            <td class="p-4 text-xs">
+              <span class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2.5 py-1 rounded-md font-bold mr-2">${g.ticket_tier || 'General'}</span> 
+              <span class="text-slate-400">(${g.checked_in_count || 0}/${g.allowed_capacity || 1} scanned)</span>
+            </td>
+            <td class="p-4">
+              <span class="${isCompleted ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-slate-800 text-slate-400 border-slate-700'} border px-3 py-1 rounded-full text-xs font-bold">
+                ${isCompleted ? 'Completed' : 'Active'}
+              </span>
+            </td>
+            <td class="p-4 text-center">
+              <button onclick="showTicket('${g.id}', '${g.guest_name}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold transition border border-slate-700">View QR</button>
             </td>
           `;
           tbody.appendChild(row);
         });
       }
 
-      // Update Analytics Counters
       document.getElementById('statTotal').innerText = total;
       document.getElementById('statCheckedIn').innerText = checkedIn;
       document.getElementById('statRate').innerText = total > 0 ? Math.round((checkedIn / total) * 100) + '%' : '0%';
     }
 
-    // 4. Add Guest Handler with Multi-Person Capacity
+    // Add Guest
     document.getElementById('addGuestBtn').addEventListener('click', async () => {
       const name = document.getElementById('guestNameInput').value.trim();
       const tier = document.getElementById('guestTierInput').value;
       const capacity = parseInt(document.getElementById('guestCapacityInput').value) || 1;
       const eventId = document.getElementById('eventSelect').value;
       
-      if (!name || !eventId) return alert('Enter guest name and select event.');
+      if (!name || !eventId) return alert('Enter guest name and select an event.');
 
-      // Check if event is approved and not expired
-      const { data: eventData, error: eventErr } = await supabaseClient
-        .from('events')
-        .select('is_approved, expires_at')
-        .eq('id', eventId)
-        .single();
-
-      if (eventErr || !eventData.is_approved) {
-        alert('Action Blocked: This event has not been approved by the Admin yet.');
-        return;
-      }
-
-      if (eventData.expires_at && new Date(eventData.expires_at) < new Date()) {
-        alert('Action Blocked: This event has expired and is disabled.');
-        return;
-      }
+      const { data: eventData, error: eventErr } = await supabaseClient.from('events').select('is_approved, expires_at').eq('id', eventId).single();
+      
+      if (eventErr || !eventData.is_approved) return alert('Action Blocked: This event is pending admin approval.');
+      if (eventData.expires_at && new Date(eventData.expires_at) < new Date()) return alert('Action Blocked: This event has expired.');
 
       const { error } = await supabaseClient.from('guests').insert([{ 
-        guest_name: name, 
-        event_id: eventId, 
-        ticket_tier: tier,
-        allowed_capacity: capacity, 
-        checked_in_count: 0 
+        guest_name: name, event_id: eventId, ticket_tier: tier, allowed_capacity: capacity, checked_in_count: 0 
       }]);
 
-      if (error) {
-        alert('Error adding guest: ' + error.message);
-      } else {
+      if (error) alert('Error: ' + error.message);
+      else {
         document.getElementById('guestNameInput').value = '';
         document.getElementById('guestCapacityInput').value = '1';
         fetchGuests();
       }
     });
 
-    // QR Modal Handler
+    // QR Code Generation
     function showTicket(id, name) {
       document.getElementById('modalGuestName').innerText = name;
       document.getElementById('modalTicketId').innerText = 'ID: ' + id;
       
       const qrContainer = document.getElementById('qrcode');
       qrContainer.innerHTML = '';
-      const qrcode = new QRCode(qrContainer, { text: id, width: 180, height: 180 });
+      new QRCode(qrContainer, { text: id, width: 160, height: 160, colorDark : "#000000", colorLight : "#ffffff" });
 
-      const downloadBtn = document.getElementById('downloadQrBtn');
-      downloadBtn.onclick = function() {
-        const img = qrContainer.querySelector('img');
+      document.getElementById('downloadQrBtn').onclick = function() {
         const canvas = qrContainer.querySelector('canvas');
-        let imageUrl = canvas ? canvas.toDataURL("image/png") : (img ? img.src : '');
-
-        if (imageUrl) {
+        if (canvas) {
           const link = document.createElement('a');
-          link.href = imageUrl;
+          link.href = canvas.toDataURL("image/png");
           link.download = `${name.replace(/\s+/g, '_')}_Ticket.png`;
-          document.body.appendChild(link);
           link.click();
-          document.body.removeChild(link);
-        } else {
-          alert('Please wait for the QR code to finish rendering.');
         }
       };
-
       document.getElementById('qrModal').classList.remove('hidden');
     }
 
     function closeModal() {
       document.getElementById('qrModal').classList.add('hidden');
+    }
+
+    async function handleSignOut() {
+      await supabaseClient.auth.signOut();
+      window.location.href = 'index.html';
     }
 
     init();
