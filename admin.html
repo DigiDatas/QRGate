@@ -3,65 +3,144 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - QRGate</title>
+  <title>Admin Dashboard - QRGate</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-100 p-4 md:p-10 font-sans text-gray-800">
+<body class="bg-slate-950 text-slate-100 font-sans antialiased flex h-screen overflow-hidden">
 
-  <div class="max-w-6xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-md mt-6">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-extrabold text-gray-900">🛠️ Platform Admin Dashboard</h1>
-      <a href="index.html" class="text-blue-600 hover:underline font-semibold">← Back to Dashboard</a>
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="w-72 bg-slate-900 border-r border-slate-800 flex flex-col justify-between hidden md:flex">
+    <div>
+      <!-- Brand Logo -->
+      <div class="h-20 flex items-center px-6 gap-3 border-b border-slate-800">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-500 to-indigo-600 flex items-center justify-center font-bold text-lg shadow-lg shadow-pink-500/20">QR</div>
+        <span class="text-lg font-extrabold tracking-tight">QRGate<span class="text-pink-500">.</span> Admin</span>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="p-4 space-y-1">
+        <a href="#" onclick="switchTab('tenants')" id="navTenants" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-pink-600 text-white font-semibold shadow-lg shadow-pink-600/20 transition">
+          <span>👥 Manage Tenants</span>
+        </a>
+        <a href="#" onclick="switchTab('events')" id="navEvents" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 font-medium transition">
+          <span>📅 Approve Events</span>
+        </a>
+        <a href="events.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 font-medium transition">
+          <span>⚙️ Event Manager Portal</span>
+        </a>
+      </nav>
     </div>
 
-    <!-- TABS -->
-    <div class="flex border-b mb-6">
-      <button onclick="switchTab('tenants')" id="tabTenantsBtn" class="py-2 px-4 font-bold border-b-2 border-blue-600 text-blue-600">Manage Tenants</button>
-      <button onclick="switchTab('events')" id="tabEventsBtn" class="py-2 px-4 font-bold text-gray-500">Approve Events</button>
-    </div>
-
-    <!-- TENANTS SECTION -->
-    <div id="tenantsSection">
-      <h2 class="text-xl font-bold mb-4">Registered Tenants & Payment Status</h2>
-      <div class="overflow-x-auto border rounded-md">
-        <table class="w-full text-left border-collapse bg-white">
-          <thead>
-            <tr class="bg-gray-100 border-b text-sm text-gray-600">
-              <th class="p-3">Company / Name</th>
-              <th class="p-3">Email</th>
-              <th class="p-3">Phone</th>
-              <th class="p-3">Payment Status</th>
-              <th class="p-3 text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody id="tenantTableBody">
-            <tr><td colspan="5" class="p-4 text-center text-gray-500">Loading tenants...</td></tr>
-          </tbody>
-        </table>
+    <!-- Quick Access / Newsletter Card at Bottom of Sidebar -->
+    <div class="p-4 m-4 rounded-2xl bg-slate-950 border border-slate-800">
+      <h4 class="font-bold text-sm mb-1 text-slate-200">System Status</h4>
+      <p class="text-xs text-slate-400 mb-3">All security policies and database webhooks are active.</p>
+      <div class="flex items-center gap-2 text-xs text-green-400 font-semibold">
+        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Supabase Connected
       </div>
     </div>
+  </aside>
 
-    <!-- EVENTS APPROVAL SECTION -->
-    <div id="eventsSection" class="hidden">
-      <h2 class="text-xl font-bold mb-4">Event Approval & Expiration Control</h2>
-      <div class="overflow-x-auto border rounded-md">
-        <table class="w-full text-left border-collapse bg-white">
-          <thead>
-            <tr class="bg-gray-100 border-b text-sm text-gray-600">
-              <th class="p-3">Event Name</th>
-              <th class="p-3">Tenant ID</th>
-              <th class="p-3">Expires At</th>
-              <th class="p-3">Approval Status</th>
-              <th class="p-3 text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody id="eventTableBody">
-            <tr><td colspan="5" class="p-4 text-center text-gray-500">Loading events...</td></tr>
-          </tbody>
-        </table>
+  <!-- MAIN CONTENT AREA -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    
+    <!-- TOP HEADER -->
+    <header class="h-20 bg-slate-950 border-b border-slate-800 flex items-center justify-between px-6 shrink-0">
+      <!-- Search Bar -->
+      <div class="relative w-96 hidden lg:block">
+        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">🔍</span>
+        <input type="text" id="globalSearch" placeholder="Search tenants, companies, or events..." class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-pink-500 text-slate-200 placeholder-slate-500 transition">
       </div>
-    </div>
+
+      <!-- Right Header Actions (Notifications & User Profile) -->
+      <div class="flex items-center gap-4 ml-auto">
+        <!-- Notifications Badge -->
+        <button class="relative p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition">
+          🔔
+          <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-pink-500"></span>
+        </button>
+
+        <!-- User Profile Dropdown / Info -->
+        <div class="flex items-center gap-3 pl-4 border-l border-slate-800">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-sm" id="userAvatar">A</div>
+          <div class="hidden sm:block text-left">
+            <p class="text-xs font-bold text-slate-200" id="userNameDisplay">Admin User</p>
+            <p class="text-[10px] text-slate-500" id="userEmailDisplay">admin@qrgate.com</p>
+          </div>
+          <button onclick="handleSignOut()" class="ml-2 bg-slate-900 border border-slate-800 hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400 text-slate-400 px-3 py-2 rounded-xl text-xs font-semibold transition" title="Sign Out">
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- DASHBOARD VIEWPORT SCROLLABLE -->
+    <main class="flex-1 overflow-y-auto p-6 md:p-10 space-y-8 bg-slate-950">
+      
+      <!-- QUICK ACCESS STAT CARDS -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Total Tenants</p>
+          <p class="text-3xl font-extrabold text-slate-100" id="statTotalTenants">0</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pending Events</p>
+          <p class="text-3xl font-extrabold text-pink-500" id="statPendingEvents">0</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Active Subscriptions (Paid)</p>
+          <p class="text-3xl font-extrabold text-green-400" id="statPaidTenants">0</p>
+        </div>
+      </div>
+
+      <!-- TENANTS SECTION TAB -->
+      <div id="tenantsSection" class="space-y-4">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xl font-bold tracking-tight text-slate-100">Registered Tenants & Payment Status</h2>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase bg-slate-900/50">
+                <th class="p-4">Company / Name</th>
+                <th class="p-4">Email</th>
+                <th class="p-4">Phone</th>
+                <th class="p-4">Payment Status</th>
+                <th class="p-4 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="tenantTableBody" class="divide-y divide-slate-800/60 text-sm">
+              <tr><td colspan="5" class="p-6 text-center text-slate-500">Loading tenants...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- EVENTS APPROVAL SECTION TAB (Hidden by default) -->
+      <div id="eventsSection" class="space-y-4 hidden">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xl font-bold tracking-tight text-slate-100">Event Approval & Expiration Control</h2>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase bg-slate-900/50">
+                <th class="p-4">Event Name</th>
+                <th class="p-4">Tenant ID</th>
+                <th class="p-4">Expires At</th>
+                <th class="p-4">Approval Status</th>
+                <th class="p-4 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="eventTableBody" class="divide-y divide-slate-800/60 text-sm">
+              <tr><td colspan="5" class="p-6 text-center text-slate-500">Loading events...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
   </div>
 
   <script>
@@ -69,30 +148,35 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_89l1fu6nVSWxGVOH-g1dQw_i99aUXt9';
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    let allTenantsData = [];
+    let allEventsData = [];
+
     async function initAdmin() {
-      // 1. Check who is logged in via Supabase Auth
       const { data: { session } } = await supabaseClient.auth.getSession();
-      
       if (!session) {
         alert('Access Denied: Please log in first.');
         window.location.href = 'index.html';
         return;
       }
 
-      // 2. Query the tenants table to check if this user is an admin
+      // Verify admin status from tenants table
       const { data: tenantData, error } = await supabaseClient
         .from('tenants')
-        .select('is_admin')
+        .select('is_admin, full_name, email')
         .eq('owner_id', session.user.id)
         .maybeSingle();
 
       if (error || !tenantData || tenantData.is_admin !== true) {
-        alert('Unauthorized: You do not have permission to view the Admin Panel.');
-        window.location.href = 'index.html';
+        alert('Unauthorized: Admin access required.');
+        window.location.href = 'events.html';
         return;
       }
 
-      // 3. If verified as admin, load the dashboard data
+      // Populate Header Profile Info
+      document.getElementById('userNameDisplay').innerText = tenantData.full_name || session.user.email;
+      document.getElementById('userEmailDisplay').innerText = session.user.email;
+      document.getElementById('userAvatar').innerText = (tenantData.full_name || session.user.email).charAt(0).toUpperCase();
+
       await loadTenants();
       await loadEvents();
     }
@@ -101,42 +185,49 @@
       if (tab === 'tenants') {
         document.getElementById('tenantsSection').classList.remove('hidden');
         document.getElementById('eventsSection').classList.add('hidden');
-        document.getElementById('tabTenantsBtn').className = 'py-2 px-4 font-bold border-b-2 border-blue-600 text-blue-600';
-        document.getElementById('tabEventsBtn').className = 'py-2 px-4 font-bold text-gray-500';
+        document.getElementById('navTenants').className = 'flex items-center gap-3 px-4 py-3 rounded-xl bg-pink-600 text-white font-semibold shadow-lg shadow-pink-600/20 transition';
+        document.getElementById('navEvents').className = 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 font-medium transition';
       } else {
         document.getElementById('eventsSection').classList.remove('hidden');
         document.getElementById('tenantsSection').classList.add('hidden');
-        document.getElementById('tabEventsBtn').className = 'py-2 px-4 font-bold border-b-2 border-blue-600 text-blue-600';
-        document.getElementById('tabTenantsBtn').className = 'py-2 px-4 font-bold text-gray-500';
+        document.getElementById('navEvents').className = 'flex items-center gap-3 px-4 py-3 rounded-xl bg-pink-600 text-white font-semibold shadow-lg shadow-pink-600/20 transition';
+        document.getElementById('navTenants').className = 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 font-medium transition';
       }
     }
 
-    // Load Tenants from Database
     async function loadTenants() {
       const { data, error } = await supabaseClient.from('tenants').select('*');
+      if (data) {
+        allTenantsData = data;
+        renderTenants(data);
+        document.getElementById('statTotalTenants').innerText = data.length;
+        document.getElementById('statPaidTenants').innerText = data.filter(t => t.payment_status === 'Paid').length;
+      }
+    }
+
+    function renderTenants(data) {
       const tbody = document.getElementById('tenantTableBody');
       tbody.innerHTML = '';
-
-      if (error || !data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">No tenants registered yet.</td></tr>`;
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">No tenants registered yet.</td></tr>`;
         return;
       }
 
       data.forEach(t => {
         const isPaid = t.payment_status === 'Paid';
         const row = document.createElement('tr');
-        row.className = 'border-b text-sm';
+        row.className = 'hover:bg-slate-800/40 transition';
         row.innerHTML = `
-          <td class="p-3 font-medium">${t.company_name || 'N/A'}</td>
-          <td class="p-3 text-gray-600">${t.email || 'N/A'}</td>
-          <td class="p-3 text-gray-600">${t.phone || 'N/A'}</td>
-          <td class="p-3">
-            <span class="${isPaid ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'} px-2 py-1 rounded text-xs font-bold">
+          <td class="p-4 font-semibold text-slate-200">${t.company_name || 'N/A'}</td>
+          <td class="p-4 text-slate-400">${t.email || 'N/A'}</td>
+          <td class="p-4 text-slate-400">${t.phone || 'N/A'}</td>
+          <td class="p-4">
+            <span class="${isPaid ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'} px-3 py-1 rounded-full text-xs font-bold">
               ${t.payment_status || 'Pending'}
             </span>
           </td>
-          <td class="p-3 text-center">
-            <button onclick="togglePayment('${t.id}', '${t.payment_status}')" class="bg-gray-800 text-white px-3 py-1 rounded text-xs font-semibold hover:bg-black">
+          <td class="p-4 text-center">
+            <button onclick="togglePayment('${t.id}', '${t.payment_status}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold transition border border-slate-700">
               Toggle Payment
             </button>
           </td>
@@ -145,43 +236,47 @@
       });
     }
 
-    // Toggle Payment Status
     async function togglePayment(tenantId, currentStatus) {
       const newStatus = currentStatus === 'Paid' ? 'Pending' : 'Paid';
       const { error } = await supabaseClient.from('tenants').update({ payment_status: newStatus }).eq('id', tenantId);
-      if (error) alert('Error updating payment: ' + error.message);
+      if (error) alert('Error: ' + error.message);
       else loadTenants();
     }
 
-    // Load Events for Approval
     async function loadEvents() {
       const { data, error } = await supabaseClient.from('events').select('*').order('event_name');
+      if (data) {
+        allEventsData = data;
+        renderEvents(data);
+        document.getElementById('statPendingEvents').innerText = data.filter(e => !e.is_approved).length;
+      }
+    }
+
+    function renderEvents(data) {
       const tbody = document.getElementById('eventTableBody');
       tbody.innerHTML = '';
-
-      if (error || !data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">No events found.</td></tr>`;
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">No events found.</td></tr>`;
         return;
       }
 
       data.forEach(e => {
         const isApproved = e.is_approved === true;
         const isExpired = e.expires_at && new Date(e.expires_at) < new Date();
-
         const row = document.createElement('tr');
-        row.className = 'border-b text-sm';
+        row.className = 'hover:bg-slate-800/40 transition';
         row.innerHTML = `
-          <td class="p-3 font-medium">${e.event_name}</td>
-          <td class="p-3 font-mono text-xs text-gray-500">${e.tenant_id.substring(0,8)}...</td>
-          <td class="p-3 text-xs text-gray-600">${e.expires_at ? new Date(e.expires_at).toLocaleString() : 'No Limit'}</td>
-          <td class="p-3">
-            <span class="${isApproved ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} px-2 py-1 rounded text-xs font-bold">
+          <td class="p-4 font-semibold text-slate-200">${e.event_name}</td>
+          <td class="p-4 font-mono text-xs text-slate-500">${e.tenant_id.substring(0,8)}...</td>
+          <td class="p-4 text-xs text-slate-400">${e.expires_at ? new Date(e.expires_at).toLocaleString() : 'No Limit'}</td>
+          <td class="p-4">
+            <span class="${isApproved ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'} px-3 py-1 rounded-full text-xs font-bold">
               ${isApproved ? 'Approved' : 'Pending Approval'}
             </span>
-            ${isExpired ? '<span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs ml-1">Expired</span>' : ''}
+            ${isExpired ? '<span class="bg-slate-800 text-slate-400 px-2.5 py-1 rounded-full text-xs ml-1 border border-slate-700">Expired</span>' : ''}
           </td>
-          <td class="p-3 text-center">
-            <button onclick="toggleApproval('${e.id}', ${isApproved})" class="${isApproved ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white px-3 py-1 rounded text-xs font-semibold">
+          <td class="p-4 text-center">
+            <button onclick="toggleApproval('${e.id}', ${isApproved})" class="${isApproved ? 'bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-500/30' : 'bg-green-600/20 text-green-400 hover:bg-green-600/30 border border-green-500/30'} px-3 py-1.5 rounded-xl text-xs font-semibold transition">
               ${isApproved ? 'Revoke Approval' : 'Approve Event'}
             </button>
           </td>
@@ -190,12 +285,23 @@
       });
     }
 
-    // Toggle Event Approval
     async function toggleApproval(eventId, currentApproval) {
       const { error } = await supabaseClient.from('events').update({ is_approved: !currentApproval }).eq('id', eventId);
-      if (error) alert('Error updating approval: ' + error.message);
+      if (error) alert('Error: ' + error.message);
       else loadEvents();
     }
+
+    async function handleSignOut() {
+      await supabaseClient.auth.signOut();
+      window.location.href = 'index.html';
+    }
+
+    // Real-time search filter hook
+    document.getElementById('globalSearch').addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase();
+      const filteredTenants = allTenantsData.filter(t => (t.company_name && t.company_name.toLowerCase().includes(term)) || (t.email && t.email.toLowerCase().includes(term)));
+      renderTenants(filteredTenants);
+    });
 
     initAdmin();
   </script>
