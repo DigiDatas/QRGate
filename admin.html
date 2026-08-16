@@ -70,6 +70,29 @@
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     async function initAdmin() {
+      // 1. Check who is logged in via Supabase Auth
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      
+      if (!session) {
+        alert('Access Denied: Please log in first.');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // 2. Query the tenants table to check if this user is an admin
+      const { data: tenantData, error } = await supabaseClient
+        .from('tenants')
+        .select('is_admin')
+        .eq('owner_id', session.user.id)
+        .maybeSingle();
+
+      if (error || !tenantData || tenantData.is_admin !== true) {
+        alert('Unauthorized: You do not have permission to view the Admin Panel.');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // 3. If verified as admin, load the dashboard data
       await loadTenants();
       await loadEvents();
     }
