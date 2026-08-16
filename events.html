@@ -204,23 +204,33 @@
       }
     });
 
-    // 2. Fetch Events
+    // 2. Fetch Events (Only for the logged-in tenant)
     async function fetchEvents() {
       if (!currentTenantId) return;
-      const { data } = await supabaseClient.from('events').select('*').order('event_name');
+      
+      // Filter events by the current tenant's ID
+      const { data } = await supabaseClient
+        .from('events')
+        .select('*')
+        .eq('tenant_id', currentTenantId)
+        .order('event_name');
+
       const select = document.getElementById('eventSelect');
       select.innerHTML = '';
+      
       if (!data || data.length === 0) {
         select.innerHTML = `<option value="">No events found. Create one above!</option>`;
         document.getElementById('guestTableBody').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">Create an event first.</td></tr>`;
         return;
       }
+      
       data.forEach(e => {
         const opt = document.createElement('option');
         opt.value = e.id;
         opt.textContent = `${e.event_name} (${e.is_approved ? 'Approved' : 'Pending Approval'})`;
         select.appendChild(opt);
       });
+      
       fetchGuests();
     }
 
