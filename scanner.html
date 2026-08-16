@@ -37,14 +37,14 @@
   </div>
 
   <script>
-    // 1. YOUR KEYS (Paste the exact same ones you used in index.html)
+    // 1. YOUR KEYS (Keep your real keys here!)
     const SUPABASE_URL = 'https://wpqpqlwjprtwoblhvenw.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_89l1fu6nVSWxGVOH-g1dQw_i99aUXt9';
     
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // 2. Variables for the Scanner
-    let html5QrcodeScanner;
+    let html5QrCode; // We changed this from the scanner UI to the direct controller
     const resultBox = document.getElementById('result-box');
     const resultTitle = document.getElementById('result-title');
     const resultMessage = document.getElementById('result-message');
@@ -57,48 +57,51 @@
         alert("You must be logged in to use the scanner.");
         window.location.href = 'index.html';
       } else {
-        startScanner(); // Only turn on the camera if they are logged in!
+        startScanner();
       }
     }
 
-    // 4. Start the Camera
+    // 4. Start the Camera - FORCING THE REAR LENS
     function startScanner() {
-      // Hide the result box if it was open
       resultBox.classList.add('hidden');
       readerDiv.classList.remove('hidden');
 
-      html5QrcodeScanner = new Html5QrcodeScanner(
-        "reader",
-        { 
-          fps: 10, 
-          qrbox: {width: 200, height: 200},
-          aspectRatio: 1.0
-        },
-        false
-      );
-      
-      html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+      // Use the direct Html5Qrcode API to bypass the buggy dropdown menu
+      html5QrCode = new Html5Qrcode("reader");
+
+      const cameraConfig = { 
+        fps: 10, 
+        qrbox: { width: 220, height: 220 } 
+      };
+
+      // This specifically commands mobile phones to use the main rear camera
+      html5QrCode.start({ facingMode: "environment" }, cameraConfig, onScanSuccess, onScanFailure)
+        .catch((err) => {
+          console.error("Rear camera failed, trying fallback: ", err);
+          // If the rear camera fails, try whatever default camera it can find
+          html5QrCode.start({ facingMode: "user" }, cameraConfig, onScanSuccess, onScanFailure);
+        });
     }
 
     // 5. What happens when a QR code is successfully read?
     async function onScanSuccess(decodedText, decodedResult) {
-      // Stop the camera temporarily so it doesn't scan the same ticket twice
-      html5QrcodeScanner.clear();
-      readerDiv.classList.add('hidden');
-      
-      // Show "Loading..." while we check the database
-      resultBox.classList.remove('hidden');
-      resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-yellow-50 border-yellow-200 border';
-      resultTitle.innerText = 'Checking Ticket...';
-      resultTitle.className = 'text-xl font-bold mb-2 text-yellow-800';
-      resultMessage.innerText = `QR Payload: ${decodedText}`;
-
-      // This is where we will write the code to check Supabase later!
+      // Stop the camera hardware so the screen freezes on success
+      html5QrCode.stop().then(() => {
+        readerDiv.classList.add('hidden');
+        
+        resultBox.classList.remove('hidden');
+        resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-yellow-50 border-yellow-200 border';
+        resultTitle.innerText = 'Checking Ticket...';
+        resultTitle.className = 'text-xl font-bold mb-2 text-yellow-800';
+        resultMessage.innerText = `QR Payload: ${decodedText}`;
+      }).catch((err) => {
+         console.error("Failed to stop camera.", err);
+      });
     }
 
     // 6. What happens if the scan fails (ignore this, it fails every frame until it finds a code)
     function onScanFailure(error) {
-      // console.warn(`Code scan error = ${error}`);
+      // Hidden so it doesn't spam your console
     }
 
     // 7. Reset button
