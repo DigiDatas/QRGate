@@ -113,13 +113,26 @@
         return;
       }
 
+      // Get the currently logged-in user's ID to use as the tenant_id
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        alert("You must be logged in.");
+        return;
+      }
+      const userId = session.user.id;
+
       const { error } = await supabaseClient
         .from('events')
-        .insert([{ event_name: name, total_capacity: 100 }]);
+        .insert([{ 
+          event_name: name, 
+          total_capacity: 100, 
+          tenant_id: userId // Automatically assigns it to you!
+        }]);
 
       if (error) {
         alert('Error creating event: ' + error.message);
       } else {
+        document.getElementById('eventNameInput', '').value = '';
         document.getElementById('eventNameInput').value = '';
         fetchEvents();
       }
