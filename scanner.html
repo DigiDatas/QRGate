@@ -85,41 +85,48 @@
 
     // 5. What happens when a QR code is successfully read?
     async function onScanSuccess(decodedText, decodedResult) {
-      // 1. Stop the camera so it doesn't scan twice
       html5QrCode.stop().then(async () => {
         readerDiv.classList.add('hidden');
         
-        // 2. Show a loading state
         resultBox.classList.remove('hidden');
         resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-blue-50 border-blue-200 border';
-        resultTitle.innerText = 'Checking Database...';
+        resultTitle.innerText = 'Processing Ticket...';
         resultTitle.className = 'text-xl font-bold mb-2 text-blue-800';
-        resultMessage.innerText = 'Please wait...';
+        resultMessage.innerText = 'Updating database...';
 
-        // 3. Query your Supabase database!
-        // We look inside the 'guests' table to find a matching ID
+        // 1. Find the guest by their ID
         const { data, error } = await supabaseClient
           .from('guests')
           .select('*')
-          .eq('id', decodedText) // The QR code text must match the guest's ID
+          .eq('id', decodedText)
           .single(); 
 
-        // 4. Handle the results
         if (error || !data) {
-          // GUEST NOT FOUND
           resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-red-50 border-red-200 border';
           resultTitle.innerText = 'Invalid Ticket ❌';
           resultTitle.className = 'text-xl font-bold mb-2 text-red-800';
-          resultMessage.innerText = `No guest record found.`;
+          resultMessage.innerText = `Ticket ID not recognized in database.`;
+          return;
+        }
+
+        // 2. Automatically update the check-in count in Supabase
+        const newCount = (data.checked_in_count || 0) + 1;
+        
+        const { error: updateError } = await supabaseClient
+          .from('guests')
+          .update({ checked_in_count: newCount })
+          .eq('id', decodedText);
+
+        if (updateError) {
+          resultBox.className = 'p-4 rounded-md text-center shadow-inner-yellow bg-yellow-50 border-yellow-200 border';
+          resultTitle.innerText = 'Warning ⚠️';
+          resultMessage.innerText = 'Guest found, but failed to update check-in counter.';
         } else {
-          // GUEST FOUND!
+          // SUCCESS!
           resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-green-50 border-green-200 border';
-          resultTitle.innerText = 'Ticket Verified ✅';
+          resultTitle.innerText = 'Access Granted ✅';
           resultTitle.className = 'text-xl font-bold mb-2 text-green-800';
-          
-          // Show the guest's name from your database column
-          const guestName = data.guest_name ? data.guest_name : 'Guest';
-          resultMessage.innerText = `${guestName} is good to go!`;
+          resultMessage.innerText = `Welcome, ${data.guest_name || 'Guest'}! (Checked in: ${newCount} time(s))`;
         }
 
       }).catch((err) => {
