@@ -116,7 +116,8 @@
     async function handleGoogleLogin() {
       const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: window.location.origin + '/index.html' }
+        // Hardcode the exact GitHub Pages URL here so it never gets lost!
+        options: { redirectTo: 'https://digidatas.github.io/QRGate/index.html' }
       });
       if (error) alert('Login error: ' + error.message);
     }
