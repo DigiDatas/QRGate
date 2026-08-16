@@ -85,15 +85,43 @@
 
     // 5. What happens when a QR code is successfully read?
     async function onScanSuccess(decodedText, decodedResult) {
-      // Stop the camera hardware so the screen freezes on success
-      html5QrCode.stop().then(() => {
+      // 1. Stop the camera so it doesn't scan twice
+      html5QrCode.stop().then(async () => {
         readerDiv.classList.add('hidden');
         
+        // 2. Show a loading state
         resultBox.classList.remove('hidden');
-        resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-yellow-50 border-yellow-200 border';
-        resultTitle.innerText = 'Checking Ticket...';
-        resultTitle.className = 'text-xl font-bold mb-2 text-yellow-800';
-        resultMessage.innerText = `QR Payload: ${decodedText}`;
+        resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-blue-50 border-blue-200 border';
+        resultTitle.innerText = 'Checking Database...';
+        resultTitle.className = 'text-xl font-bold mb-2 text-blue-800';
+        resultMessage.innerText = 'Please wait...';
+
+        // 3. Query your Supabase database!
+        // We look inside the 'tickets' table to find a matching QR code
+        const { data, error } = await supabaseClient
+          .from('tickets')
+          .select('*')
+          .eq('qr_code', decodedText)
+          .single(); // We only want one exact match
+
+        // 4. Handle the results
+        if (error || !data) {
+          // TICKET NOT FOUND
+          resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-red-50 border-red-200 border';
+          resultTitle.innerText = 'Invalid Ticket ❌';
+          resultTitle.className = 'text-xl font-bold mb-2 text-red-800';
+          resultMessage.innerText = `No record found for: ${decodedText}`;
+        } else {
+          // TICKET FOUND!
+          resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-green-50 border-green-200 border';
+          resultTitle.innerText = 'Ticket Verified ✅';
+          resultTitle.className = 'text-xl font-bold mb-2 text-green-800';
+          
+          // Show the guest's name if we have it in the database
+          const guestName = data.guest_name ? data.guest_name : 'Guest';
+          resultMessage.innerText = `${guestName} is good to go!`;
+        }
+
       }).catch((err) => {
          console.error("Failed to stop camera.", err);
       });
