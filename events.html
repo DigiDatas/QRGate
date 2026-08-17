@@ -684,7 +684,6 @@
     if (!session) { window.location.href = 'index.html'; return; }
     document.getElementById('userEmailDisplay').innerText = session.user.email;
     await checkTenantProfile(session);
-    initCharts(); // Initialize exact template charts
   }
 
   async function checkTenantProfile(session) {
@@ -704,7 +703,7 @@
   // --- DATA FETCHING (Populating the exact template lists) ---
   async function fetchEvents() {
     if (!currentTenantId) return;
-    const { data } = await supabaseClient.from('events').select('*').eq('tenant_id', currentTenantId).order('created_at', { ascending: false });
+    const { data } = await supabaseClient.from('events').select('*').eq('tenant_id', currentTenantId);
     
     const select = document.getElementById('eventSelect');
     select.innerHTML = '<option value="">-- Select Event --</option>';
@@ -771,7 +770,7 @@
     if (!events || events.length === 0) return;
     
     const eventIds = events.map(e => e.id);
-    const { data: guests } = await supabaseClient.from('guests').select('*, events(event_name)').in('event_id', eventIds).order('created_at', { ascending: false });
+    const { data: guests } = await supabaseClient.from('guests').select('*, events(event_name)').in('event_id', eventIds);
     
     const dashboardGuestList = document.getElementById('recentGuestsList');
     dashboardGuestList.innerHTML = '';
@@ -859,34 +858,7 @@
   function closeModal() { document.getElementById('qrModal').classList.add('hidden'); }
   async function handleSignOut() { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; }
 
-  // --- STATIC TEMPLATE CHARTS ---
-  function initCharts() {
-    const purple = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
-    const border = getComputedStyle(document.documentElement).getPropertyValue('--color-border').trim();
-    const success = getComputedStyle(document.documentElement).getPropertyValue('--color-success').trim();
-    const warning = getComputedStyle(document.documentElement).getPropertyValue('--color-warning').trim();
-    const danger = getComputedStyle(document.documentElement).getPropertyValue('--color-danger').trim();
-
-    new Chart(document.getElementById('checkinLineChart'), {
-      type: 'line',
-      data: {
-        labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
-        datasets: [{
-          data: [28, 62, 40, 38, 42, 68, 55],
-          borderColor: purple,
-          backgroundColor: (ctx) => { const g = ctx.chart.ctx.createLinearGradient(0,0,0,220); g.addColorStop(0, 'rgba(124,58,237,0.18)'); g.addColorStop(1, 'rgba(124,58,237,0)'); return g; },
-          fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#fff', pointBorderColor: purple, pointBorderWidth: 2, borderWidth: 2.5,
-        }]
-      },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100, grid: { color: border }, border: { display: false } }, x: { grid: { display: false }, border: { display: false } } } }
-    });
-
-    new Chart(document.getElementById('checkinDonutChart'), {
-      type: 'doughnut',
-      data: { labels: ['Checked In', 'Pending', 'No Show'], datasets: [{ data: [212, 68, 40], backgroundColor: [success, warning, danger], borderWidth: 0 }] },
-      options: { responsive: true, maintainAspectRatio: false, cutout: '72%', plugins: { legend: { display: false } } }
-    });
-  }
+  
 
   init();
 </script>
