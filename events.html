@@ -137,47 +137,49 @@
   .view-section { display: none; }
   .view-section.active { display: block; animation: fadeIn 0.3s ease-in-out; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
 /* ============ DASHBOARD LOCK & LAYOUTS ============ */
-  /* Lock app shell to exact viewport height */
   body, .app-shell { height: 100vh; overflow: hidden; margin: 0; }
   .content-shell { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
   
-  /* Make main content flex, prevent global scrolling */
+  /* Flex constraint for main content */
   .main-content { 
     flex: 1; 
-    padding: var(--space-6) 28px var(--space-7); 
+    padding: var(--space-5) 28px; 
     display: flex; 
     flex-direction: column; 
     overflow: hidden; 
     height: calc(100vh - var(--header-height)); 
   }
   
-  /* Hidden Scrollbars */
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-  /* Fix View Sections */
-  .view-section { height: 100%; display: none; flex-direction: column; overflow: hidden; }
+  /* View Sections - Flex & 100% Height */
+  .view-section { height: 100%; display: none; flex-direction: column; overflow: hidden; gap: 20px; }
   .view-section.active { display: flex; animation: fadeIn 0.3s ease-in-out; }
 
-  /* Perfect 100vh Column Layouts */
-  .layout-grid { display: grid; grid-template-columns: 1fr 300px; gap: 24px; height: 100%; overflow: hidden; }
-  .left-col { display: flex; flex-direction: column; height: 100%; overflow: hidden; min-height: 0; }
-  .right-col { display: flex; flex-direction: column; gap: 24px; height: 100%; overflow-y: auto; padding-right: 4px; padding-bottom: 40px; }
+  /* Grids */
+  .layout-grid { display: grid; grid-template-columns: 1fr 320px; gap: 24px; height: 100%; min-height: 0; overflow: hidden; }
+  .left-col { display: flex; flex-direction: column; height: 100%; overflow: hidden; min-height: 0; gap: 20px; }
+  .right-col { display: flex; flex-direction: column; height: 100%; overflow-y: auto; padding-right: 4px; padding-bottom: 20px; gap: 20px; }
   
-  .kpi-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; flex-shrink: 0; }
-  
-  .data-table-container { flex: 1; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow-y: auto; min-height: 0; margin-bottom: 16px; }
-  
-  /* Standardized Data Table */
+  /* Flex growing table containers */
+  .data-table-container { flex: 1; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow-y: auto; min-height: 0; }
   .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .data-table th { position: sticky; top: 0; background: var(--color-bg); text-align: left; padding: 16px 20px; color: var(--color-text-muted); font-weight: 700; text-transform: uppercase; font-size: 11px; border-bottom: 1px solid var(--color-border); z-index: 10; }
-  .data-table td { padding: 16px 20px; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
+  .data-table th { position: sticky; top: 0; background: var(--color-surface-soft); text-align: left; padding: 14px 20px; color: var(--color-text-muted); font-weight: 700; text-transform: uppercase; font-size: 11px; border-bottom: 1px solid var(--color-border); z-index: 10; }
+  .data-table td { padding: 14px 20px; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
   .data-table tr:hover { background: var(--color-surface-soft); }
   .data-table tr:last-child td { border-bottom: none; }
   
   .table-avatar { width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--color-primary-soft); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; flex-shrink: 0; }
-
+  
+  /* Top Navigation Button Overrides */
+  .btn-filter-nav { background: var(--color-bg); color: var(--color-text-secondary); padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border); cursor: pointer; transition: 0.2s; }
+  .btn-filter-nav:hover { background: var(--color-surface-soft); }
+  .btn-filter-nav.active { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+  .badge-count { background: var(--color-surface-soft); color: var(--color-text-secondary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid var(--color-border); }
+  .btn-filter-nav.active .badge-count { background: #fff; color: var(--color-primary); border: none; }
 
 
 </style>
@@ -273,7 +275,7 @@
     <!-- HEADER -->
     <header class="top-header">
       <div class="header-left" style="display:flex; align-items:center; gap:40px;">
-        <div style="display:flex; flex-direction:column; width: 200px;">
+        <div style="display:flex; flex-direction:column; width: 240px;">
           <div id="dynamicPageTitle" class="portal-title" style="font-size:18px;">Dashboard</div>
           <div id="dynamicPageSubtitle" style="font-size:12px; color:var(--color-text-secondary); margin-top:2px;">Overview of your activities</div>
         </div>
@@ -282,12 +284,18 @@
           <input type="text" id="dynamicSearchInput" placeholder="Search..." style="width:100%; padding:8px 10px 8px 40px; border:1px solid var(--color-border); border-radius:var(--radius-pill); font-size:13px; outline:none; background:var(--color-surface-soft);">
         </div>
       </div>
-      <div class="header-right">
+      <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
+        <!-- Notification Bell -->
+        <button style="position: relative; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--color-border); background: var(--color-bg); display: flex; align-items: center; justify-content: center; color: var(--color-text-secondary);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span style="position: absolute; top: -2px; right: -2px; background: var(--color-danger); color: white; font-size: 10px; font-weight: 700; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white;">3</span>
+        </button>
+        <div style="width: 1px; height: 24px; background: var(--color-border);"></div>
         <div class="user-menu">
-          <div class="avatar" id="userAvatar">O</div>
+          <div class="avatar" id="userAvatar" style="background:#8b5cf6;">A</div>
           <div class="user-meta">
-            <div class="user-name" id="userNameDisplay">Organizer</div>
-            <div class="user-role" id="userEmailDisplay">loading@...</div>
+            <div class="user-name" id="userNameDisplay">Admin User</div>
+            <div class="user-role" id="userEmailDisplay">Super Admin</div>
           </div>
           <button onclick="handleSignOut()" class="btn-signout ml-3 cursor-pointer">Logout</button>
         </div>
@@ -306,88 +314,71 @@
       </div>
 
       <!-- ============================================== -->
-      <!-- VIEW 1: THE EXACT TEMPLATE DASHBOARD -->
+      <!-- VIEW 1: DASHBOARD -->
       <!-- ============================================== -->
       <div id="dashboardView" class="view-section active">
-        <div class="page-head-row">
+        
+        <!-- Header Row with Date Filters -->
+        <div class="page-head-row" style="flex-shrink:0; margin-bottom: 0;">
           <div>
-            <h1 class="page-title">Welcome back! 👋</h1>
+            <h1 class="page-title">Welcome back, Admin! 👋</h1>
             <p class="page-subtitle">Here's what's happening with your events today.</p>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn-filter-nav">Today</button>
+            <button class="btn-filter-nav">Yesterday</button>
+            <button class="btn-filter-nav">This Week</button>
+            <button class="btn-filter-nav active">This Month</button>
+            <button class="btn-filter-nav">This Year</button>
+            <button class="btn-filter-nav" style="gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> Custom Range</button>
           </div>
         </div>
 
-        <!-- KPI CARDS -->
-        <section class="kpi-grid">
-          <div class="card kpi-card">
-            <div class="kpi-icon purple"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div>
-            <div><div class="kpi-value" id="kpiEvents">0</div><div class="kpi-label">Total Events</div></div>
-          </div>
-          <div class="card kpi-card">
-            <div class="kpi-icon green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
-            <div><div class="kpi-value" id="kpiGuests">0</div><div class="kpi-label">Total Guests Registered</div></div>
-          </div>
-          <div class="card kpi-card">
-            <div class="kpi-icon blue"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4Z"/></svg></div>
-            <div><div class="kpi-value" id="kpiPasses">0</div><div class="kpi-label">Gate Passes Issued</div></div>
-          </div>
+        <!-- 4 KPI CARDS -->
+        <section class="kpi-grid" style="flex-shrink:0; margin-bottom:0;">
+          <div class="card kpi-card"><div class="kpi-icon purple"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div><div><div class="kpi-value" id="kpiEvents">5</div><div class="kpi-label">Total Events</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:4px;">2 Upcoming</div></div></div>
+          <div class="card kpi-card"><div class="kpi-icon green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div><div class="kpi-value" id="kpiGuests">320</div><div class="kpi-label">Total Guests</div><div style="font-size:11px; color:var(--color-success); font-weight:600; margin-top:4px;">212 Checked In</div></div></div>
+          <div class="card kpi-card"><div class="kpi-icon blue"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="kpi-value" id="kpiPasses">120</div><div class="kpi-label">Gate Passes Issued</div><div style="font-size:11px; color:var(--color-info); font-weight:600; margin-top:4px;">45 Today</div></div></div>
+          <div class="card kpi-card"><div class="kpi-icon pink"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div><div class="kpi-value">75%</div><div class="kpi-label">Attendance Rate</div><div style="font-size:11px; color:var(--color-success); font-weight:600; margin-top:4px;">+12% vs last event</div></div></div>
         </section>
 
-        <!-- QUICK ACTIONS (Styled exactly as requested) -->
-        <section class="quick-actions-wrap">
-          <div class="section-head"><h2 class="section-title">Quick Actions</h2></div>
+        <!-- 5 QUICK ACTIONS -->
+        <section style="flex-shrink:0;">
+          <h2 class="section-title" style="margin-bottom: 12px;">Quick Actions</h2>
           <div class="quick-actions-grid">
-            <button class="card action-card" onclick="document.querySelectorAll('.nav-item')[1].click()">
-              <div class="action-icon" style="background:var(--color-primary-soft); color:var(--color-primary);">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              </div>
-              <div class="action-label">Create Event</div>
-            </button>
-            <button class="card action-card" onclick="document.querySelectorAll('.nav-item')[2].click()">
-              <div class="action-icon" style="background:var(--color-success-soft); color:var(--color-success);">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
-              </div>
-              <div class="action-label">Issue Gate Pass</div>
-            </button>
-            <button class="card action-card" onclick="window.location.href='scanner.html'">
-              <div class="action-icon" style="background:var(--color-danger-soft); color:var(--color-danger);">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><line x1="17.5" y1="14" x2="17.5" y2="21"/><line x1="14" y1="17.5" x2="21" y2="17.5"/></svg>
-              </div>
-              <div class="action-label">Scan QR Code</div>
-            </button>
+            <button class="card action-card"><div class="action-icon" style="background:var(--color-primary-soft); color:var(--color-primary);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="action-label">Create Event</div></button>
+            <button class="card action-card"><div class="action-icon" style="background:var(--color-success-soft); color:var(--color-success);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg></div><div class="action-label">Add Guests</div></button>
+            <button class="card action-card"><div class="action-icon" style="background:var(--color-info-soft); color:var(--color-info);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div class="action-label">Issue Gate Pass</div></button>
+            <button class="card action-card" onclick="window.location.href='scanner.html'"><div class="action-icon" style="background:var(--color-danger-soft); color:var(--color-danger);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div class="action-label">Scan QR Code</div></button>
+            <button class="card action-card"><div class="action-icon" style="background:var(--color-primary-soft); color:var(--color-primary);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><div class="action-label">View Reports</div></button>
           </div>
         </section>
 
-        <!-- TWO COLUMN LISTS (Live Data) -->
-        <section class="two-col">
-          <div class="card panel">
-            <div class="section-head"><h2 class="section-title">Recent Events</h2></div>
-            <div id="recentEventsList">
-              <p style="font-size: 13px; color: var(--color-text-secondary);">Loading events...</p>
+        <!-- TWO COLUMN LISTS (Flexed to scroll internally) -->
+        <section style="flex:1; display:flex; gap:24px; min-height:0;">
+          <div class="card panel" style="flex:1; display:flex; flex-direction:column; overflow:hidden; padding: 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-shrink:0;">
+              <h2 class="section-title" style="margin:0;">Recent Events</h2>
+              <a href="#" style="font-size:12px; font-weight:600; color:var(--color-primary);">View All</a>
             </div>
+            <div id="recentEventsList" class="no-scrollbar" style="overflow-y:auto; flex:1; padding-right:8px;"></div>
           </div>
-
-          <div class="card panel">
-            <div class="section-head"><h2 class="section-title">Recent Gate Passes</h2></div>
-            <div id="recentGuestsList">
-              <p style="font-size: 13px; color: var(--color-text-secondary);">Loading passes...</p>
+          <div class="card panel" style="flex:1; display:flex; flex-direction:column; overflow:hidden; padding: 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-shrink:0;">
+              <h2 class="section-title" style="margin:0;">Recent Gate Passes</h2>
+              <a href="#" style="font-size:12px; font-weight:600; color:var(--color-primary);">View All</a>
             </div>
+            <div id="recentGuestsList" class="no-scrollbar" style="overflow-y:auto; flex:1; padding-right:8px;"></div>
           </div>
         </section>
 
-        <!-- EXACT TEMPLATE ANALYTICS CHARTS (Visual Only) -->
-        <section class="card analytics-panel">
-          <div class="section-head"><h2 class="section-title">Demo Event Analytics (Static)</h2></div>
-          <div class="analytics-body">
-            <div style="height:220px;"><canvas id="checkinLineChart"></canvas></div>
-            <div style="display:flex; justify-content:center;">
-              <div style="position:relative; width:170px; height:170px;">
-                <canvas id="checkinDonutChart"></canvas>
-                <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                  <div style="font-size: 22px; font-weight: 700;">320</div>
-                  <div style="font-size: 11px; color: var(--color-text-secondary);">Guests</div>
-                </div>
-              </div>
-            </div>
+        <!-- ANALYTICS BANNER -->
+        <section class="card analytics-panel" style="flex-shrink:0; display:flex; justify-content:space-between; align-items:center; padding: 20px;">
+          <div><h2 class="section-title" style="margin:0 0 8px;">Guest Check-in Overview</h2><p style="margin:0; font-size:12px; color:var(--color-text-secondary);">Visual data graph connects to detailed reports tab.</p></div>
+          <div style="display:flex; gap:32px; align-items:center;">
+             <div style="text-align:right;"><div style="font-size:24px; font-weight:700;">320</div><div style="font-size:11px; color:var(--color-text-secondary);">Total Guests</div></div>
+             <div style="text-align:right;"><div style="font-size:24px; font-weight:700; color:var(--color-success);">212</div><div style="font-size:11px; color:var(--color-text-secondary);">Checked In</div></div>
+             <div style="text-align:right;"><div style="font-size:24px; font-weight:700; color:var(--color-danger);">40</div><div style="font-size:11px; color:var(--color-text-secondary);">No Show</div></div>
           </div>
         </section>
       </div>
@@ -400,18 +391,17 @@
         <div class="layout-grid">
           
           <div class="left-col">
-            <!-- Filter & Action Bar -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-shrink: 0;" class="no-scrollbar">
-              <div style="display: flex; gap: 12px;">
-                <button style="background: var(--color-primary); color: white; padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: none;">All Events <span style="background: white; color: var(--color-primary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px;">12</span></button>
-                <button style="background: var(--color-bg); color: var(--color-text-secondary); padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">Upcoming <span style="background: var(--color-surface-soft); color: var(--color-text-secondary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid var(--color-border);">4</span></button>
-                <button style="background: var(--color-bg); color: var(--color-text-secondary); padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">Ongoing <span style="background: var(--color-surface-soft); color: var(--color-text-secondary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid var(--color-border);">2</span></button>
-                <button style="background: var(--color-bg); color: var(--color-text-secondary); padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">Completed <span style="background: var(--color-surface-soft); color: var(--color-text-secondary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid var(--color-border);">4</span></button>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-shrink:0;" class="no-scrollbar">
+              <div style="display: flex; gap: 8px;">
+                <button class="btn-filter-nav active">All Events <span class="badge-count">12</span></button>
+                <button class="btn-filter-nav">Upcoming <span class="badge-count">4</span></button>
+                <button class="btn-filter-nav">Ongoing <span class="badge-count">2</span></button>
+                <button class="btn-filter-nav">Completed <span class="badge-count">4</span></button>
+                <button class="btn-filter-nav">Cancelled <span class="badge-count">2</span></button>
               </div>
               <div style="display: flex; gap: 12px;">
                 <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filter</button>
-                <!-- This Create Event button is visual only here, form is on the right -->
-                <button class="btn-primary" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; height: auto;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Create Event</button>
+                <button class="btn-primary" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Create Event</button>
               </div>
             </div>
 
@@ -424,38 +414,45 @@
               <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon pink" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div><div><div class="kpi-label" style="margin:0;">Cancelled</div><div class="kpi-value">2</div></div></div>
             </div>
 
-            <!-- MAIN TABLE CONTAINER (Will scroll internally) -->
+            <!-- MAIN TABLE -->
             <div class="data-table-container no-scrollbar">
               <table class="data-table">
                 <thead><tr><th>Event Name</th><th>Date & Time</th><th>Venue</th><th>Guests</th><th>Status</th><th>Actions</th></tr></thead>
                 <tbody id="eventsTableBody"></tbody>
               </table>
             </div>
-            
-            <!-- Pagination under table -->
             <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--color-text-secondary); flex-shrink:0;">
-              Showing 1 to 6 of 12 events
+              Showing Data Grid
             </div>
           </div>
 
-          <!-- RIGHT SIDEBAR -->
           <div class="right-col no-scrollbar">
-            
-            <!-- Live Create Event Input Block (Supabase Connected) -->
+            <!-- Event Overview Donut -->
             <div class="card panel" style="padding: 20px;">
-              <h2 class="section-title">Create New Event</h2>
-              <input type="text" id="eventNameInput" placeholder="Event Name" class="input-field" style="padding: 10px; margin-bottom: 12px;">
-              <div style="display: flex; gap: 12px;">
-                <input type="number" id="eventCapacityInput" value="100" class="input-field" style="padding: 10px; margin-bottom: 12px; flex:1;">
-                <input type="datetime-local" id="eventExpireInput" class="input-field" style="padding: 10px; margin-bottom: 12px; flex:1;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 class="section-title" style="margin: 0;">Event Overview</h2>
+                <button style="background: var(--color-bg); color: var(--color-text-secondary); border: 1px solid var(--color-border); padding: 4px 8px; border-radius: var(--radius-sm); font-size: 11px; display: flex; gap: 4px; align-items: center;">This Month <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg></button>
               </div>
-              <button id="addEventBtn" class="btn-primary" style="padding: 10px;">Deploy Event Gate</button>
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--color-success) 0% 33%, var(--color-warning) 33% 50%, var(--color-info) 50% 83%, var(--color-danger) 83% 100%); position: relative; display: flex; align-items: center; justify-content: center;">
+                  <div style="width: 70px; height: 70px; background: var(--color-bg); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;"><div style="font-size: 18px; font-weight: 700;">12</div><div style="font-size: 9px; color: var(--color-text-secondary);">Total Events</div></div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-success);"></span> Upcoming</span> <span style="color: var(--color-text-secondary);">4 <span style="font-size:9px;">(33%)</span></span></div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-warning);"></span> Ongoing</span> <span style="color: var(--color-text-secondary);">2 <span style="font-size:9px;">(17%)</span></span></div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-info);"></span> Completed</span> <span style="color: var(--color-text-secondary);">4 <span style="font-size:9px;">(33%)</span></span></div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-danger);"></span> Cancelled</span> <span style="color: var(--color-text-secondary);">2 <span style="font-size:9px;">(17%)</span></span></div>
+                </div>
+              </div>
             </div>
-            
-            <!-- Recent Gate Passes List -->
+
+            <!-- Recent Gate Passes -->
             <div class="card panel" style="padding: 20px;">
-              <h2 class="section-title" style="margin: 0; font-size: 14px;">Recent Gate Passes</h2>
-              <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                 <h2 class="section-title" style="margin: 0; font-size: 14px;">Recent Gate Passes</h2>
+                 <span style="font-size:11px; font-weight:600; color:var(--color-primary); cursor:pointer;">View All</span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 16px;">
                 <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;"><div><div style="font-size: 12px; font-weight: 600;">GP-2025-00120</div><div style="font-size: 11px; color: var(--color-text-secondary);">Tech Expo 2025</div></div><div style="text-align:right;"><div style="font-size: 11px;">10:30 AM</div><div style="font-size: 11px; color: var(--color-text-secondary);">May 20, 2025</div></div></div>
                 <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;"><div><div style="font-size: 12px; font-weight: 600;">GP-2025-00119</div><div style="font-size: 11px; color: var(--color-text-secondary);">Tech Expo 2025</div></div><div style="text-align:right;"><div style="font-size: 11px;">09:45 AM</div><div style="font-size: 11px; color: var(--color-text-secondary);">May 20, 2025</div></div></div>
                 <button style="width: 100%; margin-top: 4px; padding: 8px; background: white; border: 1px solid var(--color-primary); color: var(--color-primary); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600;">View All Gate Passes</button>
@@ -474,32 +471,29 @@
 
       <!-- TAB: GUEST LISTS -->
       <div id="guestListsView" class="view-section">
-        <div style="display: flex; flex-direction: column; height: 100%;">
-          
+        <div style="display: flex; flex-direction: column; height: 100%; min-height:0;">
           <div style="margin-bottom: 20px; flex-shrink: 0;">
             <label style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;">Select Event</label>
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
               <div style="display:flex; gap: 12px; overflow-x: auto;" class="no-scrollbar">
                 <div class="card" style="padding: 10px 16px; border-color: var(--color-primary); background: var(--color-primary-soft); min-width: 180px; cursor: pointer;"><div style="font-weight:600; color:var(--color-primary); font-size:13px;">Tech Expo 2025</div><div style="font-size:11px; color:var(--color-primary); margin-top:4px;">May 20, 2025</div></div>
                 <div class="card" style="padding: 10px 16px; min-width: 180px; cursor: pointer;"><div style="font-weight:600; font-size:13px; color:var(--color-text);">Corporate Summit</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:4px;">Jun 10, 2025</div></div>
-                <!-- Styled New Event Button as requested -->
                 <div style="display: flex; align-items: center; justify-content: center; padding: 10px 16px; cursor: pointer; color: var(--color-primary); font-size: 13px; font-weight: 600; border: 1.5px dashed var(--color-border); border-radius: var(--radius-md); min-width: 140px;">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Event
                 </div>
               </div>
               <div style="display: flex; gap: 12px;">
-                <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; border: 1px solid var(--color-border);">Import Guests</button>
-                <button class="btn-primary" style="padding: 8px 16px;">Add Guest</button>
+                <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; border: 1px solid var(--color-border);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline; margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import Guests</button>
+                <button class="btn-primary" style="padding: 8px 16px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline; margin-right:6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Guest</button>
               </div>
             </div>
           </div>
 
-          <div class="kpi-5">
+          <div class="kpi-5" style="flex-shrink:0;">
             <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon purple" style="width:40px; height:40px; background:var(--color-primary-soft); color:var(--color-primary);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div style="flex:1;"><div class="kpi-value">120</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Total Guests</div></div></div>
-            <!-- More KPIs -->
+            <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon green" style="width:40px; height:40px; background:var(--color-success-soft); color:var(--color-success);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div style="flex:1;"><div class="kpi-value">89</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Accepted</div></div></div>
           </div>
 
-          <!-- Table Wrapper Flexed -->
           <div class="data-table-container no-scrollbar">
             <table class="data-table">
               <thead><tr><th>Guest Name</th><th>Contact</th><th>Invitation Status</th><th>Sent Via</th><th>Gate Pass</th><th>Actions</th></tr></thead>
@@ -515,20 +509,19 @@
           
           <div class="left-col">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-shrink: 0;" class="no-scrollbar">
-              <div style="display: flex; gap: 12px; align-items: center;">
-                <button style="background: var(--color-primary); color: white; padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: none;">All Gate Passes <span style="background: white; color: var(--color-primary); border-radius: 50%; width: 26px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px;">320</span></button>
-                <button style="background: transparent; color: var(--color-text); padding: 6px 12px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: none;">Active <span style="color: var(--color-success); font-weight: 600; font-size: 11px;">260</span></button>
-                <button style="background: transparent; color: var(--color-text); padding: 6px 12px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: none;">Used <span style="color: var(--color-info); font-weight: 600; font-size: 11px;">45</span></button>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn-filter-nav active">All Gate Passes <span class="badge-count">320</span></button>
+                <button class="btn-filter-nav">Active <span style="color:var(--color-success); font-weight:600; font-size:11px;">260</span></button>
+                <button class="btn-filter-nav">Used <span style="color:var(--color-info); font-weight:600; font-size:11px;">45</span></button>
               </div>
               <div style="display: flex; gap: 12px;">
-                <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filter</button>
-                <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">Export</button>
+                <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; border: 1px solid var(--color-border);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline; margin-right:4px;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filter</button>
+                <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; border: 1px solid var(--color-border);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline; margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Export</button>
               </div>
             </div>
 
             <div class="kpi-5">
               <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon purple" style="width:40px; height:40px; background:var(--color-primary-soft);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="kpi-value" style="font-size:22px;">320</div><div class="kpi-label" style="margin:2px 0;">Total Gate Passes</div></div></div>
-              <!-- Other KPIs truncated for space -->
             </div>
 
             <div class="data-table-container no-scrollbar">
@@ -540,23 +533,29 @@
           </div>
 
           <div class="right-col no-scrollbar">
-            <!-- ISSUE PASS FORM -->
+            <!-- Gate Pass Overview -->
             <div class="card panel" style="padding: 20px;">
-              <h2 class="section-title">Issue New Pass</h2>
-              <select id="eventSelect" class="input-field" style="padding: 10px; margin-bottom: 12px;"><option value="">-- Loading events... --</option></select>
-              <input type="text" id="guestNameInput" placeholder="Guest Name" class="input-field" style="padding: 10px; margin-bottom: 12px;">
-              <div style="display: flex; gap: 12px; margin-bottom: 12px;">
-                <input type="number" id="guestCapacityInput" value="1" class="input-field" style="padding: 10px; margin:0; flex:1;">
-                <select id="guestTierInput" class="input-field" style="padding: 10px; margin:0; flex:1;"><option value="General">General</option><option value="VIP">VIP</option></select>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 class="section-title" style="margin: 0;">Gate Pass Overview</h2>
               </div>
-              <button id="addGuestBtn" class="btn-primary" style="padding: 10px;">Generate Pass</button>
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--color-success) 0% 81%, var(--color-info) 81% 95%, var(--color-warning) 95% 98%, var(--color-danger) 98% 100%); position: relative; display: flex; align-items: center; justify-content: center;">
+                  <div style="width: 70px; height: 70px; background: var(--color-bg); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;"><div style="font-size: 18px; font-weight: 700;">320</div><div style="font-size: 9px; color: var(--color-text-secondary);">Total</div></div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-success);"></span> Active</span> <span style="color: var(--color-text-secondary);">260 <span style="font-size:9px;">(81%)</span></span></div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-info);"></span> Used</span> <span style="color: var(--color-text-secondary);">45 <span style="font-size:9px;">(14%)</span></span></div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #B4790C;"></span> Expired</span> <span style="color: var(--color-text-secondary);">10 <span style="font-size:9px;">(3%)</span></span></div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-danger);"></span> Cancelled</span> <span style="color: var(--color-text-secondary);">5 <span style="font-size:9px;">(1%)</span></span></div>
+                </div>
+              </div>
             </div>
             
             <div class="card panel" style="padding: 20px;">
               <h2 class="section-title" style="margin: 0; font-size: 14px;">Actions Menu</h2>
               <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
-                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;"><div style="font-size: 12px; font-weight: 600;">Bulk Generate</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)"><polyline points="9 18 15 12 9 6"/></svg></div>
-                <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px;"><div style="font-size: 12px; font-weight: 600;">Download All</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)"><polyline points="9 18 15 12 9 6"/></svg></div>
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;"><div style="display:flex; gap:12px; align-items:center;"><div style="width:32px; height:32px; background:var(--color-primary-soft); color:var(--color-primary); border-radius:8px; display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg></div><div><div style="font-size: 12px; font-weight: 600;">Generate Gate Pass</div><div style="font-size:10px; color:var(--color-text-secondary);">Create new pass</div></div></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)"><polyline points="9 18 15 12 9 6"/></svg></div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px;"><div style="display:flex; gap:12px; align-items:center;"><div style="width:32px; height:32px; background:var(--color-info-soft); color:var(--color-info); border-radius:8px; display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div><div><div style="font-size: 12px; font-weight: 600;">Bulk Generate</div><div style="font-size:10px; color:var(--color-text-secondary);">Generate multiple</div></div></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)"><polyline points="9 18 15 12 9 6"/></svg></div>
               </div>
             </div>
           </div>
@@ -568,20 +567,19 @@
         <div class="layout-grid">
           
           <div class="left-col">
-            <div class="kpi-5" style="margin-bottom: 24px;">
-              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon purple" style="width:40px; height:40px; background:var(--color-primary-soft);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div><div class="kpi-label" style="margin:2px 0;">Total QR Codes</div><div class="kpi-value" style="font-size:22px;">512</div></div></div>
-              <!-- KPIs -->
-            </div>
-
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); margin-bottom: 16px; flex-shrink: 0;" class="no-scrollbar">
-              <div style="display: flex; gap: 24px; align-items: flex-end;">
-                <div style="padding-bottom: 12px; border-bottom: 2px solid var(--color-primary); color: var(--color-primary); font-weight: 600; font-size: 13px; cursor: pointer;">All QR Codes</div>
-                <div style="padding-bottom: 12px; color: var(--color-text-secondary); font-weight: 500; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent;">Active</div>
-                <div style="padding-bottom: 12px; color: var(--color-text-secondary); font-weight: 500; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent;">Scanned</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-shrink: 0;" class="no-scrollbar">
+              <div style="display: flex; gap: 8px;">
+                <button class="btn-filter-nav active">All QR Codes</button>
+                <button class="btn-filter-nav">Active</button>
+                <button class="btn-filter-nav">Scanned</button>
               </div>
-              <div style="display: flex; gap: 12px; align-items: center; padding-bottom: 8px;">
+              <div style="display: flex; gap: 12px; align-items: center;">
                 <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; border: 1px solid var(--color-border);">Filter</button>
               </div>
+            </div>
+
+            <div class="kpi-5">
+              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon purple" style="width:40px; height:40px; background:var(--color-primary-soft);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div><div class="kpi-label" style="margin:2px 0;">Total QR Codes</div><div class="kpi-value" style="font-size:22px;">512</div></div></div>
             </div>
 
             <div class="data-table-container no-scrollbar">
@@ -593,11 +591,26 @@
           </div>
 
           <div class="right-col no-scrollbar">
-             <div class="card panel" style="padding: 20px;">
+             <!-- QR Code Overview Chart Card -->
+            <div class="card panel" style="padding: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 class="section-title" style="margin: 0;">QR Code Overview</h2>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--color-success) 0% 77.7%, var(--color-info) 77.7% 85%, var(--color-warning) 85% 91%, var(--color-danger) 91% 100%); position: relative; display: flex; align-items: center; justify-content: center;">
+                  <div style="width: 70px; height: 70px; background: var(--color-bg); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;"><div style="font-size: 18px; font-weight: 700;">512</div><div style="font-size: 9px; color: var(--color-text-secondary);">Total</div></div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 125px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-success);"></span> Active</span> <span style="color: var(--color-text-secondary);">398 <span style="font-size:9px;">(77%)</span></span></div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 125px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-info);"></span> Scanned</span> <span style="color: var(--color-text-secondary);">278 <span style="font-size:9px;">(54%)</span></span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card panel" style="padding: 20px;">
               <h2 class="section-title" style="margin: 0 0 16px; font-size: 14px;">Quick Actions</h2>
               <button class="btn-primary" style="margin-bottom: 12px;">Create QR Code</button>
               <button style="width: 100%; padding: 10px; background: white; border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; margin-bottom: 12px;">Bulk Generate</button>
-              <button style="width: 100%; padding: 10px; background: white; border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600;">Download All</button>
             </div>
           </div>
         </div>
@@ -645,7 +658,7 @@
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   let currentTenantId = null;
 
-  // --- TAB NAVIGATION ---
+  // --- TAB NAVIGATION & HEADER ROUTING ---
   function switchView(viewId, navElement) {
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -658,7 +671,7 @@
     const searchInput = document.getElementById('dynamicSearchInput');
 
     if(viewId === 'dashboardView') {
-       titleEl.innerText = 'Welcome back! 👋'; subEl.innerText = 'Here\'s what\'s happening with your events today.';
+       titleEl.innerText = 'Dashboard'; subEl.innerText = 'Overview of your activities';
        searchBox.style.display = 'none';
     } else if (viewId === 'eventsView') {
        titleEl.innerText = 'Events'; subEl.innerText = 'Manage all your events';
@@ -677,6 +690,75 @@
        searchBox.style.display = 'none';
     }
   }
+
+  // --- DATA FETCHING ---
+  async function fetchEvents() {
+    if (!currentTenantId) return;
+    const { data } = await supabaseClient.from('events').select('*').eq('tenant_id', currentTenantId);
+    
+    const select = document.getElementById('eventSelect');
+    if(select) select.innerHTML = '<option value="">-- Select Event --</option>';
+    const list = document.getElementById('recentEventsList');
+    if(list) list.innerHTML = '';
+
+    const eventsTable = document.getElementById('eventsTableBody');
+    if (eventsTable) eventsTable.innerHTML = '';
+    
+    const kpiEvents = document.getElementById('kpiEvents');
+    if(kpiEvents) kpiEvents.innerText = data ? data.length : 0;
+
+    if (!data || data.length === 0) {
+      if(list) list.innerHTML = `<p style="font-size:13px; color:var(--color-text-secondary); padding: 20px;">No events found.</p>`;
+      if (eventsTable) eventsTable.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px;">No events created yet.</td></tr>`;
+      return;
+    }
+
+    data.forEach(e => {
+      if(select) {
+        const opt = document.createElement('option');
+        opt.value = e.id;
+        opt.dataset.approved = e.is_approved;
+        opt.textContent = `${e.event_name} (${e.is_approved ? 'Approved' : 'Pending'})`;
+        select.appendChild(opt);
+      }
+
+      // Safe Date Parsing (Prevents NaN/Invalid Date crash)
+      const dateObj = e.created_at ? new Date(e.created_at) : new Date();
+      const month = dateObj.toLocaleString('default', { month: 'short' }).toUpperCase();
+      const day = dateObj.getDate();
+      const badgeClass = e.is_approved ? 'upcoming' : 'pending';
+      const badgeText = e.is_approved ? 'Approved' : 'Pending';
+
+      if(list) {
+        list.innerHTML += `
+          <div class="list-row" style="border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin-bottom: 12px;">
+            <div class="date-tile"><div class="mon">${month}</div><div class="day">${day}</div></div>
+            <div style="flex:1;">
+              <div class="row-title">${e.event_name}</div>
+              <div class="row-sub">Capacity Limit: ${e.total_capacity}</div>
+            </div>
+            <span class="status-badge ${badgeClass}">${badgeText}</span>
+          </div>
+        `;
+      }
+
+      if (eventsTable) {
+        eventsTable.innerHTML += `
+          <tr>
+            <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar">${e.event_name.substring(0,2).toUpperCase()}</div><div><div style="font-weight:600; color:var(--color-text);">${e.event_name}</div><div style="font-size:11px; color:var(--color-text-secondary);">Event</div></div></div></td>
+            <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> ${month} ${day}, ${dateObj.getFullYear()}</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">Created On</div></td>
+            <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Location TBD</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">Venue</div></td>
+            <td><div style="font-weight:600; font-size:13px; text-align:center;">${e.total_capacity}</div><div style="font-size:11px; color:var(--color-text-secondary); text-align:center;">Capacity</div></td>
+            <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
+            <td><div style="display:flex; gap:4px;"><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
+          </tr>
+        `;
+      }
+    });
+    
+    fetchAllGuestsForKPIs();
+  }
+  
 
   // --- INIT & AUTH ---
   async function init() {
@@ -700,70 +782,7 @@
     }
   }
 
-  // --- DATA FETCHING (Populating the exact template lists) ---
-  async function fetchEvents() {
-    if (!currentTenantId) return;
-    const { data } = await supabaseClient.from('events').select('*').eq('tenant_id', currentTenantId);
-    
-    const select = document.getElementById('eventSelect');
-    select.innerHTML = '<option value="">-- Select Event --</option>';
-    const list = document.getElementById('recentEventsList');
-    list.innerHTML = '';
-
-    const eventsTable = document.getElementById('eventsTableBody');
-    if (eventsTable) eventsTable.innerHTML = '';
-    
-    document.getElementById('kpiEvents').innerText = data ? data.length : 0;
-
-    if (!data || data.length === 0) {
-      list.innerHTML = `<p style="font-size:13px; color:var(--color-text-secondary);">No events found.</p>`;
-      if (eventsTable) eventsTable.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px;">No events created yet.</td></tr>`;
-      return;
-    }
-
-    data.forEach(e => {
-      // 1. Populate Dropdown Form
-      const opt = document.createElement('option');
-      opt.value = e.id;
-      opt.dataset.approved = e.is_approved;
-      opt.textContent = `${e.event_name} (${e.is_approved ? 'Approved' : 'Pending'})`;
-      select.appendChild(opt);
-
-      // 2. Populate Template "Recent Events" List on Dashboard
-      const dateObj = new Date(e.created_at);
-      const month = dateObj.toLocaleString('default', { month: 'short' }).toUpperCase();
-      const day = dateObj.getDate();
-      const badgeClass = e.is_approved ? 'upcoming' : 'pending';
-      const badgeText = e.is_approved ? 'Approved' : 'Pending';
-
-      list.innerHTML += `
-        <div class="list-row">
-          <div class="date-tile"><div class="mon">${month}</div><div class="day">${day}</div></div>
-          <div style="flex:1;">
-            <div class="row-title">${e.event_name}</div>
-            <div class="row-sub">Capacity Limit: ${e.total_capacity}</div>
-          </div>
-          <span class="status-badge ${badgeClass}">${badgeText}</span>
-        </div>
-      `;
-
-      // 3. Populate Main Events Table
-      if (eventsTable) {
-        eventsTable.innerHTML += `
-          <tr>
-            <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar">${e.event_name.substring(0,2).toUpperCase()}</div><div><div style="font-weight:600; color:var(--color-text);">${e.event_name}</div><div style="font-size:11px; color:var(--color-text-secondary);">Event</div></div></div></td>
-            <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> ${month} ${day}, ${dateObj.getFullYear()}</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">Created On</div></td>
-            <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Location TBD</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">Venue</div></td>
-            <td><div style="font-weight:600; font-size:13px; text-align:center;">${e.total_capacity}</div><div style="font-size:11px; color:var(--color-text-secondary); text-align:center;">Capacity</div></td>
-            <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
-            <td><div style="display:flex; gap:4px;"><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-          </tr>
-        `;
-      }
-    });
-    
-    fetchAllGuestsForKPIs();
-  }
+  
 
   async function fetchAllGuestsForKPIs() {
     const { data: events } = await supabaseClient.from('events').select('id, event_name').eq('tenant_id', currentTenantId);
