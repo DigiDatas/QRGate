@@ -157,25 +157,71 @@
       </div>
 
       <div class="nav-group">
-        <p class="nav-label">Management</p>
+        <p class="nav-label">Events</p>
         <button class="nav-item w-full" onclick="switchView('eventsView', this)">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg></span>
-          Manage Events
+          Events
+        </button>
+        <button class="nav-item w-full" onclick="switchView('guestListsView', this)">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+          Guest Lists
         </button>
         <button class="nav-item w-full" onclick="switchView('guestsView', this)">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4Z"/></svg></span>
           Gate Passes
         </button>
+        <button class="nav-item w-full" onclick="switchView('qrCodesView', this)">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><line x1="17.5" y1="14" x2="17.5" y2="21"/><line x1="14" y1="17.5" x2="21" y2="17.5"/></svg></span>
+          QR Codes
+        </button>
       </div>
 
       <div class="nav-group">
-        <p class="nav-label">System</p>
-        <a href="scanner.html" class="nav-item">
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><line x1="17.5" y1="14" x2="17.5" y2="21"/><line x1="14" y1="17.5" x2="21" y2="17.5"/></svg></span>
-          QR Scanner App
-        </a>
+        <p class="nav-label">Management</p>
+        <button class="nav-item w-full" onclick="switchView('createManageView', this)">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+          Create & Manage
+        </button>
+        <button class="nav-item w-full" onclick="switchView('importDataView', this)">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span>
+          Import Data
+        </button>
+      </div>
+
+      <div class="nav-group">
+        <p class="nav-label">Design & Templates</p>
+        <button class="nav-item w-full" onclick="switchView('designTemplatesView', this)">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></span>
+          Design Templates
+        </button>
+        <button class="nav-item w-full" onclick="switchView('savedDesignsView', this)">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span>
+          My Saved Designs
+        </button>
+      </div>
+
+      <div class="nav-group">
+        <p class="nav-label">Reports</p>
+        <button class="nav-item w-full" onclick="switchView('analyticsView', this)">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+          Analytics
+        </button>
+        <button class="nav-item w-full" onclick="switchView('reportsView', this)">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span>
+          Reports
+        </button>
       </div>
     </nav>
+
+    <!-- Help Card Panel -->
+    <div style="margin: var(--space-3); padding: var(--space-4); background: var(--color-surface-soft); border-radius: var(--radius-md); flex-shrink: 0;">
+      <div style="width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--color-primary-soft); color: var(--color-primary); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-3);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 5.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+      </div>
+      <h4 style="margin: 0 0 4px; font-size: 14px; font-weight: 700; color: var(--color-text);">Need Help?</h4>
+      <p style="margin: 0 0 var(--space-3); font-size: 12px; color: var(--color-text-secondary); line-height: 1.5;">View guide or contact support team.</p>
+      <button class="btn-primary" style="width: 100%; height: 40px; padding: 0;">View Guide</button>
+    </div>
   </aside>
 
   <!-- ============ MAIN SHELL ============ -->
@@ -356,6 +402,57 @@
             <button id="addGuestBtn" class="btn-primary" style="flex: 1; margin:0; height: 46px; min-width: 120px;">Generate Pass</button>
           </div>
         </div>
+      </div>
+<!-- ============================================== -->
+      <!-- NEW PLACEHOLDER VIEWS -->
+      <!-- ============================================== -->
+      
+      <div id="guestListsView" class="view-section">
+        <h1 class="page-title">Guest Lists</h1>
+        <p class="page-subtitle">View and manage all registered attendees.</p>
+        <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Module coming soon.</p></div>
+      </div>
+
+      <div id="qrCodesView" class="view-section">
+        <h1 class="page-title">QR Codes</h1>
+        <p class="page-subtitle">Bulk generate and export QR codes.</p>
+        <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Module coming soon.</p></div>
+      </div>
+
+      <div id="createManageView" class="view-section">
+        <h1 class="page-title">Create & Manage</h1>
+        <p class="page-subtitle">Configure advanced settings and team access.</p>
+        <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Module coming soon.</p></div>
+      </div>
+
+      <div id="importDataView" class="view-section">
+        <h1 class="page-title">Import Data</h1>
+        <p class="page-subtitle">Upload CSV lists of guests and bulk configure events.</p>
+        <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Module coming soon.</p></div>
+      </div>
+
+      <div id="designTemplatesView" class="view-section">
+        <h1 class="page-title">Design Templates</h1>
+        <p class="page-subtitle">Customize the look and feel of your gate passes.</p>
+        <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Module coming soon.</p></div>
+      </div>
+
+      <div id="savedDesignsView" class="view-section">
+        <h1 class="page-title">My Saved Designs</h1>
+        <p class="page-subtitle">Access your previously saved ticket templates.</p>
+        <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Module coming soon.</p></div>
+      </div>
+
+      <div id="analyticsView" class="view-section">
+        <h1 class="page-title">Analytics</h1>
+        <p class="page-subtitle">Deep dive into check-in rates and gate performance.</p>
+        <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Module coming soon.</p></div>
+      </div>
+
+      <div id="reportsView" class="view-section">
+        <h1 class="page-title">Reports</h1>
+        <p class="page-subtitle">Export PDF and CSV reports of event data.</p>
+        <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Module coming soon.</p></div>
       </div>
 
     </main>
