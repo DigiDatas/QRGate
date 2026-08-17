@@ -139,28 +139,47 @@
   @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 /* ============ DASHBOARD LOCK & LAYOUTS ============ */
   /* Lock app shell to exact viewport height */
-  body { overflow: hidden; }
-  .app-shell { height: 100vh; overflow: hidden; }
+  body, .app-shell { height: 100vh; overflow: hidden; margin: 0; }
   .content-shell { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
   
-  /* Make main content scrollable but hide scrollbars */
-  .main-content { flex: 1; overflow-y: auto; padding: var(--space-6) 28px var(--space-7); }
+  /* Make main content flex, prevent global scrolling */
+  .main-content { 
+    flex: 1; 
+    padding: var(--space-6) 28px var(--space-7); 
+    display: flex; 
+    flex-direction: column; 
+    overflow: hidden; 
+    height: calc(100vh - var(--header-height)); 
+  }
+  
+  /* Hidden Scrollbars */
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-  /* New View Layout Grids (from your images) */
-  .layout-grid { display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
-  .kpi-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; }
+  /* Fix View Sections */
+  .view-section { height: 100%; display: none; flex-direction: column; overflow: hidden; }
+  .view-section.active { display: flex; animation: fadeIn 0.3s ease-in-out; }
+
+  /* Perfect 100vh Column Layouts */
+  .layout-grid { display: grid; grid-template-columns: 1fr 300px; gap: 24px; height: 100%; overflow: hidden; }
+  .left-col { display: flex; flex-direction: column; height: 100%; overflow: hidden; min-height: 0; }
+  .right-col { display: flex; flex-direction: column; gap: 24px; height: 100%; overflow-y: auto; padding-right: 4px; padding-bottom: 40px; }
   
-  /* Standardized Data Table from images */
-  .data-table-container { background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
+  .kpi-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; flex-shrink: 0; }
+  
+  .data-table-container { flex: 1; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow-y: auto; min-height: 0; margin-bottom: 16px; }
+  
+  /* Standardized Data Table */
   .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .data-table th { text-align: left; padding: 16px 20px; color: var(--color-text-muted); font-weight: 700; text-transform: uppercase; font-size: 11px; border-bottom: 1px solid var(--color-border); }
+  .data-table th { position: sticky; top: 0; background: var(--color-bg); text-align: left; padding: 16px 20px; color: var(--color-text-muted); font-weight: 700; text-transform: uppercase; font-size: 11px; border-bottom: 1px solid var(--color-border); z-index: 10; }
   .data-table td { padding: 16px 20px; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
   .data-table tr:hover { background: var(--color-surface-soft); }
   .data-table tr:last-child td { border-bottom: none; }
   
-  .table-avatar { width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--color-primary-soft); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
+  .table-avatar { width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--color-primary-soft); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; flex-shrink: 0; }
+
+
+
 </style>
 </head>
 <body>
@@ -253,8 +272,15 @@
     
     <!-- HEADER -->
     <header class="top-header">
-      <div class="header-left">
-        <div class="portal-title">Event Manager Portal</div>
+      <div class="header-left" style="display:flex; align-items:center; gap:40px;">
+        <div style="display:flex; flex-direction:column; width: 200px;">
+          <div id="dynamicPageTitle" class="portal-title" style="font-size:18px;">Dashboard</div>
+          <div id="dynamicPageSubtitle" style="font-size:12px; color:var(--color-text-secondary); margin-top:2px;">Overview of your activities</div>
+        </div>
+        <div id="dynamicSearchContainer" style="position: relative; width: 350px; display: none;">
+          <svg style="position:absolute; left:14px; top:10px; width:16px; color:var(--color-text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input type="text" id="dynamicSearchInput" placeholder="Search..." style="width:100%; padding:8px 10px 8px 40px; border:1px solid var(--color-border); border-radius:var(--radius-pill); font-size:13px; outline:none; background:var(--color-surface-soft);">
+        </div>
       </div>
       <div class="header-right">
         <div class="user-menu">
@@ -366,932 +392,222 @@
         </section>
       </div>
 
+      
       <!-- ============================================== -->
-      <!-- TAB: EVENTS (Image 1) -->
+      <!-- TAB: EVENTS -->
       <!-- ============================================== -->
       <div id="eventsView" class="view-section">
-        
-        <!-- Header & Search -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-          <div>
-            <h1 class="page-title">Events</h1>
-            <p class="page-subtitle" style="margin:0;">Manage all your events</p>
-          </div>
-          <div style="position: relative; width: 350px;">
-            <svg style="position:absolute; left:14px; top:12px; width:16px; color:var(--color-text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
-            <input type="text" placeholder="Search events by name, venue..." style="width:100%; padding:10px 10px 10px 40px; border:1px solid var(--color-border); border-radius:var(--radius-pill); font-size:13px; outline:none; background:var(--color-bg);">
-          </div>
-        </div>
-
-        <!-- Filter & Action Bar -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; overflow-x: auto;" class="no-scrollbar">
-          <div style="display: flex; gap: 12px;">
-            <!-- Active Pill -->
-            <button style="background: var(--color-primary); color: white; padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: none;">
-              All Events <span style="background: white; color: var(--color-primary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px;">12</span>
-            </button>
-            <!-- Inactive Pills -->
-            <button style="background: var(--color-bg); color: var(--color-text-secondary); padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">
-              Upcoming <span style="background: var(--color-surface-soft); color: var(--color-text-secondary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid var(--color-border);">4</span>
-            </button>
-            <button style="background: var(--color-bg); color: var(--color-text-secondary); padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">
-              Ongoing <span style="background: var(--color-surface-soft); color: var(--color-text-secondary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid var(--color-border);">2</span>
-            </button>
-            <button style="background: var(--color-bg); color: var(--color-text-secondary); padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">
-              Completed <span style="background: var(--color-surface-soft); color: var(--color-text-secondary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid var(--color-border);">4</span>
-            </button>
-            <button style="background: var(--color-bg); color: var(--color-text-secondary); padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">
-              Cancelled <span style="background: var(--color-surface-soft); color: var(--color-text-secondary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid var(--color-border);">2</span>
-            </button>
-          </div>
-          <div style="display: flex; gap: 12px;">
-            <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filter
-            </button>
-            <button class="btn-primary" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; height: auto;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Create Event
-            </button>
-          </div>
-        </div>
-
-        <!-- KPI 5-Card Row -->
-        <div class="kpi-5">
-          <div class="card kpi-card" style="padding: 16px; align-items: center;">
-            <div class="kpi-icon purple" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div>
-            <div><div class="kpi-label" style="margin:0;">Total Events</div><div class="kpi-value">12</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">All Time</div></div>
-          </div>
-          <div class="card kpi-card" style="padding: 16px; align-items: center;">
-            <div class="kpi-icon green" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div>
-            <div><div class="kpi-label" style="margin:0;">Upcoming</div><div class="kpi-value">4</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Next 7 Days</div></div>
-          </div>
-          <div class="card kpi-card" style="padding: 16px; align-items: center;">
-            <div class="kpi-icon blue" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></div>
-            <div><div class="kpi-label" style="margin:0;">Ongoing</div><div class="kpi-value">2</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">In Progress</div></div>
-          </div>
-          <div class="card kpi-card" style="padding: 16px; align-items: center;">
-            <div class="kpi-icon purple" style="width:40px; height:40px; background:var(--color-primary-soft);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-            <div><div class="kpi-label" style="margin:0;">Completed</div><div class="kpi-value">4</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">All Completed</div></div>
-          </div>
-          <div class="card kpi-card" style="padding: 16px; align-items: center;">
-            <div class="kpi-icon pink" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
-            <div><div class="kpi-label" style="margin:0;">Cancelled</div><div class="kpi-value">2</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">All Cancelled</div></div>
-          </div>
-        </div>
-
         <div class="layout-grid">
-          <!-- MAIN TABLE -->
-          <div class="data-table-container" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Event Name</th>
-                  <th>Date & Time</th>
-                  <th>Venue</th>
-                  <th>Guests</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Row 1 -->
-                <tr>
-                  <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar">TE</div><div><div style="font-weight:600; color:var(--color-text);">Tech Expo 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">Exhibition</div></div></div></td>
-                  <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> May 20, 2025</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">10:00 AM - 06:00 PM</div></td>
-                  <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Dubai Convention Center</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">Dubai, UAE</div></td>
-                  <td><div style="font-weight:600; font-size:13px; text-align:center;">120</div><div style="font-size:11px; color:var(--color-text-secondary); text-align:center;">Guests</div></td>
-                  <td><span class="status-badge upcoming">Upcoming</span></td>
-                  <td><div style="display:flex; gap:4px;"><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-                </tr>
-                <!-- Row 2 -->
-                <tr>
-                  <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar" style="background:#EAF8EE; color:#22B35A;">CS</div><div><div style="font-weight:600; color:var(--color-text);">Corporate Summit 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">Conference</div></div></div></td>
-                  <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> May 10, 2025</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">09:00 AM - 05:00 PM</div></td>
-                  <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Grand Hyatt</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">Dubai, UAE</div></td>
-                  <td><div style="font-weight:600; font-size:13px; text-align:center;">85</div><div style="font-size:11px; color:var(--color-text-secondary); text-align:center;">Guests</div></td>
-                  <td><span class="status-badge upcoming">Upcoming</span></td>
-                  <td><div style="display:flex; gap:4px;"><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-                </tr>
-                <!-- Row 3 -->
-                <tr>
-                  <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar" style="background:#FEF6E2; color:#B4790C;">PL</div><div><div style="font-weight:600; color:var(--color-text);">Product Launch Event</div><div style="font-size:11px; color:var(--color-text-secondary);">Launch</div></div></div></td>
-                  <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> Apr 28, 2025</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">02:00 PM - 08:00 PM</div></td>
-                  <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Address Hotel</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">Dubai, UAE</div></td>
-                  <td><div style="font-weight:600; font-size:13px; text-align:center;">115</div><div style="font-size:11px; color:var(--color-text-secondary); text-align:center;">Guests</div></td>
-                  <td><span class="status-badge" style="background:var(--color-info-soft); color:var(--color-info);">Completed</span></td>
-                  <td><div style="display:flex; gap:4px;"><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-                </tr>
-              </tbody>
-            </table>
-
-            <!-- Pagination Row -->
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-top: 1px solid var(--color-border);">
-              <div style="font-size: 13px; color: var(--color-text-secondary);">Showing 1 to 6 of 12 events</div>
-              <div style="display: flex; gap: 8px;">
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--color-text-muted);">&lt;</button>
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: var(--color-primary-soft); color: var(--color-primary); font-weight: 600;">1</button>
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--color-text); font-weight: 500;">2</button>
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--color-text); font-weight: 500;">3</button>
-                <span style="display: flex; align-items: center; color: var(--color-text-muted);">...</span>
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--color-text-muted);">&gt;</button>
+          
+          <div class="left-col">
+            <!-- Filter & Action Bar -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-shrink: 0;" class="no-scrollbar">
+              <div style="display: flex; gap: 12px;">
+                <button style="background: var(--color-primary); color: white; padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: none;">All Events <span style="background: white; color: var(--color-primary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px;">12</span></button>
+                <button style="background: var(--color-bg); color: var(--color-text-secondary); padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">Upcoming <span style="background: var(--color-surface-soft); color: var(--color-text-secondary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid var(--color-border);">4</span></button>
+                <button style="background: var(--color-bg); color: var(--color-text-secondary); padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">Ongoing <span style="background: var(--color-surface-soft); color: var(--color-text-secondary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid var(--color-border);">2</span></button>
+                <button style="background: var(--color-bg); color: var(--color-text-secondary); padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">Completed <span style="background: var(--color-surface-soft); color: var(--color-text-secondary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid var(--color-border);">4</span></button>
               </div>
+              <div style="display: flex; gap: 12px;">
+                <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filter</button>
+                <!-- This Create Event button is visual only here, form is on the right -->
+                <button class="btn-primary" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; height: auto;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Create Event</button>
+              </div>
+            </div>
+
+            <!-- KPI 5-Card Row -->
+            <div class="kpi-5">
+              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon purple" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div><div><div class="kpi-label" style="margin:0;">Total Events</div><div class="kpi-value">12</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">All Time</div></div></div>
+              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon green" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div><div><div class="kpi-label" style="margin:0;">Upcoming</div><div class="kpi-value">4</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Next 7 Days</div></div></div>
+              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon blue" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></div><div><div class="kpi-label" style="margin:0;">Ongoing</div><div class="kpi-value">2</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">In Progress</div></div></div>
+              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon purple" style="width:40px; height:40px; background:var(--color-primary-soft);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div><div class="kpi-label" style="margin:0;">Completed</div><div class="kpi-value">4</div></div></div>
+              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon pink" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div><div><div class="kpi-label" style="margin:0;">Cancelled</div><div class="kpi-value">2</div></div></div>
+            </div>
+
+            <!-- MAIN TABLE CONTAINER (Will scroll internally) -->
+            <div class="data-table-container no-scrollbar">
+              <table class="data-table">
+                <thead><tr><th>Event Name</th><th>Date & Time</th><th>Venue</th><th>Guests</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>
+                  <tr><td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar">TE</div><div><div style="font-weight:600; color:var(--color-text);">Tech Expo 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">Exhibition</div></div></div></td><td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> May 20, 2025</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">10:00 AM - 06:00 PM</div></td><td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Dubai Convention Center</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">Dubai, UAE</div></td><td><div style="font-weight:600; font-size:13px; text-align:center;">120</div><div style="font-size:11px; color:var(--color-text-secondary); text-align:center;">Guests</div></td><td><span class="status-badge upcoming">Upcoming</span></td><td><div style="display:flex; gap:4px;"><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td></tr>
+                  <tr><td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar" style="background:#EAF8EE; color:#22B35A;">CS</div><div><div style="font-weight:600; color:var(--color-text);">Corporate Summit 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">Conference</div></div></div></td><td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> May 10, 2025</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">09:00 AM - 05:00 PM</div></td><td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Grand Hyatt</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">Dubai, UAE</div></td><td><div style="font-weight:600; font-size:13px; text-align:center;">85</div><div style="font-size:11px; color:var(--color-text-secondary); text-align:center;">Guests</div></td><td><span class="status-badge upcoming">Upcoming</span></td><td><div style="display:flex; gap:4px;"><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Pagination under table -->
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--color-text-secondary); flex-shrink:0;">
+              Showing 1 to 6 of 12 events
             </div>
           </div>
 
           <!-- RIGHT SIDEBAR -->
-          <div style="display: flex; flex-direction: column; gap: 24px;">
+          <div class="right-col no-scrollbar">
             
-            <!-- Event Overview Chart Card -->
+            <!-- Live Create Event Input Block (Supabase Connected) -->
             <div class="card panel" style="padding: 20px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                <h2 class="section-title" style="margin: 0;">Event Overview</h2>
-                <button style="background: var(--color-bg); color: var(--color-text-secondary); border: 1px solid var(--color-border); padding: 4px 8px; border-radius: var(--radius-sm); font-size: 11px; display: flex; gap: 4px; align-items: center;">This Month <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg></button>
+              <h2 class="section-title">Create New Event</h2>
+              <input type="text" id="eventNameInput" placeholder="Event Name" class="input-field" style="padding: 10px; margin-bottom: 12px;">
+              <div style="display: flex; gap: 12px;">
+                <input type="number" id="eventCapacityInput" value="100" class="input-field" style="padding: 10px; margin-bottom: 12px; flex:1;">
+                <input type="datetime-local" id="eventExpireInput" class="input-field" style="padding: 10px; margin-bottom: 12px; flex:1;">
               </div>
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <!-- CSS Mock Donut Chart -->
-                <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--color-success) 0% 33%, var(--color-warning) 33% 50%, var(--color-info) 50% 83%, var(--color-danger) 83% 100%); position: relative; display: flex; align-items: center; justify-content: center;">
-                  <div style="width: 70px; height: 70px; background: var(--color-bg); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <div style="font-size: 18px; font-weight: 700;">12</div>
-                    <div style="font-size: 9px; color: var(--color-text-secondary);">Total Events</div>
-                  </div>
-                </div>
-                <!-- Legend -->
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-success);"></span> Upcoming</span> <span style="color: var(--color-text-secondary);">4 <span style="font-size:9px;">(33%)</span></span></div>
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-warning);"></span> Ongoing</span> <span style="color: var(--color-text-secondary);">2 <span style="font-size:9px;">(17%)</span></span></div>
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-info);"></span> Completed</span> <span style="color: var(--color-text-secondary);">4 <span style="font-size:9px;">(33%)</span></span></div>
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-danger);"></span> Cancelled</span> <span style="color: var(--color-text-secondary);">2 <span style="font-size:9px;">(17%)</span></span></div>
-                </div>
+              <button id="addEventBtn" class="btn-primary" style="padding: 10px;">Deploy Event Gate</button>
+            </div>
+            
+            <!-- Recent Gate Passes List -->
+            <div class="card panel" style="padding: 20px;">
+              <h2 class="section-title" style="margin: 0; font-size: 14px;">Recent Gate Passes</h2>
+              <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;"><div><div style="font-size: 12px; font-weight: 600;">GP-2025-00120</div><div style="font-size: 11px; color: var(--color-text-secondary);">Tech Expo 2025</div></div><div style="text-align:right;"><div style="font-size: 11px;">10:30 AM</div><div style="font-size: 11px; color: var(--color-text-secondary);">May 20, 2025</div></div></div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;"><div><div style="font-size: 12px; font-weight: 600;">GP-2025-00119</div><div style="font-size: 11px; color: var(--color-text-secondary);">Tech Expo 2025</div></div><div style="text-align:right;"><div style="font-size: 11px;">09:45 AM</div><div style="font-size: 11px; color: var(--color-text-secondary);">May 20, 2025</div></div></div>
+                <button style="width: 100%; margin-top: 4px; padding: 8px; background: white; border: 1px solid var(--color-primary); color: var(--color-primary); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600;">View All Gate Passes</button>
               </div>
             </div>
 
-            <!-- Recent Gate Passes Card -->
-            <div class="card panel" style="padding: 20px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h2 class="section-title" style="margin: 0; font-size: 14px;">Recent Gate Passes</h2>
-                <a href="#" style="font-size: 11px; font-weight: 600; color: var(--color-primary);">View All</a>
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 16px;">
-                <!-- Pass 1 -->
-                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
-                  <div>
-                    <div style="font-size: 12px; font-weight: 600; color: var(--color-text);">GP-2025-00120</div>
-                    <div style="font-size: 11px; color: var(--color-text-secondary);">Tech Expo 2025</div>
-                  </div>
-                  <div>
-                    <div style="font-size: 11px; color: var(--color-text); text-align: right;">10:30 AM</div>
-                    <div style="font-size: 11px; color: var(--color-text-secondary); text-align: right;">May 20, 2025</div>
-                  </div>
-                  <button style="background: var(--color-danger-soft); color: var(--color-danger); border: none; border-radius: 6px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h7v7h-7z"/></svg></button>
-                </div>
-                <!-- Pass 2 -->
-                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
-                  <div>
-                    <div style="font-size: 12px; font-weight: 600; color: var(--color-text);">GP-2025-00119</div>
-                    <div style="font-size: 11px; color: var(--color-text-secondary);">Tech Expo 2025</div>
-                  </div>
-                  <div>
-                    <div style="font-size: 11px; color: var(--color-text); text-align: right;">09:45 AM</div>
-                    <div style="font-size: 11px; color: var(--color-text-secondary); text-align: right;">May 20, 2025</div>
-                  </div>
-                  <button style="background: var(--color-danger-soft); color: var(--color-danger); border: none; border-radius: 6px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h7v7h-7z"/></svg></button>
-                </div>
-                <!-- Pass 3 -->
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <div>
-                    <div style="font-size: 12px; font-weight: 600; color: var(--color-text);">GP-2025-00118</div>
-                    <div style="font-size: 11px; color: var(--color-text-secondary);">Tech Expo 2025</div>
-                  </div>
-                  <div>
-                    <div style="font-size: 11px; color: var(--color-text); text-align: right;">09:15 AM</div>
-                    <div style="font-size: 11px; color: var(--color-text-secondary); text-align: right;">May 20, 2025</div>
-                  </div>
-                  <button style="background: var(--color-danger-soft); color: var(--color-danger); border: none; border-radius: 6px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h7v7h-7z"/></svg></button>
-                </div>
-              </div>
-              <button style="width: 100%; margin-top: 16px; padding: 10px; background: white; border: 1px solid var(--color-primary); color: var(--color-primary); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600;">View All Gate Passes</button>
-            </div>
-
-            <!-- Export Events Card -->
+            <!-- Export Block -->
             <div class="card panel" style="padding: 20px;">
               <h2 class="section-title" style="margin: 0 0 4px; font-size: 14px;">Export Events</h2>
               <p style="font-size: 11px; color: var(--color-text-secondary); margin-bottom: 16px;">Download your events data</p>
-              <button style="width: 100%; padding: 10px; background: white; border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Export to Excel
-              </button>
+              <button style="width: 100%; padding: 10px; background: white; border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg> Export to Excel</button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ============================================== -->
-      <!-- TAB: GUEST LISTS (Image 2) -->
-      <!-- ============================================== -->
+      <!-- TAB: GUEST LISTS -->
       <div id="guestListsView" class="view-section">
-        
-        <!-- Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <div>
-            <h1 class="page-title">Guest List</h1>
-            <p class="page-subtitle" style="margin:0;">Manage and invite guests for your events</p>
+        <div style="display: flex; flex-direction: column; height: 100%;">
+          
+          <div style="margin-bottom: 20px; flex-shrink: 0;">
+            <label style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;">Select Event</label>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+              <div style="display:flex; gap: 12px; overflow-x: auto;" class="no-scrollbar">
+                <div class="card" style="padding: 10px 16px; border-color: var(--color-primary); background: var(--color-primary-soft); min-width: 180px; cursor: pointer;"><div style="font-weight:600; color:var(--color-primary); font-size:13px;">Tech Expo 2025</div><div style="font-size:11px; color:var(--color-primary); margin-top:4px;">May 20, 2025</div></div>
+                <div class="card" style="padding: 10px 16px; min-width: 180px; cursor: pointer;"><div style="font-weight:600; font-size:13px; color:var(--color-text);">Corporate Summit</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:4px;">Jun 10, 2025</div></div>
+                <!-- Styled New Event Button as requested -->
+                <div style="display: flex; align-items: center; justify-content: center; padding: 10px 16px; cursor: pointer; color: var(--color-primary); font-size: 13px; font-weight: 600; border: 1.5px dashed var(--color-border); border-radius: var(--radius-md); min-width: 140px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Event
+                </div>
+              </div>
+              <div style="display: flex; gap: 12px;">
+                <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; border: 1px solid var(--color-border);">Import Guests</button>
+                <button class="btn-primary" style="padding: 8px 16px;">Add Guest</button>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <!-- Event Selection & Top Actions -->
-        <div style="margin-bottom: 20px;">
-          <label style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;">Select Event</label>
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-            <div style="display:flex; gap: 12px; overflow-x: auto;" class="no-scrollbar">
-              <!-- Active Event Card -->
-              <div class="card" style="padding: 10px 16px; border-color: var(--color-primary); background: var(--color-primary-soft); min-width: 180px; cursor: pointer;">
-                <div style="font-weight:600; color:var(--color-primary); font-size:13px; display:flex; align-items:center; gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg> Tech Expo 2025</div>
-                <div style="font-size:11px; color:var(--color-primary); margin-top:4px;">May 20, 2025</div>
-              </div>
-              <!-- Inactive Event Cards -->
-              <div class="card" style="padding: 10px 16px; min-width: 180px; cursor: pointer;">
-                <div style="font-weight:600; font-size:13px; color:var(--color-text); display:flex; align-items:center; gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg> Corporate Summit</div>
-                <div style="font-size:11px; color:var(--color-text-secondary); margin-top:4px;">Jun 10, 2025</div>
-              </div>
-              <div class="card" style="padding: 10px 16px; min-width: 180px; cursor: pointer;">
-                <div style="font-weight:600; font-size:13px; color:var(--color-text); display:flex; align-items:center; gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg> Product Launch Event</div>
-                <div style="font-size:11px; color:var(--color-text-secondary); margin-top:4px;">Jun 28, 2025</div>
-              </div>
-              <!-- Add New Event Action -->
-              <div style="display: flex; align-items: center; justify-content: center; padding: 10px 16px; cursor: pointer; color: var(--color-primary); font-size: 13px; font-weight: 600;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Event
-              </div>
-            </div>
-            
-            <!-- Right Actions -->
-            <div style="display: flex; gap: 12px;">
-              <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import Guests
-              </button>
-              <button class="btn-primary" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; height: auto;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Guest
-              </button>
-            </div>
+          <div class="kpi-5">
+            <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon purple" style="width:40px; height:40px; background:var(--color-primary-soft); color:var(--color-primary);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div style="flex:1;"><div class="kpi-value">120</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Total Guests</div></div></div>
+            <!-- More KPIs -->
           </div>
-        </div>
 
-        <!-- KPI 5-Card Row with Percentages -->
-        <div class="kpi-5" style="margin-bottom: 20px;">
-          <!-- Card 1 -->
-          <div class="card kpi-card" style="padding: 16px;">
-            <div class="kpi-icon purple" style="width:40px; height:40px; background:var(--color-primary-soft); color:var(--color-primary);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-            <div style="flex:1;">
-              <div class="kpi-value">120</div>
-              <div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Total Guests</div>
-            </div>
-          </div>
-          <!-- Card 2 -->
-          <div class="card kpi-card" style="padding: 16px;">
-            <div class="kpi-icon green" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-            <div style="flex:1;">
-              <div class="kpi-value">89</div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
-                <span style="font-size:11px; color:var(--color-text-secondary);">Invitations Sent</span>
-                <span style="font-size:11px; color:var(--color-success); font-weight:600;">74%</span>
-              </div>
-            </div>
-          </div>
-          <!-- Card 3 -->
-          <div class="card kpi-card" style="padding: 16px;">
-            <div class="kpi-icon blue" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-            <div style="flex:1;">
-              <div class="kpi-value">72</div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
-                <span style="font-size:11px; color:var(--color-text-secondary);">Accepted</span>
-                <span style="font-size:11px; color:var(--color-info); font-weight:600;">60%</span>
-              </div>
-            </div>
-          </div>
-          <!-- Card 4 -->
-          <div class="card kpi-card" style="padding: 16px;">
-            <div class="kpi-icon" style="width:40px; height:40px; background:#FEF6E2; color:#B4790C;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-            <div style="flex:1;">
-              <div class="kpi-value">15</div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
-                <span style="font-size:11px; color:var(--color-text-secondary);">Pending</span>
-                <span style="font-size:11px; color:#B4790C; font-weight:600;">13%</span>
-              </div>
-            </div>
-          </div>
-          <!-- Card 5 -->
-          <div class="card kpi-card" style="padding: 16px;">
-            <div class="kpi-icon pink" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
-            <div style="flex:1;">
-              <div class="kpi-value">18</div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
-                <span style="font-size:11px; color:var(--color-text-secondary);">No Response</span>
-                <span style="font-size:11px; color:var(--color-danger); font-weight:600;">15%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tab & Search Bar -->
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); margin-bottom: 16px; padding-bottom: 0;">
-          <div style="display: flex; gap: 24px; align-items: flex-end;">
-            <div style="padding-bottom: 12px; border-bottom: 2px solid var(--color-primary); color: var(--color-primary); font-weight: 600; font-size: 13px; cursor: pointer;">All Guests (120)</div>
-            <div style="padding-bottom: 12px; color: var(--color-text-secondary); font-weight: 500; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent;">Invited (89)</div>
-            <div style="padding-bottom: 12px; color: var(--color-text-secondary); font-weight: 500; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent;">Accepted (72)</div>
-            <div style="padding-bottom: 12px; color: var(--color-text-secondary); font-weight: 500; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent;">Pending (15)</div>
-            <div style="padding-bottom: 12px; color: var(--color-text-secondary); font-weight: 500; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent;">No Response (18)</div>
-          </div>
-          <div style="display: flex; gap: 12px; align-items: center; padding-bottom: 8px;">
-            <div style="position: relative; width: 280px;">
-              <svg style="position:absolute; left:12px; top:10px; width:14px; color:var(--color-text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
-              <input type="text" placeholder="Search guests by name, email or phone..." style="width:100%; padding:8px 10px 8px 34px; border:1px solid var(--color-border); border-radius:var(--radius-pill); font-size:12px; outline:none; background:var(--color-surface-soft);">
-            </div>
-            <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 14px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; border: 1px solid var(--color-border);">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filter
-            </button>
-          </div>
-        </div>
-
-        <!-- MAIN FULL-WIDTH TABLE -->
-        <div class="data-table-container">
-          <table class="data-table" style="width: 100%;">
-            <thead>
-              <tr>
-                <th>Guest Name</th>
-                <th>Contact</th>
-                <th>Invitation Status</th>
-                <th>Sent Via</th>
-                <th>Gate Pass</th>
-                <th>Sent On</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Row 1 -->
-              <tr>
-                <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar" style="background:#F3E8FF; color:#9333EA;">JD</div><div><div style="font-weight:600; color:var(--color-text);">John Doe</div><div style="font-size:11px; color:var(--color-text-secondary);">Acme Corporation</div></div></div></td>
-                <td><div style="font-weight:500; color:var(--color-text); font-size:12px;">john.doe@acme.com</div><div style="font-size:11px; color:var(--color-text-secondary);">+971 50 123 4567</div></td>
-                <td><span class="status-badge" style="background:var(--color-success-soft); color:var(--color-success); border:1px solid #bbf7d0;"><svg width="12" height="12" style="display:inline; margin-right:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Accepted</span></td>
-                <td><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22B35A" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></td>
-                <td><div style="display:flex; gap:8px; align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg><div><div style="font-weight:600; font-size:12px; color:var(--color-text);">GP-2025-00120</div><div style="font-size:11px; color:var(--color-text-secondary);">5 Pairs</div></div></div></td>
-                <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">May 20, 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">10:30 AM</div></td>
-                <td><div style="display:flex; gap:8px;"><button style="padding:6px 12px; background:var(--color-primary-soft); color:var(--color-primary); border-radius:6px; border:none; font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> View Pass</button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-              </tr>
-              <!-- Row 2 -->
-              <tr>
-                <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar" style="background:#EAF8EE; color:#22B35A;">SM</div><div><div style="font-weight:600; color:var(--color-text);">Sarah Miller</div><div style="font-size:11px; color:var(--color-text-secondary);">Blue Sky Marketing</div></div></div></td>
-                <td><div style="font-weight:500; color:var(--color-text); font-size:12px;">sarah.miller@bluesky.com</div><div style="font-size:11px; color:var(--color-text-secondary);">+971 55 987 6543</div></td>
-                <td><span class="status-badge" style="background:var(--color-info-soft); color:var(--color-info); border:1px solid #bfdbfe;"><svg width="12" height="12" style="display:inline; margin-right:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Invited</span></td>
-                <td><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-info)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></td>
-                <td><div style="display:flex; gap:8px; align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg><div><div style="font-weight:600; font-size:12px; color:var(--color-text);">GP-2025-00121</div><div style="font-size:11px; color:var(--color-text-secondary);">3 Pairs</div></div></div></td>
-                <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">May 20, 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">09:15 AM</div></td>
-                <td><div style="display:flex; gap:8px;"><button style="padding:6px 12px; background:var(--color-primary-soft); color:var(--color-primary); border-radius:6px; border:none; font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> View Pass</button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-              </tr>
-              <!-- Row 3 -->
-              <tr>
-                <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar" style="background:#FEF6E2; color:#B4790C;">RK</div><div><div style="font-weight:600; color:var(--color-text);">Robert King</div><div style="font-size:11px; color:var(--color-text-secondary);">Tech Solutions</div></div></div></td>
-                <td><div style="font-weight:500; color:var(--color-text); font-size:12px;">robert.king@tech.com</div><div style="font-size:11px; color:var(--color-text-secondary);">+971 52 456 7890</div></td>
-                <td><span class="status-badge" style="background:#FEF6E2; color:#B4790C; border:1px solid #fde68a;"><svg width="12" height="12" style="display:inline; margin-right:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Pending</span></td>
-                <td><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22B35A" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></td>
-                <td><div style="display:flex; gap:8px; align-items:center;"><span style="color:var(--color-text-muted); font-weight:600;">—</span><div><div style="font-size:11px; color:var(--color-text-secondary);">Not generated</div></div></div></td>
-                <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">May 19, 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">04:45 PM</div></td>
-                <td><div style="display:flex; gap:8px;"><button style="padding:6px 12px; background:var(--color-bg); color:var(--color-text); border-radius:6px; border:1px solid var(--color-border); font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Reminder</button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-              </tr>
-              <!-- Row 4 -->
-              <tr>
-                <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar" style="background:var(--color-danger-soft); color:var(--color-danger);">AH</div><div><div style="font-weight:600; color:var(--color-text);">Aisha Hassan</div><div style="font-size:11px; color:var(--color-text-secondary);">Innovate LLC</div></div></div></td>
-                <td><div style="font-weight:500; color:var(--color-text); font-size:12px;">aisha.hassan@innovate.ae</div><div style="font-size:11px; color:var(--color-text-secondary);">+971 50 654 3210</div></td>
-                <td><span class="status-badge" style="background:var(--color-danger-soft); color:var(--color-danger); border:1px solid #fecdd3;"><svg width="12" height="12" style="display:inline; margin-right:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> No Response</span></td>
-                <td><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-info)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></td>
-                <td><div style="display:flex; gap:8px; align-items:center;"><span style="color:var(--color-text-muted); font-weight:600;">—</span><div><div style="font-size:11px; color:var(--color-text-secondary);">Not generated</div></div></div></td>
-                <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">May 19, 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">02:30 PM</div></td>
-                <td><div style="display:flex; gap:8px;"><button style="padding:6px 12px; background:var(--color-bg); color:var(--color-text); border-radius:6px; border:1px solid var(--color-border); font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Reminder</button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-              </tr>
-              <!-- Row 5 -->
-              <tr>
-                <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar" style="background:#FEF6E2; color:#B4790C;">MT</div><div><div style="font-weight:600; color:var(--color-text);">Michael Tan</div><div style="font-size:11px; color:var(--color-text-secondary);">Global Ventures</div></div></div></td>
-                <td><div style="font-weight:500; color:var(--color-text); font-size:12px;">michael.tan@global.com</div><div style="font-size:11px; color:var(--color-text-secondary);">+971 56 789 1234</div></td>
-                <td><span class="status-badge" style="background:var(--color-success-soft); color:var(--color-success); border:1px solid #bbf7d0;"><svg width="12" height="12" style="display:inline; margin-right:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Accepted</span></td>
-                <td><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22B35A" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></td>
-                <td><div style="display:flex; gap:8px; align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg><div><div style="font-weight:600; font-size:12px; color:var(--color-text);">GP-2025-00122</div><div style="font-size:11px; color:var(--color-text-secondary);">2 Pairs</div></div></div></td>
-                <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">May 18, 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">11:20 AM</div></td>
-                <td><div style="display:flex; gap:8px;"><button style="padding:6px 12px; background:var(--color-primary-soft); color:var(--color-primary); border-radius:6px; border:none; font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> View Pass</button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- Bottom Action Bar & Pagination -->
-          <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-top: 1px solid var(--color-border); background: var(--color-bg);">
-            <div style="display: flex; gap: 12px;">
-              <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> Bulk Actions <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <button style="background: var(--color-bg); color: #16a34a; padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Send via WhatsApp
-              </button>
-              <button style="background: var(--color-bg); color: var(--color-info); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Send via Email
-              </button>
-            </div>
-            
-            <!-- Pagination Row -->
-            <div style="display: flex; gap: 8px;">
-              <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--color-bg); color: var(--color-text-muted);">&lt;</button>
-              <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: var(--color-primary-soft); color: var(--color-primary); font-weight: 600;">1</button>
-              <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--color-text); font-weight: 500;">2</button>
-              <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--color-text); font-weight: 500;">3</button>
-              <span style="display: flex; align-items: center; color: var(--color-text-muted);">...</span>
-              <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--color-text); font-weight: 500;">10</button>
-              <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--color-bg); color: var(--color-text);">&gt;</button>
-            </div>
+          <!-- Table Wrapper Flexed -->
+          <div class="data-table-container no-scrollbar">
+            <table class="data-table">
+              <thead><tr><th>Guest Name</th><th>Contact</th><th>Invitation Status</th><th>Sent Via</th><th>Gate Pass</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr><td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar" style="background:#F3E8FF; color:#9333EA;">JD</div><div><div style="font-weight:600; color:var(--color-text);">John Doe</div></div></div></td><td>john.doe@acme.com</td><td><span class="status-badge" style="background:var(--color-success-soft); color:var(--color-success);">Accepted</span></td><td>Via WhatsApp</td><td>GP-2025-00120</td><td><button class="btn-qr">View Pass</button></td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      <!-- ============================================== -->
-      <!-- TAB: GATE PASSES (Image 3) -->
-      <!-- ============================================== -->
+      <!-- TAB: GATE PASSES -->
       <div id="guestsView" class="view-section">
-        
-        <!-- Header & Search -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-          <div>
-            <h1 class="page-title">Gate Passes</h1>
-            <p class="page-subtitle" style="margin:0;">Manage and track all generated gate passes</p>
-          </div>
-          <div style="position: relative; width: 400px;">
-            <svg style="position:absolute; left:14px; top:12px; width:16px; color:var(--color-text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
-            <input type="text" placeholder="Search gate passes by ID, guest name, event..." style="width:100%; padding:10px 10px 10px 40px; border:1px solid var(--color-border); border-radius:var(--radius-pill); font-size:13px; outline:none; background:var(--color-bg);">
-          </div>
-        </div>
-
-        <!-- Filter & Action Bar -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; overflow-x: auto;" class="no-scrollbar">
-          <div style="display: flex; gap: 12px; align-items: center;">
-            <!-- Active Pill -->
-            <button style="background: var(--color-primary); color: white; padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: none;">
-              All Gate Passes <span style="background: white; color: var(--color-primary); border-radius: 50%; width: 26px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px;">320</span>
-            </button>
-            <!-- Inactive Pills -->
-            <button style="background: transparent; color: var(--color-text); padding: 6px 12px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: none;">
-              Active <span style="color: var(--color-success); font-weight: 600; font-size: 11px;">260</span>
-            </button>
-            <button style="background: transparent; color: var(--color-text); padding: 6px 12px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: none;">
-              Used / Checked In <span style="color: var(--color-info); font-weight: 600; font-size: 11px;">45</span>
-            </button>
-            <button style="background: transparent; color: var(--color-text); padding: 6px 12px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: none;">
-              Expired <span style="background: #FEF6E2; color: #B4790C; padding: 2px 8px; border-radius: 10px; font-weight: 600; font-size: 11px;">10</span>
-            </button>
-            <button style="background: transparent; color: var(--color-text); padding: 6px 12px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: none;">
-              Cancelled <span style="background: var(--color-danger-soft); color: var(--color-danger); padding: 2px 8px; border-radius: 10px; font-weight: 600; font-size: 11px;">5</span>
-            </button>
-          </div>
-          <div style="display: flex; gap: 12px;">
-            <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filter
-            </button>
-            <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Export
-            </button>
-            <button class="btn-primary" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; height: auto;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Generate Gate Pass
-            </button>
-          </div>
-        </div>
-
-        <!-- KPI 5-Card Row -->
-        <div class="kpi-5">
-          <div class="card kpi-card" style="padding: 16px; align-items: center;">
-            <div class="kpi-icon purple" style="width:40px; height:40px; background:var(--color-primary-soft);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-            <div><div class="kpi-value" style="font-size:22px;">320</div><div class="kpi-label" style="margin:2px 0;">Total Gate Passes</div><div style="font-size:11px; color:var(--color-text-secondary);">All Time</div></div>
-          </div>
-          <div class="card kpi-card" style="padding: 16px; align-items: center;">
-            <div class="kpi-icon green" style="width:40px; height:40px; background:var(--color-success-soft);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
-            <div><div class="kpi-value" style="font-size:22px;">260</div><div class="kpi-label" style="margin:2px 0;">Active</div><div style="font-size:11px; color:var(--color-success); font-weight:600;">81.25%</div></div>
-          </div>
-          <div class="card kpi-card" style="padding: 16px; align-items: center;">
-            <div class="kpi-icon blue" style="width:40px; height:40px; background:var(--color-info-soft);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-            <div><div class="kpi-value" style="font-size:22px;">45</div><div class="kpi-label" style="margin:2px 0;">Used / Checked In</div><div style="font-size:11px; color:var(--color-success); font-weight:600;">14.06%</div></div>
-          </div>
-          <div class="card kpi-card" style="padding: 16px; align-items: center;">
-            <div class="kpi-icon warning" style="width:40px; height:40px; background:#FEF6E2; color:#B4790C;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-            <div><div class="kpi-value" style="font-size:22px;">10</div><div class="kpi-label" style="margin:2px 0;">Expired</div><div style="font-size:11px; color:#B4790C; font-weight:600;">3.13%</div></div>
-          </div>
-          <div class="card kpi-card" style="padding: 16px; align-items: center;">
-            <div class="kpi-icon pink" style="width:40px; height:40px; background:var(--color-danger-soft);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
-            <div><div class="kpi-value" style="font-size:22px;">5</div><div class="kpi-label" style="margin:2px 0;">Cancelled</div><div style="font-size:11px; color:var(--color-danger); font-weight:600;">1.56%</div></div>
-          </div>
-        </div>
-
         <div class="layout-grid">
-          <!-- MAIN TABLE -->
-          <div class="data-table-container" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Gate Pass ID</th>
-                  <th>Event</th>
-                  <th>Guest</th>
-                  <th>Ticket / Type</th>
-                  <th>Status</th>
-                  <th>Generated On</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Row 1 (Active) -->
-                <tr>
-                  <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar" style="background:var(--color-primary-soft); color:var(--color-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div><div style="font-weight:600; color:var(--color-text);">GP-2025-00120</div><div style="font-size:11px; color:var(--color-text-secondary);">#120</div></div></div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">Tech Expo 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">May 20, 2025</div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">Ahmed Hassan</div><div style="font-size:11px; color:var(--color-text-secondary);">+966 50 123 4567</div></td>
-                  <td><div style="font-weight:600; font-size:12px; color:var(--color-text);">General</div><div style="font-size:11px; color:var(--color-text-secondary);">1 Guest</div></td>
-                  <td><div style="display:flex; align-items:center; gap:6px; color:var(--color-success); font-weight:600; font-size:12px;"><span style="width:6px; height:6px; background:var(--color-success); border-radius:50%;"></span> Active</div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">May 18, 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">10:30 AM</div></td>
-                  <td><div style="display:flex; gap:4px;"><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-                </tr>
-                <!-- Row 2 (Used) -->
-                <tr>
-                  <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar" style="background:var(--color-primary-soft); color:var(--color-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div><div style="font-weight:600; color:var(--color-text);">GP-2025-00119</div><div style="font-size:11px; color:var(--color-text-secondary);">#119</div></div></div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">Tech Expo 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">May 20, 2025</div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">Fatima Al Zahra</div><div style="font-size:11px; color:var(--color-text-secondary);">+966 55 987 6543</div></td>
-                  <td><div style="font-weight:600; font-size:12px; color:var(--color-text);">VIP</div><div style="font-size:11px; color:var(--color-text-secondary);">2 Guests</div></td>
-                  <td><div style="display:flex; align-items:center; gap:6px; color:var(--color-info); font-weight:600; font-size:12px;"><span style="width:6px; height:6px; background:var(--color-info); border-radius:50%;"></span> Used</div><div style="font-size:10px; color:var(--color-text-secondary); margin-left:12px;">Checked In</div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">May 18, 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">09:45 AM</div></td>
-                  <td><div style="display:flex; gap:4px;"><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-                </tr>
-                <!-- Row 3 (Expired) -->
-                <tr>
-                  <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar" style="background:var(--color-primary-soft); color:var(--color-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div><div style="font-weight:600; color:var(--color-text);">GP-2025-00117</div><div style="font-size:11px; color:var(--color-text-secondary);">#117</div></div></div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">Product Launch Event</div><div style="font-size:11px; color:var(--color-text-secondary);">Apr 28, 2025</div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">Noor Al Subaie</div><div style="font-size:11px; color:var(--color-text-secondary);">+966 53 234 5678</div></td>
-                  <td><div style="font-weight:600; font-size:12px; color:var(--color-text);">VIP</div><div style="font-size:11px; color:var(--color-text-secondary);">2 Guests</div></td>
-                  <td><div style="display:flex; align-items:center; gap:6px; color:#B4790C; font-weight:600; font-size:12px;"><span style="width:6px; height:6px; background:#B4790C; border-radius:50%;"></span> Expired</div><div style="font-size:10px; color:var(--color-text-secondary); margin-left:12px;">Expired on May 15</div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">May 10, 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">11:15 AM</div></td>
-                  <td><div style="display:flex; gap:4px;"><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-                </tr>
-                <!-- Row 4 (Cancelled) -->
-                <tr>
-                  <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar" style="background:var(--color-primary-soft); color:var(--color-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div><div style="font-weight:600; color:var(--color-text);">GP-2025-00116</div><div style="font-size:11px; color:var(--color-text-secondary);">#116</div></div></div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">Annual Gala Dinner</div><div style="font-size:11px; color:var(--color-text-secondary);">Apr 15, 2025</div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">Riyadh Ahmed</div><div style="font-size:11px; color:var(--color-text-secondary);">+966 54 345 6789</div></td>
-                  <td><div style="font-weight:600; font-size:12px; color:var(--color-text);">General</div><div style="font-size:11px; color:var(--color-text-secondary);">1 Guest</div></td>
-                  <td><div style="display:flex; align-items:center; gap:6px; color:var(--color-danger); font-weight:600; font-size:12px;"><span style="width:6px; height:6px; background:var(--color-danger); border-radius:50%;"></span> Cancelled</div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">Apr 12, 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">01:05 PM</div></td>
-                  <td><div style="display:flex; gap:4px;"><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-                </tr>
-              </tbody>
-            </table>
-
-            <!-- Pagination Row -->
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-top: 1px solid var(--color-border);">
-              <div style="font-size: 13px; color: var(--color-text-secondary);">Showing 1 to 10 of 320 gate passes</div>
-              <div style="display: flex; gap: 8px;">
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--color-text-muted);">&lt;</button>
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: var(--color-primary-soft); color: var(--color-primary); font-weight: 600;">1</button>
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--color-text); font-weight: 500;">2</button>
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--color-text); font-weight: 500;">3</button>
-                <span style="display: flex; align-items: center; color: var(--color-text-muted);">...</span>
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--color-text); font-weight: 500;">32</button>
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--color-bg); color: var(--color-text);">&gt;</button>
+          
+          <div class="left-col">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-shrink: 0;" class="no-scrollbar">
+              <div style="display: flex; gap: 12px; align-items: center;">
+                <button style="background: var(--color-primary); color: white; padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: none;">All Gate Passes <span style="background: white; color: var(--color-primary); border-radius: 50%; width: 26px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px;">320</span></button>
+                <button style="background: transparent; color: var(--color-text); padding: 6px 12px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: none;">Active <span style="color: var(--color-success); font-weight: 600; font-size: 11px;">260</span></button>
+                <button style="background: transparent; color: var(--color-text); padding: 6px 12px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: none;">Used <span style="color: var(--color-info); font-weight: 600; font-size: 11px;">45</span></button>
               </div>
+              <div style="display: flex; gap: 12px;">
+                <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filter</button>
+                <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">Export</button>
+              </div>
+            </div>
+
+            <div class="kpi-5">
+              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon purple" style="width:40px; height:40px; background:var(--color-primary-soft);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="kpi-value" style="font-size:22px;">320</div><div class="kpi-label" style="margin:2px 0;">Total Gate Passes</div></div></div>
+              <!-- Other KPIs truncated for space -->
+            </div>
+
+            <div class="data-table-container no-scrollbar">
+              <table class="data-table">
+                <thead><tr><th>Gate Pass ID</th><th>Event</th><th>Guest</th><th>Ticket / Type</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>
+                  <tr><td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar" style="background:var(--color-primary-soft); color:var(--color-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div><div style="font-weight:600; color:var(--color-text);">GP-2025-00120</div></div></div></td><td>Tech Expo 2025</td><td>Ahmed Hassan</td><td>General</td><td><div style="display:flex; align-items:center; gap:6px; color:var(--color-success); font-weight:600; font-size:12px;"><span style="width:6px; height:6px; background:var(--color-success); border-radius:50%;"></span> Active</div></td><td><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
-          <!-- RIGHT SIDEBAR -->
-          <div style="display: flex; flex-direction: column; gap: 24px;">
+          <div class="right-col no-scrollbar">
+            <!-- ISSUE PASS FORM -->
+            <div class="card panel" style="padding: 20px;">
+              <h2 class="section-title">Issue New Pass</h2>
+              <select id="eventSelect" class="input-field" style="padding: 10px; margin-bottom: 12px;"><option value="">-- Loading events... --</option></select>
+              <input type="text" id="guestNameInput" placeholder="Guest Name" class="input-field" style="padding: 10px; margin-bottom: 12px;">
+              <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                <input type="number" id="guestCapacityInput" value="1" class="input-field" style="padding: 10px; margin:0; flex:1;">
+                <select id="guestTierInput" class="input-field" style="padding: 10px; margin:0; flex:1;"><option value="General">General</option><option value="VIP">VIP</option></select>
+              </div>
+              <button id="addGuestBtn" class="btn-primary" style="padding: 10px;">Generate Pass</button>
+            </div>
             
-            <!-- Gate Pass Overview Chart Card -->
             <div class="card panel" style="padding: 20px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                <h2 class="section-title" style="margin: 0;">Gate Pass Overview</h2>
-              </div>
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <!-- CSS Mock Donut Chart -->
-                <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--color-success) 0% 81%, var(--color-info) 81% 95%, var(--color-warning) 95% 98%, var(--color-danger) 98% 100%); position: relative; display: flex; align-items: center; justify-content: center;">
-                  <div style="width: 70px; height: 70px; background: var(--color-bg); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <div style="font-size: 18px; font-weight: 700;">320</div>
-                    <div style="font-size: 9px; color: var(--color-text-secondary);">Total</div>
-                  </div>
-                </div>
-                <!-- Legend -->
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-success);"></span> Active</span> <span style="color: var(--color-text-secondary);">260 <span style="font-size:9px;">(81%)</span></span></div>
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-info);"></span> Used</span> <span style="color: var(--color-text-secondary);">45 <span style="font-size:9px;">(14%)</span></span></div>
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #B4790C;"></span> Expired</span> <span style="color: var(--color-text-secondary);">10 <span style="font-size:9px;">(3%)</span></span></div>
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-danger);"></span> Cancelled</span> <span style="color: var(--color-text-secondary);">5 <span style="font-size:9px;">(1%)</span></span></div>
-                </div>
+              <h2 class="section-title" style="margin: 0; font-size: 14px;">Actions Menu</h2>
+              <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;"><div style="font-size: 12px; font-weight: 600;">Bulk Generate</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)"><polyline points="9 18 15 12 9 6"/></svg></div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px;"><div style="font-size: 12px; font-weight: 600;">Download All</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)"><polyline points="9 18 15 12 9 6"/></svg></div>
               </div>
             </div>
-
-            <!-- Actions Menu Card -->
-            <div class="card panel" style="padding: 20px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h2 class="section-title" style="margin: 0; font-size: 14px;">Actions</h2>
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 16px;">
-                <!-- Action 1 -->
-                <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
-                  <div style="display: flex; gap: 12px; align-items: center;">
-                    <div style="width:32px; height:32px; background:var(--color-primary-soft); color:var(--color-primary); border-radius:8px; display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg></div>
-                    <div><div style="font-size:12px; font-weight:600; color:var(--color-text);">Generate Gate Pass</div><div style="font-size:10px; color:var(--color-text-secondary);">Create new gate pass for guests</div></div>
-                  </div>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)"><polyline points="9 18 15 12 9 6"/></svg>
-                </div>
-                <!-- Action 2 -->
-                <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
-                  <div style="display: flex; gap: 12px; align-items: center;">
-                    <div style="width:32px; height:32px; background:var(--color-success-soft); color:var(--color-success); border-radius:8px; display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-                    <div><div style="font-size:12px; font-weight:600; color:var(--color-text);">Send Invitations</div><div style="font-size:10px; color:var(--color-text-secondary);">Send gate pass via WhatsApp or Email</div></div>
-                  </div>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)"><polyline points="9 18 15 12 9 6"/></svg>
-                </div>
-                <!-- Action 3 -->
-                <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
-                  <div style="display: flex; gap: 12px; align-items: center;">
-                    <div style="width:32px; height:32px; background:var(--color-info-soft); color:var(--color-info); border-radius:8px; display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
-                    <div><div style="font-size:12px; font-weight:600; color:var(--color-text);">Bulk Generate</div><div style="font-size:10px; color:var(--color-text-secondary);">Generate multiple gate passes at once</div></div>
-                  </div>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)"><polyline points="9 18 15 12 9 6"/></svg>
-                </div>
-                <!-- Action 4 -->
-                <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-                  <div style="display: flex; gap: 12px; align-items: center;">
-                    <div style="width:32px; height:32px; background:var(--color-surface-soft); color:var(--color-text-secondary); border-radius:8px; display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
-                    <div><div style="font-size:12px; font-weight:600; color:var(--color-text);">Download All</div><div style="font-size:10px; color:var(--color-text-secondary);">Download all gate passes as PDF</div></div>
-                  </div>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)"><polyline points="9 18 15 12 9 6"/></svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- Quick Filters Card -->
-            <div class="card panel" style="padding: 20px;">
-              <h2 class="section-title" style="margin: 0 0 16px; font-size: 14px;">Quick Filters</h2>
-              
-              <label style="font-size: 11px; font-weight: 600; color: var(--color-text-secondary); margin-bottom: 4px; display: block;">Select Event</label>
-              <select class="input-field" style="padding: 8px 12px; margin-bottom: 16px; width: 100%; border-radius: 6px;">
-                <option>All Events</option>
-              </select>
-
-              <label style="font-size: 11px; font-weight: 600; color: var(--color-text-secondary); margin-bottom: 4px; display: block;">Date Range</label>
-              <div style="display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--color-border); border-radius: 6px; padding: 8px 12px; margin-bottom: 20px;">
-                <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--color-text);">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> May 14, 2025
-                </div>
-                <span style="color: var(--color-border);">-</span>
-                <div style="font-size: 12px; color: var(--color-text);">May 20, 2025</div>
-              </div>
-
-              <div style="display: flex; gap: 12px;">
-                <button class="btn-primary" style="flex: 1; padding: 10px; font-size: 12px; border-radius: 6px;">Apply Filters</button>
-                <button style="flex: 1; padding: 10px; font-size: 12px; border-radius: 6px; background: white; border: 1px solid var(--color-border); color: var(--color-text); font-weight: 600;">Reset</button>
-              </div>
-            </div>
-
           </div>
         </div>
       </div>
 
-      <!-- ============================================== -->
-      <!-- TAB: QR CODES (Image 4) -->
-      <!-- ============================================== -->
+      <!-- TAB: QR CODES -->
       <div id="qrCodesView" class="view-section">
-        
-        <!-- Header & Search -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-          <div>
-            <h1 class="page-title">QR Codes</h1>
-            <p class="page-subtitle" style="margin:0;">Create, customize and manage QR codes</p>
-          </div>
-          <div style="position: relative; width: 400px;">
-            <svg style="position:absolute; left:14px; top:12px; width:16px; color:var(--color-text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
-            <input type="text" placeholder="Search QR codes by name, event, type..." style="width:100%; padding:10px 10px 10px 40px; border:1px solid var(--color-border); border-radius:var(--radius-pill); font-size:13px; outline:none; background:var(--color-bg);">
-          </div>
-        </div>
-
-        <!-- KPI 5-Card Row -->
-        <div class="kpi-5" style="margin-bottom: 24px;">
-          <div class="card kpi-card" style="padding: 16px; align-items: center;">
-            <div class="kpi-icon purple" style="width:40px; height:40px; background:var(--color-primary-soft);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
-            <div><div class="kpi-label" style="margin:2px 0;">Total QR Codes</div><div class="kpi-value" style="font-size:22px;">512</div><div style="font-size:11px; color:var(--color-text-secondary);">All Time</div></div>
-          </div>
-          <div class="card kpi-card" style="padding: 16px; align-items: center;">
-            <div class="kpi-icon green" style="width:40px; height:40px; background:var(--color-success-soft); color:var(--color-success);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
-            <div><div class="kpi-label" style="margin:2px 0;">Active</div><div class="kpi-value" style="font-size:22px;">398</div><div style="font-size:11px; color:var(--color-success); font-weight:600;">77.73%</div></div>
-          </div>
-          <div class="card kpi-card" style="padding: 16px; align-items: center;">
-            <div class="kpi-icon blue" style="width:40px; height:40px; background:var(--color-info-soft); color:var(--color-info);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
-            <div><div class="kpi-label" style="margin:2px 0;">Scanned</div><div class="kpi-value" style="font-size:22px;">278</div><div style="font-size:11px; color:var(--color-text-secondary); font-weight:500;">Today: 45</div></div>
-          </div>
-          <div class="card kpi-card" style="padding: 16px; align-items: center;">
-            <div class="kpi-icon warning" style="width:40px; height:40px; background:#FEF6E2; color:#B4790C;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
-            <div><div class="kpi-label" style="margin:2px 0;">Expired</div><div class="kpi-value" style="font-size:22px;">32</div><div style="font-size:11px; color:#B4790C; font-weight:600;">6.25%</div></div>
-          </div>
-          <div class="card kpi-card" style="padding: 16px; align-items: center;">
-            <div class="kpi-icon pink" style="width:40px; height:40px; background:var(--color-danger-soft); color:var(--color-danger);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
-            <div><div class="kpi-label" style="margin:2px 0;">Disabled</div><div class="kpi-value" style="font-size:22px;">82</div><div style="font-size:11px; color:var(--color-danger); font-weight:600;">16.02%</div></div>
-          </div>
-        </div>
-
-        <!-- Tab & Action Bar -->
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); margin-bottom: 24px; padding-bottom: 0;">
-          <div style="display: flex; gap: 24px; align-items: flex-end;">
-            <div style="padding-bottom: 12px; border-bottom: 2px solid var(--color-primary); color: var(--color-primary); font-weight: 600; font-size: 13px; cursor: pointer;">All QR Codes</div>
-            <div style="padding-bottom: 12px; color: var(--color-text-secondary); font-weight: 500; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent;">Active</div>
-            <div style="padding-bottom: 12px; color: var(--color-text-secondary); font-weight: 500; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent;">Scanned</div>
-            <div style="padding-bottom: 12px; color: var(--color-text-secondary); font-weight: 500; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent;">Expired</div>
-            <div style="padding-bottom: 12px; color: var(--color-text-secondary); font-weight: 500; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent;">Disabled</div>
-          </div>
-          <div style="display: flex; gap: 12px; align-items: center; padding-bottom: 8px;">
-            <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filter
-            </button>
-            <button class="btn-primary" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; height: auto;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Create QR Code
-            </button>
-          </div>
-        </div>
-
         <div class="layout-grid">
-          <!-- MAIN TABLE -->
-          <div class="data-table-container" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>QR Code Name</th>
-                  <th>Event</th>
-                  <th>Type</th>
-                  <th>Linked To</th>
-                  <th>Status</th>
-                  <th>Scans</th>
-                  <th>Created On</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Row 1 -->
-                <tr>
-                  <td><div style="display:flex; gap:12px; align-items:center;"><div style="width:36px; height:36px; background:#f8fafc; border:1px solid var(--color-border); border-radius:4px; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div><div style="font-weight:600; color:var(--color-text);">Tech Expo 2025 - Entry</div><div style="font-size:11px; color:var(--color-text-secondary);">QR-TE-ENTRY-001</div></div></div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">Tech Expo 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">May 20, 2025</div></td>
-                  <td><span style="font-size:11px; font-weight:600; color:#9333EA; background:#F3E8FF; padding:4px 10px; border-radius:4px;">Entry</span></td>
-                  <td><div style="font-weight:600; font-size:12px; color:var(--color-text);">Gate Entry</div><div style="font-size:11px; color:var(--color-text-secondary);">All Guests</div></td>
-                  <td><span style="color:var(--color-success); font-weight:600; font-size:12px;">Active</span></td>
-                  <td><div style="font-weight:600; font-size:12px; color:var(--color-text);">128</div><div style="font-size:11px; color:var(--color-text-secondary);">Today: 18</div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">May 10, 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">10:30 AM</div></td>
-                  <td><div style="display:flex; gap:4px;"><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-                </tr>
-                <!-- Row 2 -->
-                <tr>
-                  <td><div style="display:flex; gap:12px; align-items:center;"><div style="width:36px; height:36px; background:#f8fafc; border:1px solid var(--color-border); border-radius:4px; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div><div style="font-weight:600; color:var(--color-text);">VIP Access - Tech Expo</div><div style="font-size:11px; color:var(--color-text-secondary);">QR-TE-VIP-001</div></div></div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">Tech Expo 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">May 20, 2025</div></td>
-                  <td><span style="font-size:11px; font-weight:600; color:#B4790C; background:#FEF6E2; padding:4px 10px; border-radius:4px;">VIP</span></td>
-                  <td><div style="font-weight:600; font-size:12px; color:var(--color-text);">VIP Guests</div><div style="font-size:11px; color:var(--color-text-secondary);">25 Guests</div></td>
-                  <td><span style="color:var(--color-success); font-weight:600; font-size:12px;">Active</span></td>
-                  <td><div style="font-weight:600; font-size:12px; color:var(--color-text);">45</div><div style="font-size:11px; color:var(--color-text-secondary);">Today: 7</div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">May 10, 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">10:30 AM</div></td>
-                  <td><div style="display:flex; gap:4px;"><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-                </tr>
-                <!-- Row 3 -->
-                <tr>
-                  <td><div style="display:flex; gap:12px; align-items:center;"><div style="width:36px; height:36px; background:#f8fafc; border:1px solid var(--color-border); border-radius:4px; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div><div style="font-weight:600; color:var(--color-text);">Parking Pass</div><div style="font-size:11px; color:var(--color-text-secondary);">QR-TE-PARK-001</div></div></div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">Tech Expo 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">May 20, 2025</div></td>
-                  <td><span style="font-size:11px; font-weight:600; color:var(--color-info); background:var(--color-info-soft); padding:4px 10px; border-radius:4px;">Parking</span></td>
-                  <td><div style="font-weight:600; font-size:12px; color:var(--color-text);">Parking Area</div><div style="font-size:11px; color:var(--color-text-secondary);">All Guests</div></td>
-                  <td><span style="color:var(--color-success); font-weight:600; font-size:12px;">Active</span></td>
-                  <td><div style="font-weight:600; font-size:12px; color:var(--color-text);">67</div><div style="font-size:11px; color:var(--color-text-secondary);">Today: 11</div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">May 10, 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">10:30 AM</div></td>
-                  <td><div style="display:flex; gap:4px;"><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-                </tr>
-                <!-- Row 4 -->
-                <tr>
-                  <td><div style="display:flex; gap:12px; align-items:center;"><div style="width:36px; height:36px; background:#f8fafc; border:1px solid var(--color-border); border-radius:4px; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div><div style="font-weight:600; color:var(--color-text);">Staff Access</div><div style="font-size:11px; color:var(--color-text-secondary);">QR-TE-STAFF-001</div></div></div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">Tech Expo 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">May 20, 2025</div></td>
-                  <td><span style="font-size:11px; font-weight:600; color:var(--color-success); background:var(--color-success-soft); padding:4px 10px; border-radius:4px;">Staff</span></td>
-                  <td><div style="font-weight:600; font-size:12px; color:var(--color-text);">Staff Only</div><div style="font-size:11px; color:var(--color-text-secondary);">15 Users</div></td>
-                  <td><span style="color:var(--color-danger); font-weight:600; font-size:12px;">Disabled</span></td>
-                  <td><div style="font-weight:600; font-size:12px; color:var(--color-text);">12</div><div style="font-size:11px; color:var(--color-text-secondary);">Today: 0</div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">May 08, 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">09:15 AM</div></td>
-                  <td><div style="display:flex; gap:4px;"><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-                </tr>
-                <!-- Row 5 -->
-                <tr>
-                  <td><div style="display:flex; gap:12px; align-items:center;"><div style="width:36px; height:36px; background:#f8fafc; border:1px solid var(--color-border); border-radius:4px; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div><div style="font-weight:600; color:var(--color-text);">Workshop A</div><div style="font-size:11px; color:var(--color-text-secondary);">QR-TE-WKA-001</div></div></div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">Tech Expo 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">May 20, 2025</div></td>
-                  <td><span style="font-size:11px; font-weight:600; color:#d946ef; background:#faf5ff; padding:4px 10px; border-radius:4px;">Workshop</span></td>
-                  <td><div style="font-weight:600; font-size:12px; color:var(--color-text);">Workshop A</div><div style="font-size:11px; color:var(--color-text-secondary);">40 Guests</div></td>
-                  <td><span style="color:var(--color-success); font-weight:600; font-size:12px;">Active</span></td>
-                  <td><div style="font-weight:600; font-size:12px; color:var(--color-text);">23</div><div style="font-size:11px; color:var(--color-text-secondary);">Today: 5</div></td>
-                  <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">May 09, 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">03:45 PM</div></td>
-                  <td><div style="display:flex; gap:4px;"><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
-                </tr>
-              </tbody>
-            </table>
+          
+          <div class="left-col">
+            <div class="kpi-5" style="margin-bottom: 24px;">
+              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon purple" style="width:40px; height:40px; background:var(--color-primary-soft);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div><div class="kpi-label" style="margin:2px 0;">Total QR Codes</div><div class="kpi-value" style="font-size:22px;">512</div></div></div>
+              <!-- KPIs -->
+            </div>
 
-            <!-- Pagination Row -->
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-top: 1px solid var(--color-border);">
-              <div style="font-size: 13px; color: var(--color-text-secondary);">Showing 1 to 7 of 512 QR codes</div>
-              <div style="display: flex; gap: 8px;">
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--color-text-muted);">&lt;</button>
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: var(--color-primary-soft); color: var(--color-primary); font-weight: 600;">1</button>
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--color-text); font-weight: 500;">2</button>
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--color-text); font-weight: 500;">3</button>
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--color-text); font-weight: 500;">4</button>
-                <span style="display: flex; align-items: center; color: var(--color-text-muted);">...</span>
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--color-text); font-weight: 500;">73</button>
-                <button style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--color-bg); color: var(--color-text);">&gt;</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); margin-bottom: 16px; flex-shrink: 0;" class="no-scrollbar">
+              <div style="display: flex; gap: 24px; align-items: flex-end;">
+                <div style="padding-bottom: 12px; border-bottom: 2px solid var(--color-primary); color: var(--color-primary); font-weight: 600; font-size: 13px; cursor: pointer;">All QR Codes</div>
+                <div style="padding-bottom: 12px; color: var(--color-text-secondary); font-weight: 500; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent;">Active</div>
+                <div style="padding-bottom: 12px; color: var(--color-text-secondary); font-weight: 500; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent;">Scanned</div>
               </div>
+              <div style="display: flex; gap: 12px; align-items: center; padding-bottom: 8px;">
+                <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; border: 1px solid var(--color-border);">Filter</button>
+              </div>
+            </div>
+
+            <div class="data-table-container no-scrollbar">
+              <table class="data-table">
+                <thead><tr><th>QR Code Name</th><th>Event</th><th>Type</th><th>Linked To</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>
+                  <tr><td><div style="display:flex; gap:12px; align-items:center;"><div style="width:36px; height:36px; background:#f8fafc; border:1px solid var(--color-border); border-radius:4px; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div><div style="font-weight:600; color:var(--color-text);">Tech Expo 2025 - Entry</div></div></div></td><td>Tech Expo 2025</td><td><span style="font-size:11px; font-weight:600; color:#9333EA; background:#F3E8FF; padding:4px 10px; border-radius:4px;">Entry</span></td><td>Gate Entry</td><td><span style="color:var(--color-success); font-weight:600; font-size:12px;">Active</span></td><td><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
-          <!-- RIGHT SIDEBAR -->
-          <div style="display: flex; flex-direction: column; gap: 24px;">
-            
-            <!-- QR Code Overview Chart Card -->
-            <div class="card panel" style="padding: 20px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                <h2 class="section-title" style="margin: 0;">QR Code Overview</h2>
-              </div>
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <!-- Donut Chart -->
-                <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--color-success) 0% 77.7%, var(--color-info) 77.7% 85%, var(--color-warning) 85% 91%, var(--color-danger) 91% 100%); position: relative; display: flex; align-items: center; justify-content: center;">
-                  <div style="width: 70px; height: 70px; background: var(--color-bg); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <div style="font-size: 18px; font-weight: 700;">512</div>
-                    <div style="font-size: 9px; color: var(--color-text-secondary);">Total</div>
-                  </div>
-                </div>
-                <!-- Legend -->
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 125px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-success);"></span> Active</span> <span style="color: var(--color-text-secondary);">398 <span style="font-size:9px;">(77%)</span></span></div>
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 125px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-info);"></span> Scanned</span> <span style="color: var(--color-text-secondary);">278 <span style="font-size:9px;">(54%)</span></span></div>
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 125px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #B4790C;"></span> Expired</span> <span style="color: var(--color-text-secondary);">32 <span style="font-size:9px;">(6%)</span></span></div>
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 125px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-danger);"></span> Disabled</span> <span style="color: var(--color-text-secondary);">82 <span style="font-size:9px;">(16%)</span></span></div>
-                </div>
-              </div>
+          <div class="right-col no-scrollbar">
+             <div class="card panel" style="padding: 20px;">
+              <h2 class="section-title" style="margin: 0 0 16px; font-size: 14px;">Quick Actions</h2>
+              <button class="btn-primary" style="margin-bottom: 12px;">Create QR Code</button>
+              <button style="width: 100%; padding: 10px; background: white; border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; margin-bottom: 12px;">Bulk Generate</button>
+              <button style="width: 100%; padding: 10px; background: white; border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600;">Download All</button>
             </div>
-
-            <!-- Quick Actions Menu Card -->
-            <div class="card panel" style="padding: 20px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h2 class="section-title" style="margin: 0; font-size: 14px;">Quick Actions</h2>
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 16px;">
-                <!-- Action 1 -->
-                <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
-                  <div style="display: flex; gap: 12px; align-items: center;">
-                    <div style="width:32px; height:32px; background:var(--color-primary-soft); color:var(--color-primary); border-radius:8px; display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
-                    <div><div style="font-size:12px; font-weight:600; color:var(--color-text);">Create QR Code</div><div style="font-size:10px; color:var(--color-text-secondary);">Generate a new QR code</div></div>
-                  </div>
-                </div>
-                <!-- Action 2 -->
-                <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
-                  <div style="display: flex; gap: 12px; align-items: center;">
-                    <div style="width:32px; height:32px; background:var(--color-success-soft); color:var(--color-success); border-radius:8px; display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
-                    <div><div style="font-size:12px; font-weight:600; color:var(--color-text);">Bulk Generate</div><div style="font-size:10px; color:var(--color-text-secondary);">Create multiple QR codes</div></div>
-                  </div>
-                </div>
-                <!-- Action 3 -->
-                <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
-                  <div style="display: flex; gap: 12px; align-items: center;">
-                    <div style="width:32px; height:32px; background:#dcfce7; color:#16a34a; border-radius:8px; display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg></div>
-                    <div><div style="font-size:12px; font-weight:600; color:var(--color-text);">Upload from Excel</div><div style="font-size:10px; color:var(--color-text-secondary);">Import data and generate QR codes</div></div>
-                  </div>
-                </div>
-                <!-- Action 4 -->
-                <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-                  <div style="display: flex; gap: 12px; align-items: center;">
-                    <div style="width:32px; height:32px; background:var(--color-surface-soft); color:var(--color-text-secondary); border-radius:8px; display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
-                    <div><div style="font-size:12px; font-weight:600; color:var(--color-text);">Download All</div><div style="font-size:10px; color:var(--color-text-secondary);">Download all QR codes as ZIP/PDF</div></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Filter QR Codes Card -->
-            <div class="card panel" style="padding: 20px;">
-              <h2 class="section-title" style="margin: 0 0 16px; font-size: 14px;">Filter QR Codes</h2>
-              
-              <label style="font-size: 11px; font-weight: 600; color: var(--color-text-secondary); margin-bottom: 4px; display: block;">Select Event</label>
-              <select class="input-field" style="padding: 8px 12px; margin-bottom: 16px; width: 100%; border-radius: 6px;">
-                <option>All Events</option>
-              </select>
-
-              <label style="font-size: 11px; font-weight: 600; color: var(--color-text-secondary); margin-bottom: 4px; display: block;">Status</label>
-              <select class="input-field" style="padding: 8px 12px; margin-bottom: 16px; width: 100%; border-radius: 6px;">
-                <option>All Status</option>
-              </select>
-
-              <label style="font-size: 11px; font-weight: 600; color: var(--color-text-secondary); margin-bottom: 4px; display: block;">Date Range</label>
-              <div style="display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--color-border); border-radius: 6px; padding: 8px 12px; margin-bottom: 20px;">
-                <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--color-text);">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> May 14, 2025
-                </div>
-                <span style="color: var(--color-border);">-</span>
-                <div style="font-size: 12px; color: var(--color-text);">May 20, 2025</div>
-              </div>
-
-              <div style="display: flex; gap: 12px;">
-                <button class="btn-primary" style="flex: 1; padding: 10px; font-size: 12px; border-radius: 6px;">Apply Filters</button>
-                <button style="flex: 1; padding: 10px; font-size: 12px; border-radius: 6px; background: white; border: 1px solid var(--color-border); color: var(--color-text); font-weight: 600;">Reset</button>
-              </div>
-            </div>
-
           </div>
         </div>
       </div>
@@ -1344,6 +660,31 @@
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     document.getElementById(viewId).classList.add('active');
     navElement.classList.add('active');
+
+    const titleEl = document.getElementById('dynamicPageTitle');
+    const subEl = document.getElementById('dynamicPageSubtitle');
+    const searchBox = document.getElementById('dynamicSearchContainer');
+    const searchInput = document.getElementById('dynamicSearchInput');
+
+    if(viewId === 'dashboardView') {
+       titleEl.innerText = 'Welcome back! 👋'; subEl.innerText = 'Here\'s what\'s happening with your events today.';
+       searchBox.style.display = 'none';
+    } else if (viewId === 'eventsView') {
+       titleEl.innerText = 'Events'; subEl.innerText = 'Manage all your events';
+       searchBox.style.display = 'block'; searchInput.placeholder = 'Search events by name, venue...';
+    } else if (viewId === 'guestListsView') {
+       titleEl.innerText = 'Guest List'; subEl.innerText = 'Manage and invite guests for your events';
+       searchBox.style.display = 'block'; searchInput.placeholder = 'Search guests by name, email or phone...';
+    } else if (viewId === 'guestsView') {
+       titleEl.innerText = 'Gate Passes'; subEl.innerText = 'Manage and track all generated gate passes';
+       searchBox.style.display = 'block'; searchInput.placeholder = 'Search gate passes by ID, guest name, event...';
+    } else if (viewId === 'qrCodesView') {
+       titleEl.innerText = 'QR Codes'; subEl.innerText = 'Create, customize and manage QR codes';
+       searchBox.style.display = 'block'; searchInput.placeholder = 'Search QR codes by name, event, type...';
+    } else {
+       titleEl.innerText = navElement.innerText.trim(); subEl.innerText = 'System Module';
+       searchBox.style.display = 'none';
+    }
   }
 
   // --- INIT & AUTH ---
