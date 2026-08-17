@@ -137,6 +137,30 @@
   .view-section { display: none; }
   .view-section.active { display: block; animation: fadeIn 0.3s ease-in-out; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+/* ============ DASHBOARD LOCK & LAYOUTS ============ */
+  /* Lock app shell to exact viewport height */
+  body { overflow: hidden; }
+  .app-shell { height: 100vh; overflow: hidden; }
+  .content-shell { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  
+  /* Make main content scrollable but hide scrollbars */
+  .main-content { flex: 1; overflow-y: auto; padding: var(--space-6) 28px var(--space-7); }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* New View Layout Grids (from your images) */
+  .layout-grid { display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
+  .kpi-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; }
+  
+  /* Standardized Data Table from images */
+  .data-table-container { background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table th { text-align: left; padding: 16px 20px; color: var(--color-text-muted); font-weight: 700; text-transform: uppercase; font-size: 11px; border-bottom: 1px solid var(--color-border); }
+  .data-table td { padding: 16px 20px; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
+  .data-table tr:hover { background: var(--color-surface-soft); }
+  .data-table tr:last-child td { border-bottom: none; }
+  
+  .table-avatar { width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--color-primary-soft); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
 </style>
 </head>
 <body>
@@ -244,7 +268,7 @@
       </div>
     </header>
 
-    <main class="main-content">
+    <main class="main-content no-scrollbar">
       
       <!-- ONBOARDING FORM (Hidden if profile is complete) -->
       <div id="tenantProfileCard" class="card panel hidden" style="border-color: var(--color-warning); background: #FEF6E2; margin-bottom: 24px;">
@@ -343,115 +367,284 @@
       </div>
 
       <!-- ============================================== -->
-      <!-- VIEW 2: MANAGE EVENTS (Matched to Theme) -->
+      <!-- TAB: EVENTS (Image 1) -->
       <!-- ============================================== -->
       <div id="eventsView" class="view-section">
-        <h1 class="page-title">Event Management</h1>
-        <p class="page-subtitle">Create new events and set parameters.</p>
-        <div class="card panel" style="max-width: 600px;">
-          <h2 class="section-title">Create New Event</h2>
-          
-          <label style="font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block;">Event Name</label>
-          <input type="text" id="eventNameInput" placeholder="e.g., Tech Summit 2026" class="input-field">
-          
-          <div style="display: flex; gap: 16px;">
-            <div style="flex: 1;">
-              <label style="font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block;">Capacity</label>
-              <input type="number" id="eventCapacityInput" value="100" class="input-field">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <div>
+            <h1 class="page-title">Events</h1>
+            <p class="page-subtitle" style="margin:0;">Manage all your events</p>
+          </div>
+          <div style="position: relative; width: 300px;">
+            <svg style="position:absolute; left:12px; top:12px; width:16px; color:var(--color-text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input type="text" placeholder="Search events by name, venue..." style="width:100%; padding:10px 10px 10px 36px; border:1px solid var(--color-border); border-radius:var(--radius-pill); font-size:13px; outline:none;">
+          </div>
+        </div>
+
+        <!-- KPI 5-Card Row -->
+        <div class="kpi-5">
+          <div class="card kpi-card" style="padding: 16px;">
+            <div class="kpi-icon purple" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div>
+            <div><div class="kpi-label">Total Events</div><div class="kpi-value">12</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">All Time</div></div>
+          </div>
+          <div class="card kpi-card" style="padding: 16px;">
+            <div class="kpi-icon green" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div>
+            <div><div class="kpi-label">Upcoming</div><div class="kpi-value">4</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Next 7 Days</div></div>
+          </div>
+          <div class="card kpi-card" style="padding: 16px;">
+            <div class="kpi-icon blue" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></div>
+            <div><div class="kpi-label">Ongoing</div><div class="kpi-value">2</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">In Progress</div></div>
+          </div>
+          <div class="card kpi-card" style="padding: 16px;">
+            <div class="kpi-icon purple" style="width:40px; height:40px; background:var(--color-primary-soft);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+            <div><div class="kpi-label">Completed</div><div class="kpi-value">4</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">All Completed</div></div>
+          </div>
+          <div class="card kpi-card" style="padding: 16px;">
+            <div class="kpi-icon pink" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
+            <div><div class="kpi-label">Cancelled</div><div class="kpi-value">2</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">All Cancelled</div></div>
+          </div>
+        </div>
+
+        <div class="layout-grid">
+          <!-- MAIN TABLE -->
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Event Name</th>
+                  <th>Date & Time</th>
+                  <th>Venue</th>
+                  <th>Guests</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar">TE</div><div><div style="font-weight:600; color:var(--color-text);">Tech Expo 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">Exhibition</div></div></div></td>
+                  <td><div style="font-weight:500;">May 20, 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">10:00 AM - 06:00 PM</div></td>
+                  <td><div style="font-weight:500;">Dubai Convention Center</div><div style="font-size:11px; color:var(--color-text-secondary);">Dubai, UAE</div></td>
+                  <td><div style="font-weight:600;">120</div><div style="font-size:11px; color:var(--color-text-secondary);">Guests</div></td>
+                  <td><span class="status-badge upcoming">Upcoming</span></td>
+                  <td><button style="padding:6px; background:var(--color-surface-soft); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-muted);">...</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- RIGHT SIDEBAR (Contains your functional 'Create Event' Logic!) -->
+          <div>
+            <div class="card panel" style="margin-bottom: 24px; padding: 20px;">
+              <h2 class="section-title">Create New Event</h2>
+              <p style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 16px;">Deploy a new event gate instantly.</p>
+              <label style="font-size: 12px; font-weight: 600; margin-bottom: 4px; display: block;">Event Name</label>
+              <input type="text" id="eventNameInput" placeholder="e.g., Tech Summit 2026" class="input-field" style="padding: 10px; margin-bottom: 12px;">
+              <div style="display: flex; gap: 12px;">
+                <div style="flex: 1;">
+                  <label style="font-size: 12px; font-weight: 600; margin-bottom: 4px; display: block;">Capacity</label>
+                  <input type="number" id="eventCapacityInput" value="100" class="input-field" style="padding: 10px; margin-bottom: 12px;">
+                </div>
+                <div style="flex: 1;">
+                  <label style="font-size: 12px; font-weight: 600; margin-bottom: 4px; display: block;">Expiry</label>
+                  <input type="datetime-local" id="eventExpireInput" class="input-field" style="padding: 10px; margin-bottom: 12px;">
+                </div>
+              </div>
+              <button id="addEventBtn" class="btn-primary" style="padding: 10px;">Create Event</button>
             </div>
-            <div style="flex: 1;">
-              <label style="font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block;">Expiry</label>
-              <input type="datetime-local" id="eventExpireInput" class="input-field">
+            
+            <div class="card panel">
+              <h2 class="section-title">Event Overview</h2>
+              <div style="height: 140px; display:flex; align-items:center; justify-content:center; border: 8px solid var(--color-success); border-top-color: var(--color-warning); border-right-color: var(--color-info); border-radius: 50%; width: 140px; margin: 0 auto;">
+                <div style="text-align:center;"><div style="font-size:20px; font-weight:700;">12</div><div style="font-size:10px; color:var(--color-text-secondary);">Total Events</div></div>
+              </div>
             </div>
           </div>
-          <button id="addEventBtn" class="btn-primary">Create Event (Requires Admin Approval)</button>
         </div>
       </div>
 
       <!-- ============================================== -->
-      <!-- VIEW 3: GUEST PASSES (Matched to Theme) -->
+      <!-- TAB: GUEST LISTS (Image 2) -->
+      <!-- ============================================== -->
+      <div id="guestListsView" class="view-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <div>
+            <h1 class="page-title">Guest List</h1>
+            <p class="page-subtitle" style="margin:0;">Manage and invite guests for your events</p>
+          </div>
+        </div>
+
+        <!-- Full Width Layout -->
+        <div style="display:flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 24px;" class="no-scrollbar">
+          <div class="card" style="padding: 12px 16px; border-color: var(--color-primary); background: var(--color-primary-soft); min-width: 200px;">
+            <div style="font-weight:600; color:var(--color-primary); font-size:13px; display:flex; align-items:center; gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="17" rx="2"/></svg> Tech Expo 2025</div>
+            <div style="font-size:11px; color:var(--color-primary); margin-top:4px;">May 20, 2025</div>
+          </div>
+          <div class="card" style="padding: 12px 16px; min-width: 200px; color:var(--color-text-muted);">
+            <div style="font-weight:600; font-size:13px; display:flex; align-items:center; gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="17" rx="2"/></svg> Corporate Summit</div>
+          </div>
+        </div>
+
+        <div class="kpi-5">
+           <div class="card kpi-card" style="padding: 16px;">
+            <div class="kpi-icon purple" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            <div><div class="kpi-value">120</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Total Guests</div></div>
+          </div>
+          <!-- Other KPIs... -->
+        </div>
+
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead>
+              <tr><th>Guest Name</th><th>Contact</th><th>Invitation Status</th><th>Sent Via</th><th>Gate Pass</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar" style="background:#F3E8FF; color:#9333EA;">JD</div><div><div style="font-weight:600; color:var(--color-text);">John Doe</div><div style="font-size:11px; color:var(--color-text-secondary);">Acme Corporation</div></div></div></td>
+                <td><div style="font-weight:500; font-size:12px;">john.doe@acme.com</div><div style="font-size:11px; color:var(--color-text-secondary);">+971 50 123 4567</div></td>
+                <td><span class="status-badge upcoming" style="background:var(--color-success-soft); color:var(--color-success); border:1px solid #bbf7d0;"><svg width="12" height="12" style="display:inline; margin-right:4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Accepted</span></td>
+                <td><div style="width:28px; height:28px; border-radius:50%; background:#dcfce7; color:#16a34a; display:flex; align-items:center; justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div></td>
+                <td><div style="font-weight:600; font-size:12px;">GP-2025-00120</div><div style="font-size:11px; color:var(--color-text-secondary);">5 Pairs</div></td>
+                <td><button class="btn-qr" style="background:var(--color-primary-soft); color:var(--color-primary);">View Pass</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- TAB: GATE PASSES (Image 3) - Wires your Add Guest Logic! -->
       <!-- ============================================== -->
       <div id="guestsView" class="view-section">
-        <h1 class="page-title">Issue Gate Passes</h1>
-        <p class="page-subtitle">Generate scannable QR tickets for your approved events.</p>
-        
-        <div class="card panel">
-          <label style="font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block;">Select Active Event</label>
-          <select id="eventSelect" class="input-field" style="max-width: 400px; margin-bottom: 32px;">
-            <option value="">-- Loading events... --</option>
-          </select>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <div>
+            <h1 class="page-title">Gate Passes</h1>
+            <p class="page-subtitle" style="margin:0;">Manage and track all generated gate passes</p>
+          </div>
+        </div>
 
-          <h2 class="section-title">Generate New Pass</h2>
-          <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
-            <div style="flex: 2; min-width: 200px;">
-              <label style="font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block;">Guest Name</label>
-              <input type="text" id="guestNameInput" placeholder="Full Name" class="input-field" style="margin:0">
-            </div>
-            <div style="flex: 1; min-width: 100px;">
-              <label style="font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block;">Allowed Scans</label>
-              <input type="number" id="guestCapacityInput" value="1" class="input-field" style="margin:0">
-            </div>
-            <div style="flex: 1; min-width: 120px;">
-              <label style="font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block;">Tier</label>
-              <select id="guestTierInput" class="input-field" style="margin:0">
-                <option value="General">General</option>
-                <option value="VIP">VIP</option>
-                <option value="Speaker">Speaker</option>
+        <div class="kpi-5">
+           <div class="card kpi-card" style="padding: 16px;">
+            <div class="kpi-icon purple" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4Z"/></svg></div>
+            <div><div class="kpi-value">320</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Total Gate Passes</div></div>
+          </div>
+          <div class="card kpi-card" style="padding: 16px;">
+            <div class="kpi-icon green" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+            <div><div class="kpi-value">260</div><div style="font-size:11px; color:var(--color-success); font-weight:600; margin-top:2px;">Active (81.2%)</div></div>
+          </div>
+          <!-- Other KPIs... -->
+        </div>
+
+        <div class="layout-grid">
+          <!-- MAIN TABLE -->
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead>
+                <tr><th>Gate Pass ID</th><th>Event</th><th>Guest</th><th>Ticket Type</th><th>Status</th><th>Actions</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar" style="background:#F3E8FF; color:#9333EA;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div><div style="font-weight:600; color:var(--color-text);">GP-00120</div><div style="font-size:11px; color:var(--color-text-secondary);">#120</div></div></div></td>
+                  <td><div style="font-weight:500;">Tech Expo 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">May 20, 2025</div></td>
+                  <td><div style="font-weight:500;">Ahmed Hassan</div><div style="font-size:11px; color:var(--color-text-secondary);">+966 50 123 4567</div></td>
+                  <td><div style="font-weight:600;">General</div><div style="font-size:11px; color:var(--color-text-secondary);">1 Guest</div></td>
+                  <td><span style="color:var(--color-success); font-weight:600; font-size:12px;">• Active</span></td>
+                  <td><button style="padding:6px; background:var(--color-surface-soft); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-muted);">...</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- RIGHT SIDEBAR (Contains your functional 'Generate Pass' Logic!) -->
+          <div>
+            <div class="card panel" style="margin-bottom: 24px; padding: 20px;">
+              <h2 class="section-title">Issue New Pass</h2>
+              <p style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 16px;">Generate a secure QR code for a guest.</p>
+              
+              <label style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; margin-bottom: 4px; display: block;">Select Event</label>
+              <select id="eventSelect" class="input-field" style="padding: 10px; margin-bottom: 12px;">
+                <option value="">-- Loading events... --</option>
               </select>
+
+              <label style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; margin-bottom: 4px; display: block;">Guest Name</label>
+              <input type="text" id="guestNameInput" placeholder="Full Name" class="input-field" style="padding: 10px; margin-bottom: 12px;">
+              
+              <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                <div style="flex: 1;">
+                  <label style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; margin-bottom: 4px; display: block;">Scans</label>
+                  <input type="number" id="guestCapacityInput" value="1" class="input-field" style="padding: 10px; margin:0;">
+                </div>
+                <div style="flex: 1;">
+                  <label style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; margin-bottom: 4px; display: block;">Tier</label>
+                  <select id="guestTierInput" class="input-field" style="padding: 10px; margin:0;">
+                    <option value="General">General</option>
+                    <option value="VIP">VIP</option>
+                    <option value="Speaker">Speaker</option>
+                  </select>
+                </div>
+              </div>
+              <button id="addGuestBtn" class="btn-primary" style="padding: 10px;">Generate Gate Pass</button>
             </div>
-            <button id="addGuestBtn" class="btn-primary" style="flex: 1; margin:0; height: 46px; min-width: 120px;">Generate Pass</button>
+            
+            <div class="card panel" style="padding: 20px;">
+               <h2 class="section-title">Gate Pass Overview</h2>
+               <div style="height: 140px; display:flex; align-items:center; justify-content:center; border: 8px solid var(--color-success); border-right-color: var(--color-info); border-bottom-color: var(--color-danger); border-radius: 50%; width: 140px; margin: 0 auto;">
+                <div style="text-align:center;"><div style="font-size:20px; font-weight:700;">320</div><div style="font-size:10px; color:var(--color-text-secondary);">Total</div></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-<!-- ============================================== -->
-      <!-- NEW PLACEHOLDER VIEWS -->
+
       <!-- ============================================== -->
-      
-      <div id="guestListsView" class="view-section">
-        <h1 class="page-title">Guest Lists</h1>
-        <p class="page-subtitle">View and manage all registered attendees.</p>
-        <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Module coming soon.</p></div>
-      </div>
-
+      <!-- TAB: QR CODES (Image 4) -->
+      <!-- ============================================== -->
       <div id="qrCodesView" class="view-section">
-        <h1 class="page-title">QR Codes</h1>
-        <p class="page-subtitle">Bulk generate and export QR codes.</p>
-        <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Module coming soon.</p></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <div>
+            <h1 class="page-title">QR Codes</h1>
+            <p class="page-subtitle" style="margin:0;">Create, customize and manage QR codes</p>
+          </div>
+        </div>
+
+        <div class="kpi-5">
+           <div class="card kpi-card" style="padding: 16px;">
+            <div class="kpi-icon purple" style="width:40px; height:40px; background:var(--color-primary-soft);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
+            <div><div class="kpi-label">Total QR Codes</div><div class="kpi-value">512</div></div>
+          </div>
+          <!-- Other KPIs... -->
+        </div>
+
+        <div class="layout-grid">
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead>
+                <tr><th>QR Code Name</th><th>Event</th><th>Type</th><th>Linked To</th><th>Status</th><th>Actions</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div style="display:flex; gap:12px; align-items:center;"><div style="width:36px; height:36px; background:#f1f5f9; border-radius:4px; border:1px solid #e2e8f0; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h.01M17 7h.01M7 17h.01M17 17h.01"/></svg></div><div><div style="font-weight:600; color:var(--color-text);">Tech Expo 2025 - Entry</div><div style="font-size:11px; color:var(--color-text-secondary);">QR-TE-ENTRY-001</div></div></div></td>
+                  <td><div style="font-weight:500; font-size:12px;">Tech Expo 2025</div><div style="font-size:11px; color:var(--color-text-secondary);">May 20, 2025</div></td>
+                  <td><span style="font-size:11px; font-weight:600; color:#9333EA; background:#F3E8FF; padding:4px 8px; border-radius:4px;">Entry</span></td>
+                  <td><div style="font-weight:500; font-size:12px;">Gate Entry</div><div style="font-size:11px; color:var(--color-text-secondary);">All Guests</div></td>
+                  <td><span style="color:var(--color-success); font-weight:600; font-size:12px;">Active</span></td>
+                  <td><button style="padding:6px; background:var(--color-surface-soft); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-muted);">...</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="card panel" style="padding: 20px;">
+             <h2 class="section-title">QR Code Overview</h2>
+             <div style="height: 140px; display:flex; align-items:center; justify-content:center; border: 8px solid var(--color-success); border-right-color: var(--color-info); border-radius: 50%; width: 140px; margin: 0 auto;">
+              <div style="text-align:center;"><div style="font-size:20px; font-weight:700;">512</div><div style="font-size:10px; color:var(--color-text-secondary);">Total</div></div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div id="createManageView" class="view-section">
-        <h1 class="page-title">Create & Manage</h1>
-        <p class="page-subtitle">Configure advanced settings and team access.</p>
-        <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Module coming soon.</p></div>
-      </div>
-
-      <div id="importDataView" class="view-section">
+<div id="importDataView" class="view-section">
         <h1 class="page-title">Import Data</h1>
         <p class="page-subtitle">Upload CSV lists of guests and bulk configure events.</p>
-        <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Module coming soon.</p></div>
-      </div>
-
-      <div id="designTemplatesView" class="view-section">
-        <h1 class="page-title">Design Templates</h1>
-        <p class="page-subtitle">Customize the look and feel of your gate passes.</p>
-        <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Module coming soon.</p></div>
-      </div>
-
-      <div id="savedDesignsView" class="view-section">
-        <h1 class="page-title">My Saved Designs</h1>
-        <p class="page-subtitle">Access your previously saved ticket templates.</p>
-        <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Module coming soon.</p></div>
-      </div>
-
-      <div id="analyticsView" class="view-section">
-        <h1 class="page-title">Analytics</h1>
-        <p class="page-subtitle">Deep dive into check-in rates and gate performance.</p>
-        <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Module coming soon.</p></div>
-      </div>
-
-      <div id="reportsView" class="view-section">
-        <h1 class="page-title">Reports</h1>
-        <p class="page-subtitle">Export PDF and CSV reports of event data.</p>
         <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Module coming soon.</p></div>
       </div>
 
