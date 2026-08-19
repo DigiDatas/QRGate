@@ -163,6 +163,7 @@
   .layout-grid { display: grid; grid-template-columns: 1fr 320px; gap: 24px; height: 100%; min-height: 0; overflow: hidden; }
   .left-col { display: flex; flex-direction: column; height: 100%; overflow: hidden; min-height: 0; gap: 20px; }
   .right-col { display: flex; flex-direction: column; height: 100%; overflow-y: auto; padding-right: 4px; padding-bottom: 20px; gap: 20px; }
+.kpi-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; flex-shrink: 0; }
   
   /* Flex growing table containers */
   .data-table-container { flex: 1; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow-y: auto; min-height: 0; }
@@ -1153,6 +1154,38 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
 
   function closeModal() { document.getElementById('qrModal').classList.add('hidden'); }
   async function handleSignOut() { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; }
+// --- DEDICATED CREATE EVENT FORM LOGIC ---
+  document.addEventListener('DOMContentLoaded', () => {
+      const submitDedicatedBtn = document.getElementById('submitDedicatedEventBtn');
+      if(submitDedicatedBtn) {
+          submitDedicatedBtn.addEventListener('click', async () => {
+            const name = document.getElementById('dedicatedEventName').value.trim();
+            const capacity = parseInt(document.getElementById('dedicatedEventCapacity').value) || 100;
+            
+            if (!name) return alert('Enter event name.');
+            
+            // Save to Supabase
+            await supabaseClient.from('events').insert([{ 
+                event_name: name, 
+                total_capacity: capacity, 
+                tenant_id: currentTenantId, 
+                is_approved: false 
+            }]);
+            
+            // Clear input
+            document.getElementById('dedicatedEventName').value = '';
+            
+            // Refresh Data
+            fetchEvents();
+            
+            alert('Event Created! Awaiting Admin Approval.');
+            
+            // Safely route back to the "Create & Manage" Overview tab
+            const manageBtn = document.querySelector(`button[onclick*="createManageView"]`);
+            if(manageBtn) switchView('createManageView', manageBtn);
+          });
+      }
+  });
 
   
 
