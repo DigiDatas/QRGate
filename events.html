@@ -1154,39 +1154,92 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
 
   function closeModal() { document.getElementById('qrModal').classList.add('hidden'); }
   async function handleSignOut() { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; }
-// --- DEDICATED CREATE EVENT FORM LOGIC ---
-  document.addEventListener('DOMContentLoaded', () => {
-      const submitDedicatedBtn = document.getElementById('submitDedicatedEventBtn');
-      if(submitDedicatedBtn) {
-          submitDedicatedBtn.addEventListener('click', async () => {
-            const name = document.getElementById('dedicatedEventName').value.trim();
-            const capacity = parseInt(document.getElementById('dedicatedEventCapacity').value) || 100;
-            
-            if (!name) return alert('Enter event name.');
-            
-            // Save to Supabase
-            await supabaseClient.from('events').insert([{ 
-                event_name: name, 
-                total_capacity: capacity, 
-                tenant_id: currentTenantId, 
-                is_approved: false 
-            }]);
-            
-            // Clear input
-            document.getElementById('dedicatedEventName').value = '';
-            
-            // Refresh Data
-            fetchEvents();
-            
-            alert('Event Created! Awaiting Admin Approval.');
-            
-            // Safely route back to the "Create & Manage" Overview tab
-            const manageBtn = document.querySelector(`button[onclick*="createManageView"]`);
-            if(manageBtn) switchView('createManageView', manageBtn);
-          });
-      }
-  });
 
+
+// ==========================================
+  // --- UI INTERACTIVITY & ROUTING FIXES ---
+  // ==========================================
+  document.addEventListener('DOMContentLoaded', () => {
+
+      // 1. MAKE FILTER BUTTONS CLICKABLE (Date Ranges & Statuses)
+      // This groups filter pills together and lets you click to toggle the purple "active" state
+      const filterParents = new Set();
+      document.querySelectorAll('.btn-filter-nav').forEach(btn => {
+          filterParents.add(btn.parentElement);
+      });
+
+      filterParents.forEach(parent => {
+          const buttons = parent.querySelectorAll('.btn-filter-nav');
+          buttons.forEach(btn => {
+              btn.addEventListener('click', (e) => {
+                  e.preventDefault();
+                  // Remove active from all siblings, add to the clicked one
+                  buttons.forEach(b => b.classList.remove('active'));
+                  btn.classList.add('active');
+              });
+          });
+      });
+
+      // 2. WIRE UP ALL "VIEW ALL" LINKS
+      document.querySelectorAll('a').forEach(link => {
+          if(link.innerText.includes('View All')) {
+              link.addEventListener('click', (e) => {
+                  e.preventDefault();
+                  // If the text above it says "Events", go to Events Tab. Otherwise, Gate Passes Tab.
+                  const parentText = link.parentElement.innerText;
+                  if(parentText.includes('Events')) {
+                      document.querySelector('button[onclick*="eventsView"]').click();
+                  } else {
+                      document.querySelector('button[onclick*="guestsView"]').click();
+                  }
+              });
+          }
+      });
+
+      // 3. WIRE UP ALL DEAD ACTION BUTTONS ACROSS ALL TABS
+      document.querySelectorAll('button, div.card, div[style*="dashed"]').forEach(el => {
+          const text = el.innerText.trim();
+          
+          // Skip if the button already has functionality built in (like submit buttons)
+          if (el.onclick || el.id) return;
+
+          // Route to Reports Tab
+          if (text === 'Reports' && el.classList.contains('action-card')) {
+              el.style.cursor = 'pointer';
+              el.onclick = () => document.querySelector('button[onclick*="reportsView"]').click();
+          }
+          
+          // Route to Dedicated "Create Event" Tab
+          if (text.includes('Create Event') || text.includes('New Event')) {
+              el.style.cursor = 'pointer';
+              el.onclick = () => document.querySelector('button[onclick*="createEventView"]').click();
+          }
+          
+          // Route to Dedicated "Add Guest" Tab
+          if (text === 'Add Guest' || text.includes('Issue Pass') || text.includes('Generate Gate Pass')) {
+              el.style.cursor = 'pointer';
+              el.onclick = () => document.querySelector('button[onclick*="addGuestView"]').click();
+          }
+          
+          // Route to Dedicated "Import Data" Tab
+          if (text === 'Import Data' || text.includes('Import Guests') || text.includes('Bulk Generate') || text.includes('Upload from Excel')) {
+              el.style.cursor = 'pointer';
+              el.onclick = () => document.querySelector('button[onclick*="importDataView"]').click();
+          }
+          
+          // Route Bottom Card Buttons
+          if (text === 'View All Gate Passes') {
+              el.style.cursor = 'pointer';
+              el.onclick = () => document.querySelector('button[onclick*="guestsView"]').click();
+          }
+
+          // Give tactile feedback for Export and Filter buttons (Backend logic coming later)
+          if (text === 'Filter' || text.includes('Export to Excel') || text === 'Export') {
+              el.style.cursor = 'pointer';
+              el.onclick = () => alert(text + ' options will be connected to the backend soon!');
+          }
+      });
+  });
   
 
   init();
