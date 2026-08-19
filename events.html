@@ -1074,6 +1074,8 @@
   const SUPABASE_ANON_KEY = 'sb_publishable_89l1fu6nVSWxGVOH-g1dQw_i99aUXt9';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   let currentTenantId = null;
+let allFetchedEvents = []; 
+  let currentEditEventId = null;
 
   // --- TAB NAVIGATION & HEADER ROUTING ---
   function switchView(viewId, navElement) {
@@ -1155,39 +1157,59 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
       return;
     }
 
+    allFetchedEvents = data; // Save data so we can load it into the Edit form later
+
     data.forEach(e => {
-      // 1. Populate Dropdowns First
+      const isHidden = e.is_hidden === true;
+      
+      // 1. Populate Dropdowns (Disable if hidden!)
       if(select) {
         const opt = document.createElement('option');
         opt.value = e.id;
         opt.dataset.approved = e.is_approved;
-        opt.textContent = `${e.event_name} (${e.is_approved ? 'Approved' : 'Pending'})`;
+        opt.textContent = `${e.event_name} (${e.is_approved ? 'Approved' : 'Pending'})${isHidden ? ' - HIDDEN' : ''}`;
+        if (isHidden) opt.disabled = true; // Prevents adding guests!
         select.appendChild(opt);
       }
       if(agSelect) {
         const optAG = document.createElement('option');
         optAG.value = e.id;
-        optAG.textContent = e.event_name;
+        optAG.textContent = e.event_name + (isHidden ? ' (Hidden - Cannot add guests)' : '');
+        if (isHidden) optAG.disabled = true; // Prevents adding guests!
         agSelect.appendChild(optAG);
       }
 
-      // 2. Safe Date Parsing MUST happen before we generate tables
       const dateObj = e.created_at ? new Date(e.created_at) : new Date();
       const month = dateObj.toLocaleString('default', { month: 'short' }).toUpperCase();
       const day = dateObj.getDate();
       const badgeClass = e.is_approved ? 'upcoming' : 'pending';
       const badgeText = e.is_approved ? 'Approved' : 'Pending';
 
+      // Visual styling if hidden
+      const rowStyle = isHidden ? 'opacity: 0.5; background: var(--color-surface-soft);' : '';
+      const eyeIcon = isHidden 
+        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+
+      // Action Buttons HTML
+      const actionBtns = `
+        <div style="display:flex; gap:6px;">
+          <button onclick="toggleHideEvent('${e.id}', ${isHidden})" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer;" title="${isHidden ? 'Show Event' : 'Hide Event'}">${eyeIcon}</button>
+          <button onclick="editEvent('${e.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-info); cursor:pointer;" title="Edit Event"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+          <button onclick="deleteEvent('${e.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-danger-soft); color:var(--color-danger); cursor:pointer;" title="Delete Event"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+        </div>
+      `;
+
       // 3. Populate "Create & Manage -> Your Events" Table
       if (cmEventsTable) {
         cmEventsTable.innerHTML += `
-          <tr style="height: 48px; border-bottom: 1px solid var(--color-border);">
+          <tr style="height: 48px; border-bottom: 1px solid var(--color-border); ${rowStyle}">
             <td style="padding: 10px 20px; font-weight: 600; color: var(--color-text);">${e.event_name}</td>
             <td style="padding: 10px 20px; font-size: 12px; color: var(--color-text-secondary);">${month} ${day}, ${dateObj.getFullYear()}</td>
             <td style="padding: 10px 20px; font-size: 12px; color: var(--color-text-secondary);">${e.venue || 'Location TBD'}</td>
             <td style="padding: 10px 20px; font-weight: 600; text-align:center;">${e.total_capacity}</td>
             <td style="padding: 10px 20px;"><span class="status-badge ${badgeClass}" style="padding: 4px 8px; font-size: 10px;">${badgeText}</span></td>
-            <td style="padding: 10px 20px;"><button onclick="alert('Action Menu: Edit, Duplicate, Delete')" style="padding:4px 8px; background:transparent; border:none; color:var(--color-text-secondary); cursor:pointer;">...</button></td>
+            <td style="padding: 10px 20px;">${actionBtns}</td>
           </tr>
         `;
       }
@@ -1195,7 +1217,7 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
       // 4. Populate "Dashboard -> Recent Events" List
       if(list) {
         list.innerHTML += `
-          <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 4px; border-bottom: 1px solid var(--color-border);">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 4px; border-bottom: 1px solid var(--color-border); ${rowStyle}">
             <div style="display: flex; gap: 12px; align-items: center;">
               <div class="date-tile" style="width: 36px;"><div class="mon" style="font-size: 8px; padding: 1px 0;">${month}</div><div class="day" style="font-size: 13px; padding: 1px 0;">${day}</div></div>
               <div>
@@ -1211,13 +1233,13 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
       // 5. Populate "Events Tab" Main Table
       if (eventsTable) {
         eventsTable.innerHTML += `
-          <tr>
+          <tr style="${rowStyle}">
             <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar">${e.event_name.substring(0,2).toUpperCase()}</div><div><div style="font-weight:600; color:var(--color-text);">${e.event_name}</div><div style="font-size:11px; color:var(--color-text-secondary);">Event</div></div></div></td>
             <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> ${month} ${day}, ${dateObj.getFullYear()}</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">Created On</div></td>
             <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${e.venue || 'Location TBD'}</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">Venue</div></td>
             <td><div style="font-weight:600; font-size:13px; text-align:center;">${e.total_capacity}</div><div style="font-size:11px; color:var(--color-text-secondary); text-align:center;">Capacity</div></td>
             <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
-            <td><div style="display:flex; gap:4px;"><button onclick="alert('Action Menu: Edit, Duplicate, Delete (Backend coming soon)')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer; transition:0.2s;" onmouseover="this.style.background='var(--color-surface-soft)'" onmouseout="this.style.background='var(--color-bg)'">...</button></div></td>
+            <td>${actionBtns}</td>
           </tr>
         `;
       }
@@ -1443,6 +1465,47 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
     }
   }
 
+// --- EVENT ACTION FUNCTIONS ---
+  async function deleteEvent(id) {
+      if(confirm("Are you sure you want to completely delete this event? This action cannot be undone.")) {
+          await supabaseClient.from('events').delete().eq('id', id);
+          fetchEvents(); // Refresh UI
+      }
+  }
+
+  async function toggleHideEvent(id, currentState) {
+      await supabaseClient.from('events').update({ is_hidden: !currentState }).eq('id', id);
+      fetchEvents(); // Refresh UI
+  }
+
+  function editEvent(id) {
+      currentEditEventId = id;
+      const ev = allFetchedEvents.find(e => e.id === id);
+      if(!ev) return;
+
+      // Fill the form fields with existing data
+      document.getElementById('dedicatedEventName').value = ev.event_name || '';
+      document.getElementById('dedicatedEventType').value = ev.event_type || 'Event';
+      document.getElementById('dedicatedEventDate').value = ev.event_date || '';
+      document.getElementById('dedicatedStartTime').value = ev.start_time || '';
+      document.getElementById('dedicatedEndTime').value = ev.end_time || '';
+      document.getElementById('dedicatedVenue').value = ev.venue || '';
+      document.getElementById('dedicatedEventCapacity').value = ev.total_capacity || 100;
+      
+      document.querySelector('#createEventView input[placeholder="Enter full address"]').value = ev.address || '';
+      document.querySelector('#createEventView input[placeholder="Enter organizer / company name"]').value = ev.organizer_name || '';
+      document.querySelector('#createEventView input[type="email"]').value = ev.contact_email || '';
+      document.querySelector('#createEventView input[placeholder="Enter phone number"]').value = ev.contact_phone || '';
+      document.querySelector('#createEventView textarea').value = ev.description || '';
+
+      // Update Form Titles to reflect Editing Mode
+      document.querySelector('#createEventView .page-title').innerText = 'Edit Event';
+      document.getElementById('submitDedicatedEventBtn').innerHTML = 'Update Event (Pending Admin Approval) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+
+      // Navigate to the form
+      document.querySelector('button[onclick*="createEventView"]').click();
+  }
+
   function closeModal() { document.getElementById('qrModal').classList.add('hidden'); }
   async function handleSignOut() { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; }
 
@@ -1468,20 +1531,35 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
             const contactPhone = document.querySelector('#createEventView input[placeholder="Enter phone number"]').value.trim();
             const description = document.querySelector('#createEventView textarea').value.trim();
             
-            if (!name || !date || !venue) return alert('Please fill in Event Name, Date, and Venue.');
+           if (!name || !date || !venue) return alert('Please fill in Event Name, Date, and Venue.');
             
-            await supabaseClient.from('events').insert([{ 
+            const eventPayload = { 
                 event_name: name, event_date: date, venue: venue, event_type: type, start_time: startTime, end_time: endTime, total_capacity: capacity, 
                 address: address, organizer_name: organizer, contact_email: contactEmail, contact_phone: contactPhone, description: description,
                 tenant_id: currentTenantId, is_approved: false 
-            }]);
+            };
+
+            if (currentEditEventId) {
+                // UPDATE EXISTING
+                await supabaseClient.from('events').update(eventPayload).eq('id', currentEditEventId);
+                alert('Event Updated! Awaiting Admin Approval.');
+                currentEditEventId = null; // Reset ID state
+                
+                // Reset UI labels
+                document.querySelector('#createEventView .page-title').innerText = 'Create New Event';
+                document.getElementById('submitDedicatedEventBtn').innerHTML = 'Create Event (Pending Admin Approval) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+            } else {
+                // CREATE NEW
+                await supabaseClient.from('events').insert([eventPayload]);
+                alert('Event Created! Awaiting Admin Approval.');
+            }
             
             // Clear required fields
             document.getElementById('dedicatedEventName').value = '';
             document.getElementById('dedicatedVenue').value = '';
+            document.getElementById('dedicatedEventDate').value = '';
             
             fetchEvents();
-            alert('Event Created! Awaiting Admin Approval.');
             document.querySelector('button[onclick*="createManageView"]').click();
           });
       }
