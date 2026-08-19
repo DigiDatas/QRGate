@@ -1155,6 +1155,39 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
   function closeModal() { document.getElementById('qrModal').classList.add('hidden'); }
   async function handleSignOut() { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; }
 
+// --- DEDICATED CREATE EVENT FORM LOGIC ---
+  document.addEventListener('DOMContentLoaded', () => {
+      const submitDedicatedBtn = document.getElementById('submitDedicatedEventBtn');
+      if(submitDedicatedBtn) {
+          submitDedicatedBtn.addEventListener('click', async () => {
+            const name = document.getElementById('dedicatedEventName').value.trim();
+            const capacity = parseInt(document.getElementById('dedicatedEventCapacity').value) || 100;
+            
+            if (!name) return alert('Enter event name.');
+            
+            // Save to Supabase
+            await supabaseClient.from('events').insert([{ 
+                event_name: name, 
+                total_capacity: capacity, 
+                tenant_id: currentTenantId, 
+                is_approved: false 
+            }]);
+            
+            // Clear input
+            document.getElementById('dedicatedEventName').value = '';
+            
+            // Refresh Data
+            fetchEvents();
+            
+            alert('Event Created! Awaiting Admin Approval.');
+            
+            // Safely route back to the "Create & Manage" Overview tab
+            const manageBtn = document.querySelector(`button[onclick*="createManageView"]`);
+            if(manageBtn) switchView('createManageView', manageBtn);
+          });
+      }
+  });
+
 
 // ==========================================
   // --- UI INTERACTIVITY & ROUTING FIXES ---
