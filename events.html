@@ -131,6 +131,13 @@
   /* Input styles for forms */
   .input-field { width: 100%; padding: 12px 14px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 14px; margin-bottom: 16px; background: var(--color-bg); font-family: inherit; }
   .input-field:focus { outline: 2px solid var(--color-primary); border-color: transparent;}
+  textarea.input-field { resize: vertical; min-height: 42px; } /* Fix 4 & 10: Expandable corners */
+  
+  /* Fix 5 & 9: Hide Up/Down Arrows on Number Inputs */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type="number"] { -moz-appearance: textfield; }
+
   .btn-primary { background: var(--color-primary); color: #fff; border: none; padding: 12px 20px; border-radius: var(--radius-sm); font-weight: 600; font-size: 14px; cursor: pointer; transition: 150ms;}
   .btn-primary:hover { background: var(--color-primary-dark); }
   
@@ -723,11 +730,7 @@
       <!-- ============================================== -->
       <div id="createManageView" class="view-section">
         <div style="display: flex; flex-direction: column; height: 100%; gap: 24px; min-height: 0;">
-          <div style="flex-shrink: 0;">
-            <h1 class="page-title">Create & Manage</h1>
-            <p class="page-subtitle" style="margin:0;">Create events, add guests or import data in bulk</p>
-          </div>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; flex-shrink: 0;">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; flex-shrink: 0;">
             <div class="card panel" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
               <div style="display: flex; gap: 16px; margin-bottom: 24px;">
                 <div style="width: 56px; height: 56px; border-radius: 12px; background: var(--color-primary-soft); color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="12" y1="13" x2="12" y2="19"/><line x1="9" y1="16" x2="15" y2="16"/></svg></div>
@@ -768,8 +771,7 @@
       <!-- TAB: DEDICATED CREATE EVENT -->
       <!-- ============================================== -->
       <div id="createEventView" class="view-section">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-shrink: 0;">
-          <div><h1 class="page-title">Create New Event</h1><p class="page-subtitle" style="margin:0;">Fill in the event details to get started.</p></div>
+        <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 24px; flex-shrink: 0;">
           <button onclick="document.querySelector('button[onclick*=\'createManageView\']').click()" style="background: transparent; border: 1px solid var(--color-border); padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--color-text);">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back to Create & Manage
           </button>
@@ -907,10 +909,25 @@
               <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                 <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Company / Organization</label><input type="text" placeholder="Enter company name" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
                 <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Designation</label><div style="position:relative;"><svg style="position:absolute; left:12px; top:12px; color:var(--color-text-secondary);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><input type="text" placeholder="Enter designation" class="input-field" style="margin: 0; padding: 10px 14px 10px 34px;"></div></div>
-                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Nationality</label><select class="input-field" style="margin: 0; padding: 10px 14px;"><option>Select nationality</option></select></div>
+                <!-- FIX 7: Nationality Input with Datalist -->
+                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Nationality</label>
+                  <input list="nationalityList" placeholder="Type or select nationality..." class="input-field" style="margin: 0; padding: 10px 14px;">
+                  <datalist id="nationalityList">
+                    <option value="Saudi Arabia"></option><option value="United Arab Emirates"></option><option value="United States"></option>
+                    <option value="United Kingdom"></option><option value="India"></option><option value="Pakistan"></option>
+                    <option value="Philippines"></option><option value="Egypt"></option>
+                  </datalist>
+                </div>
               </div>
               <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">ID Type</label><select class="input-field" style="margin: 0; padding: 10px 14px;"><option>Select ID type</option></select></div>
+                <!-- FIX 8: ID Types Dropdown -->
+                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">ID Type</label>
+                  <select class="input-field" style="margin: 0; padding: 10px 14px;">
+                    <option value="National ID">National ID</option>
+                    <option value="Iqama">Iqama</option>
+                    <option value="Passport">Passport</option>
+                  </select>
+                </div>
                 <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">ID Number</label><div style="position:relative;"><svg style="position:absolute; left:12px; top:12px; color:var(--color-text-secondary);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><input type="text" placeholder="Enter ID number" class="input-field" style="margin: 0; padding: 10px 14px 10px 34px;"></div></div>
                 <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Ticket / Type</label><select id="agTierInput" class="input-field" style="margin: 0; padding: 10px 14px;"><option value="General">General</option><option value="VIP">VIP</option><option value="Speaker">Speaker</option></select></div>
               </div>
@@ -923,12 +940,12 @@
             <div class="card panel" style="padding: 24px;">
               <h2 class="section-title" style="margin-bottom: 20px;">Guest Invitation (Optional)</h2>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="card" style="padding: 16px; border-color: var(--color-success); background: var(--color-success-soft); display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                <div id="btnWhatsappOption" class="card" style="padding: 16px; border-color: var(--color-success); background: var(--color-success-soft); display: flex; align-items: center; gap: 12px; cursor: pointer;">
                   <div style="width: 20px; height: 20px; border-radius: 50%; background: var(--color-success); color: white; display: flex; align-items: center; justify-content: center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
                   <div style="width: 32px; height: 32px; border-radius: 50%; background: #25D366; color: white; display: flex; align-items: center; justify-content: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
                   <div><h4 style="margin: 0 0 4px; font-size: 13px; font-weight: 700; color: var(--color-success);">Send via WhatsApp</h4><p style="margin: 0; font-size: 11px; color: #166534;">Guest will receive invitation on WhatsApp</p></div>
                 </div>
-                <div class="card" style="padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; border-color: var(--color-border);">
+                <div id="btnEmailOption" class="card" style="padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; border-color: var(--color-border); background: var(--color-bg);">
                   <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--color-border); background: white;"></div>
                   <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-surface-soft); color: var(--color-text-secondary); border: 1px solid var(--color-border); display: flex; align-items: center; justify-content: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
                   <div><h4 style="margin: 0 0 4px; font-size: 13px; font-weight: 600; color: var(--color-text);">Send via Email</h4><p style="margin: 0; font-size: 11px; color: var(--color-text-secondary);">Guest will receive invitation on Email</p></div>
@@ -1091,6 +1108,12 @@
     } else if (viewId === 'createEventView') {
        titleEl.innerText = 'Create New Event'; subEl.innerText = 'Dashboard > Create & Manage > Create New Event';
        searchBox.style.display = 'none';
+    } else if (viewId === 'addGuestView') { // FIX 6: Add Guest Title routing
+       titleEl.innerText = 'Add Guest'; subEl.innerText = 'Dashboard > Create & Manage > Add individual guest details.';
+       searchBox.style.display = 'none';
+    } else if (viewId === 'importDataView') { // Import Data Title routing
+       titleEl.innerText = 'Import Data'; subEl.innerText = 'Dashboard > Create & Manage > Import guests in bulk.';
+       searchBox.style.display = 'none';
     } else if (viewId === 'eventsView') {
        titleEl.innerText = 'Events'; subEl.innerText = 'Manage all your events';
        searchBox.style.display = 'block'; searchInput.placeholder = 'Search events by name, venue...';
@@ -1103,9 +1126,6 @@
     } else if (viewId === 'qrCodesView') {
        titleEl.innerText = 'QR Codes'; subEl.innerText = 'Create, customize and manage QR codes';
        searchBox.style.display = 'block'; searchInput.placeholder = 'Search QR codes by name, event, type...';
-    } else {
-       titleEl.innerText = 'System Module'; subEl.innerText = '';
-       searchBox.style.display = 'none';
     }
   }
 
@@ -1136,6 +1156,19 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
     }
 
     data.forEach(e => {
+// FIX 2: Populate the "Your Events" table cleanly
+      if (cmEventsTable) {
+        cmEventsTable.innerHTML += `
+          <tr style="height: 48px; border-bottom: 1px solid var(--color-border);">
+            <td style="padding: 10px 20px; font-weight: 600; color: var(--color-text);">${e.event_name}</td>
+            <td style="padding: 10px 20px; font-size: 12px; color: var(--color-text-secondary);">${month} ${day}, ${dateObj.getFullYear()}</td>
+            <td style="padding: 10px 20px; font-size: 12px; color: var(--color-text-secondary);">${e.venue || 'Location TBD'}</td>
+            <td style="padding: 10px 20px; font-weight: 600;">${e.total_capacity}</td>
+            <td style="padding: 10px 20px;"><span class="status-badge ${badgeClass}" style="padding: 4px 8px; font-size: 10px;">${badgeText}</span></td>
+            <td style="padding: 10px 20px;"><button onclick="alert('Action Menu: Edit, Duplicate, Delete')" style="padding:4px 8px; background:transparent; border:none; color:var(--color-text-secondary); cursor:pointer;">...</button></td>
+          </tr>
+        `;
+      }
       if(select) {
         const opt = document.createElement('option');
         opt.value = e.id;
@@ -1567,7 +1600,32 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
               el.onclick = () => alert(text + ' options will be connected to the backend soon!');
           }
       });
+// FIX 11: Selectable Invitation Options
+      const waBtn = document.getElementById('btnWhatsappOption');
+      const emBtn = document.getElementById('btnEmailOption');
+      if (waBtn && emBtn) {
+          waBtn.onclick = () => {
+              waBtn.style.borderColor = 'var(--color-success)'; waBtn.style.background = 'var(--color-success-soft)';
+              waBtn.querySelector('div').innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+              waBtn.querySelector('div').style.background = 'var(--color-success)'; waBtn.querySelector('div').style.border = 'none';
+              
+              emBtn.style.borderColor = 'var(--color-border)'; emBtn.style.background = 'var(--color-bg)';
+              emBtn.querySelector('div').innerHTML = '';
+              emBtn.querySelector('div').style.background = 'white'; emBtn.querySelector('div').style.border = '2px solid var(--color-border)';
+          };
+          emBtn.onclick = () => {
+              emBtn.style.borderColor = 'var(--color-info)'; emBtn.style.background = 'var(--color-info-soft)';
+              emBtn.querySelector('div').innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+              emBtn.querySelector('div').style.background = 'var(--color-info)'; emBtn.querySelector('div').style.border = 'none';
+              
+              waBtn.style.borderColor = 'var(--color-border)'; waBtn.style.background = 'var(--color-bg)';
+              waBtn.querySelector('div').innerHTML = '';
+              waBtn.querySelector('div').style.background = 'white'; waBtn.querySelector('div').style.border = '2px solid var(--color-border)';
+          };
+      }
+
   });
+ 
   
 
   init();
