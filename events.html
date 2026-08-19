@@ -1372,7 +1372,7 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
           )`;
       }
       // ------------------------------------------
-      
+      allFetchedGuests = guests;
       guests.forEach((g, index) => {
         const isApproved = document.querySelector(`option[value="${g.event_id}"]`)?.dataset.approved === 'true';
         const shortId = g.id.substring(0, 8).toUpperCase();
