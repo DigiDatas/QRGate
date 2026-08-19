@@ -195,6 +195,7 @@
       <div class="brand-name">QRGate<span class="dot">.</span></div>
     </div>
     <nav class="sidebar-scroll">
+      
       <div class="nav-group">
         <button class="nav-item active w-full" onclick="switchView('dashboardView', this)">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
@@ -222,77 +223,91 @@
         </button>
       </div>
 
+      <div class="nav-group">
+        <p class="nav-label">Management</p>
+        <button class="nav-item w-full" onclick="switchView('createManageView', this)" style="justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: var(--space-3);">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg></span>
+            Create & Manage
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--color-text-muted);"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div style="display: flex; flex-direction: column; gap: 2px; padding-left: 36px; margin-top: 4px;">
+          <button class="nav-item w-full" onclick="switchView('createEventView', this)" style="height: 36px; font-size: 13px;">Create Event</button>
+          <button class="nav-item w-full" onclick="switchView('addGuestView', this)" style="height: 36px; font-size: 13px;">Add Guest</button>
+          <button class="nav-item w-full" onclick="switchView('importDataView', this)" style="height: 36px; font-size: 13px;">Import Data</button>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <p class="nav-label">Design & Templates</p>
+        <button class="nav-item w-full" onclick="switchView('designTemplatesView', this)">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></span>
+          Design Templates
+        </button>
+        <button class="nav-item w-full" onclick="switchView('savedDesignsView', this)">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span>
+          My Saved Designs
+        </button>
+      </div>
+
+      <div class="nav-group">
+        <p class="nav-label">Reports</p>
+        <button class="nav-item w-full" onclick="switchView('analyticsView', this)">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+          Analytics
+        </button>
+        <button class="nav-item w-full" onclick="switchView('reportsView', this)">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span>
+          Reports
+        </button>
+      </div>
+    </nav>
+
+    <div style="margin: var(--space-3); padding: var(--space-4); background: var(--color-surface-soft); border-radius: var(--radius-md); flex-shrink: 0;">
+      <div style="width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--color-primary-soft); color: var(--color-primary); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-3);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 5.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div>
+      <h4 style="margin: 0 0 4px; font-size: 14px; font-weight: 700; color: var(--color-text);">Need Help?</h4>
+      <p style="margin: 0 0 var(--space-3); font-size: 12px; color: var(--color-text-secondary); line-height: 1.5;">View guide or contact support team.</p>
+      <button class="btn-primary" style="width: 100%; height: 40px; padding: 0;">View Guide</button>
+    </div>
+  </aside>
+
       <!-- ============================================== -->
-      <!-- TAB: CREATE & MANAGE OVERVIEW (Image 2) -->
+      <!-- TAB: CREATE & MANAGE OVERVIEW -->
       <!-- ============================================== -->
       <div id="createManageView" class="view-section">
         <div style="display: flex; flex-direction: column; height: 100%; gap: 24px; min-height: 0;">
-          
           <div style="flex-shrink: 0;">
             <h1 class="page-title">Create & Manage</h1>
             <p class="page-subtitle" style="margin:0;">Create events, add guests or import data in bulk</p>
           </div>
-
-          <!-- Top 3 Action Cards -->
           <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; flex-shrink: 0;">
-            
             <div class="card panel" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
               <div style="display: flex; gap: 16px; margin-bottom: 24px;">
-                <div style="width: 56px; height: 56px; border-radius: 12px; background: var(--color-primary-soft); color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="12" y1="13" x2="12" y2="19"/><line x1="9" y1="16" x2="15" y2="16"/></svg>
-                </div>
-                <div>
-                  <h3 style="font-size: 16px; font-weight: 700; color: var(--color-text); margin: 0 0 6px;">Create New Event</h3>
-                  <p style="font-size: 12px; color: var(--color-text-secondary); margin: 0; line-height: 1.4;">Create a new event and configure details, venue, and settings.</p>
-                </div>
+                <div style="width: 56px; height: 56px; border-radius: 12px; background: var(--color-primary-soft); color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="12" y1="13" x2="12" y2="19"/><line x1="9" y1="16" x2="15" y2="16"/></svg></div>
+                <div><h3 style="font-size: 16px; font-weight: 700; margin: 0 0 6px;">Create New Event</h3><p style="font-size: 12px; color: var(--color-text-secondary); margin: 0;">Create a new event and configure details.</p></div>
               </div>
-              <button onclick="document.querySelectorAll('.nav-item')[5].click()" class="btn-primary" style="width: max-content; padding: 10px 20px; border-radius: 8px;">Create Event &rarr;</button>
+              <button onclick="document.querySelector('button[onclick*=\'createEventView\']').click()" class="btn-primary" style="width: max-content; padding: 10px 20px; border-radius: 8px;">Create Event &rarr;</button>
             </div>
-
             <div class="card panel" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
               <div style="display: flex; gap: 16px; margin-bottom: 24px;">
-                <div style="width: 56px; height: 56px; border-radius: 12px; background: var(--color-success-soft); color: var(--color-success); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
-                </div>
-                <div>
-                  <h3 style="font-size: 16px; font-weight: 700; color: var(--color-text); margin: 0 0 6px;">Add Guest</h3>
-                  <p style="font-size: 12px; color: var(--color-text-secondary); margin: 0; line-height: 1.4;">Add individual guest details manually and assign to an event.</p>
-                </div>
+                <div style="width: 56px; height: 56px; border-radius: 12px; background: var(--color-success-soft); color: var(--color-success); display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg></div>
+                <div><h3 style="font-size: 16px; font-weight: 700; margin: 0 0 6px;">Add Guest</h3><p style="font-size: 12px; color: var(--color-text-secondary); margin: 0;">Add individual guest details manually.</p></div>
               </div>
-              <button onclick="document.querySelectorAll('.nav-item')[6].click()" class="btn-primary" style="background: var(--color-success); width: max-content; padding: 10px 20px; border-radius: 8px;">Add Guest &rarr;</button>
+              <button onclick="document.querySelector('button[onclick*=\'addGuestView\']').click()" class="btn-primary" style="background: var(--color-success); width: max-content; padding: 10px 20px; border-radius: 8px;">Add Guest &rarr;</button>
             </div>
-
             <div class="card panel" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
               <div style="display: flex; gap: 16px; margin-bottom: 24px;">
-                <div style="width: 56px; height: 56px; border-radius: 12px; background: var(--color-info-soft); color: var(--color-info); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                </div>
-                <div>
-                  <h3 style="font-size: 16px; font-weight: 700; color: var(--color-text); margin: 0 0 6px;">Import Data</h3>
-                  <p style="font-size: 12px; color: var(--color-text-secondary); margin: 0; line-height: 1.4;">Import events or guest data in bulk using Excel (.xlsx) or CSV files.</p>
-                </div>
+                <div style="width: 56px; height: 56px; border-radius: 12px; background: var(--color-info-soft); color: var(--color-info); display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+                <div><h3 style="font-size: 16px; font-weight: 700; margin: 0 0 6px;">Import Data</h3><p style="font-size: 12px; color: var(--color-text-secondary); margin: 0;">Import events or guest data in bulk.</p></div>
               </div>
-              <button onclick="document.querySelectorAll('.nav-item')[7].click()" class="btn-primary" style="background: var(--color-info); width: max-content; padding: 10px 20px; border-radius: 8px;">Import Data &rarr;</button>
+              <button onclick="document.querySelector('button[onclick*=\'importDataView\']').click()" class="btn-primary" style="background: var(--color-info); width: max-content; padding: 10px 20px; border-radius: 8px;">Import Data &rarr;</button>
             </div>
-            
           </div>
-
-          <!-- Your Events Table -->
           <div class="card panel" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 24px;">
             <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; flex-shrink: 0;">
-              <div>
-                <h2 class="section-title" style="margin: 0 0 6px;">Your Events</h2>
-                <p style="font-size: 12px; color: var(--color-text-secondary); margin: 0;">Manage all your events and view their summary.</p>
-              </div>
-              <div style="display: flex; gap: 8px; align-items: center;">
-                <button class="btn-filter-nav active">All Events</button>
-                <button class="btn-filter-nav">Upcoming</button>
-                <button class="btn-filter-nav">Ongoing</button>
-                <button class="btn-filter-nav">Completed</button>
-                <button class="btn-filter-nav">Cancelled</button>
-              </div>
+              <div><h2 class="section-title" style="margin: 0 0 6px;">Your Events</h2></div>
             </div>
-
             <div class="data-table-container no-scrollbar">
               <table class="data-table">
                 <thead><tr><th>Event Name</th><th>Date</th><th>Venue</th><th>Guests</th><th>Status</th><th>Actions</th></tr></thead>
@@ -308,70 +323,29 @@
       <!-- ============================================== -->
       <div id="createEventView" class="view-section">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-shrink: 0;">
-          <div>
-            <h1 class="page-title">Create New Event</h1>
-            <p class="page-subtitle" style="margin:0;">Fill in the event details to get started.</p>
-          </div>
-          <button onclick="document.querySelectorAll('.nav-item')[4].click()" style="background: transparent; border: none; color: var(--color-text); font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 6px; cursor: pointer;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back to Create & Manage
+          <div><h1 class="page-title">Create New Event</h1></div>
+          <button onclick="document.querySelector('button[onclick*=\'createManageView\']').click()" style="background: transparent; border: none; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back
           </button>
         </div>
-
         <div class="layout-grid">
           <div class="left-col no-scrollbar" style="overflow-y: auto;">
             <div class="card panel" style="padding: 24px; margin-bottom: 24px;">
               <h2 class="section-title" style="margin-bottom: 20px;">Event Information</h2>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                <div>
-                  <label style="font-size: 12px; font-weight: 700; color: var(--color-text); margin-bottom: 8px; display: block;">Event Name <span style="color: var(--color-danger);">*</span></label>
-                  <input type="text" id="dedicatedEventName" placeholder="Enter event name" class="input-field" style="margin: 0; padding: 10px 14px;">
-                </div>
-                <div>
-                  <label style="font-size: 12px; font-weight: 700; color: var(--color-text); margin-bottom: 8px; display: block;">Event Type</label>
-                  <select id="dedicatedEventType" class="input-field" style="margin: 0; padding: 10px 14px;">
-                    <option value="Event">Select event type</option><option value="Conference">Conference</option><option value="Exhibition">Exhibition</option><option value="Party">Private Party</option>
-                  </select>
-                </div>
+                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Event Name *</label><input type="text" id="dedicatedEventName" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Event Type</label><select id="dedicatedEventType" class="input-field" style="margin: 0; padding: 10px 14px;"><option value="Event">Select event type</option><option value="Conference">Conference</option></select></div>
               </div>
-
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                <div>
-                  <label style="font-size: 12px; font-weight: 700; color: var(--color-text); margin-bottom: 8px; display: block;">Event Date <span style="color: var(--color-danger);">*</span></label>
-                  <input type="date" id="dedicatedEventDate" class="input-field" style="margin: 0; padding: 10px 14px;">
-                </div>
-                <div>
-                  <label style="font-size: 12px; font-weight: 700; color: var(--color-text); margin-bottom: 8px; display: block;">Event Time <span style="color: var(--color-danger);">*</span></label>
-                  <div style="display: flex; align-items: center; gap: 12px;">
-                    <input type="time" id="dedicatedStartTime" class="input-field" style="margin: 0; padding: 10px 14px;">
-                    <span style="color: var(--color-text-secondary); font-size: 12px; font-weight: 500;">to</span>
-                    <input type="time" id="dedicatedEndTime" class="input-field" style="margin: 0; padding: 10px 14px;">
-                  </div>
-                </div>
-              </div>
-
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                <div>
-                  <label style="font-size: 12px; font-weight: 700; color: var(--color-text); margin-bottom: 8px; display: block;">Venue <span style="color: var(--color-danger);">*</span></label>
-                  <input type="text" id="dedicatedVenue" placeholder="Enter venue name" class="input-field" style="margin: 0; padding: 10px 14px;">
-                </div>
+                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Event Date *</label><input type="date" id="dedicatedEventDate" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Venue *</label><input type="text" id="dedicatedVenue" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
               </div>
             </div>
-
             <div class="card panel" style="padding: 24px;">
               <h2 class="section-title" style="margin-bottom: 20px;">Capacity & Settings</h2>
-              <div style="width: 50%;">
-                <label style="font-size: 12px; font-weight: 700; color: var(--color-text); margin-bottom: 8px; display: block;">Total Guests Capacity <span style="color: var(--color-danger);">*</span></label>
-                <div style="position: relative;">
-                  <svg style="position: absolute; left: 12px; top: 12px; color: var(--color-text-secondary);" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                  <input type="number" id="dedicatedEventCapacity" value="100" class="input-field" style="margin: 0; padding: 10px 14px 10px 36px;">
-                </div>
-              </div>
+              <div style="width: 50%;"><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Capacity *</label><input type="number" id="dedicatedEventCapacity" value="100" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
               <div style="display: flex; gap: 16px; margin-top: 32px;">
-                <button onclick="document.querySelectorAll('.nav-item')[4].click()" style="background: white; border: 1px solid var(--color-border); color: var(--color-text); font-weight: 600; font-size: 13px; padding: 10px 24px; border-radius: 8px; cursor: pointer;">Cancel</button>
-                <button id="submitDedicatedEventBtn" class="btn-primary" style="padding: 10px 24px; border-radius: 8px; display: flex; align-items: center; gap: 8px;">
-  Create Event (Pending Admin Approval) 
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-</button>
+                <button id="submitDedicatedEventBtn" class="btn-primary" style="padding: 10px 24px; border-radius: 8px;">Create Event</button>
               </div>
             </div>
           </div>
@@ -382,15 +356,10 @@
       <!-- TAB: ADD GUEST & IMPORT DATA PLACEHOLDERS -->
       <!-- ============================================== -->
       <div id="addGuestView" class="view-section">
-        <h1 class="page-title">Add Guest</h1>
-        <p class="page-subtitle">Add individual guest details manually and assign to an event.</p>
-        <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Add Guest Module coming next.</p></div>
+        <h1 class="page-title">Add Guest</h1><div class="card panel"><p>Add Guest Module coming next.</p></div>
       </div>
-
       <div id="importDataView" class="view-section">
-        <h1 class="page-title">Import Data</h1>
-        <p class="page-subtitle">Import events or guest data in bulk using Excel (.xlsx) or CSV files.</p>
-        <div class="card panel"><p style="font-size: 13px; color: var(--color-text-secondary);">Import Data Module coming next.</p></div>
+        <h1 class="page-title">Import Data</h1><div class="card panel"><p>Import Data Module coming next.</p></div>
       </div>
 
       <div class="nav-group">
@@ -1031,7 +1000,7 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
             <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${e.venue || 'Location TBD'}</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">Venue</div></td>
             <td><div style="font-weight:600; font-size:13px; text-align:center;">${e.total_capacity}</div><div style="font-size:11px; color:var(--color-text-secondary); text-align:center;">Capacity</div></td>
             <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
-            <td><div style="display:flex; gap:4px;"><button onclick="alert('Action Menu:\n• Edit Details\n• Duplicate\n• Delete\n\n(Backend functions coming soon)')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer; transition:0.2s;" onmouseover="this.style.background='var(--color-surface-soft)'" onmouseout="this.style.background='var(--color-bg)'">...</button></div></td>
+            <td><div style="display:flex; gap:4px;"><button onclick="alert('Action Menu: Edit, Duplicate, Delete (Backend coming soon)')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer; transition:0.2s;" onmouseover="this.style.background='var(--color-surface-soft)'" onmouseout="this.style.background='var(--color-bg)'">...</button></div></td>
           </tr>
         `;
       }
@@ -1224,7 +1193,7 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
                 <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">${g.guest_name}</div></td>
                 <td><div style="font-weight:600; font-size:12px; color:var(--color-text);">${g.ticket_tier}</div></td>
                 <td><div style="display:flex; align-items:center; gap:6px; color:var(--color-success); font-weight:600; font-size:12px;"><span style="width:6px; height:6px; background:var(--color-success); border-radius:50%;"></span> Active</div></td>
-                <td><button onclick="alert('Action Menu:\n• Edit Details\n• Duplicate\n• Delete\n\n(Backend functions coming soon)')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer; transition:0.2s;" onmouseover="this.style.background='var(--color-surface-soft)'" onmouseout="this.style.background='var(--color-bg)'">...</button></td>
+                <td><button onclick="alert('Action Menu: Edit, Duplicate, Delete (Backend coming soon)')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer; transition:0.2s;" onmouseover="this.style.background='var(--color-surface-soft)'" onmouseout="this.style.background='var(--color-bg)'">...</button></td>
               </tr>
             `;
         }
@@ -1238,7 +1207,7 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
                 <td><span style="font-size:11px; font-weight:600; color:#9333EA; background:#F3E8FF; padding:4px 10px; border-radius:4px;">${g.ticket_tier}</span></td>
                 <td><div style="font-weight:600; font-size:12px; color:var(--color-text);">Gate Entry</div></td>
                 <td><span style="color:var(--color-success); font-weight:600; font-size:12px;">Active</span></td>
-                <td><button onclick="alert('Action Menu:\n• Edit Details\n• Duplicate\n• Delete\n\n(Backend functions coming soon)')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer; transition:0.2s;" onmouseover="this.style.background='var(--color-surface-soft)'" onmouseout="this.style.background='var(--color-bg)'">...</button></td>
+                <td><button onclick="alert('Action Menu: Edit, Duplicate, Delete (Backend coming soon)')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer; transition:0.2s;" onmouseover="this.style.background='var(--color-surface-soft)'" onmouseout="this.style.background='var(--color-bg)'">...</button></td>
               </tr>
             `;
         }
