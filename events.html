@@ -1156,19 +1156,7 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
     }
 
     data.forEach(e => {
-// FIX 2: Populate the "Your Events" table cleanly
-      if (cmEventsTable) {
-        cmEventsTable.innerHTML += `
-          <tr style="height: 48px; border-bottom: 1px solid var(--color-border);">
-            <td style="padding: 10px 20px; font-weight: 600; color: var(--color-text);">${e.event_name}</td>
-            <td style="padding: 10px 20px; font-size: 12px; color: var(--color-text-secondary);">${month} ${day}, ${dateObj.getFullYear()}</td>
-            <td style="padding: 10px 20px; font-size: 12px; color: var(--color-text-secondary);">${e.venue || 'Location TBD'}</td>
-            <td style="padding: 10px 20px; font-weight: 600;">${e.total_capacity}</td>
-            <td style="padding: 10px 20px;"><span class="status-badge ${badgeClass}" style="padding: 4px 8px; font-size: 10px;">${badgeText}</span></td>
-            <td style="padding: 10px 20px;"><button onclick="alert('Action Menu: Edit, Duplicate, Delete')" style="padding:4px 8px; background:transparent; border:none; color:var(--color-text-secondary); cursor:pointer;">...</button></td>
-          </tr>
-        `;
-      }
+      // 1. Populate Dropdowns First
       if(select) {
         const opt = document.createElement('option');
         opt.value = e.id;
@@ -1176,21 +1164,36 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
         opt.textContent = `${e.event_name} (${e.is_approved ? 'Approved' : 'Pending'})`;
         select.appendChild(opt);
       }
-	if(agSelect) {
+      if(agSelect) {
         const optAG = document.createElement('option');
         optAG.value = e.id;
         optAG.textContent = e.event_name;
         agSelect.appendChild(optAG);
       }
 
-      // Safe Date Parsing (Prevents NaN/Invalid Date crash)
+      // 2. Safe Date Parsing MUST happen before we generate tables
       const dateObj = e.created_at ? new Date(e.created_at) : new Date();
       const month = dateObj.toLocaleString('default', { month: 'short' }).toUpperCase();
       const day = dateObj.getDate();
       const badgeClass = e.is_approved ? 'upcoming' : 'pending';
       const badgeText = e.is_approved ? 'Approved' : 'Pending';
 
-     if(list) {
+      // 3. Populate "Create & Manage -> Your Events" Table
+      if (cmEventsTable) {
+        cmEventsTable.innerHTML += `
+          <tr style="height: 48px; border-bottom: 1px solid var(--color-border);">
+            <td style="padding: 10px 20px; font-weight: 600; color: var(--color-text);">${e.event_name}</td>
+            <td style="padding: 10px 20px; font-size: 12px; color: var(--color-text-secondary);">${month} ${day}, ${dateObj.getFullYear()}</td>
+            <td style="padding: 10px 20px; font-size: 12px; color: var(--color-text-secondary);">${e.venue || 'Location TBD'}</td>
+            <td style="padding: 10px 20px; font-weight: 600; text-align:center;">${e.total_capacity}</td>
+            <td style="padding: 10px 20px;"><span class="status-badge ${badgeClass}" style="padding: 4px 8px; font-size: 10px;">${badgeText}</span></td>
+            <td style="padding: 10px 20px;"><button onclick="alert('Action Menu: Edit, Duplicate, Delete')" style="padding:4px 8px; background:transparent; border:none; color:var(--color-text-secondary); cursor:pointer;">...</button></td>
+          </tr>
+        `;
+      }
+
+      // 4. Populate "Dashboard -> Recent Events" List
+      if(list) {
         list.innerHTML += `
           <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 4px; border-bottom: 1px solid var(--color-border);">
             <div style="display: flex; gap: 12px; align-items: center;">
@@ -1205,6 +1208,7 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
         `;
       }
 
+      // 5. Populate "Events Tab" Main Table
       if (eventsTable) {
         eventsTable.innerHTML += `
           <tr>
