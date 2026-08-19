@@ -304,7 +304,7 @@
       </div>
 
       <!-- ============================================== -->
-      <!-- TAB: DEDICATED CREATE EVENT (Image 3) -->
+      <!-- TAB: DEDICATED CREATE EVENT -->
       <!-- ============================================== -->
       <div id="createEventView" class="view-section">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-shrink: 0;">
@@ -328,8 +328,8 @@
                 </div>
                 <div>
                   <label style="font-size: 12px; font-weight: 700; color: var(--color-text); margin-bottom: 8px; display: block;">Event Type</label>
-                  <select class="input-field" style="margin: 0; padding: 10px 14px;">
-                    <option>Select event type</option><option>Conference</option><option>Exhibition</option><option>Private Party</option>
+                  <select id="dedicatedEventType" class="input-field" style="margin: 0; padding: 10px 14px;">
+                    <option value="Event">Select event type</option><option value="Conference">Conference</option><option value="Exhibition">Exhibition</option><option value="Party">Private Party</option>
                   </select>
                 </div>
               </div>
@@ -337,15 +337,22 @@
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                 <div>
                   <label style="font-size: 12px; font-weight: 700; color: var(--color-text); margin-bottom: 8px; display: block;">Event Date <span style="color: var(--color-danger);">*</span></label>
-                  <input type="date" class="input-field" style="margin: 0; padding: 10px 14px;">
+                  <input type="date" id="dedicatedEventDate" class="input-field" style="margin: 0; padding: 10px 14px;">
                 </div>
                 <div>
                   <label style="font-size: 12px; font-weight: 700; color: var(--color-text); margin-bottom: 8px; display: block;">Event Time <span style="color: var(--color-danger);">*</span></label>
                   <div style="display: flex; align-items: center; gap: 12px;">
-                    <input type="time" class="input-field" style="margin: 0; padding: 10px 14px;">
+                    <input type="time" id="dedicatedStartTime" class="input-field" style="margin: 0; padding: 10px 14px;">
                     <span style="color: var(--color-text-secondary); font-size: 12px; font-weight: 500;">to</span>
-                    <input type="time" class="input-field" style="margin: 0; padding: 10px 14px;">
+                    <input type="time" id="dedicatedEndTime" class="input-field" style="margin: 0; padding: 10px 14px;">
                   </div>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div>
+                  <label style="font-size: 12px; font-weight: 700; color: var(--color-text); margin-bottom: 8px; display: block;">Venue <span style="color: var(--color-danger);">*</span></label>
+                  <input type="text" id="dedicatedVenue" placeholder="Enter venue name" class="input-field" style="margin: 0; padding: 10px 14px;">
                 </div>
               </div>
             </div>
@@ -362,18 +369,6 @@
               <div style="display: flex; gap: 16px; margin-top: 32px;">
                 <button onclick="document.querySelectorAll('.nav-item')[4].click()" style="background: white; border: 1px solid var(--color-border); color: var(--color-text); font-weight: 600; font-size: 13px; padding: 10px 24px; border-radius: 8px; cursor: pointer;">Cancel</button>
                 <button id="submitDedicatedEventBtn" class="btn-primary" style="padding: 10px 24px; border-radius: 8px; display: flex; align-items: center; gap: 8px;">Create Event <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
-              </div>
-            </div>
-          </div>
-
-          <div class="right-col no-scrollbar">
-            <div class="card panel" style="padding: 24px; background: var(--color-primary-soft); border: 1px solid #e9d5ff;">
-              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-                <div style="width: 32px; height: 32px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--color-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-7 7c0 2.2 1.3 4.1 3 5.4V16a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-1.6c1.7-1.3 3-3.2 3-5.4a7 7 0 0 0-7-7z"/></svg></div>
-                <h3 style="font-size: 16px; font-weight: 700; color: var(--color-primary); margin: 0;">Tips</h3>
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 16px;">
-                <div style="display: flex; gap: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><p style="font-size: 12px; color: var(--color-primary-dark); margin: 0; line-height: 1.5; font-weight: 500;">Add a clear event name to help you identify it easily.</p></div>
               </div>
             </div>
           </div>
@@ -624,7 +619,7 @@
               </div>
               <div style="display: flex; gap: 12px;">
                 <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filter</button>
-                <button class="btn-primary" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Create Event</button>
+                <button onclick="document.querySelectorAll('.nav-item')[5].click()" class="btn-primary" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Create Event</button>
               </div>
             </div>
 
@@ -673,7 +668,7 @@
             <div class="card panel" style="padding: 20px;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                  <h2 class="section-title" style="margin: 0; font-size: 14px;">Recent Gate Passes</h2>
-                 <span style="font-size:11px; font-weight:600; color:var(--color-primary); cursor:pointer;">View All</span>
+                 
               </div>
               <div style="display: flex; flex-direction: column; gap: 16px;">
                 <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;"><div><div style="font-size: 12px; font-weight: 600;">GP-2025-00120</div><div style="font-size: 11px; color: var(--color-text-secondary);">Tech Expo 2025</div></div><div style="text-align:right;"><div style="font-size: 11px;">10:30 AM</div><div style="font-size: 11px; color: var(--color-text-secondary);">May 20, 2025</div></div></div>
@@ -980,7 +975,7 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
           <tr>
             <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar">${e.event_name.substring(0,2).toUpperCase()}</div><div><div style="font-weight:600; color:var(--color-text);">${e.event_name}</div><div style="font-size:11px; color:var(--color-text-secondary);">Event</div></div></div></td>
             <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> ${month} ${day}, ${dateObj.getFullYear()}</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">Created On</div></td>
-            <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Location TBD</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">Venue</div></td>
+            <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${e.venue || 'Location TBD'}</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">Venue</div></td>
             <td><div style="font-weight:600; font-size:13px; text-align:center;">${e.total_capacity}</div><div style="font-size:11px; color:var(--color-text-secondary); text-align:center;">Capacity</div></td>
             <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
             <td><div style="display:flex; gap:4px;"><button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary);">...</button></div></td>
@@ -1160,30 +1155,41 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
       const submitDedicatedBtn = document.getElementById('submitDedicatedEventBtn');
       if(submitDedicatedBtn) {
           submitDedicatedBtn.addEventListener('click', async () => {
+            
+            // Gather all data from the form
             const name = document.getElementById('dedicatedEventName').value.trim();
+            const type = document.getElementById('dedicatedEventType').value;
+            const date = document.getElementById('dedicatedEventDate').value;
+            const startTime = document.getElementById('dedicatedStartTime').value;
+            const endTime = document.getElementById('dedicatedEndTime').value;
+            const venue = document.getElementById('dedicatedVenue').value.trim();
             const capacity = parseInt(document.getElementById('dedicatedEventCapacity').value) || 100;
             
-            if (!name) return alert('Enter event name.');
+            if (!name || !date || !venue) return alert('Please fill in Event Name, Date, and Venue.');
             
-            // Save to Supabase
+            // Save to Supabase (Ensure these columns exist in your table!)
             await supabaseClient.from('events').insert([{ 
                 event_name: name, 
+                event_date: date,
+                venue: venue,
+                event_type: type,
+                start_time: startTime,
+                end_time: endTime,
                 total_capacity: capacity, 
                 tenant_id: currentTenantId, 
                 is_approved: false 
             }]);
             
-            // Clear input
+            // Clear inputs
             document.getElementById('dedicatedEventName').value = '';
+            document.getElementById('dedicatedVenue').value = '';
+            document.getElementById('dedicatedEventDate').value = '';
             
-            // Refresh Data
-            fetchEvents();
-            
+            fetchEvents(); // Refresh tables
             alert('Event Created! Awaiting Admin Approval.');
             
-            // Safely route back to the "Create & Manage" Overview tab
-            const manageBtn = document.querySelector(`button[onclick*="createManageView"]`);
-            if(manageBtn) switchView('createManageView', manageBtn);
+            // Route back to the Overview
+            document.querySelectorAll('.nav-item')[4].click();
           });
       }
   });
