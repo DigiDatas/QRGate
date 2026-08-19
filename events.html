@@ -1116,6 +1116,8 @@
     
     const select = document.getElementById('eventSelect');
     if(select) select.innerHTML = '<option value="">-- Select Event --</option>';
+    const agSelect = document.getElementById('addGuestEventSelect');
+    if(agSelect) agSelect.innerHTML = '<option value="">Select event...</option>';
     const list = document.getElementById('recentEventsList');
     if(list) list.innerHTML = '';
 
@@ -1140,6 +1142,12 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
         opt.dataset.approved = e.is_approved;
         opt.textContent = `${e.event_name} (${e.is_approved ? 'Approved' : 'Pending'})`;
         select.appendChild(opt);
+      }
+	if(agSelect) {
+        const optAG = document.createElement('option');
+        optAG.value = e.id;
+        optAG.textContent = e.event_name;
+        agSelect.appendChild(optAG);
       }
 
       // Safe Date Parsing (Prevents NaN/Invalid Date crash)
@@ -1308,6 +1316,16 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
            const capacityCount = g.allowed_capacity || 1;
            const pairText = capacityCount > 1 ? `${capacityCount} Pairs` : `${capacityCount} Pair`;
 
+           const gEmail = g.email || 'No email provided';
+           const gPhone = g.phone || 'No phone provided';
+           const gCompany = g.company || 'Independent';
+           const gStatus = g.invitation_status || 'Pending';
+           
+           // Change color based on status
+           let statusColor = 'var(--color-warning)'; let statusBg = '#FEF6E2';
+           if(gStatus === 'Accepted') { statusColor = 'var(--color-success)'; statusBg = 'var(--color-success-soft)'; }
+           else if(gStatus === 'Active') { statusColor = 'var(--color-success)'; statusBg = 'var(--color-success-soft)'; }
+
            guestListTable.innerHTML += `
               <tr>
                 <td>
@@ -1315,22 +1333,23 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
                     <div class="table-avatar" style="background:#F3E8FF; color:#9333EA;">${g.guest_name.substring(0,2).toUpperCase()}</div>
                     <div>
                       <div style="font-weight:600; color:var(--color-text);">${g.guest_name}</div>
-                      <div style="font-size:11px; color:var(--color-text-secondary);">Company TBD</div>
+                      <div style="font-size:11px; color:var(--color-text-secondary);">${gCompany}</div>
                     </div>
                   </div>
                 </td>
                 <td>
-                  <div style="font-size:12px; color:var(--color-text);">contact@tbd.com</div>
-                  <div style="font-size:11px; color:var(--color-text-secondary);">+966 50 000 0000</div>
+                  <div style="font-size:12px; color:var(--color-text);">${gEmail}</div>
+                  <div style="font-size:11px; color:var(--color-text-secondary);">${gPhone}</div>
                 </td>
                 <td>
-                  <span style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:99px; background:var(--color-success-soft); color:var(--color-success); font-size:11px; font-weight:600;">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Accepted
+                  <span style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:99px; background:${statusBg}; color:${statusColor}; font-size:11px; font-weight:600;">
+                    ${gStatus}
                   </span>
                 </td>
                 <td>
                   <div style="display:flex; gap:8px;">
-                    <div style="width:24px; height:24px; border-radius:50%; background:#EAF8EE; color:#22B35A; display:flex; align-items:center; justify-content:center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                    <div style="width:24px; height:24px; border-radius:50%; background:var(--color-surface-soft); color:var(--color-text-secondary); display:flex; align-items:center; justify-content:center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                    <span style="font-size: 11px; font-weight: 500; display:flex; align-items:center;">${g.sent_via || 'System'}</span>
                   </div>
                 </td>
                 <td>
@@ -1349,12 +1368,11 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
                 <td>
                   <div style="display:flex; align-items:center; gap:8px;">
                     ${btnHtml}
-                    <button style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                    <button onclick="alert('Guest Actions:\\n• Edit Guest\\n• Resend Invite\\n• Cancel Pass')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
                   </div>
                 </td>
               </tr>
            `;
-        }
 
         // Gate Passes Tab
         if (gatePassesTable) {
@@ -1390,46 +1408,76 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
   function closeModal() { document.getElementById('qrModal').classList.add('hidden'); }
   async function handleSignOut() { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; }
 
-// --- DEDICATED CREATE EVENT FORM LOGIC ---
+// --- SUBMIT FORMS LOGIC (EVENTS & GUESTS) ---
   document.addEventListener('DOMContentLoaded', () => {
+      
+      // 1. CREATE EVENT
       const submitDedicatedBtn = document.getElementById('submitDedicatedEventBtn');
       if(submitDedicatedBtn) {
           submitDedicatedBtn.addEventListener('click', async () => {
-            
-            // Gather all data from the form
             const name = document.getElementById('dedicatedEventName').value.trim();
-            const type = document.getElementById('dedicatedEventType').value;
             const date = document.getElementById('dedicatedEventDate').value;
+            const venue = document.getElementById('dedicatedVenue').value.trim();
+            const type = document.getElementById('dedicatedEventType').value;
             const startTime = document.getElementById('dedicatedStartTime').value;
             const endTime = document.getElementById('dedicatedEndTime').value;
-            const venue = document.getElementById('dedicatedVenue').value.trim();
             const capacity = parseInt(document.getElementById('dedicatedEventCapacity').value) || 100;
+            
+            // New UI Columns safely captured via querySelectors (using placeholders)
+            const address = document.querySelector('#createEventView input[placeholder="Enter full address"]').value.trim();
+            const organizer = document.querySelector('#createEventView input[placeholder="Enter organizer / company name"]').value.trim();
+            const contactEmail = document.querySelector('#createEventView input[type="email"]').value.trim();
+            const contactPhone = document.querySelector('#createEventView input[placeholder="Enter phone number"]').value.trim();
+            const description = document.querySelector('#createEventView textarea').value.trim();
             
             if (!name || !date || !venue) return alert('Please fill in Event Name, Date, and Venue.');
             
-            // Save to Supabase (Ensure these columns exist in your table!)
             await supabaseClient.from('events').insert([{ 
-                event_name: name, 
-                event_date: date,
-                venue: venue,
-                event_type: type,
-                start_time: startTime,
-                end_time: endTime,
-                total_capacity: capacity, 
-                tenant_id: currentTenantId, 
-                is_approved: false 
+                event_name: name, event_date: date, venue: venue, event_type: type, start_time: startTime, end_time: endTime, total_capacity: capacity, 
+                address: address, organizer_name: organizer, contact_email: contactEmail, contact_phone: contactPhone, description: description,
+                tenant_id: currentTenantId, is_approved: false 
             }]);
             
-            // Clear inputs
+            // Clear required fields
             document.getElementById('dedicatedEventName').value = '';
             document.getElementById('dedicatedVenue').value = '';
-            document.getElementById('dedicatedEventDate').value = '';
             
-            fetchEvents(); // Refresh tables
+            fetchEvents();
             alert('Event Created! Awaiting Admin Approval.');
-            
-            // Route back to the Overview
-            document.querySelectorAll('.nav-item')[4].click();
+            document.querySelector('button[onclick*="createManageView"]').click();
+          });
+      }
+
+      // 2. ADD GUEST
+      const submitAddGuestBtn = document.getElementById('submitAddGuestBtn');
+      if(submitAddGuestBtn) {
+          submitAddGuestBtn.addEventListener('click', async () => {
+              const eventId = document.getElementById('addGuestEventSelect').value;
+              const name = document.getElementById('agGuestName').value.trim();
+              const email = document.querySelector('#addGuestView input[type="email"]').value.trim();
+              const phone = document.querySelector('#addGuestView input[placeholder="Enter phone number"]').value.trim();
+              const company = document.querySelector('#addGuestView input[placeholder="Enter company name"]').value.trim();
+              const designation = document.querySelector('#addGuestView input[placeholder="Enter designation"]').value.trim();
+              const idNumber = document.querySelector('#addGuestView input[placeholder="Enter ID number"]').value.trim();
+              const tier = document.getElementById('agTierInput').value;
+              const capacity = parseInt(document.getElementById('agCapacityInput').value) || 1;
+              const notes = document.querySelector('#addGuestView textarea').value.trim();
+
+              if (!eventId || !name || !phone) return alert('Please select an event, and enter Guest Name and Phone Number.');
+
+              await supabaseClient.from('guests').insert([{
+                  event_id: eventId, guest_name: name, email: email, phone: phone, company: company, designation: designation,
+                  id_number: idNumber, ticket_tier: tier, allowed_capacity: capacity, notes: notes,
+                  status: 'Active', invitation_status: 'Accepted', sent_via: 'System'
+              }]);
+
+              alert('Guest successfully saved and pass generated!');
+              
+              document.getElementById('agGuestName').value = '';
+              document.querySelector('#addGuestView input[placeholder="Enter phone number"]').value = '';
+              
+              fetchAllGuestsForKPIs();
+              document.querySelector('button[onclick*="guestListsView"]').click();
           });
       }
   });
