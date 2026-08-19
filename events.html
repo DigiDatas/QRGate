@@ -553,16 +553,8 @@
               <!-- Event Selection Pills -->
               <div style="display:flex; flex-direction:column; gap:8px;">
                 <label style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase;">Select Event</label>
-                <div style="display:flex; gap: 12px; overflow-x: auto;" class="no-scrollbar">
-                  <div class="card" style="padding: 10px 16px; border-color: var(--color-primary); background: var(--color-primary-soft); min-width: 180px; cursor: pointer; display:flex; gap:12px; align-items:center;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
-                    <div><div style="font-weight:600; color:var(--color-primary); font-size:13px;">Tech Expo 2025</div><div style="font-size:11px; color:var(--color-primary); margin-top:2px;">May 20, 2025</div></div>
-                  </div>
-                  
-                  <!-- Redirects to Create Event View -->
-                  <div onclick="document.querySelector('button[onclick*=\'createEventView\']').click()" style="display: flex; align-items: center; justify-content: center; padding: 10px 16px; cursor: pointer; color: var(--color-primary); font-size: 13px; font-weight: 600; border: 1.5px dashed var(--color-border); border-radius: var(--radius-md); min-width: 140px; transition: 0.2s;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Event
-                  </div>
+                <div id="guestListEventPills" style="display:flex; gap: 12px; overflow-x: auto; padding-bottom: 8px;" class="no-scrollbar">
+                  <!-- JS will dynamically inject your recent events here -->
                 </div>
               </div>
 
@@ -1061,11 +1053,16 @@
         <p id="bpTicketId" class="text-[10px] font-mono text-slate-400">...</p>
       </div>
     </div>
-    <div class="flex gap-3 w-[340px] mt-4">
-      <button id="downloadQrBtn" class="bg-pink-600 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer">Download</button>
-      <button onclick="closeModal()" class="bg-slate-800 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer">Close</button>
+    <div class="flex flex-col gap-2 w-[340px] mt-4">
+      <div class="flex gap-2">
+        <button onclick="alert('Gate Pass sent via WhatsApp!\nStatus updated to Pending.')" class="bg-[#25D366] text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> WhatsApp</button>
+        <button onclick="alert('Gate Pass sent via Email!\nStatus updated to Pending.')" class="bg-blue-600 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Email</button>
+      </div>
+      <div class="flex gap-2">
+        <button id="downloadQrBtn" class="bg-pink-600 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer text-sm">Download</button>
+        <button onclick="closeModal()" class="bg-slate-800 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer text-sm">Close</button>
+      </div>
     </div>
-  </div>
 </div>
 
 <script>
@@ -1243,7 +1240,30 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
           </tr>
         `;
       }
-    });
+    }); // <--- THE LOOP CLOSES HERE
+
+    // 6. Populate "Guest Lists -> Event Pills" dynamically (OUTSIDE THE LOOP)
+    const glPills = document.getElementById('guestListEventPills');
+    if (glPills) {
+        let pillsHtml = '';
+        data.slice(0, 4).forEach((e, idx) => {
+            const isSelected = idx === 0; // Highlight the first one by default
+            const bgStr = isSelected ? 'var(--color-primary-soft)' : 'var(--color-bg)';
+            const borderStr = isSelected ? 'var(--color-primary)' : 'var(--color-border)';
+            pillsHtml += `
+              <div class="card" style="padding: 10px 16px; border-color: ${borderStr}; background: ${bgStr}; min-width: 180px; cursor: pointer; display:flex; gap:12px; align-items:center;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+                <div><div style="font-weight:600; color:var(--color-primary); font-size:13px;">${e.event_name}</div><div style="font-size:11px; color:var(--color-primary); margin-top:2px;">Capacity: ${e.total_capacity}</div></div>
+              </div>
+            `;
+        });
+        pillsHtml += `
+          <div onclick="document.querySelector('button[onclick*=\\'createEventView\\']').click()" style="display: flex; align-items: center; justify-content: center; padding: 10px 16px; cursor: pointer; color: var(--color-primary); font-size: 13px; font-weight: 600; border: 1.5px dashed var(--color-border); border-radius: var(--radius-md); min-width: 140px; transition: 0.2s;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Event
+          </div>
+        `;
+        glPills.innerHTML = pillsHtml;
+    }
     
     fetchAllGuestsForKPIs();
   }
@@ -1379,55 +1399,46 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
            const gPhone = g.phone || 'No phone provided';
            const gCompany = g.company || 'Independent';
            const gStatus = g.invitation_status || 'Pending';
+           const isHidden = g.is_hidden === true;
+           const rowStyle = isHidden ? 'opacity: 0.5; background: var(--color-surface-soft);' : '';
            
-           // Change color based on status
+           // Status Colors
            let statusColor = 'var(--color-warning)'; let statusBg = '#FEF6E2';
-           if(gStatus === 'Accepted') { statusColor = 'var(--color-success)'; statusBg = 'var(--color-success-soft)'; }
-           else if(gStatus === 'Active') { statusColor = 'var(--color-success)'; statusBg = 'var(--color-success-soft)'; }
+           if(gStatus === 'Accepted' || gStatus === 'Active') { statusColor = 'var(--color-success)'; statusBg = 'var(--color-success-soft)'; }
+
+           // Dynamic 'Sent Via' Icon
+           let sentViaIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>';
+           if (g.sent_via === 'WhatsApp') sentViaIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
+
+           // Action Buttons
+           const eyeIcon = isHidden 
+             ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+             : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 
            guestListTable.innerHTML += `
-              <tr>
+              <tr style="${rowStyle}">
                 <td>
                   <div style="display:flex; gap:12px; align-items:center;">
                     <div class="table-avatar" style="background:#F3E8FF; color:#9333EA;">${g.guest_name.substring(0,2).toUpperCase()}</div>
-                    <div>
-                      <div style="font-weight:600; color:var(--color-text);">${g.guest_name}</div>
-                      <div style="font-size:11px; color:var(--color-text-secondary);">${gCompany}</div>
-                    </div>
+                    <div><div style="font-weight:600; color:var(--color-text);">${g.guest_name}</div><div style="font-size:11px; color:var(--color-text-secondary);">${gCompany}</div></div>
                   </div>
                 </td>
+                <td><div style="font-size:12px; color:var(--color-text);">${gEmail}</div><div style="font-size:11px; color:var(--color-text-secondary);">${gPhone}</div></td>
+                <td><span style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:99px; background:${statusBg}; color:${statusColor}; font-size:11px; font-weight:600;">${gStatus}</span></td>
+                <td><div style="display:flex; gap:8px;"><div style="width:24px; height:24px; border-radius:50%; background:var(--color-surface-soft); color:var(--color-text-secondary); display:flex; align-items:center; justify-content:center;">${sentViaIcon}</div><span style="font-size: 11px; font-weight: 500; display:flex; align-items:center;">${g.sent_via || 'System'}</span></div></td>
                 <td>
-                  <div style="font-size:12px; color:var(--color-text);">${gEmail}</div>
-                  <div style="font-size:11px; color:var(--color-text-secondary);">${gPhone}</div>
-                </td>
-                <td>
-                  <span style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:99px; background:${statusBg}; color:${statusColor}; font-size:11px; font-weight:600;">
-                    ${gStatus}
-                  </span>
-                </td>
-                <td>
-                  <div style="display:flex; gap:8px;">
-                    <div style="width:24px; height:24px; border-radius:50%; background:var(--color-surface-soft); color:var(--color-text-secondary); display:flex; align-items:center; justify-content:center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-                    <span style="font-size: 11px; font-weight: 500; display:flex; align-items:center;">${g.sent_via || 'System'}</span>
+                  <!-- CLICKABLE GATE PASS -->
+                  <div onclick="showTicket('${g.id}', '${encodeURIComponent(g.guest_name)}', '${g.ticket_tier}', ${g.allowed_capacity}, '${encodeURIComponent(g.events.event_name)}')" style="display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--color-primary); padding: 4px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='var(--color-primary-soft)'" onmouseout="this.style.background='transparent'">
+                    <div style="width:28px; height:28px; background:var(--color-primary-soft); border-radius:6px; display:flex; align-items:center; justify-content:center; color:var(--color-primary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
+                    <div><div style="font-weight:700; font-size:12px;">${shortId}</div><div style="font-size:11px; color:var(--color-text-secondary);">${pairText}</div></div>
                   </div>
                 </td>
+                <td><div style="font-size:12px; color:var(--color-text);">${formattedDate}</div><div style="font-size:11px; color:var(--color-text-secondary);">${formattedTime}</div></td>
                 <td>
-                  <div style="display:flex; align-items:center; gap:8px;">
-                    <div style="width:28px; height:28px; background:var(--color-surface-soft); border-radius:6px; display:flex; align-items:center; justify-content:center; color:var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
-                    <div>
-                      <div style="font-weight:600; font-size:12px; color:var(--color-text);">${shortId}</div>
-                      <div style="font-size:11px; color:var(--color-text-secondary);">${pairText}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div style="font-size:12px; color:var(--color-text);">${formattedDate}</div>
-                  <div style="font-size:11px; color:var(--color-text-secondary);">${formattedTime}</div>
-                </td>
-                <td>
-                  <div style="display:flex; align-items:center; gap:8px;">
-                    ${btnHtml}
-                    <button onclick="alert('Guest Actions:\\n• Edit Guest\\n• Resend Invite\\n• Cancel Pass')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  <div style="display:flex; gap:6px;">
+                    <button onclick="toggleHideGuest('${g.id}', ${isHidden})" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer;" title="Show/Hide">${eyeIcon}</button>
+                    <button onclick="alert('Edit Guest logic coming soon!')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-info); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+                    <button onclick="deleteGuest('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-danger-soft); color:var(--color-danger); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                   </div>
                 </td>
               </tr>
@@ -1475,6 +1486,19 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
 
   async function toggleHideEvent(id, currentState) {
       await supabaseClient.from('events').update({ is_hidden: !currentState }).eq('id', id);
+      fetchEvents(); // Refresh UI
+  }
+
+// --- GUEST ACTION FUNCTIONS ---
+  async function deleteGuest(id) {
+      if(confirm("Are you sure you want to permanently delete this guest?")) {
+          await supabaseClient.from('guests').delete().eq('id', id);
+          fetchEvents(); // Refresh UI
+      }
+  }
+
+  async function toggleHideGuest(id, currentState) {
+      await supabaseClient.from('guests').update({ is_hidden: !currentState }).eq('id', id);
       fetchEvents(); // Refresh UI
   }
 
@@ -1581,10 +1605,18 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
 
               if (!eventId || !name || !phone) return alert('Please select an event, and enter Guest Name and Phone Number.');
 
+              if (!eventId || !name || !phone) return alert('Please select an event, and enter Guest Name and Phone Number.');
+
+              // Check which send method was toggled on the UI
+              let selectedMethod = 'System';
+              const waBtn = document.getElementById('btnWhatsappOption');
+              if(waBtn && waBtn.style.background.includes('success')) selectedMethod = 'WhatsApp';
+              else selectedMethod = 'Email';
+
               await supabaseClient.from('guests').insert([{
                   event_id: eventId, guest_name: name, email: email, phone: phone, company: company, designation: designation,
                   id_number: idNumber, ticket_tier: tier, allowed_capacity: capacity, notes: notes,
-                  status: 'Active', invitation_status: 'Accepted', sent_via: 'System'
+                  status: 'Active', invitation_status: 'Pending', sent_via: selectedMethod
               }]);
 
               alert('Guest successfully saved and pass generated!');
