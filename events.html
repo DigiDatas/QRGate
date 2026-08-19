@@ -1483,7 +1483,10 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
       const ev = allFetchedEvents.find(e => e.id === id);
       if(!ev) return;
 
-      // Fill the form fields with existing data
+      // 1. Navigate to the form FIRST
+      document.querySelector('button[onclick*="createEventView"]').click();
+
+      // 2. Fill the form fields with existing data
       document.getElementById('dedicatedEventName').value = ev.event_name || '';
       document.getElementById('dedicatedEventType').value = ev.event_type || 'Event';
       document.getElementById('dedicatedEventDate').value = ev.event_date || '';
@@ -1498,12 +1501,10 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
       document.querySelector('#createEventView input[placeholder="Enter phone number"]').value = ev.contact_phone || '';
       document.querySelector('#createEventView textarea').value = ev.description || '';
 
-      // Update Form Titles to reflect Editing Mode
-      document.querySelector('#createEventView .page-title').innerText = 'Edit Event';
+      // 3. Safely update the Global Header Titles & Button Text
+      document.getElementById('dynamicPageTitle').innerText = 'Edit Event';
+      document.getElementById('dynamicPageSubtitle').innerText = 'Dashboard > Create & Manage > Edit Event Details';
       document.getElementById('submitDedicatedEventBtn').innerHTML = 'Update Event (Pending Admin Approval) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
-
-      // Navigate to the form
-      document.querySelector('button[onclick*="createEventView"]').click();
   }
 
   function closeModal() { document.getElementById('qrModal').classList.add('hidden'); }
@@ -1545,8 +1546,7 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
                 alert('Event Updated! Awaiting Admin Approval.');
                 currentEditEventId = null; // Reset ID state
                 
-                // Reset UI labels
-                document.querySelector('#createEventView .page-title').innerText = 'Create New Event';
+                // Safely reset button text only (header resets automatically on navigation)
                 document.getElementById('submitDedicatedEventBtn').innerHTML = 'Create Event (Pending Admin Approval) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
             } else {
                 // CREATE NEW
