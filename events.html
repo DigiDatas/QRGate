@@ -269,6 +269,14 @@
           Reports
         </button>
       </div>
+<div class="nav-group">
+        <p class="nav-label">Settings</p>
+        <button class="nav-item w-full" onclick="switchView('profileView', this)">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+          My Profile
+        </button>
+      </div>
+
     </nav>
 
     <div style="margin: var(--space-3); padding: var(--space-4); background: var(--color-surface-soft); border-radius: var(--radius-md); flex-shrink: 0;">
@@ -321,6 +329,36 @@
         <input type="text" id="profileName" placeholder="Your Full Name" class="input-field" style="background:#fff">
         <input type="text" id="profilePhone" placeholder="Mobile Number" class="input-field" style="background:#fff">
         <button id="saveProfileBtn" class="btn-primary" style="background: var(--color-warning); color: #000;">Save Profile</button>
+      </div>
+<!-- ============================================== -->
+      <!-- TAB: MY PROFILE VIEW -->
+      <!-- ============================================== -->
+      <div id="profileView" class="view-section">
+        <div style="max-width: 600px; margin: 0 auto; width: 100%;">
+          <h1 class="page-title" style="margin-bottom: 24px;">My Profile</h1>
+          <div class="card panel" style="padding: 32px;">
+            <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 32px;">
+              <div id="profileAvatarLarge" style="width: 80px; height: 80px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700;">A</div>
+              <div>
+                <h2 id="profileNameDisplay" style="margin: 0 0 4px; font-size: 20px; font-weight: 700;">Admin User</h2>
+                <p id="profileEmailDisplay" style="margin: 0; color: var(--color-text-secondary); font-size: 14px;">admin@example.com</p>
+              </div>
+            </div>
+            
+            <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Full Name</label>
+            <input type="text" id="settingName" class="input-field">
+            
+            <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Company / Organization</label>
+            <input type="text" id="settingCompany" class="input-field">
+            
+            <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Mobile Number</label>
+            <input type="text" id="settingPhone" class="input-field">
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+              <button onclick="updateUserProfile()" class="btn-primary">Save Changes</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- ============================================== -->
@@ -1040,7 +1078,8 @@
               
               <div onclick="applyTemplateBg(this, 'url(./templates/gatepass01.jpg)', '#ffffff', '#e2e8f0')" class="card tpl-card" style="min-width: 120px; height: 90px; border: 2px solid var(--color-primary); border-radius: var(--radius-md); position: relative; overflow: hidden; cursor: pointer; background: var(--color-surface-soft);">
                 <div class="active-check" style="position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                <div style="width: 100%; height: 64px; background: url('./templates/gatepass01.jpg') center/cover;"></div>
+                <!-- FIXED SCALING -->
+                <div style="width: 100%; height: 64px; background: url('./templates/gatepass01.jpg') center/100% 100% no-repeat;"></div>
                 <div style="padding: 2px; text-align: center; font-size: 10px; font-weight: 600;">Custom 1080x1440</div>
               </div>
 
@@ -1066,7 +1105,7 @@
          <path d="M9 3L10.1241 6.55181C10.4287 7.51478 11.134 8.29177 12.0628 8.65345L15 9.79723L12.0628 10.941C11.134 11.3027 10.4287 12.0797 10.1241 13.0426L9 16.5945L7.87588 13.0426C7.57127 12.0797 6.86598 11.3027 5.93718 10.941L3 9.79723L5.93718 8.65345C6.86598 8.29177 7.57127 7.51478 7.87588 6.55181L9 3Z"></path>
          <path d="M18 14L18.5621 15.7759C18.7144 16.2574 19.067 16.6459 19.5314 16.8267L21 17.3986L19.5314 17.9705C19.067 18.1513 18.7144 18.5398 18.5621 19.0213L18 20.7972L17.4379 19.0213C17.2856 18.5398 16.933 18.1513 16.4686 17.9705L15 17.3986L16.4686 16.8267C16.933 16.6459 17.2856 16.2574 17.4379 15.7759L18 14Z"></path>
        </svg>
-       <span style="font-size: 14px; font-weight: 700; letter-spacing: 0.02em;">AI Generation</span>
+       <span style="font-size: 14px; font-weight: 700; letter-spacing: 0.02em;">Generation with AI</span>
    </div>
    <div style="font-size: 9px; font-weight: 700; background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 12px; margin-top: 8px; letter-spacing: 0.05em; text-transform: uppercase;">Coming Soon</div>
 </div>
@@ -1166,6 +1205,19 @@
   </div>
 </div>
 
+<!-- ALL TEMPLATES MODAL -->
+<div id="allTemplatesModal" class="hidden fixed inset-0 flex items-center justify-center p-4" style="background: rgba(15,23,42,0.85); z-index: 9999;">
+  <div class="card panel" style="width: 100%; max-width: 900px; height: 80vh; display: flex; flex-direction: column; padding: 24px;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+      <h2 class="section-title">All Saved Templates</h2>
+      <button onclick="document.getElementById('allTemplatesModal').classList.add('hidden')" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
+    </div>
+    <div id="allTemplatesGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; overflow-y: auto; padding-right: 8px;" class="no-scrollbar">
+      <!-- Injected via JS -->
+    </div>
+  </div>
+</div>
+
 <!-- ============================================== -->
 <!-- QR BOARDING PASS MODAL -->
 <!-- ============================================== -->
@@ -1243,7 +1295,11 @@ let allFetchedGuests = [];
     const searchInput = document.getElementById('dynamicSearchInput');
 
     if(viewId === 'dashboardView') {
+
        titleEl.innerText = 'Dashboard'; subEl.innerText = 'Overview of your activities';
+       searchBox.style.display = 'none';
+	} else if (viewId === 'profileView') {
+       titleEl.innerText = 'My Profile'; subEl.innerText = 'Manage your account and organizer details';
        searchBox.style.display = 'none';
     } else if (viewId === 'createManageView') {
        titleEl.innerText = 'Create & Manage'; subEl.innerText = 'Dashboard > Create & Manage';
@@ -1992,92 +2048,9 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
 
   let windowSavedTemplates = []; 
   let currentlySelectedElement = null; 
+  let currentEditingTemplateId = null; // FIX: Track if we are editing an existing template
 
-  async function fetchSavedTemplates() {
-    const { data, error } = await supabaseClient.from('templates').select('*').order('created_at', { ascending: false });
-    if (error) { console.error("Error fetching templates:", error); return; }
-
-    const gallery = document.getElementById('savedTemplatesGallery');
-    if (!gallery) return;
-
-    windowSavedTemplates = data || []; 
-
-    gallery.innerHTML = `
-      <div onclick="resetTemplate()" class="card" style="min-width: 200px; height: 100px; border: 1px dashed var(--color-primary); background: var(--color-primary-soft); color: var(--color-primary); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;">
-         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-         <div style="font-size: 11px; font-weight: 600; margin-top: 8px;">Create New Template</div>
-      </div>
-    `;
-
-    if (data) {
-      data.forEach(t => {
-        const dateStr = new Date(t.created_at).toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' });
-        gallery.innerHTML += `
-          <div onclick="loadSavedTemplate('${t.id}')" class="card" style="min-width: 260px; height: 100px; padding: 12px; display: flex; gap: 12px; align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='var(--color-primary)'" onmouseout="this.style.borderColor='var(--color-border)'">
-             <div style="width: 50px; height: 70px; background: url('${t.thumbnail_url || ''}') center/cover; background-color: var(--color-surface-soft); border-radius: 4px; border: 1px solid var(--color-border);"></div>
-             <div style="flex: 1;">
-                <div style="font-size: 13px; font-weight: 700; color: var(--color-text); margin-bottom: 2px;">${t.name}</div>
-                <div style="font-size: 11px; color: var(--color-text-secondary);">${dateStr}</div>
-             </div>
-          </div>
-        `;
-      });
-    }
-  }
-
-  function loadSavedTemplate(id) {
-      const tpl = windowSavedTemplates.find(x => x.id === id);
-      if(!tpl) return;
-      document.getElementById('editorCanvas').outerHTML = tpl.html_layout;
-      document.getElementById('tplName').value = tpl.name;
-      alert("Template loaded successfully!");
-  }
-
-  async function saveGatePassTemplate() {
-    const tplName = document.getElementById('tplName').value.trim();
-    if (!tplName) return alert("Please enter a Template Name before saving!");
-
-    const canvasHtml = document.getElementById('editorCanvas').outerHTML;
-    const payload = {
-       name: tplName, event_type: 'Custom', html_layout: canvasHtml, thumbnail_url: './templates/gatepass01.jpg' 
-    };
-
-    const { error } = await supabaseClient.from('templates').insert([payload]);
-    
-    if (error) alert("Error saving template: " + error.message);
-    else {
-       alert("Template saved successfully!");
-       document.getElementById('tplName').value = '';
-       fetchSavedTemplates(); 
-    }
-  }
-
-  function applyTemplateBg(cardElement, bgStr, color1, color2) {
-      document.querySelectorAll('.tpl-card').forEach(c => {
-          c.style.border = '1px solid var(--color-border)';
-          const check = c.querySelector('.active-check');
-          if(check) check.style.display = 'none';
-      });
-      cardElement.style.border = '2px solid var(--color-primary)';
-      const activeCheck = cardElement.querySelector('.active-check');
-      if (activeCheck) activeCheck.style.display = 'flex';
-
-      const canvas = document.getElementById('editorCanvas');
-      canvas.style.background = 'none'; 
-      if (bgStr.includes('url')) {
-          canvas.style.backgroundImage = bgStr;
-          canvas.style.backgroundSize = '100% 100%'; // Stretches exactly to 1080x1440
-          canvas.style.backgroundPosition = 'center';
-          canvas.style.backgroundRepeat = 'no-repeat';
-      } else {
-          canvas.style.background = bgStr; 
-      }
-      
-      document.getElementById('canvasEventName').style.color = color1;
-      document.getElementById('canvasGuestName').style.color = color2;
-  }
-
-  // --- DRAG, DROP & TEXT SETTINGS ---
+  // FIX: Drag vs Type Logic
   let isDragging = false;
   let dragTarget = null;
   let offsetX = 0;
@@ -2086,51 +2059,44 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
   function makeDraggable(el) {
       el.classList.add('canvas-element');
       el.style.cursor = 'move';
+      el.contentEditable = "false"; // Disable typing initially so dragging works
       
       el.addEventListener('mousedown', (e) => {
-          if (document.activeElement === el) return; // Prevent drag if typing
+          if (el.contentEditable === "true") return; // Let user type if double-clicked
+          e.preventDefault(); // Stop text highlighting while dragging
           
           currentlySelectedElement = el;
           document.querySelectorAll('.canvas-element').forEach(node => node.style.outline = "none");
           el.style.outline = "4px dashed var(--color-primary)";
           
-          // Update Left Sidebar inputs to match this element
+          // Sync left sidebar
           const style = window.getComputedStyle(el);
           const sizeInput = document.getElementById('elementFontSize');
-          const fontInput = document.getElementById('elementFontFamily');
-          
           if (sizeInput) sizeInput.value = parseInt(style.fontSize);
-          if (fontInput) {
-             const currentFont = style.fontFamily.replace(/"/g, "'");
-             let matched = false;
-             for (let opt of fontInput.options) {
-                 if (currentFont.includes(opt.value.split(',')[0].trim())) {
-                     fontInput.value = opt.value;
-                     matched = true; break;
-                 }
-             }
-             if (!matched) fontInput.selectedIndex = 0;
-          }
           
           isDragging = true;
           dragTarget = el;
           
-          // The canvas is scaled down (e.g. 0.32), so mouse coordinates must divide by scale
           const parentRect = document.getElementById('editorCanvas').getBoundingClientRect();
           const scale = parentRect.width / 1080;
           
           offsetX = (e.clientX - el.getBoundingClientRect().left) / scale;
           offsetY = (e.clientY - el.getBoundingClientRect().top) / scale;
-          e.stopPropagation(); 
       });
 
-      // Double-click to type
+      // Double-click to enable typing
       el.addEventListener('dblclick', () => {
+          el.contentEditable = "true";
           el.focus();
           el.style.cursor = 'text';
           el.style.outline = "4px solid var(--color-primary)";
       });
-      el.addEventListener('blur', () => el.style.cursor = 'move');
+      
+      // Click away -> back to drag mode
+      el.addEventListener('blur', () => {
+          el.contentEditable = "false";
+          el.style.cursor = 'move';
+      });
   }
 
   document.addEventListener('mousemove', (e) => {
@@ -2142,7 +2108,6 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       let x = (e.clientX - parentRect.left) / scale - offsetX;
       let y = (e.clientY - parentRect.top) / scale - offsetY;
 
-      // Apply new coordinates and remove centering transform
       dragTarget.style.left = x + 'px';
       dragTarget.style.top = y + 'px';
       dragTarget.style.transform = 'none'; 
@@ -2153,59 +2118,122 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       dragTarget = null;
   });
 
-  function addCanvasText() {
-      const canvas = document.getElementById('editorCanvas');
-      const newText = document.createElement('div');
-      newText.contentEditable = "true";
-      newText.innerText = "Double Click to Edit";
-      newText.style.position = "absolute";
-      newText.style.top = "500px";
-      newText.style.left = "400px";
-      newText.style.fontSize = "40px";
-      newText.style.fontWeight = "600";
-      newText.style.color = "#ffffff";
-      newText.style.fontFamily = "var(--font-family)";
-      newText.style.outline = "none";
-      
-      makeDraggable(newText);
-      canvas.appendChild(newText);
+  // --- DATABASE SAVING & LOADING ---
+
+  async function fetchSavedTemplates() {
+    const { data, error } = await supabaseClient.from('templates').select('*').order('created_at', { ascending: false });
+    if (error) return;
+
+    windowSavedTemplates = data || []; 
+    const gallery = document.getElementById('savedTemplatesGallery');
+    const grid = document.getElementById('allTemplatesGrid');
+    if (!gallery) return;
+
+    let galleryHtml = `
+      <div onclick="resetTemplate()" class="card" style="min-width: 180px; height: 90px; border: 1px dashed var(--color-primary); background: var(--color-primary-soft); color: var(--color-primary); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;">
+         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+         <div style="font-size: 11px; font-weight: 600; margin-top: 8px;">New Template</div>
+      </div>
+    `;
+    let gridHtml = '';
+
+    if (data) {
+      data.forEach((t, index) => {
+        const dateStr = new Date(t.created_at).toLocaleDateString();
+        const cardHtml = `
+          <div class="card" style="min-width: 240px; height: 90px; padding: 12px; display: flex; gap: 12px; align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); position: relative;">
+             <div onclick="loadSavedTemplate('${t.id}')" style="display:flex; flex:1; gap:12px; cursor:pointer; align-items:center;">
+                 <div style="width: 45px; height: 65px; background: url('${t.thumbnail_url || ''}') center/100% 100% no-repeat; background-color: var(--color-surface-soft); border-radius: 4px; border: 1px solid var(--color-border);"></div>
+                 <div>
+                    <div style="font-size: 13px; font-weight: 700; color: var(--color-text); margin-bottom: 2px;">${t.name}</div>
+                    <div style="font-size: 11px; color: var(--color-text-secondary);">${dateStr}</div>
+                 </div>
+             </div>
+             <button onclick="deleteTemplate('${t.id}')" style="background:var(--color-danger-soft); color:var(--color-danger); border:none; border-radius:4px; padding:4px; cursor:pointer;" title="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+          </div>
+        `;
+        
+        // Show max 4 in bottom row
+        if (index < 4) galleryHtml += cardHtml;
+        // Add to modal grid
+        gridHtml += cardHtml;
+      });
+
+      // Add "+ More" button if > 4 templates
+      if (data.length > 4) {
+          galleryHtml += `
+            <div onclick="document.getElementById('allTemplatesModal').classList.remove('hidden')" class="card" style="min-width: 100px; height: 90px; border: 1px solid var(--color-border); background: var(--color-surface-soft); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; color: var(--color-primary);">
+               <div style="font-size: 14px; font-weight: 700;">+${data.length - 4}</div>
+               <div style="font-size: 11px; font-weight: 600;">More</div>
+            </div>
+          `;
+      }
+    }
+    gallery.innerHTML = galleryHtml;
+    if(grid) grid.innerHTML = gridHtml;
   }
 
-  function deleteSelectedElement() {
-      if(currentlySelectedElement) {
-          currentlySelectedElement.remove();
-          currentlySelectedElement = null;
-      } else {
-          alert("Click on a custom text element first to select it for deletion.");
+  async function deleteTemplate(id) {
+      if(confirm("Are you sure you want to permanently delete this template?")) {
+          await supabaseClient.from('templates').delete().eq('id', id);
+          if (currentEditingTemplateId === id) resetTemplate();
+          fetchSavedTemplates();
       }
   }
 
-  function previewTemplate() {
-      const previewContainer = document.getElementById('previewContainer');
-      const canvas = document.getElementById('editorCanvas');
+  function loadSavedTemplate(id) {
+      const tpl = windowSavedTemplates.find(x => x.id === id);
+      if(!tpl) return;
       
-      // Remove the dashed outline before taking the screenshot
-      document.querySelectorAll('.canvas-element').forEach(node => node.style.outline = "none");
+      const canvasWrapper = document.getElementById('editorCanvas').parentElement;
+      document.getElementById('editorCanvas').outerHTML = tpl.html_layout;
       
-      previewContainer.innerHTML = '';
-      const clone = canvas.cloneNode(true);
+      // FIX 2: Force the canvas back into perfect center, ignoring old saved inline styles
+      const newCanvas = canvasWrapper.querySelector('#editorCanvas');
+      newCanvas.style.position = 'absolute';
+      newCanvas.style.top = '50%';
+      newCanvas.style.left = '50%';
+      newCanvas.style.transform = 'translate(-50%, -50%) scale(0.26)';
+      newCanvas.style.transformOrigin = 'center';
       
-      // Reset the centering anchor so it fits the modal perfectly
-      clone.style.transform = "none"; 
-      clone.style.top = "0";
-      clone.style.left = "0";
-      clone.style.position = "relative";
-      clone.style.width = "100%";
-      clone.style.height = "100%";
-      
-      previewContainer.appendChild(clone);
-      document.getElementById('previewModal').classList.remove('hidden');
+      // FIX 3: Re-attach drag controls to elements loaded from database
+      newCanvas.querySelectorAll('.canvas-element').forEach(node => makeDraggable(node));
+
+      document.getElementById('tplName').value = tpl.name;
+      currentEditingTemplateId = id; // Track for overwriting
+      document.getElementById('allTemplatesModal').classList.add('hidden');
+  }
+
+  async function saveGatePassTemplate() {
+    const tplName = document.getElementById('tplName').value.trim();
+    if (!tplName) return alert("Please enter a Template Name before saving!");
+
+    // Clean up outlines before saving
+    document.querySelectorAll('.canvas-element').forEach(node => node.style.outline = "none");
+    const canvasHtml = document.getElementById('editorCanvas').outerHTML;
+    
+    const payload = {
+       name: tplName, event_type: 'Custom', html_layout: canvasHtml, thumbnail_url: './templates/gatepass01.jpg' 
+    };
+
+    // FIX 5: Overwrite existing if currently editing
+    if (currentEditingTemplateId) {
+        const { error } = await supabaseClient.from('templates').update(payload).eq('id', currentEditingTemplateId);
+        if (error) alert("Error updating: " + error.message);
+        else { alert("Template updated successfully!"); fetchSavedTemplates(); }
+    } else {
+        const { error } = await supabaseClient.from('templates').insert([payload]);
+        if (error) alert("Error saving: " + error.message);
+        else { alert("New template saved!"); document.getElementById('tplName').value = ''; fetchSavedTemplates(); }
+    }
   }
 
   function resetTemplate() {
-      if(confirm("Reset canvas? All unsaved changes will be lost.")) {
+      if(confirm("Reset canvas to default?")) {
+          currentEditingTemplateId = null; // Clearing drops us out of "Edit" mode
           document.querySelector('button[onclick*="designTemplatesView"]').click();
           document.querySelectorAll('.tpl-card')[0].click();
+          document.getElementById('tplName').value = '';
           document.getElementById('canvasEventName').innerText = 'Event Name';
           document.getElementById('canvasGuestName').innerText = 'Guest Name';
           document.getElementById('tplGuestSelect').value = '';
@@ -2214,7 +2242,44 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       }
   }
 
-  // --- EVENT LISTENERS ---
+  // Profile Saving Logic
+  async function updateUserProfile() {
+      const name = document.getElementById('settingName').value;
+      const comp = document.getElementById('settingCompany').value;
+      const ph = document.getElementById('settingPhone').value;
+      
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      await supabaseClient.from('tenants').update({ full_name: name, company_name: comp, phone_number: ph }).eq('owner_id', session.user.id);
+      
+      document.getElementById('profileNameDisplay').innerText = name;
+      document.getElementById('userNameDisplay').innerText = name;
+      document.getElementById('userAvatar').innerText = name.charAt(0).toUpperCase();
+      document.getElementById('profileAvatarLarge').innerText = name.charAt(0).toUpperCase();
+      alert("Profile updated successfully!");
+  }
+
+  // Overriding initial profile fetch to populate new UI
+  async function checkTenantProfile(session) {
+    const userId = session.user.id;
+    let { data: tenant } = await supabaseClient.from('tenants').select('*').eq('owner_id', userId).maybeSingle();
+
+    if (tenant) {
+      currentTenantId = tenant.id;
+      document.getElementById('userNameDisplay').innerText = tenant.full_name || 'Admin User';
+      document.getElementById('userAvatar').innerText = (tenant.full_name || 'A').charAt(0).toUpperCase();
+      
+      // Populate Profile Page
+      document.getElementById('profileNameDisplay').innerText = tenant.full_name || 'Admin User';
+      document.getElementById('profileEmailDisplay').innerText = session.user.email;
+      document.getElementById('profileAvatarLarge').innerText = (tenant.full_name || 'A').charAt(0).toUpperCase();
+      document.getElementById('settingName').value = tenant.full_name || '';
+      document.getElementById('settingCompany').value = tenant.company_name || '';
+      document.getElementById('settingPhone').value = tenant.phone_number || '';
+      
+      await fetchEvents();
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
       fetchSavedTemplates();
 
@@ -2228,25 +2293,10 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
           if (e.key === "Escape") {
               document.getElementById('previewModal').classList.add('hidden');
               document.getElementById('qrModal').classList.add('hidden');
+              document.getElementById('allTemplatesModal').classList.add('hidden');
           }
       });
 
-      // Wire up Color, Size, and Font inputs
-      const colorPicker = document.getElementById('elementColor');
-      const sizePicker = document.getElementById('elementFontSize');
-      const fontPicker = document.getElementById('elementFontFamily');
-      
-      if (colorPicker) colorPicker.addEventListener('input', (e) => {
-          if (currentlySelectedElement) currentlySelectedElement.style.color = e.target.value;
-      });
-      if (sizePicker) sizePicker.addEventListener('input', (e) => {
-          if (currentlySelectedElement && e.target.value) currentlySelectedElement.style.fontSize = e.target.value + 'px';
-      });
-      if (fontPicker) fontPicker.addEventListener('change', (e) => {
-          if (currentlySelectedElement) currentlySelectedElement.style.fontFamily = e.target.value;
-      });
-
-      // Guest Dropdown -> QR Generator
       const guestDropdown = document.getElementById('tplGuestSelect');
       if(guestDropdown) {
           guestDropdown.addEventListener('change', (e) => {
@@ -2269,14 +2319,11 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
               document.getElementById('canvasQrLabel').innerText = guestId.substring(0,8).toUpperCase();
               
               qrSpot.innerHTML = '';
-              new QRCode(qrSpot, {
-                  text: guestId, width: 310, height: 310, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H
-              });
+              new QRCode(qrSpot, { text: guestId, width: 310, height: 310, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
           });
       }
   });
 
-  // MUST REMAIN LAST
   init();
 
 
