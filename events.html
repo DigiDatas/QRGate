@@ -328,7 +328,7 @@
         <input type="text" id="profileCompany" placeholder="Company Name" class="input-field" style="background:#fff">
         <input type="text" id="profileName" placeholder="Your Full Name" class="input-field" style="background:#fff">
         <input type="text" id="profilePhone" placeholder="Mobile Number" class="input-field" style="background:#fff">
-        <button id="saveProfileBtn" class="btn-primary" style="background: var(--color-warning); color: #000;">Save Profile</button>
+       <button id="saveProfileBtn" onclick="updateUserProfile(true)" class="btn-primary" style="background: var(--color-warning); color: #000;">Save Profile</button>
       </div>
 <!-- ============================================== -->
       <!-- TAB: MY PROFILE VIEW -->
@@ -355,7 +355,7 @@
             <input type="text" id="settingPhone" class="input-field">
 
             <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
-              <button onclick="updateUserProfile()" class="btn-primary">Save Changes</button>
+              <button onclick="updateUserProfile(false)" class="btn-primary">Save Changes</button>
             </div>
           </div>
         </div>
@@ -1522,16 +1522,39 @@ if (!data || data.length === 0) {
     await checkTenantProfile(session);
   }
 
+  // --- PROFILE FETCH AND SAVE LOGIC ---
   async function checkTenantProfile(session) {
     const userId = session.user.id;
     let { data: tenant } = await supabaseClient.from('tenants').select('*').eq('owner_id', userId).maybeSingle();
 
-    if (!tenant || !tenant.full_name) {
-      document.getElementById('tenantProfileCard').classList.remove('hidden');
-    } else {
+    const profileBanner = document.getElementById('tenantProfileCard');
+    
+    if (tenant) {
       currentTenantId = tenant.id;
-      document.getElementById('userNameDisplay').innerText = tenant.full_name;
-      document.getElementById('userAvatar').innerText = tenant.full_name.charAt(0).toUpperCase();
+      
+      // 1. Update Top Right Header
+      document.getElementById('userNameDisplay').innerText = tenant.full_name || 'Admin User';
+      document.getElementById('userAvatar').innerText = (tenant.full_name || 'A').charAt(0).toUpperCase();
+      
+      // 2. Update 'My Profile' Tab
+      document.getElementById('profileNameDisplay').innerText = tenant.full_name || 'Admin User';
+      document.getElementById('profileEmailDisplay').innerText = session.user.email; // Pulled securely from Auth
+      document.getElementById('profileAvatarLarge').innerText = (tenant.full_name || 'A').charAt(0).toUpperCase();
+      
+      document.getElementById('settingName').value = tenant.full_name || '';
+      document.getElementById('settingCompany').value = tenant.company_name || '';
+      document.getElementById('settingPhone').value = tenant.phone_number || '';
+
+      // 3. Handle Dashboard Banner visibility and pre-fill if data is missing
+      if (!tenant.full_name || !tenant.company_name) {
+          if(profileBanner) profileBanner.classList.remove('hidden');
+          document.getElementById('profileName').value = tenant.full_name || '';
+          document.getElementById('profileCompany').value = tenant.company_name || '';
+          document.getElementById('profilePhone').value = tenant.phone_number || '';
+      } else {
+          if(profileBanner) profileBanner.classList.add('hidden');
+      }
+      
       await fetchEvents();
     }
   }
@@ -1604,13 +1627,10 @@ if (!data || data.length === 0) {
       }
       // ------------------------------------------
       allFetchedGuests = guests;
-// Populate Design Template Guest Dropdown
+      // Clear Guest Dropdown initially, wait for event selection
       const tplGuest = document.getElementById('tplGuestSelect');
       if (tplGuest) {
-          tplGuest.innerHTML = '<option value="">Select Guest to Preview...</option>';
-          guests.forEach(g => {
-              tplGuest.innerHTML += `<option value="${g.id}">${g.guest_name} (${g.events.event_name})</option>`;
-          });
+          tplGuest.innerHTML = '<option value="">First Select Event...</option>';
       }
       guests.forEach((g, index) => {
         const isApproved = document.querySelector(`option[value="${g.event_id}"]`)?.dataset.approved === 'true';
@@ -2356,15 +2376,28 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
     }
   }
 
-  // Profile Saving Logic
-  async function updateUserProfile() {
-      const name = document.getElementById('settingName').value;
-      const comp = document.getElementById('settingCompany').value;
-      const ph = document.getElementById('settingPhone').value;
+  // Combined save function for BOTH the Profile Tab and the Dashboard Banner
+  async function updateUserProfile(isFromBanner = false) {
+      // Read from either Banner inputs OR Profile Tab inputs based on which button was clicked
+      const name = isFromBanner ? document.getElementById('profileName').value.trim() : document.getElementById('settingName').value.trim();
+      const comp = isFromBanner ? document.getElementById('profileCompany').value.trim() : document.getElementById('settingCompany').value.trim();
+      const ph = isFromBanner ? document.getElementById('profilePhone').value.trim() : document.getElementById('settingPhone').value.trim();
+      
+      if (!name) return alert("Full Name is required!");
+
       const { data: { session } } = await supabaseClient.auth.getSession();
-      await supabaseClient.from('tenants').update({ full_name: name, company_name: comp, phone_number: ph }).eq('owner_id', session.user.id);
-      alert("Profile updated successfully!");
-      window.location.reload();
+      const { error } = await supabaseClient.from('tenants').update({ full_name: name, company_name: comp, phone_number: ph }).eq('owner_id', session.user.id);
+      
+      if(error) {
+          alert("Error updating profile: " + error.message);
+      } else {
+          alert("Profile updated successfully!");
+          // Hide banner instantly if it was open
+          const profileBanner = document.getElementById('tenantProfileCard');
+          if(profileBanner) profileBanner.classList.add('hidden');
+          // Re-sync all UI elements without reloading the page
+          checkTenantProfile(session); 
+      }
   }
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -2406,6 +2439,29 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       if (alignPicker) alignPicker.addEventListener('change', (e) => {
           if (currentlySelectedElement) currentlySelectedElement.style.textAlign = e.target.value;
       });
+
+const eventDropdown = document.getElementById('tplEventSelect');
+      if (eventDropdown) {
+          eventDropdown.addEventListener('change', (e) => {
+              const eventId = e.target.value;
+              const gDrop = document.getElementById('tplGuestSelect');
+              if (!gDrop) return;
+              
+              gDrop.innerHTML = '<option value="">Select Guest to Preview...</option>';
+              if (!eventId) {
+                  gDrop.dispatchEvent(new Event('change')); // Reset canvas QR
+                  return;
+              }
+
+              // Filter globally fetched guests to match ONLY the selected event
+              const filteredGuests = allFetchedGuests.filter(g => g.event_id === eventId);
+              filteredGuests.forEach(g => {
+                  gDrop.innerHTML += `<option value="${g.id}">${g.guest_name}</option>`;
+              });
+              
+              gDrop.dispatchEvent(new Event('change')); // Reset canvas QR
+          });
+      }
 
       const guestDropdown = document.getElementById('tplGuestSelect');
       if(guestDropdown) {
