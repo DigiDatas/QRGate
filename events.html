@@ -1030,7 +1030,7 @@
       <!-- TAB: DESIGN TEMPLATES VIEW (FIXED LAYOUT) -->
       <!-- ============================================== -->
       <div id="designTemplatesView" class="view-section">
-        <div style="display: flex; flex-direction: column; height: 100%; min-height: 0;">
+        <div style="display: flex; flex-direction: column; height: 100%; min-height: 0; overflow-y: auto; padding-right: 8px;" class="no-scrollbar">
           
         
 
@@ -1084,7 +1084,13 @@
                   <button class="nav-item tool-btn w-full" style="justify-content: flex-start; height: 34px; font-size:12px; opacity:0.5; cursor:not-allowed;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> QR Fixed to Bottom</button>
                   
                   <div style="height: 1px; background: var(--color-border); margin: 12px 0;"></div>
-                  <div style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 4px; text-transform: uppercase;">Element Settings</div>
+                  <div style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 8px; text-transform: uppercase;">Element Settings</div>
+                  
+                  <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                      <input type="color" id="elementColor" value="#000000" style="width: 32px; height: 32px; padding: 0; border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer;" title="Text Color">
+                      <input type="number" id="elementFontSize" class="input-field" style="margin: 0; padding: 4px 8px; font-size: 12px; height: 32px;" placeholder="Size (px)" title="Font Size">
+                  </div>
+
                   <button onclick="deleteSelectedElement()" class="btn-primary" style="background: var(--color-danger-soft); color: var(--color-danger); font-size: 11px; padding: 6px;">Delete Selected</button>
                </div>
             </div>
@@ -1274,7 +1280,9 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
     const kpiEvents = document.getElementById('kpiEvents');
     if(kpiEvents) kpiEvents.innerText = data ? data.length : 0;
 
-    if (!data || data.length === 0) {
+const tplEvent = document.getElementById('tplEventSelect');
+    if (tplEvent) tplEvent.innerHTML = '<option value="">Select Event...</option>';    
+if (!data || data.length === 0) {
       if(list) list.innerHTML = `<p style="font-size:13px; color:var(--color-text-secondary); padding: 20px;">No events found.</p>`;
       if (eventsTable) eventsTable.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px;">No events created yet.</td></tr>`;
       return;
@@ -1296,8 +1304,8 @@ if (cmEventsTable) cmEventsTable.innerHTML = '';
       }
 // Populate Design Template Event Dropdown
       const tplEvent = document.getElementById('tplEventSelect');
-      if (tplEvent) {
-         if (tplEvent.options.length === 1 && tplEvent.options[0].value === "") tplEvent.innerHTML = '<option value="">Select Event...</option>';
+      // Populate Design Template Event Dropdown
+      if (tplEvent && !isHidden) {
          tplEvent.innerHTML += `<option value="${e.id}">${e.event_name}</option>`;
       }
       if(agSelect) {
@@ -2037,13 +2045,94 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       if (activeCheck) activeCheck.style.display = 'flex';
 
       const canvas = document.getElementById('editorCanvas');
-      canvas.style.backgroundImage = 'none'; 
-      if (bgStr.includes('url')) canvas.style.backgroundImage = bgStr;
-      else canvas.style.background = bgStr; 
+      canvas.style.background = 'none'; // Wipe previous
+      
+      if (bgStr.includes('url')) {
+          canvas.style.backgroundImage = bgStr;
+          canvas.style.backgroundSize = 'cover';
+          canvas.style.backgroundPosition = 'center';
+          canvas.style.backgroundRepeat = 'no-repeat';
+      } else {
+          canvas.style.background = bgStr; 
+      }
       
       document.getElementById('canvasEventName').style.color = color1;
       document.getElementById('canvasGuestName').style.color = color2;
   }
+// Close Modals with Escape Key
+  document.addEventListener('keydown', (e) => {
+      if (e.key === "Escape") {
+          document.getElementById('previewModal').classList.add('hidden');
+          document.getElementById('qrModal').classList.add('hidden');
+      }
+  });
+
+  // --- DRAG AND DROP & ELEMENT SETTINGS ---
+  let isDragging = false;
+  let dragTarget = null;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  function makeDraggable(el) {
+      el.classList.add('canvas-element');
+      el.style.cursor = 'move';
+      
+      el.addEventListener('mousedown', (e) => {
+          // Prevent dragging if user is currently typing
+          if (document.activeElement === el) return;
+          
+          // Select Element
+          currentlySelectedElement = el;
+          document.querySelectorAll('.canvas-element').forEach(node => node.style.outline = "none");
+          el.style.outline = "2px dashed var(--color-primary)";
+          
+          // Populate the left toolbar settings
+          const style = window.getComputedStyle(el);
+          const sizeInput = document.getElementById('elementFontSize');
+          if (sizeInput) sizeInput.value = parseInt(style.fontSize);
+          
+          isDragging = true;
+          dragTarget = el;
+          
+          // Calculate scale (Canvas is visually scaled to 0.3)
+          const parentRect = document.getElementById('editorCanvas').getBoundingClientRect();
+          const scale = parentRect.width / 1080;
+          
+          offsetX = (e.clientX - el.getBoundingClientRect().left) / scale;
+          offsetY = (e.clientY - el.getBoundingClientRect().top) / scale;
+          e.stopPropagation(); 
+      });
+
+      // Double-click to type
+      el.addEventListener('dblclick', () => {
+          el.focus();
+          el.style.cursor = 'text';
+          el.style.outline = "2px solid var(--color-primary)";
+      });
+
+      el.addEventListener('blur', () => el.style.cursor = 'move');
+  }
+
+  // Handle the mouse moving across the screen
+  document.addEventListener('mousemove', (e) => {
+      if (!isDragging || !dragTarget) return;
+      const canvas = document.getElementById('editorCanvas');
+      const parentRect = canvas.getBoundingClientRect();
+      const scale = parentRect.width / 1080;
+      
+      let x = (e.clientX - parentRect.left) / scale - offsetX;
+      let y = (e.clientY - parentRect.top) / scale - offsetY;
+
+      dragTarget.style.left = x + 'px';
+      dragTarget.style.top = y + 'px';
+      dragTarget.style.transform = 'none'; // remove center translate
+  });
+
+  // Stop dragging on mouse release
+  document.addEventListener('mouseup', () => {
+      isDragging = false;
+      dragTarget = null;
+  });
 
   function addCanvasText() {
       const canvas = document.getElementById('editorCanvas');
@@ -2051,24 +2140,43 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       newText.contentEditable = "true";
       newText.innerText = "Double Click to Edit";
       newText.style.position = "absolute";
-      newText.style.top = "50%";
-      newText.style.left = "50%";
-      newText.style.transform = "translate(-50%, -50%)";
+      newText.style.top = "500px";
+      newText.style.left = "400px";
       newText.style.fontSize = "40px";
       newText.style.fontWeight = "600";
-      newText.style.color = "#000";
+      newText.style.color = "#000000";
       newText.style.fontFamily = "var(--font-family)";
-      newText.style.cursor = "text";
       newText.style.outline = "none";
       
-      newText.onclick = (e) => {
-          currentlySelectedElement = e.target;
-          e.target.style.outline = "2px dashed var(--color-primary)";
-      };
-      newText.onblur = (e) => e.target.style.outline = "none";
-      
+      makeDraggable(newText);
       canvas.appendChild(newText);
   }
+
+  // Wire up the Color and Size inputs inside DOMContentLoaded
+  document.addEventListener('DOMContentLoaded', () => {
+      // Setup default elements to be draggable
+      const defaultEventName = document.getElementById('canvasEventName');
+      const defaultGuestName = document.getElementById('canvasGuestName');
+      if(defaultEventName) makeDraggable(defaultEventName);
+      if(defaultGuestName) makeDraggable(defaultGuestName);
+
+      // Wire up property inputs
+      const colorPicker = document.getElementById('elementColor');
+      const sizePicker = document.getElementById('elementFontSize');
+      
+      if (colorPicker) {
+          colorPicker.addEventListener('input', (e) => {
+              if (currentlySelectedElement) currentlySelectedElement.style.color = e.target.value;
+          });
+      }
+      if (sizePicker) {
+          sizePicker.addEventListener('input', (e) => {
+              if (currentlySelectedElement && e.target.value) {
+                  currentlySelectedElement.style.fontSize = e.target.value + 'px';
+              }
+          });
+      }
+  });
 
   function deleteSelectedElement() {
       if(currentlySelectedElement) {
