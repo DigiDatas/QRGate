@@ -1138,6 +1138,11 @@
                           <option value="'Times New Roman', serif">Times New Roman</option>
                           <option value="'Georgia', serif">Georgia</option>
                       </select>
+                      <select id="elementTextAlign" class="input-field" style="margin: 0; padding: 4px 8px; font-size: 12px; height: 32px;">
+                          <option value="center">Center Align</option>
+                          <option value="left">Left Align</option>
+                          <option value="right">Right Align</option>
+                      </select>
                   </div>
 
                   <button onclick="deleteSelectedElement()" class="btn-primary" style="background: var(--color-danger-soft); color: var(--color-danger); font-size: 11px; padding: 6px;">Delete Selected</button>
@@ -1178,7 +1183,7 @@
                   </div>
                   <!-- FIX 5: Save Update AND Save As New buttons -->
                   <div style="display: flex; gap: 8px;">
-                     <button onclick="saveGatePassTemplate(false)" class="btn-primary" style="flex: 1; padding: 10px; font-size:11px;">Save / Update</button>
+                     <button onclick="saveGatePassTemplate(false)" class="btn-primary" style="flex: 1; padding: 10px; font-size:11px;">Update Pass</button>
                      <button onclick="saveGatePassTemplate(true)" class="btn-primary" style="background: var(--color-info); flex: 1; padding: 10px; font-size:11px;">Save as New</button>
                   </div>
                </div>
@@ -1191,7 +1196,7 @@
             <h3 class="section-title" style="margin-bottom: 8px; font-size: 14px;">4. My Saved Templates</h3>
             <div style="display: flex; gap: 12px; align-items: stretch; width: 100%;">
                 
-                <div id="savedTemplatesGallery" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; flex: 1;" class="no-scrollbar">
+                <div id="savedTemplatesGallery" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; flex: 1; min-width: 0;" class="no-scrollbar">
                     <!-- Cards will be injected here by JS -->
                 </div>
                 
@@ -2064,6 +2069,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
   let windowSavedTemplates = []; 
   let currentlySelectedElement = null; 
   let currentEditingTemplateId = null;
+  let currentActiveBgString = "url('./templates/gatepass01.jpg')"; // Tracks the active background
 
   // --- DRAG vs TYPE UX ---
   let isDragging = false;
@@ -2087,7 +2093,10 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
           const style = window.getComputedStyle(el);
           const sizeInput = document.getElementById('elementFontSize');
           const colorInput = document.getElementById('elementColor');
+          const alignInput = document.getElementById('elementTextAlign');
+          
           if (sizeInput) sizeInput.value = parseInt(style.fontSize);
+          if (alignInput) alignInput.value = style.textAlign || 'center';
           
           isDragging = true;
           dragTarget = el;
@@ -2133,6 +2142,8 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
 
   // --- EDITOR UI CONTROLS ---
   function applyTemplateBg(cardElement, bgStr, color1, color2) {
+      currentActiveBgString = bgStr; // Save active string for the database thumbnail
+
       document.querySelectorAll('.tpl-card').forEach(c => {
           c.style.border = '1px solid var(--color-border)';
           const check = c.querySelector('.active-check');
@@ -2153,8 +2164,10 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
           canvas.style.background = bgStr; 
       }
       
-      document.getElementById('canvasEventName').style.color = color1;
-      document.getElementById('canvasGuestName').style.color = color2;
+      const evtName = document.getElementById('canvasEventName');
+      const gstName = document.getElementById('canvasGuestName');
+      if(evtName) evtName.style.color = color1;
+      if(gstName) gstName.style.color = color2;
   }
 
   function addCanvasText() {
@@ -2168,9 +2181,10 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       newText.style.fontSize = "40px";
       newText.style.fontWeight = "600";
       newText.style.color = "#000000";
+      newText.style.textAlign = "center";
       newText.style.fontFamily = "var(--font-family)";
       newText.style.outline = "none";
-      newText.style.width = "max-content";
+      newText.style.width = "400px"; // Default width to allow alignment to work
       
       makeDraggable(newText);
       canvas.appendChild(newText);
@@ -2211,8 +2225,10 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
           document.querySelector('button[onclick*="designTemplatesView"]').click();
           document.querySelectorAll('.tpl-card')[0].click();
           document.getElementById('tplName').value = '';
-          document.getElementById('canvasEventName').innerText = 'Event Name';
-          document.getElementById('canvasGuestName').innerText = 'Guest Name';
+          const evtName = document.getElementById('canvasEventName');
+          const gstName = document.getElementById('canvasGuestName');
+          if(evtName) evtName.innerText = 'Event Name';
+          if(gstName) gstName.innerText = 'Guest Name';
           document.getElementById('tplGuestSelect').value = '';
           document.getElementById('canvasQRSpot').innerHTML = '<div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight:bold;">QR SPOT</div>';
           document.getElementById('canvasQrLabel').innerText = 'GST-ID-001';
@@ -2239,11 +2255,11 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
     if (data) {
       data.forEach((t, index) => {
         const dateStr = new Date(t.created_at).toLocaleDateString();
-        // FIX 4: Added Pencil Icon and Trash Icon next to each other
+        
         const cardHtml = `
           <div class="card" style="min-width: 260px; height: 90px; padding: 12px; display: flex; gap: 12px; align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); position: relative; flex-shrink: 0;">
              <div onclick="loadSavedTemplate('${t.id}')" style="display:flex; flex:1; gap:12px; cursor:pointer; align-items:center;" title="Click to Edit">
-                 <div style="width: 45px; height: 65px; background: url('${t.thumbnail_url || ''}') center/cover no-repeat; background-color: var(--color-surface-soft); border-radius: 4px; border: 1px solid var(--color-border);"></div>
+                 <div style="width: 45px; height: 65px; background: ${t.thumbnail_url || "url('./templates/gatepass01.jpg')"} center/cover no-repeat; background-color: var(--color-surface-soft); border-radius: 4px; border: 1px solid var(--color-border);"></div>
                  <div>
                     <div style="font-size: 13px; font-weight: 700; color: var(--color-text); margin-bottom: 2px;">${t.name}</div>
                     <div style="font-size: 11px; color: var(--color-text-secondary);">${dateStr}</div>
@@ -2256,16 +2272,12 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
           </div>
         `;
         
-        // Show max 4 in bottom row
         if (index < 4) gallery.innerHTML += cardHtml;
-        
-        // Add to modal grid
         const grid = document.getElementById('allTemplatesGrid');
         if(grid && index === 0) grid.innerHTML = ''; 
         if(grid) grid.innerHTML += cardHtml;
       });
 
-      // Show/Hide "+ More" fixed button
       if (data.length > 4) {
           moreBtn.style.display = 'block';
           document.getElementById('moreTemplatesCount').innerText = '+' + (data.length - 4);
@@ -2293,6 +2305,22 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
 
       document.getElementById('tplName').value = tpl.name;
       currentEditingTemplateId = id; 
+      currentActiveBgString = tpl.thumbnail_url || "url('./templates/gatepass01.jpg')";
+
+      // Sync top thumbnail selector
+      document.querySelectorAll('#templateGallery .tpl-card').forEach(c => {
+          const check = c.querySelector('.active-check');
+          c.style.border = '1px solid var(--color-border)';
+          if(check) check.style.display = 'none';
+          
+          // Match background logic
+          const onclickStr = c.getAttribute('onclick') || '';
+          if (onclickStr.includes(currentActiveBgString.replace(/"/g, "'"))) {
+              c.style.border = '2px solid var(--color-primary)';
+              if(check) check.style.display = 'flex';
+          }
+      });
+
       const modal = document.getElementById('allTemplatesModal');
       if(modal) modal.classList.add('hidden');
   }
@@ -2312,8 +2340,9 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
     document.querySelectorAll('.canvas-element').forEach(node => node.style.outline = "none");
     const canvasHtml = document.getElementById('editorCanvas').outerHTML;
     
+    // Save the actual active background instead of hardcoded default
     const payload = {
-       name: tplName, event_type: 'Custom', html_layout: canvasHtml, thumbnail_url: './templates/gatepass01.jpg' 
+       name: tplName, event_type: 'Custom', html_layout: canvasHtml, thumbnail_url: currentActiveBgString 
     };
 
     if (currentEditingTemplateId && !saveAsNew) {
@@ -2341,9 +2370,13 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
   document.addEventListener('DOMContentLoaded', () => {
       fetchSavedTemplates();
 
-      makeDraggable(document.getElementById('canvasEventName'));
-      makeDraggable(document.getElementById('canvasGuestName'));
-      makeDraggable(document.getElementById('canvasQrLabel'));
+      const evtName = document.getElementById('canvasEventName');
+      const gstName = document.getElementById('canvasGuestName');
+      const qrLabel = document.getElementById('canvasQrLabel');
+      
+      if(evtName) makeDraggable(evtName);
+      if(gstName) makeDraggable(gstName);
+      if(qrLabel) makeDraggable(qrLabel);
 
       document.addEventListener('keydown', (e) => {
           if (e.key === "Escape") {
@@ -2359,6 +2392,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       const colorPicker = document.getElementById('elementColor');
       const sizePicker = document.getElementById('elementFontSize');
       const fontPicker = document.getElementById('elementFontFamily');
+      const alignPicker = document.getElementById('elementTextAlign');
       
       if (colorPicker) colorPicker.addEventListener('input', (e) => {
           if (currentlySelectedElement) currentlySelectedElement.style.color = e.target.value;
@@ -2369,30 +2403,41 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       if (fontPicker) fontPicker.addEventListener('change', (e) => {
           if (currentlySelectedElement) currentlySelectedElement.style.fontFamily = e.target.value;
       });
+      if (alignPicker) alignPicker.addEventListener('change', (e) => {
+          if (currentlySelectedElement) currentlySelectedElement.style.textAlign = e.target.value;
+      });
 
       const guestDropdown = document.getElementById('tplGuestSelect');
       if(guestDropdown) {
           guestDropdown.addEventListener('change', (e) => {
               const guestId = e.target.value;
               const qrSpot = document.getElementById('canvasQRSpot');
+              const guestNameEl = document.getElementById('canvasGuestName');
+              const eventNameEl = document.getElementById('canvasEventName');
+              const qrLabelEl = document.getElementById('canvasQrLabel');
               
               if(!guestId) {
-                  qrSpot.innerHTML = '<div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight:bold;">QR SPOT</div>';
-                  document.getElementById('canvasQrLabel').innerText = 'GST-ID-001';
-                  document.getElementById('canvasGuestName').innerText = 'Guest Name';
+                  if(qrSpot) qrSpot.innerHTML = '<div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight:bold;">QR SPOT</div>';
+                  if(qrLabelEl) qrLabelEl.innerText = 'GST-ID-001';
+                  if(guestNameEl) guestNameEl.innerText = 'Guest Name';
                   return;
               }
+
+              // Safely find the guest and calculate sequential ID
+              const guest = allFetchedGuests.find(g => g.id === guestId);
+              if(!guest) return;
+
+              // Uses the permanent database ticket number, padded to 3 digits (e.g., GST-ID-007)
+const seqId = 'GST-ID-' + String(guest.ticket_number).padStart(3, '0');
               
-              const optionText = e.target.options[e.target.selectedIndex].text;
-              const guestName = optionText.split(' (')[0];
-              const eventName = optionText.split('(')[1].replace(')', '');
+              if(guestNameEl) guestNameEl.innerText = guest.guest_name;
+              if(eventNameEl) eventNameEl.innerText = guest.events.event_name;
+              if(qrLabelEl) qrLabelEl.innerText = seqId;
               
-              document.getElementById('canvasGuestName').innerText = guestName;
-              document.getElementById('canvasEventName').innerText = eventName;
-              document.getElementById('canvasQrLabel').innerText = guestId.substring(0,8).toUpperCase();
-              
-              qrSpot.innerHTML = '';
-              new QRCode(qrSpot, { text: guestId, width: 310, height: 310, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
+              if(qrSpot) {
+                  qrSpot.innerHTML = '';
+                  new QRCode(qrSpot, { text: guestId, width: 310, height: 310, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
+              }
           });
       }
   });
