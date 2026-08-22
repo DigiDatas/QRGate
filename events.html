@@ -1984,12 +1984,12 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
 
   });
  
-  // --- TEMPLATES DATABASE LOGIC (Fix 04) ---
+  // ==========================================
+  // --- TEMPLATES DATABASE LOGIC & EDITOR CONTROLS ---
+  // ==========================================
 
-  async function // --- TEMPLATES DATABASE LOGIC & EDITOR CONTROLS ---
-
-  let windowSavedTemplates = []; // Store them globally to reload them later
-  let currentlySelectedElement = null; // Track clicked text elements for deletion
+  let windowSavedTemplates = []; 
+  let currentlySelectedElement = null; 
 
   async function fetchSavedTemplates() {
     const { data, error } = await supabaseClient.from('templates').select('*').order('created_at', { ascending: false });
@@ -1998,7 +1998,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
     const gallery = document.getElementById('savedTemplatesGallery');
     if (!gallery) return;
 
-    windowSavedTemplates = data || []; // Save to global variable
+    windowSavedTemplates = data || []; 
 
     gallery.innerHTML = `
       <div onclick="resetTemplate()" class="card" style="min-width: 200px; height: 100px; border: 1px dashed var(--color-primary); background: var(--color-primary-soft); color: var(--color-primary); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;">
@@ -2010,7 +2010,6 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
     if (data) {
       data.forEach(t => {
         const dateStr = new Date(t.created_at).toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' });
-        // Clicking this card loads the saved HTML back into the editor!
         gallery.innerHTML += `
           <div onclick="loadSavedTemplate('${t.id}')" class="card" style="min-width: 260px; height: 100px; padding: 12px; display: flex; gap: 12px; align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='var(--color-primary)'" onmouseout="this.style.borderColor='var(--color-border)'">
              <div style="width: 50px; height: 70px; background: url('${t.thumbnail_url || ''}') center/cover; background-color: var(--color-surface-soft); border-radius: 4px; border: 1px solid var(--color-border);"></div>
@@ -2027,7 +2026,6 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
   function loadSavedTemplate(id) {
       const tpl = windowSavedTemplates.find(x => x.id === id);
       if(!tpl) return;
-      // Overwrite the current canvas with the saved HTML
       document.getElementById('editorCanvas').outerHTML = tpl.html_layout;
       document.getElementById('tplName').value = tpl.name;
       alert("Template loaded successfully!");
@@ -2052,21 +2050,16 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
     }
   }
 
-  // --- EDITOR UI CONTROLS ---
-
   function applyTemplateBg(cardElement, bgStr, color1, color2) {
-      // 1. Reset all thumbnails styling
       document.querySelectorAll('.tpl-card').forEach(c => {
           c.style.border = '1px solid var(--color-border)';
           const check = c.querySelector('.active-check');
           if(check) check.style.display = 'none';
       });
-      // 2. Highlight clicked thumbnail
       cardElement.style.border = '2px solid var(--color-primary)';
       const activeCheck = cardElement.querySelector('.active-check');
       if (activeCheck) activeCheck.style.display = 'flex';
 
-      // 3. Apply background to canvas
       const canvas = document.getElementById('editorCanvas');
       canvas.style.backgroundImage = 'none'; 
       if (bgStr.includes('url')) canvas.style.backgroundImage = bgStr;
@@ -2092,7 +2085,6 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       newText.style.cursor = "text";
       newText.style.outline = "none";
       
-      // Allow selecting to delete
       newText.onclick = (e) => {
           currentlySelectedElement = e.target;
           e.target.style.outline = "2px dashed var(--color-primary)";
@@ -2115,20 +2107,17 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       const previewContainer = document.getElementById('previewContainer');
       const canvas = document.getElementById('editorCanvas');
       
-      // Clone the exact state of the canvas into the modal
       previewContainer.innerHTML = '';
       const clone = canvas.cloneNode(true);
-      clone.style.transform = "scale(1)"; // reset scale for the modal container
+      clone.style.transform = "scale(1)"; 
       previewContainer.appendChild(clone);
       
       document.getElementById('previewModal').classList.remove('hidden');
   }
 
   function resetTemplate() {
-      // Refresh the page to reset the canvas completely for V1
       if(confirm("Are you sure you want to reset the canvas? All unsaved changes will be lost.")) {
           document.querySelector('button[onclick*="designTemplatesView"]').click();
-          // Simulate clicking the first thumbnail
           document.querySelectorAll('.tpl-card')[0].click();
           document.getElementById('canvasEventName').innerText = 'Event Name';
           document.getElementById('canvasGuestName').innerText = 'Guest Name';
@@ -2138,11 +2127,14 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       }
   }
 
-  // --- DYNAMIC QR INJECTION ---
+  function selectEditorTool(btnElement) {
+      document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+      btnElement.classList.add('active');
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
       fetchSavedTemplates();
 
-      // Listen to the Guest Dropdown in Settings
       const guestDropdown = document.getElementById('tplGuestSelect');
       if(guestDropdown) {
           guestDropdown.addEventListener('change', (e) => {
@@ -2150,14 +2142,12 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
               const qrSpot = document.getElementById('canvasQRSpot');
               
               if(!guestId) {
-                  // Reset if no guest selected
                   qrSpot.innerHTML = '<div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight:bold;">QR SPOT</div>';
                   document.getElementById('canvasQrLabel').innerText = 'GST-ID-001';
                   document.getElementById('canvasGuestName').innerText = 'Guest Name';
                   return;
               }
               
-              // 1. Update Names
               const optionText = e.target.options[e.target.selectedIndex].text;
               const guestName = optionText.split(' (')[0];
               const eventName = optionText.split('(')[1].replace(')', '');
@@ -2166,11 +2156,10 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
               document.getElementById('canvasEventName').innerText = eventName;
               document.getElementById('canvasQrLabel').innerText = guestId.substring(0,8).toUpperCase();
               
-              // 2. Generate Real QR on the Canvas
               qrSpot.innerHTML = '';
               new QRCode(qrSpot, {
                   text: guestId,
-                  width: 310,  // fits nicely inside the 350px box with padding
+                  width: 310, 
                   height: 310,
                   colorDark : "#000000",
                   colorLight : "#ffffff",
@@ -2180,7 +2169,11 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       }
   });
 
+  // Ensure this is the last line of your script!
   init();
+
+
+
 </script>
 </body>
 </html>
