@@ -506,7 +506,7 @@
                 <button class="btn-filter-nav">Upcoming <span class="badge-count">4</span></button>
                 <button class="btn-filter-nav">Ongoing <span class="badge-count">2</span></button>
                 <button class="btn-filter-nav">Completed <span class="badge-count">4</span></button>
-                <button type="button" onclick="cancelEventCreation()" class="btn-filter-nav">Cancel</button>
+                <button type="button" onclick="cancelEventForm()" class="btn-filter-nav">Cancel</button>
               </div>
               <div style="display: flex; gap: 12px;">
                 <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filter</button>
@@ -1800,21 +1800,21 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
           }
           
           const customCanvas = tempDiv.firstElementChild;
-          customCanvas.style.position = 'relative';
-          customCanvas.style.top = '0';
-          customCanvas.style.left = '0';
-          
-          // Calculate scale to fit modal perfectly (assuming standard 1080x1440 canvas)
-          customCanvas.style.transform = 'scale(0.315)'; 
-          customCanvas.style.transformOrigin = 'top left';
+          // PERFECT CENTER SCALING FIX
+          customCanvas.style.position = 'absolute';
+          customCanvas.style.top = '50%';
+          customCanvas.style.left = '50%';
+          customCanvas.style.transform = 'translate(-50%, -50%) scale(0.315)'; 
+          customCanvas.style.transformOrigin = 'center';
           
           ticketContainer.innerHTML = '';
           ticketContainer.style.width = '340px';
-          ticketContainer.style.height = '455px'; // Exact height needed for scaled 1440px canvas
+          ticketContainer.style.height = '455px'; 
           ticketContainer.style.background = 'transparent';
           ticketContainer.style.boxShadow = 'none';
           ticketContainer.style.overflow = 'hidden';
           ticketContainer.style.borderRadius = '16px';
+          ticketContainer.style.position = 'relative';
           ticketContainer.appendChild(customCanvas);
 
       } else {
@@ -2518,22 +2518,27 @@ const eventDropdown = document.getElementById('tplEventSelect');
               const gDrop = document.getElementById('tplGuestSelect');
               if (!gDrop) return;
               
+              // 1. Auto-load saved template assigned to this event if it exists
+              const matchedTpl = windowSavedTemplates.find(t => String(t.event_id) === String(eventId));
+              if (matchedTpl) {
+                  loadSavedTemplate(matchedTpl.id);
+              }
+
+              // 2. Filter guests for this event
               gDrop.innerHTML = '<option value="">Select Guest to Preview...</option>';
               if (!eventId) {
-                  gDrop.dispatchEvent(new Event('change')); // Reset canvas QR
+                  gDrop.dispatchEvent(new Event('change'));
                   return;
               }
 
-              // Filter globally fetched guests to match ONLY the selected event
               const filteredGuests = allFetchedGuests.filter(g => g.event_id === eventId);
               filteredGuests.forEach(g => {
                   gDrop.innerHTML += `<option value="${g.id}">${g.guest_name}</option>`;
               });
               
-              gDrop.dispatchEvent(new Event('change')); // Reset canvas QR
+              gDrop.dispatchEvent(new Event('change'));
           });
       }
-
       const guestDropdown = document.getElementById('tplGuestSelect');
       if(guestDropdown) {
           guestDropdown.addEventListener('change', (e) => {
@@ -2589,6 +2594,14 @@ const seqId = 'GST-ID-' + String(guest.ticket_number).padStart(3, '0');
           // Fallback to the Dashboard tab if the Events tab can't be found
           document.querySelectorAll('.nav-item')[0].click(); 
       }
+  }
+function cancelEventForm() {
+      currentEditEventId = null;
+      document.getElementById('dedicatedEventName').value = '';
+      document.getElementById('dedicatedVenue').value = '';
+      document.getElementById('dedicatedEventDate').value = '';
+      document.getElementById('submitDedicatedEventBtn').innerHTML = 'Create Event <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+      switchView('createManageView', document.querySelector('button[onclick*="createManageView"]'));
   }
 
   // Ensure this remains last
