@@ -1065,57 +1065,58 @@
 
 
 <!-- ============================================== -->
-      <!-- TAB: DESIGN TEMPLATES VIEW (LOCKED TO SCREEN) -->
+      <!-- TAB: DESIGN TEMPLATES VIEW -->
       <!-- ============================================== -->
       <div id="designTemplatesView" class="view-section">
-        <!-- Main Wrapper: strictly 100% height, no scrolling -->
-        <div style="display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: hidden;">
+        <div style="display: flex; flex-direction: column; height: 100%; min-height: 0; overflow-y: auto; padding-right: 8px;" class="no-scrollbar">
           
-          <!-- 1. Choose a Template (Fixed Height, Shrink = 0) -->
+          <!-- 1. Choose a Template -->
           <div style="flex-shrink: 0; margin-bottom: 12px;">
             <h3 class="section-title" style="margin-bottom: 8px; font-size: 14px;">1. Choose a Template</h3>
-            <div id="templateGallery" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px;" class="no-scrollbar">
+            <div id="templateGallery" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px;" class="no-scrollbar">
               
-              <div onclick="applyTemplateBg(this, 'url(./templates/gatepass01.jpg)', '#ffffff', '#e2e8f0')" class="card tpl-card" style="min-width: 120px; height: 90px; border: 2px solid var(--color-primary); border-radius: var(--radius-md); position: relative; overflow: hidden; cursor: pointer; background: var(--color-surface-soft);">
+              <!-- TALL PORTRAIT THUMBNAILS -->
+              <div onclick="applyTemplateBg(this, 'url(./templates/gatepass01.jpg)', '#ffffff', '#e2e8f0')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 2px solid var(--color-primary); border-radius: var(--radius-md); position: relative; overflow: hidden; cursor: pointer; background: var(--color-surface-soft);">
                 <div class="active-check" style="position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                <div style="width: 100%; height: 64px; background: url('./templates/gatepass01.jpg') center/cover no-repeat;"></div>
-                <div style="padding: 2px; text-align: center; font-size: 10px; font-weight: 600;">Custom 1080x1440</div>
+                <!-- Switched to center/cover to fill the tall box -->
+                <div style="width: 100%; height: 100px; background: url('./templates/gatepass01.jpg') center/cover no-repeat;"></div>
+                <div style="padding: 4px 2px; text-align: center; font-size: 9px; font-weight: 600; line-height: 1;">Custom Gatepass</div>
               </div>
 
-              <div onclick="applyTemplateBg(this, 'linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)', '#111827', '#64748b')" class="card tpl-card" style="min-width: 120px; height: 90px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer;">
+              <div onclick="applyTemplateBg(this, 'linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)', '#111827', '#64748b')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer;">
                  <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                 <div style="width: 100%; height: 64px; background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);"></div>
-                 <div style="padding: 2px; text-align: center; font-size: 10px; font-weight: 600;">Corporate Clean</div>
+                 <div style="width: 100%; height: 100px; background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);"></div>
+                 <div style="padding: 4px 2px; text-align: center; font-size: 9px; font-weight: 600; line-height: 1;">Corporate Clean</div>
               </div>
 
-              <div onclick="applyTemplateBg(this, 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)', '#831843', '#be185d')" class="card tpl-card" style="min-width: 120px; height: 90px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer;">
+              <div onclick="applyTemplateBg(this, 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)', '#831843', '#be185d')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer;">
                  <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                 <div style="width: 100%; height: 64px; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);"></div>
-                 <div style="padding: 2px; text-align: center; font-size: 10px; font-weight: 600;">Wedding Theme</div>
+                 <div style="width: 100%; height: 100px; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);"></div>
+                 <div style="padding: 4px 2px; text-align: center; font-size: 9px; font-weight: 600; line-height: 1;">Wedding Theme</div>
               </div>
 
-              <div onclick="applyTemplateBg(this, 'linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%)', '#1e3a8a', '#1d4ed8')" class="card tpl-card" style="min-width: 120px; height: 90px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer;">
+              <div onclick="applyTemplateBg(this, 'linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%)', '#1e3a8a', '#1d4ed8')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer;">
                  <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                 <div style="width: 100%; height: 64px; background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);"></div>
-                 <div style="padding: 2px; text-align: center; font-size: 10px; font-weight: 600;">Birthday Bash</div>
+                 <div style="width: 100%; height: 100px; background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);"></div>
+                 <div style="padding: 4px 2px; text-align: center; font-size: 9px; font-weight: 600; line-height: 1;">Birthday Bash</div>
               </div>
 
-              <div onclick="alert('AI Generation feature is coming in V2!')" class="card" style="min-width: 180px; height: 90px; background: linear-gradient(135deg, #ea7e8c 0%, #9865a7 50%, #4a549a 100%); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; border: none; color: white; box-shadow: 0 6px 16px rgba(152, 101, 167, 0.3); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                 <div style="display: flex; align-items: center; gap: 8px;">
-                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                       <path d="M9 3L10.1241 6.55181C10.4287 7.51478 11.134 8.29177 12.0628 8.65345L15 9.79723L12.0628 10.941C11.134 11.3027 10.4287 12.0797 10.1241 13.0426L9 16.5945L7.87588 13.0426C7.57127 12.0797 6.86598 11.3027 5.93718 10.941L3 9.79723L5.93718 8.65345C6.86598 8.29177 7.57127 7.51478 7.87588 6.55181L9 3Z"></path>
-                       <path d="M18 14L18.5621 15.7759C18.7144 16.2574 19.067 16.6459 19.5314 16.8267L21 17.3986L19.5314 17.9705C19.067 18.1513 18.7144 18.5398 18.5621 19.0213L18 20.7972L17.4379 19.0213C17.2856 18.5398 16.933 18.1513 16.4686 17.9705L15 17.3986L16.4686 16.8267C16.933 16.6459 17.2856 16.2574 17.4379 15.7759L18 14Z"></path>
-                     </svg>
-                     <span style="font-size: 14px; font-weight: 700;">Generate by AI</span>
-                 </div>
+              <!-- AI Button (Kept Horizontal for layout balance) -->
+              <div onclick="alert('AI Generation feature is coming in V2!')" class="card" style="min-width: 150px; height: 130px; background: linear-gradient(135deg, #ea7e8c 0%, #9865a7 50%, #4a549a 100%); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; border: none; color: white; box-shadow: 0 6px 16px rgba(152, 101, 167, 0.3); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 8px;">
+                   <path d="M9 3L10.1241 6.55181C10.4287 7.51478 11.134 8.29177 12.0628 8.65345L15 9.79723L12.0628 10.941C11.134 11.3027 10.4287 12.0797 10.1241 13.0426L9 16.5945L7.87588 13.0426C7.57127 12.0797 6.86598 11.3027 5.93718 10.941L3 9.79723L5.93718 8.65345C6.86598 8.29177 7.57127 7.51478 7.87588 6.55181L9 3Z"></path>
+                 </svg>
+                 <span style="font-size: 13px; font-weight: 700; letter-spacing: 0.02em;">Generate by AI</span>
                  <div style="font-size: 9px; font-weight: 700; background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 12px; margin-top: 8px; letter-spacing: 0.05em; text-transform: uppercase;">Coming Soon</div>
               </div>
-            </div>
 
-          <!-- 2. EDITOR GRID (Flexible Height, locks to space between top and bottom) -->
-          <div style="flex: 1; display: grid; grid-template-columns: 220px 1fr 260px; gap: 16px; min-height: 0; margin-bottom: 12px;">
+            </div>
+          </div>
+
+          <!-- 2. EDITOR GRID -->
+          <div style="flex: 1; display: grid; grid-template-columns: 220px 1fr 260px; gap: 16px; min-height: 520px; margin-bottom: 12px;">
             
-            <!-- Left: Tools Sidebar (Internal scroll if needed) -->
+            <!-- Left: Tools Sidebar -->
             <div class="card panel no-scrollbar" style="padding: 12px; display: flex; flex-direction: column; overflow-y: auto;">
                <h3 class="section-title" style="margin-bottom: 12px; font-size: 13px;">2. Tools</h3>
                <div style="display: flex; flex-direction: column; gap: 4px;">
@@ -1145,22 +1146,19 @@
 
             <!-- Middle: Canvas Area -->
             <div class="card panel" style="background: var(--color-surface-soft); position: relative; overflow: hidden; min-height: 0; padding: 0;">
-              
-              <!-- PERFECTLY CENTERED ABSOLUTE CANVAS (Won't stretch the container) -->
               <div id="editorCanvas" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.26); transform-origin: center; width: 1080px; height: 1440px; background-image: url('./templates/gatepass01.jpg'); background-size: 100% 100%; background-repeat: no-repeat; background-position: center; box-shadow: 0 40px 100px rgba(0,0,0,0.15); border-radius: 20px; background-color: #fff;">
                   
-                  <div id="canvasEventName" class="canvas-element" contenteditable="true" style="position: absolute; top: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 70px; font-weight: 800; color: #fff; font-family: var(--font-family); outline: none; cursor: move;">Event Name</div>
-                  <div id="canvasGuestName" class="canvas-element" contenteditable="true" style="position: absolute; top: 260px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 45px; color: #e2e8f0; font-family: var(--font-family); outline: none; cursor: move;">Guest Name</div>
+                  <div id="canvasEventName" class="canvas-element" contenteditable="false" style="position: absolute; top: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 70px; font-weight: 800; color: #fff; font-family: var(--font-family); outline: none; cursor: move; width: max-content;">Event Name</div>
+                  <div id="canvasGuestName" class="canvas-element" contenteditable="false" style="position: absolute; top: 260px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 45px; color: #e2e8f0; font-family: var(--font-family); outline: none; cursor: move; width: max-content;">Guest Name</div>
                   
                   <div id="canvasQRSpot" style="position: absolute; bottom: 220px; left: 50%; transform: translateX(-50%); width: 350px; height: 350px; background: white; border-radius: 20px; padding: 20px; display: flex; align-items: center; justify-content: center;">
                       <div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight:bold;">QR SPOT</div>
                   </div>
-                  <div id="canvasQrLabel" class="canvas-element" style="position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 32px; font-weight: bold; color: #fff; font-family: monospace; cursor: move;">GST-ID-001</div>
+                  <div id="canvasQrLabel" class="canvas-element" contenteditable="false" style="position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 32px; font-weight: bold; color: #fff; font-family: monospace; cursor: move; width: max-content;">GST-ID-001</div>
               </div>
-
             </div>
 
-            <!-- Right: Settings Sidebar (Internal scroll if needed) -->
+            <!-- Right: Settings Sidebar -->
             <div class="card panel no-scrollbar" style="padding: 16px; overflow-y: auto; display: flex; flex-direction: column;">
                <h3 class="section-title" style="margin-bottom: 16px; font-size: 13px;">3. Template Settings</h3>
                
@@ -1178,23 +1176,26 @@
                      <button onclick="previewTemplate()" class="btn-filter-nav" style="flex: 1; justify-content: center; font-size:11px;">Preview</button>
                      <button onclick="resetTemplate()" class="btn-filter-nav" style="flex: 1; justify-content: center; font-size:11px;">Reset</button>
                   </div>
+                  <!-- FIX 5: Save Update AND Save As New buttons -->
                   <div style="display: flex; gap: 8px;">
                      <button onclick="saveGatePassTemplate(false)" class="btn-primary" style="flex: 1; padding: 10px; font-size:11px;">Save / Update</button>
                      <button onclick="saveGatePassTemplate(true)" class="btn-primary" style="background: var(--color-info); flex: 1; padding: 10px; font-size:11px;">Save as New</button>
                   </div>
                </div>
+            </div>
+          </div> 
+          <!-- END OF GRID (This missing closing div broke your layout before!) -->
 
           <!-- 4. My Saved Templates (Scrolling with Fixed +More) -->
           <div style="flex-shrink: 0; padding-bottom: 8px; display: flex; flex-direction: column;">
             <h3 class="section-title" style="margin-bottom: 8px; font-size: 14px;">4. My Saved Templates</h3>
             <div style="display: flex; gap: 12px; align-items: stretch; width: 100%;">
                 
-                <!-- This container holds the cards and scrolls infinitely -->
                 <div id="savedTemplatesGallery" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; flex: 1;" class="no-scrollbar">
                     <!-- Cards will be injected here by JS -->
                 </div>
                 
-                <!-- This container is FIXED to the right side -->
+                <!-- FIX 6: The fixed "+ More" button anchored to the right -->
                 <div id="moreTemplatesBtnContainer" style="display: none; flex-shrink: 0; padding-bottom: 8px;">
                     <div onclick="document.getElementById('allTemplatesModal').classList.remove('hidden')" class="card" style="width: 80px; height: 90px; border: 1px solid var(--color-border); background: var(--color-surface-soft); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; color: var(--color-primary);">
                        <div style="font-size: 16px; font-weight: 700;" id="moreTemplatesCount">+0</div>
@@ -1205,10 +1206,13 @@
             </div>
           </div>
 
+        </div>
+      </div>
+
 <!-- PREVIEW FULLSCREEN MODAL -->
 <div id="previewModal" onclick="if(event.target === this) this.classList.add('hidden')" class="hidden fixed inset-0 flex items-center justify-center p-4" style="background: rgba(15,23,42,0.95); z-index: 10000; flex-direction: column;">
   <div style="display: flex; justify-content: flex-end; width: 100%; max-width: 800px; margin-bottom: 16px;">
-    <button onclick="document.getElementById('previewModal').classList.add('hidden')" class="btn-primary" style="background: white; color: black; font-size: 13px; padding: 8px 16px;">X</button>
+    <button onclick="document.getElementById('previewModal').classList.add('hidden')" class="btn-primary" style="background: white; color: black; font-size: 13px; padding: 8px 16px;">Close Preview</button>
   </div>
   <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
       <div id="previewContainer" style="width: 1080px; height: 1440px; transform: scale(0.55); transform-origin: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-radius: 20px; overflow: hidden; flex-shrink: 0; background: white;">
@@ -1218,7 +1222,7 @@
 </div>
 
 <!-- ALL TEMPLATES MODAL -->
-<div id="allTemplatesModal" class="hidden fixed inset-0 flex items-center justify-center p-4" style="background: rgba(15,23,42,0.85); z-index: 9999;">
+<div id="allTemplatesModal" onclick="if(event.target === this) this.classList.add('hidden')" class="hidden fixed inset-0 flex items-center justify-center p-4" style="background: rgba(15,23,42,0.85); z-index: 9999;">
   <div class="card panel" style="width: 100%; max-width: 900px; height: 80vh; display: flex; flex-direction: column; padding: 24px;">
     <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
       <h2 class="section-title">All Saved Templates</h2>
@@ -1229,7 +1233,6 @@
     </div>
   </div>
 </div>
-
 <!-- ============================================== -->
 <!-- QR BOARDING PASS MODAL -->
 <!-- ============================================== -->
@@ -2069,7 +2072,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
   let offsetY = 0;
 
   function makeDraggable(el) {
-      el.classList.add('canvas-element');
+      if(!el.classList.contains('canvas-element')) el.classList.add('canvas-element');
       el.style.cursor = 'move';
       el.contentEditable = "false"; 
       
@@ -2167,13 +2170,14 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       newText.style.color = "#000000";
       newText.style.fontFamily = "var(--font-family)";
       newText.style.outline = "none";
+      newText.style.width = "max-content";
       
       makeDraggable(newText);
       canvas.appendChild(newText);
   }
 
   function deleteSelectedElement() {
-      if(currentlySelectedElement) {
+      if(currentlySelectedElement && currentlySelectedElement.id !== 'canvasQRSpot') {
           currentlySelectedElement.remove();
           currentlySelectedElement = null;
       } else {
@@ -2225,7 +2229,6 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
     const moreBtn = document.getElementById('moreTemplatesBtnContainer');
     if (!gallery) return;
 
-    // Reset Gallery
     gallery.innerHTML = `
       <div onclick="resetTemplate()" class="card" style="min-width: 180px; height: 90px; border: 1px dashed var(--color-primary); background: var(--color-primary-soft); color: var(--color-primary); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;">
          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -2234,9 +2237,9 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
     `;
 
     if (data) {
-      data.forEach((t) => {
+      data.forEach((t, index) => {
         const dateStr = new Date(t.created_at).toLocaleDateString();
-        // UI Fix 4: Added Pencil and Trash icons to card
+        // FIX 4: Added Pencil Icon and Trash Icon next to each other
         const cardHtml = `
           <div class="card" style="min-width: 260px; height: 90px; padding: 12px; display: flex; gap: 12px; align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); position: relative; flex-shrink: 0;">
              <div onclick="loadSavedTemplate('${t.id}')" style="display:flex; flex:1; gap:12px; cursor:pointer; align-items:center;" title="Click to Edit">
@@ -2252,18 +2255,20 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
              </div>
           </div>
         `;
-        gallery.innerHTML += cardHtml;
         
-        // Also inject into the all templates modal
+        // Show max 4 in bottom row
+        if (index < 4) gallery.innerHTML += cardHtml;
+        
+        // Add to modal grid
         const grid = document.getElementById('allTemplatesGrid');
-        if(grid && t === data[0]) grid.innerHTML = ''; // wipe on first run
+        if(grid && index === 0) grid.innerHTML = ''; 
         if(grid) grid.innerHTML += cardHtml;
       });
 
       // Show/Hide "+ More" fixed button
-      if (data.length > 3) {
+      if (data.length > 4) {
           moreBtn.style.display = 'block';
-          document.getElementById('moreTemplatesCount').innerText = '+' + data.length;
+          document.getElementById('moreTemplatesCount').innerText = '+' + (data.length - 4);
       } else {
           moreBtn.style.display = 'none';
       }
@@ -2300,7 +2305,6 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       }
   }
 
-  // FIX 5: Save as New vs Update
   async function saveGatePassTemplate(saveAsNew = false) {
     const tplName = document.getElementById('tplName').value.trim();
     if (!tplName) return alert("Please enter a Template Name before saving!");
@@ -2313,12 +2317,10 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
     };
 
     if (currentEditingTemplateId && !saveAsNew) {
-        // UPDATE Existing
         const { error } = await supabaseClient.from('templates').update(payload).eq('id', currentEditingTemplateId);
         if (error) alert("Error updating: " + error.message);
         else { alert("Template updated!"); fetchSavedTemplates(); }
     } else {
-        // INSERT New
         const { error } = await supabaseClient.from('templates').insert([payload]);
         if (error) alert("Error saving: " + error.message);
         else { alert("New template saved!"); fetchSavedTemplates(); }
@@ -2343,7 +2345,6 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       makeDraggable(document.getElementById('canvasGuestName'));
       makeDraggable(document.getElementById('canvasQrLabel'));
 
-      // FIX 3: Close modals with Escape
       document.addEventListener('keydown', (e) => {
           if (e.key === "Escape") {
               const prev = document.getElementById('previewModal');
