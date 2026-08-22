@@ -1247,10 +1247,10 @@ let allFetchedGuests = [];
     } else if (viewId === 'createEventView') {
        titleEl.innerText = 'Create New Event'; subEl.innerText = 'Dashboard > Create & Manage > Create New Event';
        searchBox.style.display = 'none';
-    } else if (viewId === 'addGuestView') { // FIX 6: Add Guest Title routing
+    } else if (viewId === 'addGuestView') { 
        titleEl.innerText = 'Add Guest'; subEl.innerText = 'Dashboard > Create & Manage > Add individual guest details.';
        searchBox.style.display = 'none';
-    } else if (viewId === 'importDataView') { // Import Data Title routing
+    } else if (viewId === 'importDataView') { 
        titleEl.innerText = 'Import Data'; subEl.innerText = 'Dashboard > Create & Manage > Import guests in bulk.';
        searchBox.style.display = 'none';
     } else if (viewId === 'eventsView') {
@@ -1262,18 +1262,16 @@ let allFetchedGuests = [];
     } else if (viewId === 'guestsView') {
        titleEl.innerText = 'Gate Passes'; subEl.innerText = 'Manage and track all generated gate passes';
        searchBox.style.display = 'block'; searchInput.placeholder = 'Search gate passes by ID, guest name, event...';
+    } else if (viewId === 'designTemplatesView') {
+       titleEl.innerText = 'Design Templates'; subEl.innerText = 'Choose a template and customize your gate pass';
+       searchBox.style.display = 'none';
+    } else if (viewId === 'savedDesignsView') {
+       titleEl.innerText = 'My Saved Designs'; subEl.innerText = 'Manage and edit your saved gate pass templates';
+       searchBox.style.display = 'none';
     } else if (viewId === 'qrCodesView') {
        titleEl.innerText = 'QR Codes'; subEl.innerText = 'Create, customize and manage QR codes';
        searchBox.style.display = 'block'; searchInput.placeholder = 'Search QR codes by name, event, type...';
     }
-	} else if (viewId === 'designTemplatesView') {
-       titleEl.innerText = 'Design Templates'; 
-       subEl.innerText = 'Choose a template and customize your gate pass';
-       searchBox.style.display = 'none';
-    } else if (viewId === 'savedDesignsView') {
-       titleEl.innerText = 'My Saved Designs'; 
-       subEl.innerText = 'Manage and edit your saved gate pass templates';
-       searchBox.style.display = 'none';
   }
 
   // --- DATA FETCHING ---
