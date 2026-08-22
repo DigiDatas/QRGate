@@ -1027,19 +1027,16 @@
 
 
 <!-- ============================================== -->
-      <!-- TAB: DESIGN TEMPLATES VIEW (FIXED LAYOUT) -->
+      <!-- TAB: DESIGN TEMPLATES VIEW (FIXED) -->
       <!-- ============================================== -->
       <div id="designTemplatesView" class="view-section">
-        <div style="display: flex; flex-direction: column; height: 100%; min-height: 0; overflow-y: auto; padding-right: 8px;" class="no-scrollbar">
+        <div style="display: flex; flex-direction: column; height: 100%; overflow-y: auto; padding-right: 8px;" class="no-scrollbar">
           
-        
-
-          <!-- 1. Choose a Template (Fixed Height Row) -->
+          <!-- 1. Choose a Template -->
           <div style="flex-shrink: 0; margin-bottom: 16px;">
             <h3 class="section-title" style="margin-bottom: 12px; font-size: 14px;">1. Choose a Template</h3>
             <div id="templateGallery" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px;" class="no-scrollbar">
               
-              <!-- Added 'this' to the onclick, fixed image path -->
               <div onclick="applyTemplateBg(this, 'url(./templates/gatepass01.jpg)', '#ffffff', '#e2e8f0')" class="card tpl-card" style="min-width: 120px; height: 100px; border: 2px solid var(--color-primary); border-radius: var(--radius-md); position: relative; overflow: hidden; cursor: pointer; background: var(--color-surface-soft);">
                 <div class="active-check" style="position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
                 <div style="width: 100%; height: 70px; background: url('./templates/gatepass01.jpg') center/cover;"></div>
@@ -1061,73 +1058,70 @@
                  <div style="width: 100%; height: 70px; background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);"></div>
                  <div style="padding: 4px; text-align: center; font-size: 10px; font-weight: 600;">Birthday Bash</div>
               </div>
-<div class="card" style="min-width: 120px; height: 100px; border: 1px dashed var(--color-border); background: var(--color-surface-soft); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.7;">
-                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" style="margin-bottom: 4px;"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                 <div style="font-size: 10px; font-weight: 700; color: var(--color-text);">AI Generation</div>
-                 <div style="font-size: 8px; color: var(--color-text-secondary); margin-top: 2px; background: var(--color-border); padding: 2px 6px; border-radius: 4px;">Coming Soon</div>
-              </div>
-
             </div>
           </div>
 
-          <!-- 2. EDITOR GRID (Flexible Middle Section) -->
-          <!-- Widened the left column from 180px to 220px -->
-          <div style="flex: 1; display: grid; grid-template-columns: 220px 1fr 260px; gap: 20px; min-height: 0; margin-bottom: 16px;">
+          <!-- 2. EDITOR GRID -->
+          <div style="display: grid; grid-template-columns: 220px 1fr 260px; gap: 20px; min-height: 520px; margin-bottom: 24px; flex-shrink: 0;">
             
-            <!-- Left: Tools Sidebar (Scrollable) -->
-            <div class="card panel no-scrollbar" style="padding: 12px; overflow-y: auto;">
+            <!-- Left: Tools Sidebar -->
+            <div class="card panel" style="padding: 12px; display: flex; flex-direction: column;">
                <h3 class="section-title" style="margin-bottom: 12px; font-size: 13px;">2. Tools</h3>
                <div style="display: flex; flex-direction: column; gap: 4px;">
-                  <!-- Wired up addCanvasText() -->
                   <button class="nav-item tool-btn w-full" onclick="addCanvasText()" style="justify-content: flex-start; height: 34px; font-size:12px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg> Add Text</button>
                   <button class="nav-item tool-btn w-full" onclick="alert('Image upload coming soon!')" style="justify-content: flex-start; height: 34px; font-size:12px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Add Image</button>
-                  <button class="nav-item tool-btn w-full" style="justify-content: flex-start; height: 34px; font-size:12px; opacity:0.5; cursor:not-allowed;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> QR Fixed to Bottom</button>
                   
                   <div style="height: 1px; background: var(--color-border); margin: 12px 0;"></div>
                   <div style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 8px; text-transform: uppercase;">Element Settings</div>
                   
-                  <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-                      <input type="color" id="elementColor" value="#000000" style="width: 32px; height: 32px; padding: 0; border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer;" title="Text Color">
-                      <input type="number" id="elementFontSize" class="input-field" style="margin: 0; padding: 4px 8px; font-size: 12px; height: 32px;" placeholder="Size (px)" title="Font Size">
+                  <!-- FIX 2: Text Properties -->
+                  <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+                      <div style="display: flex; gap: 8px;">
+                          <input type="color" id="elementColor" value="#ffffff" style="width: 32px; height: 32px; padding: 0; border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer;" title="Text Color">
+                          <input type="number" id="elementFontSize" class="input-field" style="margin: 0; padding: 4px 8px; font-size: 12px; height: 32px;" placeholder="Size (px)" title="Font Size">
+                      </div>
+                      <select id="elementFontFamily" class="input-field" style="margin: 0; padding: 4px 8px; font-size: 12px; height: 32px;">
+                          <option value="var(--font-family)">Default Font</option>
+                          <option value="Arial, sans-serif">Arial</option>
+                          <option value="'Courier New', monospace">Courier New</option>
+                          <option value="'Times New Roman', serif">Times New Roman</option>
+                          <option value="'Georgia', serif">Georgia</option>
+                      </select>
                   </div>
 
                   <button onclick="deleteSelectedElement()" class="btn-primary" style="background: var(--color-danger-soft); color: var(--color-danger); font-size: 11px; padding: 6px;">Delete Selected</button>
                </div>
             </div>
 
-            <!-- Middle: Canvas Area (Scales automatically) -->
+            <!-- Middle: Canvas Area (FIX 1: Background stretched correctly) -->
             <div class="card panel" style="background: var(--color-surface-soft); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; position: relative; overflow: hidden;">
-              
-              <!-- 1080x1440 CANVAS -->
-              <div id="editorCanvas" style="width: 1080px; height: 1440px; position: relative; background-image: url('./templates/gatepass01.jpg'); background-size: cover; background-position: center; transform: scale(0.30); box-shadow: 0 20px 40px rgba(0,0,0,0.1); border-radius: 20px; background-color: #fff; flex-shrink: 0; overflow: hidden;">
+              <div id="editorCanvas" style="width: 1080px; height: 1440px; position: relative; background-image: url('./templates/gatepass01.jpg'); background-size: 100% 100%; background-repeat: no-repeat; background-position: center; transform: scale(0.32); transform-origin: center; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border-radius: 20px; background-color: #fff; flex-shrink: 0; overflow: hidden;">
                   
-                  <!-- Dynamic Elements - Added contenteditable="true" -->
-                  <div id="canvasEventName" contenteditable="true" style="position: absolute; top: 150px; width: 100%; text-align: center; font-size: 70px; font-weight: 800; color: #fff; font-family: var(--font-family); outline: none; cursor: text;">Event Name</div>
-                  <div id="canvasGuestName" contenteditable="true" style="position: absolute; top: 260px; width: 100%; text-align: center; font-size: 45px; color: #e2e8f0; font-family: var(--font-family); outline: none; cursor: text;">Guest Name</div>
+                  <div id="canvasEventName" class="canvas-element" contenteditable="true" style="position: absolute; top: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 70px; font-weight: 800; color: #fff; font-family: var(--font-family); outline: none; cursor: move;">Event Name</div>
+                  <div id="canvasGuestName" class="canvas-element" contenteditable="true" style="position: absolute; top: 260px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 45px; color: #e2e8f0; font-family: var(--font-family); outline: none; cursor: move;">Guest Name</div>
                   
-                  <!-- Centered Fixed QR Code Zone -->
                   <div id="canvasQRSpot" style="position: absolute; bottom: 220px; left: 50%; transform: translateX(-50%); width: 350px; height: 350px; background: white; border-radius: 20px; padding: 20px; display: flex; align-items: center; justify-content: center;">
                       <div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight:bold;">QR SPOT</div>
                   </div>
-                  <!-- Centered QR Name Label -->
-                  <div id="canvasQrLabel" style="position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%); width: 350px; text-align: center; font-size: 32px; font-weight: bold; color: #fff; font-family: monospace;">GST-ID-001</div>
+                  <div id="canvasQrLabel" class="canvas-element" style="position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 32px; font-weight: bold; color: #fff; font-family: monospace; cursor: move;">GST-ID-001</div>
               </div>
             </div>
 
-            <!-- Right: Settings Sidebar -->
+            <!-- Right: Settings Sidebar (FIX 3: Event Dropdown Restored) -->
             <div class="card panel no-scrollbar" style="padding: 16px; overflow-y: auto; display: flex; flex-direction: column;">
                <h3 class="section-title" style="margin-bottom: 16px; font-size: 13px;">3. Template Settings</h3>
                
                <label style="font-size: 11px; font-weight: 700; margin-bottom: 4px; display: block;">Template Name</label>
                <input type="text" id="tplName" placeholder="New Template Name" class="input-field" style="padding: 8px 10px; font-size:12px; margin-bottom: 12px;">
                
-               <!-- Guest selection wires directly to the QR generation -->
+               <label style="font-size: 11px; font-weight: 700; margin-bottom: 4px; display: block;">Assign to Event</label>
+               <select id="tplEventSelect" class="input-field" style="padding: 8px 10px; font-size:12px; margin-bottom: 12px;"><option value="">Select Event...</option></select>
+
                <label style="font-size: 11px; font-weight: 700; margin-bottom: 4px; display: block;">Preview with Guest</label>
                <select id="tplGuestSelect" class="input-field" style="padding: 8px 10px; font-size:12px; margin-bottom: 12px;"><option value="">Select Guest...</option></select>
                
                <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px; padding-top: 16px;">
                   <div style="display: flex; gap: 8px;">
-                     <!-- Wired Preview and Reset buttons -->
                      <button onclick="previewTemplate()" class="btn-filter-nav" style="flex: 1; justify-content: center; font-size:11px;">Preview</button>
                      <button onclick="resetTemplate()" class="btn-filter-nav" style="flex: 1; justify-content: center; font-size:11px;">Reset</button>
                   </div>
@@ -1136,17 +1130,28 @@
             </div>
           </div>
 
+          <!-- 4. My Saved Templates (FIX 4: Now visible because container scrolls) -->
+          <div style="flex-shrink: 0; padding-bottom: 40px;">
+            <h3 class="section-title" style="margin-bottom: 12px; font-size: 14px;">4. My Saved Templates</h3>
+            <div id="savedTemplatesGallery" style="display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px;" class="no-scrollbar">
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
 <!-- PREVIEW FULLSCREEN MODAL -->
-<div id="previewModal" class="hidden fixed inset-0 flex items-center justify-center p-4" style="background: rgba(15,23,42,0.95); z-index: 10000; flex-direction: column;">
+<div id="previewModal" onclick="if(event.target === this) this.classList.add('hidden')" class="hidden fixed inset-0 flex items-center justify-center p-4" style="background: rgba(15,23,42,0.95); z-index: 10000; flex-direction: column;">
   <div style="display: flex; justify-content: flex-end; width: 100%; max-width: 800px; margin-bottom: 16px;">
     <button onclick="document.getElementById('previewModal').classList.add('hidden')" class="btn-primary" style="background: white; color: black; font-size: 13px; padding: 8px 16px;">Close Preview</button>
   </div>
-  <!-- Scaled up preview container -->
-  <div id="previewContainer" style="width: 1080px; height: 1440px; transform: scale(0.55); transform-origin: top center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-radius: 20px; overflow: hidden; flex-shrink: 0;">
-      <!-- Canvas will be cloned here -->
+  <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
+      <div id="previewContainer" style="width: 1080px; height: 1440px; transform: scale(0.55); transform-origin: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-radius: 20px; overflow: hidden; flex-shrink: 0; background: white;">
+          <!-- Canvas will be cloned here -->
+      </div>
   </div>
 </div>
-
 
 <!-- ============================================== -->
 <!-- QR BOARDING PASS MODAL -->
@@ -1306,7 +1311,7 @@ if (!data || data.length === 0) {
       const tplEvent = document.getElementById('tplEventSelect');
       // Populate Design Template Event Dropdown
       if (tplEvent && !isHidden) {
-         tplEvent.innerHTML += `<option value="${e.id}">${e.event_name}</option>`;
+          tplEvent.innerHTML += `<option value="${e.id}">${e.event_name}</option>`;
       }
       if(agSelect) {
         const optAG = document.createElement('option');
@@ -2045,11 +2050,10 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       if (activeCheck) activeCheck.style.display = 'flex';
 
       const canvas = document.getElementById('editorCanvas');
-      canvas.style.background = 'none'; // Wipe previous
-      
+      canvas.style.background = 'none'; 
       if (bgStr.includes('url')) {
           canvas.style.backgroundImage = bgStr;
-          canvas.style.backgroundSize = 'cover';
+          canvas.style.backgroundSize = '100% 100%'; // Stretches exactly to 1080x1440
           canvas.style.backgroundPosition = 'center';
           canvas.style.backgroundRepeat = 'no-repeat';
       } else {
@@ -2059,15 +2063,8 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       document.getElementById('canvasEventName').style.color = color1;
       document.getElementById('canvasGuestName').style.color = color2;
   }
-// Close Modals with Escape Key
-  document.addEventListener('keydown', (e) => {
-      if (e.key === "Escape") {
-          document.getElementById('previewModal').classList.add('hidden');
-          document.getElementById('qrModal').classList.add('hidden');
-      }
-  });
 
-  // --- DRAG AND DROP & ELEMENT SETTINGS ---
+  // --- DRAG, DROP & TEXT SETTINGS ---
   let isDragging = false;
   let dragTarget = null;
   let offsetX = 0;
@@ -2078,23 +2075,34 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       el.style.cursor = 'move';
       
       el.addEventListener('mousedown', (e) => {
-          // Prevent dragging if user is currently typing
-          if (document.activeElement === el) return;
+          if (document.activeElement === el) return; // Prevent drag if typing
           
-          // Select Element
           currentlySelectedElement = el;
           document.querySelectorAll('.canvas-element').forEach(node => node.style.outline = "none");
-          el.style.outline = "2px dashed var(--color-primary)";
+          el.style.outline = "4px dashed var(--color-primary)";
           
-          // Populate the left toolbar settings
+          // Update Left Sidebar inputs to match this element
           const style = window.getComputedStyle(el);
           const sizeInput = document.getElementById('elementFontSize');
+          const fontInput = document.getElementById('elementFontFamily');
+          
           if (sizeInput) sizeInput.value = parseInt(style.fontSize);
+          if (fontInput) {
+             const currentFont = style.fontFamily.replace(/"/g, "'");
+             let matched = false;
+             for (let opt of fontInput.options) {
+                 if (currentFont.includes(opt.value.split(',')[0].trim())) {
+                     fontInput.value = opt.value;
+                     matched = true; break;
+                 }
+             }
+             if (!matched) fontInput.selectedIndex = 0;
+          }
           
           isDragging = true;
           dragTarget = el;
           
-          // Calculate scale (Canvas is visually scaled to 0.3)
+          // The canvas is scaled down (e.g. 0.32), so mouse coordinates must divide by scale
           const parentRect = document.getElementById('editorCanvas').getBoundingClientRect();
           const scale = parentRect.width / 1080;
           
@@ -2107,13 +2115,11 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       el.addEventListener('dblclick', () => {
           el.focus();
           el.style.cursor = 'text';
-          el.style.outline = "2px solid var(--color-primary)";
+          el.style.outline = "4px solid var(--color-primary)";
       });
-
       el.addEventListener('blur', () => el.style.cursor = 'move');
   }
 
-  // Handle the mouse moving across the screen
   document.addEventListener('mousemove', (e) => {
       if (!isDragging || !dragTarget) return;
       const canvas = document.getElementById('editorCanvas');
@@ -2123,12 +2129,12 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       let x = (e.clientX - parentRect.left) / scale - offsetX;
       let y = (e.clientY - parentRect.top) / scale - offsetY;
 
+      // Apply new coordinates and remove centering transform
       dragTarget.style.left = x + 'px';
       dragTarget.style.top = y + 'px';
-      dragTarget.style.transform = 'none'; // remove center translate
+      dragTarget.style.transform = 'none'; 
   });
 
-  // Stop dragging on mouse release
   document.addEventListener('mouseup', () => {
       isDragging = false;
       dragTarget = null;
@@ -2144,39 +2150,13 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       newText.style.left = "400px";
       newText.style.fontSize = "40px";
       newText.style.fontWeight = "600";
-      newText.style.color = "#000000";
+      newText.style.color = "#ffffff";
       newText.style.fontFamily = "var(--font-family)";
       newText.style.outline = "none";
       
       makeDraggable(newText);
       canvas.appendChild(newText);
   }
-
-  // Wire up the Color and Size inputs inside DOMContentLoaded
-  document.addEventListener('DOMContentLoaded', () => {
-      // Setup default elements to be draggable
-      const defaultEventName = document.getElementById('canvasEventName');
-      const defaultGuestName = document.getElementById('canvasGuestName');
-      if(defaultEventName) makeDraggable(defaultEventName);
-      if(defaultGuestName) makeDraggable(defaultGuestName);
-
-      // Wire up property inputs
-      const colorPicker = document.getElementById('elementColor');
-      const sizePicker = document.getElementById('elementFontSize');
-      
-      if (colorPicker) {
-          colorPicker.addEventListener('input', (e) => {
-              if (currentlySelectedElement) currentlySelectedElement.style.color = e.target.value;
-          });
-      }
-      if (sizePicker) {
-          sizePicker.addEventListener('input', (e) => {
-              if (currentlySelectedElement && e.target.value) {
-                  currentlySelectedElement.style.fontSize = e.target.value + 'px';
-              }
-          });
-      }
-  });
 
   function deleteSelectedElement() {
       if(currentlySelectedElement) {
@@ -2191,16 +2171,21 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       const previewContainer = document.getElementById('previewContainer');
       const canvas = document.getElementById('editorCanvas');
       
+      // Remove the selection outline for the preview
+      document.querySelectorAll('.canvas-element').forEach(node => node.style.outline = "none");
+      
       previewContainer.innerHTML = '';
       const clone = canvas.cloneNode(true);
-      clone.style.transform = "scale(1)"; 
+      clone.style.transform = "none"; 
+      clone.style.width = "100%";
+      clone.style.height = "100%";
       previewContainer.appendChild(clone);
       
       document.getElementById('previewModal').classList.remove('hidden');
   }
 
   function resetTemplate() {
-      if(confirm("Are you sure you want to reset the canvas? All unsaved changes will be lost.")) {
+      if(confirm("Reset canvas? All unsaved changes will be lost.")) {
           document.querySelector('button[onclick*="designTemplatesView"]').click();
           document.querySelectorAll('.tpl-card')[0].click();
           document.getElementById('canvasEventName').innerText = 'Event Name';
@@ -2211,14 +2196,39 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       }
   }
 
-  function selectEditorTool(btnElement) {
-      document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
-      btnElement.classList.add('active');
-  }
-
+  // --- EVENT LISTENERS ---
   document.addEventListener('DOMContentLoaded', () => {
       fetchSavedTemplates();
 
+      // Make Default text draggable
+      makeDraggable(document.getElementById('canvasEventName'));
+      makeDraggable(document.getElementById('canvasGuestName'));
+      makeDraggable(document.getElementById('canvasQrLabel'));
+
+      // Close modals with Escape
+      document.addEventListener('keydown', (e) => {
+          if (e.key === "Escape") {
+              document.getElementById('previewModal').classList.add('hidden');
+              document.getElementById('qrModal').classList.add('hidden');
+          }
+      });
+
+      // Wire up Color, Size, and Font inputs
+      const colorPicker = document.getElementById('elementColor');
+      const sizePicker = document.getElementById('elementFontSize');
+      const fontPicker = document.getElementById('elementFontFamily');
+      
+      if (colorPicker) colorPicker.addEventListener('input', (e) => {
+          if (currentlySelectedElement) currentlySelectedElement.style.color = e.target.value;
+      });
+      if (sizePicker) sizePicker.addEventListener('input', (e) => {
+          if (currentlySelectedElement && e.target.value) currentlySelectedElement.style.fontSize = e.target.value + 'px';
+      });
+      if (fontPicker) fontPicker.addEventListener('change', (e) => {
+          if (currentlySelectedElement) currentlySelectedElement.style.fontFamily = e.target.value;
+      });
+
+      // Guest Dropdown -> QR Generator
       const guestDropdown = document.getElementById('tplGuestSelect');
       if(guestDropdown) {
           guestDropdown.addEventListener('change', (e) => {
@@ -2242,18 +2252,13 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
               
               qrSpot.innerHTML = '';
               new QRCode(qrSpot, {
-                  text: guestId,
-                  width: 310, 
-                  height: 310,
-                  colorDark : "#000000",
-                  colorLight : "#ffffff",
-                  correctLevel : QRCode.CorrectLevel.H
+                  text: guestId, width: 310, height: 310, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H
               });
           });
       }
   });
 
-  // Ensure this is the last line of your script!
+  // MUST REMAIN LAST
   init();
 
 
