@@ -506,7 +506,7 @@
                 <button class="btn-filter-nav">Upcoming <span class="badge-count">4</span></button>
                 <button class="btn-filter-nav">Ongoing <span class="badge-count">2</span></button>
                 <button class="btn-filter-nav">Completed <span class="badge-count">4</span></button>
-                <button class="btn-filter-nav">Cancelled <span class="badge-count">2</span></button>
+                <button type="button" onclick="cancelEventCreation()" class="btn-filter-nav">Cancel</button>
               </div>
               <div style="display: flex; gap: 12px;">
                 <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filter</button>
@@ -1637,7 +1637,7 @@ if (!data || data.length === 0) {
         const shortId = g.id.substring(0, 8).toUpperCase();
         
         const btnHtml = isApproved 
-          ? `<button onclick="showTicket('${g.id}', '${encodeURIComponent(g.guest_name)}', '${g.ticket_tier}', ${g.allowed_capacity}, '${encodeURIComponent(g.events.event_name)}')" class="btn-qr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><line x1="17.5" y1="14" x2="17.5" y2="21"/><line x1="14" y1="17.5" x2="21" y2="17.5"/></svg> View Pass</button>`
+          ? `<button onclick="showTicket('${g.id}', '${encodeURIComponent(g.guest_name)}', '${g.ticket_tier}', ${g.allowed_capacity}, '${encodeURIComponent(g.events.event_name)}', '${g.event_id}')" class="btn-qr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><line x1="17.5" y1="14" x2="17.5" y2="21"/><line x1="14" y1="17.5" x2="21" y2="17.5"/></svg> View Pass</button>`
           : `<button disabled class="btn-qr" style="opacity: 0.5;">Pending</button>`;
 
         // Dashboard Right Sidebar List
@@ -1771,30 +1771,82 @@ if (!data || data.length === 0) {
       await supabaseClient.from('guests').update({ is_hidden: !currentState }).eq('id', id);
       fetchEvents(); // Refresh UI
   }
-function showTicket(id, encodedName, tier, capacity, encodedEventName) {
+function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) {
       const guestName = decodeURIComponent(encodedName);
       const eventName = decodeURIComponent(encodedEventName);
+      const ticketContainer = document.getElementById('ticketContainer');
+      const guest = allFetchedGuests.find(g => g.id === id);
+      
+      // Check if this event has a custom template saved
+      const customTpl = windowSavedTemplates.find(t => t.event_id === eventId);
 
-      // Populate Modal Text
-      document.getElementById('bpEventName').innerText = eventName;
-      document.getElementById('bpGuestName').innerText = guestName;
-      document.getElementById('bpTier').innerText = tier || 'General';
-      document.getElementById('bpCapacity').innerText = capacity > 1 ? capacity + ' Persons' : '1 Person';
-      document.getElementById('bpTicketId').innerText = id.substring(0, 8).toUpperCase();
+      if (customTpl) {
+          // --- RENDER CUSTOM DESIGN ---
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = customTpl.html_layout;
+          
+          const cEvent = tempDiv.querySelector('#canvasEventName');
+          const cGuest = tempDiv.querySelector('#canvasGuestName');
+          const cQrLabel = tempDiv.querySelector('#canvasQrLabel');
+          const cQrSpot = tempDiv.querySelector('#canvasQRSpot');
+          
+          if(cEvent) cEvent.innerText = eventName;
+          if(cGuest) cGuest.innerText = guestName;
+          if(cQrLabel && guest) cQrLabel.innerText = 'GST-ID-' + String(guest.ticket_number || 0).padStart(3, '0');
+          
+          if (cQrSpot) {
+              cQrSpot.innerHTML = '';
+              new QRCode(cQrSpot, { text: id, width: 310, height: 310, colorDark : "#000", colorLight : "#fff", correctLevel : QRCode.CorrectLevel.H });
+          }
+          
+          const customCanvas = tempDiv.firstElementChild;
+          customCanvas.style.position = 'relative';
+          customCanvas.style.top = '0';
+          customCanvas.style.left = '0';
+          customCanvas.style.transform = 'scale(0.314)'; // Scale down to fit mobile modal width
+          customCanvas.style.transformOrigin = 'top left';
+          customCanvas.style.margin = '0 auto';
+          
+          ticketContainer.innerHTML = '';
+          ticketContainer.style.width = '340px';
+          ticketContainer.style.height = '455px'; 
+          ticketContainer.style.background = 'transparent';
+          ticketContainer.style.boxShadow = 'none';
+          ticketContainer.appendChild(customCanvas);
 
-      // Generate the actual QR Code image using the guest's UUID
-      const qrContainer = document.getElementById('qrcode');
-      qrContainer.innerHTML = ''; // Clear previous QR
-      new QRCode(qrContainer, {
-          text: id,
-          width: 120,
-          height: 120,
-          colorDark : "#000000",
-          colorLight : "#ffffff",
-          correctLevel : QRCode.CorrectLevel.H
-      });
+      } else {
+          // --- RENDER DEFAULT FALLBACK DESIGN ---
+          ticketContainer.style.width = '340px';
+          ticketContainer.style.height = 'auto';
+          ticketContainer.style.background = 'white';
+          ticketContainer.innerHTML = `
+            <div class="bg-gradient-to-br from-indigo-900 to-indigo-700 text-white p-6 relative">
+              <p class="text-[10px] text-indigo-300 uppercase tracking-widest mb-1 font-bold">Event Pass</p>
+              <h2 id="bpEventName" class="text-2xl font-bold tracking-tight truncate">${eventName}</h2>
+            </div>
+            <div class="bg-white px-6 pt-6 pb-2 text-slate-800">
+              <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Guest Name</p>
+              <p id="bpGuestName" class="text-lg font-bold text-slate-900 leading-tight mb-4">${guestName}</p>
+              <div class="flex justify-between">
+                 <div><p class="text-[10px] text-slate-400 uppercase font-bold">Tier</p><p id="bpTier" class="text-sm font-bold text-pink-600">${tier || 'General'}</p></div>
+                 <div><p class="text-[10px] text-slate-400 uppercase font-bold">Admit</p><p id="bpCapacity" class="text-sm font-bold text-slate-800">${capacity > 1 ? capacity + ' Persons' : '1 Person'}</p></div>
+              </div>
+            </div>
+            <div class="relative h-8 bg-white flex items-center justify-center">
+              <div class="absolute left-[-12px] w-6 h-6 bg-slate-800 rounded-full"></div>
+              <div class="absolute right-[-12px] w-6 h-6 bg-slate-800 rounded-full"></div>
+              <div class="w-full border-t-2 border-dashed border-slate-200 mx-4"></div>
+            </div>
+            <div class="bg-white px-6 pb-6 flex flex-col items-center">
+              <div id="qrcode" class="p-2 bg-white border-2 border-slate-100 rounded-xl shadow-sm mb-2"></div>
+              <p id="bpTicketId" class="text-[10px] font-mono text-slate-400">${guest ? 'GST-ID-' + String(guest.ticket_number || 0).padStart(3, '0') : '...'}</p>
+            </div>
+          `;
+          
+          const qrContainer = ticketContainer.querySelector('#qrcode');
+          new QRCode(qrContainer, { text: id, width: 120, height: 120, colorDark : "#000", colorLight : "#fff", correctLevel : QRCode.CorrectLevel.H });
+      }
 
-      // Show the Modal popup
       document.getElementById('qrModal').classList.remove('hidden');
   }
 
@@ -2277,7 +2329,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
         const dateStr = new Date(t.created_at).toLocaleDateString();
         
         const cardHtml = `
-          <div class="card" style="min-width: 260px; height: 90px; padding: 12px; display: flex; gap: 12px; align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); position: relative; flex-shrink: 0;">
+          <div id="saved-card-${t.id}" class="card saved-tpl-card" style="min-width: 260px; height: 90px; padding: 12px; display: flex; gap: 12px; align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); position: relative; flex-shrink: 0; transition: 0.2s;">
              <div onclick="loadSavedTemplate('${t.id}')" style="display:flex; flex:1; gap:12px; cursor:pointer; align-items:center;" title="Click to Edit">
                  <div style="width: 45px; height: 65px; background: ${t.thumbnail_url || "url('./templates/gatepass01.jpg')"} center/cover no-repeat; background-color: var(--color-surface-soft); border-radius: 4px; border: 1px solid var(--color-border);"></div>
                  <div>
@@ -2311,6 +2363,11 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       const tpl = windowSavedTemplates.find(x => x.id === id);
       if(!tpl) return;
       
+      // Highlight the selected bottom card
+      document.querySelectorAll('.saved-tpl-card').forEach(c => c.style.border = '1px solid var(--color-border)');
+      const activeCard = document.getElementById('saved-card-' + id);
+      if(activeCard) activeCard.style.border = '2px solid var(--color-primary)';
+
       const canvasWrapper = document.getElementById('editorCanvas').parentElement;
       document.getElementById('editorCanvas').outerHTML = tpl.html_layout;
       
@@ -2324,16 +2381,16 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
       newCanvas.querySelectorAll('.canvas-element').forEach(node => makeDraggable(node));
 
       document.getElementById('tplName').value = tpl.name;
+      document.getElementById('tplEventSelect').value = tpl.event_id || ''; // Load saved event
+      
       currentEditingTemplateId = id; 
       currentActiveBgString = tpl.thumbnail_url || "url('./templates/gatepass01.jpg')";
 
-      // Sync top thumbnail selector
       document.querySelectorAll('#templateGallery .tpl-card').forEach(c => {
           const check = c.querySelector('.active-check');
           c.style.border = '1px solid var(--color-border)';
           if(check) check.style.display = 'none';
           
-          // Match background logic
           const onclickStr = c.getAttribute('onclick') || '';
           if (onclickStr.includes(currentActiveBgString.replace(/"/g, "'"))) {
               c.style.border = '2px solid var(--color-primary)';
@@ -2361,8 +2418,13 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName) {
     const canvasHtml = document.getElementById('editorCanvas').outerHTML;
     
     // Save the actual active background instead of hardcoded default
+    const assignedEventId = document.getElementById('tplEventSelect').value || null;
     const payload = {
-       name: tplName, event_type: 'Custom', html_layout: canvasHtml, thumbnail_url: currentActiveBgString 
+       name: tplName, 
+       event_type: 'Custom', 
+       html_layout: canvasHtml, 
+       thumbnail_url: currentActiveBgString,
+       event_id: assignedEventId // Save the event link!
     };
 
     if (currentEditingTemplateId && !saveAsNew) {
@@ -2497,6 +2559,28 @@ const seqId = 'GST-ID-' + String(guest.ticket_number).padStart(3, '0');
           });
       }
   });
+
+// --- CANCEL EVENT CREATION ---
+  function cancelEventCreation() {
+      // 1. If you have an event form ID, reset the inputs (change 'eventForm' if your form has a different ID)
+      const form = document.getElementById('eventForm');
+      if (form) form.reset();
+
+      // 2. Clear out specific fields manually just in case
+      const eName = document.getElementById('eventName');
+      const eDate = document.getElementById('eventDate');
+      if (eName) eName.value = '';
+      if (eDate) eDate.value = '';
+
+      // 3. Redirect to the main Events / Create & Manage tab
+      const eventsTabBtn = document.querySelector('button[onclick*="eventsView"]');
+      if (eventsTabBtn) {
+          eventsTabBtn.click();
+      } else {
+          // Fallback to the Dashboard tab if the Events tab can't be found
+          document.querySelectorAll('.nav-item')[0].click(); 
+      }
+  }
 
   // Ensure this remains last
   init();
