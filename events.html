@@ -1826,6 +1826,13 @@ if (!data || data.length === 0) {
   // --- DASHBOARD FILTER & GRAPH LOGIC ---
   let dashboardChartInstance = null;
 
+  // FIX: Helper to safely parse dates, defaulting to right now if missing
+  function getSafeDate(dateString) {
+      if (!dateString) return new Date();
+      const parsed = new Date(dateString);
+      return isNaN(parsed.getTime()) ? new Date() : parsed;
+  }
+
   function applyDashboardFilter(period, btnElement) {
       // 1. Update UI Buttons safely
       if (btnElement && btnElement.parentElement) {
@@ -1850,17 +1857,18 @@ if (!data || data.length === 0) {
           startDate.setMonth(0, 1);
           startDate.setHours(0,0,0,0);
       } else if (period === 'All Time') {
-          startDate = new Date('2000-01-01'); // Capture all past test data
+          startDate = new Date(0); // Jan 1, 1970 - Catches all history
       }
 
-      // 3. Filter the global arrays based on the selected date range
-      const filteredEvents = allFetchedEvents.filter(e => new Date(e.created_at) >= startDate);
-      const filteredGuests = allFetchedGuests.filter(g => new Date(g.created_at) >= startDate);
+      // 3. Filter the global arrays safely (prevents '0' glitch)
+      const filteredEvents = allFetchedEvents.filter(e => getSafeDate(e.created_at) >= startDate);
+      const filteredGuests = allFetchedGuests.filter(g => getSafeDate(g.created_at) >= startDate);
 
       // 4. Update the 4 KPI Cards dynamically
       const kpiEv = document.getElementById('kpiEvents');
       const kpiGu = document.getElementById('kpiGuests');
       const kpiPa = document.getElementById('kpiPasses');
+      
       if (kpiEv) kpiEv.innerText = filteredEvents.length;
       if (kpiGu) kpiGu.innerText = filteredGuests.length;
       if (kpiPa) kpiPa.innerText = filteredGuests.length;
@@ -1881,8 +1889,6 @@ if (!data || data.length === 0) {
       // 6. Draw the Graph
       if (typeof Chart !== 'undefined') {
           renderDashboardChart(period);
-      } else {
-          console.error("Chart.js is still not loaded. Please check your <head> script tag.");
       }
   }
 
@@ -1893,39 +1899,59 @@ if (!data || data.length === 0) {
       const labels = [];
       const eventsData = [];
       const guestsData = [];
+      const today = new Date();
       
       // Dynamic Data Generation based on the selected period
       if (period === 'Today') {
-          // Show 6 data points across today
           for(let i=5; i>=0; i--) {
-              let d = new Date();
-              d.setHours(d.getHours() - (i * 4));
+              let d = new Date(today);
+              d.setHours(today.getHours() - (i * 4));
               labels.push(d.toLocaleTimeString('default', { hour: 'numeric', hour12: true }));
-              eventsData.push(allFetchedEvents.filter(e => new Date(e.created_at).getHours() === d.getHours() && new Date(e.created_at).getDate() === d.getDate()).length);
-              guestsData.push(allFetchedGuests.filter(g => new Date(g.created_at).getHours() === d.getHours() && new Date(g.created_at).getDate() === d.getDate()).length);
+              
+              eventsData.push(allFetchedEvents.filter(e => {
+                  const ed = getSafeDate(e.created_at);
+                  return ed.getHours() >= d.getHours() - 4 && ed.getHours() <= d.getHours() && ed.getDate() === d.getDate();
+              }).length);
+              
+              guestsData.push(allFetchedGuests.filter(g => {
+                  const gd = getSafeDate(g.created_at);
+                  return gd.getHours() >= d.getHours() - 4 && gd.getHours() <= d.getHours() && gd.getDate() === d.getDate();
+              }).length);
           }
       } else if (period === 'This Year' || period === 'All Time') {
-          // Show 12 months for Year and All Time
           for(let i=11; i>=0; i--) {
-              let d = new Date();
-              d.setMonth(d.getMonth() - i);
+              let d = new Date(today.getFullYear(), today.getMonth() - i, 1);
               labels.push(d.toLocaleDateString('default', { month: 'short' }));
-              eventsData.push(allFetchedEvents.filter(e => new Date(e.created_at).getMonth() === d.getMonth() && new Date(e.created_at).getFullYear() === d.getFullYear()).length);
-              guestsData.push(allFetchedGuests.filter(g => new Date(g.created_at).getMonth() === d.getMonth() && new Date(g.created_at).getFullYear() === d.getFullYear()).length);
+              
+              eventsData.push(allFetchedEvents.filter(e => {
+                  const ed = getSafeDate(e.created_at);
+                  return ed.getMonth() === d.getMonth() && ed.getFullYear() === d.getFullYear();
+              }).length);
+              
+              guestsData.push(allFetchedGuests.filter(g => {
+                  const gd = getSafeDate(g.created_at);
+                  return gd.getMonth() === d.getMonth() && gd.getFullYear() === d.getFullYear();
+              }).length);
           }
       } else {
-          // 'This Week' (7 days) or 'This Month' (30 days)
           let daysToShow = period === 'This Week' ? 7 : 30;
           for(let i=daysToShow-1; i>=0; i--) {
-              let d = new Date();
-              d.setDate(d.getDate() - i);
+              let d = new Date(today);
+              d.setDate(today.getDate() - i);
               labels.push(d.toLocaleDateString('default', { month: 'short', day: 'numeric' }));
-              eventsData.push(allFetchedEvents.filter(e => new Date(e.created_at).getDate() === d.getDate() && new Date(e.created_at).getMonth() === d.getMonth()).length);
-              guestsData.push(allFetchedGuests.filter(g => new Date(g.created_at).getDate() === d.getDate() && new Date(g.created_at).getMonth() === d.getMonth()).length);
+              
+              eventsData.push(allFetchedEvents.filter(e => {
+                  const ed = getSafeDate(e.created_at);
+                  return ed.getDate() === d.getDate() && ed.getMonth() === d.getMonth() && ed.getFullYear() === d.getFullYear();
+              }).length);
+              
+              guestsData.push(allFetchedGuests.filter(g => {
+                  const gd = getSafeDate(g.created_at);
+                  return gd.getDate() === d.getDate() && gd.getMonth() === d.getMonth() && gd.getFullYear() === d.getFullYear();
+              }).length);
           }
       }
 
-      // Destroy old chart before drawing new one to prevent canvas overlap glitches
       if (dashboardChartInstance) dashboardChartInstance.destroy();
       
       dashboardChartInstance = new Chart(ctx, {
