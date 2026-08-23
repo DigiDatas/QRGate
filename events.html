@@ -2464,22 +2464,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
           });
       });
 
-     // 2. WIRE UP ALL "VIEW ALL" LINKS
-      document.querySelectorAll('a').forEach(link => {
-          if(link.innerText.includes('View All')) {
-              link.addEventListener('click', (e) => {
-                  e.preventDefault();
-                  const parentText = link.parentElement.innerText;
-                  if(parentText.includes('Events')) {
-                      switchView('eventsView');
-                  } else {
-                      // FIX: Route Recent Gate Passes to QR Codes tab
-                      switchView('qrCodesView'); 
-                  }
-              });
-          }
-      });
-
+     
       // 3. WIRE UP ALL DEAD ACTION BUTTONS ACROSS ALL TABS
       document.querySelectorAll('button, div.card, div[style*="dashed"]').forEach(el => {
           const text = el.innerText.trim();
