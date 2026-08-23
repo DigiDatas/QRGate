@@ -1873,7 +1873,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
       const ticketContainer = document.getElementById('ticketContainer');
       const guest = allFetchedGuests.find(g => g.id === id);
       
-      // 1. Prioritize guest's individual assigned template, fallback to event's template
+      // 1. Strict per-guest template matching
       let customTpl = null;
       if (guest && guest.template_id) {
           customTpl = windowSavedTemplates.find(t => String(t.id) === String(guest.template_id));
@@ -1904,21 +1904,23 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
               }
           }
 
+          // Format Unique Dynamic QR Label (e.g., QR-001)
           const formattedQrLabel = 'QR-' + String(guest ? (guest.ticket_number || 0) : 0).padStart(3, '0');
           if(cQrLabel) cQrLabel.innerText = formattedQrLabel;
           
-          // Generate the unique QR code for THIS specific guest
+          // Generate the dynamic QR Code without destroying the child ID label
           if (cQrSpot) {
               const size = parseInt(cQrSpot.dataset.qrSize) || 310;
               const darkColor = cQrSpot.dataset.qrDark || "#000000";
               const bgColor = cQrSpot.dataset.qrBg || "#ffffff";
               const hasBox = cQrSpot.dataset.qrHasBox !== 'false';
               const radius = parseInt(cQrSpot.dataset.qrRadius) || 20;
+              const boxPadding = parseInt(cQrSpot.dataset.qrPadding) || 10;
 
-              const boxPadding = 5;
               const totalBoxSize = hasBox ? (size + (boxPadding * 2)) : size;
 
               cQrSpot.style.display = 'flex';
+              cQrSpot.style.flexDirection = 'column';
               cQrSpot.style.alignItems = 'center';
               cQrSpot.style.justifyContent = 'center';
               cQrSpot.style.width = totalBoxSize + 'px';
@@ -1926,8 +1928,21 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
               cQrSpot.style.background = hasBox ? bgColor : 'transparent';
               cQrSpot.style.borderRadius = hasBox ? (radius + 'px') : '0px';
 
-              cQrSpot.innerHTML = `<div id="modalQrInner" style="width:${size}px; height:${size}px; display:flex; align-items:center; justify-content:center;"></div>`;
-              const innerContainer = cQrSpot.querySelector('#modalQrInner');
+              // Safely target or create the inner code container without erasing cQrLabel
+              let innerContainer = cQrSpot.querySelector('#qrInnerCode');
+              if (!innerContainer) {
+                  innerContainer = document.createElement('div');
+                  innerContainer.id = 'qrInnerCode';
+                  cQrSpot.prepend(innerContainer);
+              }
+
+              innerContainer.style.display = 'flex';
+              innerContainer.style.alignItems = 'center';
+              innerContainer.style.justifyContent = 'center';
+              innerContainer.style.width = size + 'px';
+              innerContainer.style.height = size + 'px';
+              innerContainer.style.background = 'transparent';
+              innerContainer.innerHTML = '';
 
               new QRCode(innerContainer, { 
                   text: id, 
