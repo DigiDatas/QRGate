@@ -621,7 +621,7 @@
           <!-- Main Table -->
           <div class="data-table-container no-scrollbar" style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: none;">
             <table class="data-table">
-              <thead><tr><th>Guest Name</th><th>Contact</th><th>Invitation Status</th><th>Sent Via</th><th>Gate Pass</th><th>Sent On</th><th>Actions</th></tr></thead>
+              <thead><tr><th>Guest Name</th><th>Event Name</th><th>Contact</th><th>Invitation Status</th><th>Sent Via</th><th>Gate Pass</th><th>Sent On</th><th>Actions</th></tr></thead>
               <tbody id="guestListTableBody"></tbody>
             </table>
           </div>
@@ -1193,7 +1193,7 @@
                         <div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight: bold;">QR SPOT</div>
                       </div>
                   </div>
-                  <div id="canvasQrLabel" class="canvas-element" contenteditable="false" style="position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 32px; font-weight: bold; color: #fff; font-family: monospace; cursor: move; width: max-content;">GST-ID-001</div>
+                  <div id="canvasQrLabel" class="canvas-element" contenteditable="false" style="position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 32px; font-weight: bold; color: #fff; font-family: monospace; cursor: move; width: max-content;">QR-001</div>
               </div>
             </div>
 
@@ -1526,7 +1526,7 @@ if (!data || data.length === 0) {
           </div>
         `;
 
-        data.slice(0, 4).forEach((e) => {
+        data.slice(0, 10).forEach((e) => {
             const isSelected = currentGuestFilterEventId === e.id;
             const bgStr = isSelected ? 'var(--color-primary-soft)' : 'var(--color-bg)';
             const borderStr = isSelected ? 'var(--color-primary)' : 'var(--color-border)';
@@ -1720,6 +1720,16 @@ if (!data || data.length === 0) {
                  ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
                  : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 
+               // 1. Calculate Sequential QR ID (e.g., QR-001)
+               const seqQrId = 'QR-' + String(g.ticket_number || 0).padStart(3, '0');
+
+               // 2. Check-in Pair Calculation (e.g., 3/5 In)
+               const allowedPairs = g.allowed_capacity || 1;
+               const checkedInPairs = g.checked_in_count || 0;
+               const isFullyCheckedIn = checkedInPairs >= allowedPairs;
+               const checkInBadgeColor = checkedInPairs > 0 ? 'var(--color-success)' : 'var(--color-text-secondary)';
+               const checkInBadgeBg = checkedInPairs > 0 ? 'var(--color-success-soft)' : 'var(--color-surface-soft)';
+
                guestListTable.innerHTML += `
                   <tr style="${rowStyle}">
                     <td>
@@ -1728,13 +1738,22 @@ if (!data || data.length === 0) {
                         <div><div style="font-weight:600; color:var(--color-text);">${g.guest_name}</div><div style="font-size:11px; color:var(--color-text-secondary);">${gCompany}</div></div>
                       </div>
                     </td>
+                    <td>
+                      <div style="font-weight:600; font-size:13px; color:var(--color-text);">${g.events ? g.events.event_name : 'General Event'}</div>
+                      <div style="font-size:11px; color:var(--color-text-secondary);">${g.ticket_tier || 'General'}</div>
+                    </td>
                     <td><div style="font-size:12px; color:var(--color-text);">${gEmail}</div><div style="font-size:11px; color:var(--color-text-secondary);">${gPhone}</div></td>
                     <td><span style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:99px; background:${statusBg}; color:${statusColor}; font-size:11px; font-weight:600;">${gStatus}</span></td>
                     <td><div style="display:flex; gap:8px;"><div style="width:24px; height:24px; border-radius:50%; background:var(--color-surface-soft); color:var(--color-text-secondary); display:flex; align-items:center; justify-content:center;">${sentViaIcon}</div><span style="font-size: 11px; font-weight: 500; display:flex; align-items:center;">${g.sent_via || 'System'}</span></div></td>
                     <td>
-                      <div onclick="showTicket('${g.id}', '${encodeURIComponent(g.guest_name)}', '${g.ticket_tier}', ${g.allowed_capacity}, '${encodeURIComponent(g.events.event_name)}', '${g.event_id}')" style="display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--color-primary); padding: 4px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='var(--color-primary-soft)'" onmouseout="this.style.background='transparent'">
-                        <div style="width:28px; height:28px; background:var(--color-primary-soft); border-radius:6px; display:flex; align-items:center; justify-content:center; color:var(--color-primary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
-                        <div><div style="font-weight:700; font-size:12px;">${shortId}</div><div style="font-size:11px; color:var(--color-text-secondary);">${pairText}</div></div>
+                      <div onclick="showTicket('${g.id}', '${encodeURIComponent(g.guest_name)}', '${g.ticket_tier}', ${g.allowed_capacity}, '${encodeURIComponent(g.events ? g.events.event_name : 'Event')}', '${g.event_id}')" style="display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--color-primary); padding: 4px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='var(--color-primary-soft)'" onmouseout="this.style.background='transparent'">
+                        <div style="width:32px; height:32px; background:var(--color-primary-soft); border-radius:6px; display:flex; align-items:center; justify-content:center; color:var(--color-primary); flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
+                        <div style="display:flex; flex-direction:column; gap:2px;">
+                          <div style="font-weight:700; font-size:12px; font-family:monospace; color:var(--color-text);">${seqQrId}</div>
+                          <div style="display:flex; align-items:center; gap:6px;">
+                            <span style="font-size:10px; font-weight:700; color:${checkInBadgeColor}; background:${checkInBadgeBg}; padding:1px 6px; border-radius:4px;">${checkedInPairs}/${allowedPairs} In</span>
+                          </div>
+                        </div>
                       </div>
                     </td>
                     <td><div style="font-size:12px; color:var(--color-text);">${formattedDate}</div><div style="font-size:11px; color:var(--color-text-secondary);">${formattedTime}</div></td>
@@ -1827,7 +1846,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
           
           if(cEvent) cEvent.innerText = eventName;
           if(cGuest) cGuest.innerText = guestName;
-          if(cQrLabel && guest) cQrLabel.innerText = 'GST-ID-' + String(guest.ticket_number || 0).padStart(3, '0');
+          if(cQrLabel && guest) cQrLabel.innerText = 'QR-' + String(guest.ticket_number || 0).padStart(3, '0');
           
           if (cQrSpot) {
               cQrSpot.innerHTML = '';
@@ -1879,7 +1898,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
             </div>
             <div class="bg-white px-6 pb-6 flex flex-col items-center">
               <div id="qrcode" class="p-2 bg-white border-2 border-slate-100 rounded-xl shadow-sm mb-2"></div>
-              <p id="bpTicketId" class="text-[10px] font-mono text-slate-400">${guest ? 'GST-ID-' + String(guest.ticket_number || 0).padStart(3, '0') : '...'}</p>
+              <p id="bpTicketId" class="text-[10px] font-mono text-slate-400">${guest ? 'QR-' + String(guest.ticket_number || 0).padStart(3, '0') : '...'}</p>
             </div>
           `;
           
@@ -2810,14 +2829,14 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
                   if(eventNameEl) eventNameEl.innerText = 'Event Name';
                   if(venueEl) venueEl.innerText = 'Venue Location';
                   if(dtEl) dtEl.innerText = 'Date & Time';
-                  if(qrLabelEl) qrLabelEl.innerText = 'GST-ID-001';
+                  if(qrLabelEl) qrLabelEl.innerText = 'QR-001';
                   return;
               }
 
               // Fill Text Elements with Database Records
               if(guestNameEl) guestNameEl.innerText = guest.guest_name;
               if(eventNameEl && guest.events) eventNameEl.innerText = guest.events.event_name;
-              if(qrLabelEl) qrLabelEl.innerText = 'GST-ID-' + String(guest.ticket_number || 0).padStart(3, '0');
+              if(qrLabelEl) qrLabelEl.innerText = 'QR-' + String(guest.ticket_number || 0).padStart(3, '0');
 
               // Find full event record to extract venue, date, and time
               const parentEv = allFetchedEvents.find(ev => ev.id === guest.event_id);
