@@ -495,36 +495,29 @@
           
           <div class="left-col">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-shrink:0;" class="no-scrollbar">
-              <div style="display: flex; gap: 8px;">
-                <button class="btn-filter-nav active">All Events <span class="badge-count">12</span></button>
-                <button class="btn-filter-nav">Upcoming <span class="badge-count">4</span></button>
-                <button class="btn-filter-nav">Ongoing <span class="badge-count">2</span></button>
-                <button class="btn-filter-nav">Completed <span class="badge-count">4</span></button>
-              </div>
+              <!-- Removed the 4 filter pills -->
+              <div></div> 
               <div style="display: flex; gap: 12px;">
                 <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filter</button>
-                <button onclick="document.querySelectorAll('.nav-item')[5].click()" class="btn-primary" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Create Event</button>
+                <button onclick="switchView('createEventView')" class="btn-primary" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Create Event</button>
               </div>
             </div>
 
             <!-- KPI 5-Card Row -->
             <div class="kpi-5">
-              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon purple" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div><div><div class="kpi-label" style="margin:0;">Total Events</div><div class="kpi-value">12</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">All Time</div></div></div>
-              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon green" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div><div><div class="kpi-label" style="margin:0;">Upcoming</div><div class="kpi-value">4</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Next 7 Days</div></div></div>
-              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon blue" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></div><div><div class="kpi-label" style="margin:0;">Ongoing</div><div class="kpi-value">2</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">In Progress</div></div></div>
-              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon purple" style="width:40px; height:40px; background:var(--color-primary-soft);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div><div class="kpi-label" style="margin:0;">Completed</div><div class="kpi-value">4</div></div></div>
-              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon pink" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div><div><div class="kpi-label" style="margin:0;">Cancelled</div><div class="kpi-value">2</div></div></div>
+              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon purple" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div><div><div class="kpi-label" style="margin:0;">Total Events</div><div class="kpi-value" id="kpiEvTotal">0</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">All Time</div></div></div>
+              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon green" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div><div><div class="kpi-label" style="margin:0;">Upcoming</div><div class="kpi-value" id="kpiEvUpcoming">0</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Scheduled</div></div></div>
+              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon" style="width:40px; height:40px; background:#FEF6E2; color:#B4790C;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></div><div><div class="kpi-label" style="margin:0;">Ongoing</div><div class="kpi-value" id="kpiEvOngoing">0</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Today</div></div></div>
+              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon blue" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div><div class="kpi-label" style="margin:0;">Completed</div><div class="kpi-value" id="kpiEvCompleted">0</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Past Events</div></div></div>
+              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon pink" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div><div><div class="kpi-label" style="margin:0;">Cancelled</div><div class="kpi-value" id="kpiEvCancelled">0</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Hidden</div></div></div>
             </div>
 
             <!-- MAIN TABLE -->
             <div class="data-table-container no-scrollbar">
               <table class="data-table">
-                <thead><tr><th>Event Name</th><th>Date & Time</th><th>Venue</th><th>Guests</th><th>Status</th><th>Actions</th></tr></thead>
+                <thead><tr><th>Event Name</th><th>Date</th><th>Start Time</th><th>Venue</th><th>Capacity</th><th>Status</th><th>Actions</th></tr></thead>
                 <tbody id="eventsTableBody"></tbody>
               </table>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--color-text-secondary); flex-shrink:0;">
-              Showing Data Grid
             </div>
           </div>
 
@@ -533,17 +526,17 @@
             <div class="card panel" style="padding: 20px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                 <h2 class="section-title" style="margin: 0;">Event Overview</h2>
-                <button style="background: var(--color-bg); color: var(--color-text-secondary); border: 1px solid var(--color-border); padding: 4px 8px; border-radius: var(--radius-sm); font-size: 11px; display: flex; gap: 4px; align-items: center;">This Month <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg></button>
+                <!-- Removed This Month Button -->
               </div>
               <div style="display: flex; align-items: center; justify-content: space-between;">
-                <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--color-success) 0% 33%, var(--color-warning) 33% 50%, var(--color-info) 50% 83%, var(--color-danger) 83% 100%); position: relative; display: flex; align-items: center; justify-content: center;">
-                  <div style="width: 70px; height: 70px; background: var(--color-bg); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;"><div style="font-size: 18px; font-weight: 700;">12</div><div style="font-size: 9px; color: var(--color-text-secondary);">Total Events</div></div>
+                <div id="eventsDonutGraph" style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--color-surface-soft) 0% 100%); position: relative; display: flex; align-items: center; justify-content: center;">
+                  <div style="width: 70px; height: 70px; background: var(--color-bg); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;"><div id="eventsDonutTotal" style="font-size: 18px; font-weight: 700;">0</div><div style="font-size: 9px; color: var(--color-text-secondary);">Total Events</div></div>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-success);"></span> Upcoming</span> <span style="color: var(--color-text-secondary);">4 <span style="font-size:9px;">(33%)</span></span></div>
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-warning);"></span> Ongoing</span> <span style="color: var(--color-text-secondary);">2 <span style="font-size:9px;">(17%)</span></span></div>
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-info);"></span> Completed</span> <span style="color: var(--color-text-secondary);">4 <span style="font-size:9px;">(33%)</span></span></div>
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-danger);"></span> Cancelled</span> <span style="color: var(--color-text-secondary);">2 <span style="font-size:9px;">(17%)</span></span></div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-success);"></span> Upcoming</span> <span style="color: var(--color-text-secondary);"><span id="evtLegUpc">0</span> <span id="evtLegUpcPct" style="font-size:9px;">(0%)</span></span></div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #B4790C;"></span> Ongoing</span> <span style="color: var(--color-text-secondary);"><span id="evtLegOng">0</span> <span id="evtLegOngPct" style="font-size:9px;">(0%)</span></span></div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-info);"></span> Completed</span> <span style="color: var(--color-text-secondary);"><span id="evtLegCom">0</span> <span id="evtLegComPct" style="font-size:9px;">(0%)</span></span></div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-danger);"></span> Cancelled</span> <span style="color: var(--color-text-secondary);"><span id="evtLegCan">0</span> <span id="evtLegCanPct" style="font-size:9px;">(0%)</span></span></div>
                 </div>
               </div>
             </div>
@@ -552,12 +545,10 @@
             <div class="card panel" style="padding: 20px;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                  <h2 class="section-title" style="margin: 0; font-size: 14px;">Recent Gate Passes</h2>
-                 
               </div>
               <div style="display: flex; flex-direction: column; gap: 16px;">
-                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;"><div><div style="font-size: 12px; font-weight: 600;">GP-2025-00120</div><div style="font-size: 11px; color: var(--color-text-secondary);">Tech Expo 2025</div></div><div style="text-align:right;"><div style="font-size: 11px;">10:30 AM</div><div style="font-size: 11px; color: var(--color-text-secondary);">May 20, 2025</div></div></div>
-                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;"><div><div style="font-size: 12px; font-weight: 600;">GP-2025-00119</div><div style="font-size: 11px; color: var(--color-text-secondary);">Tech Expo 2025</div></div><div style="text-align:right;"><div style="font-size: 11px;">09:45 AM</div><div style="font-size: 11px; color: var(--color-text-secondary);">May 20, 2025</div></div></div>
-                <button style="width: 100%; margin-top: 4px; padding: 8px; background: white; border: 1px solid var(--color-primary); color: var(--color-primary); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600;">View All Gate Passes</button>
+                <div id="eventsTabRecentPassesList" style="display: flex; flex-direction: column; gap: 12px;"></div>
+                <button onclick="switchView('qrCodesView')" style="width: 100%; margin-top: 4px; padding: 8px; background: white; border: 1px solid var(--color-primary); color: var(--color-primary); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; cursor: pointer;">View All Gate Passes</button>
               </div>
             </div>
 
@@ -1416,25 +1407,61 @@ let allFetchedGuests = [];
     if(list) list.innerHTML = '';
 
     const eventsTable = document.getElementById('eventsTableBody');
-const cmEventsTable = document.getElementById('createManageEventsTable');
-if (cmEventsTable) cmEventsTable.innerHTML = '';
+    const cmEventsTable = document.getElementById('createManageEventsTable');
+    if (cmEventsTable) cmEventsTable.innerHTML = '';
     if (eventsTable) eventsTable.innerHTML = '';
     
-    const kpiEvents = document.getElementById('kpiEvents');
-    if(kpiEvents) kpiEvents.innerText = data ? data.length : 0;
-
-const tplEvent = document.getElementById('tplEventSelect');
+    const tplEvent = document.getElementById('tplEventSelect');
     if (tplEvent) tplEvent.innerHTML = '<option value="">Select Event...</option>';    
-if (!data || data.length === 0) {
+
+    if (!data || data.length === 0) {
       if(list) list.innerHTML = `<p style="font-size:13px; color:var(--color-text-secondary); padding: 20px;">No events found.</p>`;
-      if (eventsTable) eventsTable.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px;">No events created yet.</td></tr>`;
+      if (eventsTable) eventsTable.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 20px;">No events created yet.</td></tr>`;
       return;
     }
 
-    allFetchedEvents = data; // Save data so we can load it into the Edit form later
+    // Sort Newest First (Most Recent Events on Top)
+    data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    allFetchedEvents = data; 
+
+    // Counters for Event Tab KPIs
+    let upc = 0, ong = 0, com = 0, can = 0;
+    const today = new Date();
+    today.setHours(0,0,0,0);
 
     data.forEach(e => {
       const isHidden = e.is_hidden === true;
+
+      // Event Status Calculation Logic
+      const evDateStr = e.event_date ? e.event_date.split('T')[0] : null;
+      let evDate = evDateStr ? getSafeDate(evDateStr) : new Date(0);
+      evDate.setHours(0,0,0,0);
+
+      let calcStatus = 'Upcoming';
+      let statusBg = 'var(--color-success-soft)';
+      let statusCol = 'var(--color-success)';
+
+      if (isHidden) {
+          calcStatus = 'Cancelled';
+          statusBg = 'var(--color-danger-soft)';
+          statusCol = 'var(--color-danger)';
+          can++;
+      } else if (evDate.getTime() > today.getTime()) {
+          calcStatus = 'Upcoming';
+          statusBg = 'var(--color-success-soft)';
+          statusCol = 'var(--color-success)';
+          upc++;
+      } else if (evDate.getTime() === today.getTime()) {
+          calcStatus = 'Ongoing';
+          statusBg = '#FEF6E2';
+          statusCol = '#B4790C';
+          ong++;
+      } else {
+          calcStatus = 'Completed';
+          statusBg = 'var(--color-info-soft)';
+          statusCol = 'var(--color-info)';
+          com++;
+      }
       
       // 1. Populate Dropdowns (Disable if hidden!)
       if(select) {
@@ -1442,12 +1469,9 @@ if (!data || data.length === 0) {
         opt.value = e.id;
         opt.dataset.approved = e.is_approved;
         opt.textContent = `${e.event_name} (${e.is_approved ? 'Approved' : 'Pending'})${isHidden ? ' - HIDDEN' : ''}`;
-        if (isHidden) opt.disabled = true; // Prevents adding guests!
+        if (isHidden) opt.disabled = true;
         select.appendChild(opt);
       }
-// Populate Design Template Event Dropdown
-      const tplEvent = document.getElementById('tplEventSelect');
-      // Populate Design Template Event Dropdown
       if (tplEvent && !isHidden) {
           tplEvent.innerHTML += `<option value="${e.id}">${e.event_name}</option>`;
       }
@@ -1455,32 +1479,27 @@ if (!data || data.length === 0) {
         const optAG = document.createElement('option');
         optAG.value = e.id;
         optAG.textContent = e.event_name + (isHidden ? ' (Hidden - Cannot add guests)' : '');
-        if (isHidden) optAG.disabled = true; // Prevents adding guests!
+        if (isHidden) optAG.disabled = true;
         agSelect.appendChild(optAG);
       }
 
       const dateObj = e.created_at ? new Date(e.created_at) : new Date();
       const month = dateObj.toLocaleString('default', { month: 'short' }).toUpperCase();
       const day = dateObj.getDate();
-      const badgeClass = e.is_approved ? 'upcoming' : 'pending';
-      const badgeText = e.is_approved ? 'Approved' : 'Pending';
-
-      // Visual styling if hidden
       const rowStyle = isHidden ? 'opacity: 0.5; background: var(--color-surface-soft);' : '';
+      
       const eyeIcon = isHidden 
         ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
         : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 
-      // Action Buttons HTML
       const actionBtns = `
         <div style="display:flex; gap:6px;">
-          <button onclick="toggleHideEvent('${e.id}', ${isHidden})" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer;" title="${isHidden ? 'Show Event' : 'Hide Event'}">${eyeIcon}</button>
-          <button onclick="editEvent('${e.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-info); cursor:pointer;" title="Edit Event"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
-          <button onclick="deleteEvent('${e.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-danger-soft); color:var(--color-danger); cursor:pointer;" title="Delete Event"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+          <button onclick="toggleHideEvent('${e.id}', ${isHidden})" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer;">${eyeIcon}</button>
+          <button onclick="editEvent('${e.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-info); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+          <button onclick="deleteEvent('${e.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-danger-soft); color:var(--color-danger); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
         </div>
       `;
 
-      // 3. Populate "Create & Manage -> Your Events" Table
       if (cmEventsTable) {
         cmEventsTable.innerHTML += `
           <tr style="height: 48px; border-bottom: 1px solid var(--color-border); ${rowStyle}">
@@ -1488,16 +1507,15 @@ if (!data || data.length === 0) {
             <td style="padding: 10px 20px; font-size: 12px; color: var(--color-text-secondary);">${month} ${day}, ${dateObj.getFullYear()}</td>
             <td style="padding: 10px 20px; font-size: 12px; color: var(--color-text-secondary);">${e.venue || 'Location TBD'}</td>
             <td style="padding: 10px 20px; font-weight: 600; text-align:center;">${e.total_capacity}</td>
-            <td style="padding: 10px 20px;"><span class="status-badge ${badgeClass}" style="padding: 4px 8px; font-size: 10px;">${badgeText}</span></td>
+            <td style="padding: 10px 20px;"><span style="display:inline-block; padding:4px 8px; border-radius:99px; font-size:10px; font-weight:600; background:${statusBg}; color:${statusCol};">${calcStatus}</span></td>
             <td style="padding: 10px 20px;">${actionBtns}</td>
           </tr>
         `;
       }
 
-      // 4. Populate "Dashboard -> Recent Events" List
-      if(list) {
+      if(list && !isHidden) {
         list.innerHTML += `
-          <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 4px; border-bottom: 1px solid var(--color-border); ${rowStyle}">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 4px; border-bottom: 1px solid var(--color-border);">
             <div style="display: flex; gap: 12px; align-items: center;">
               <div class="date-tile" style="width: 36px;"><div class="mon" style="font-size: 8px; padding: 1px 0;">${month}</div><div class="day" style="font-size: 13px; padding: 1px 0;">${day}</div></div>
               <div>
@@ -1505,54 +1523,85 @@ if (!data || data.length === 0) {
                 <div style="font-size: 10px; color: var(--color-text-secondary);">Capacity Limit: ${e.total_capacity}</div>
               </div>
             </div>
-            <span class="status-badge ${badgeClass}" style="font-size: 10px; padding: 2px 8px;">${badgeText}</span>
+            <span style="display:inline-block; padding:2px 8px; border-radius:99px; font-size:10px; font-weight:600; background:${statusBg}; color:${statusCol};">${calcStatus}</span>
           </div>
         `;
       }
 
-      // 5. Populate "Events Tab" Main Table
+      // Populate "Events Tab" Main Table (With Date AND Start Time)
       if (eventsTable) {
+        const displayDate = evDateStr ? new Date(evDateStr).toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' }) : 'TBD';
         eventsTable.innerHTML += `
           <tr style="${rowStyle}">
             <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar">${e.event_name.substring(0,2).toUpperCase()}</div><div><div style="font-weight:600; color:var(--color-text);">${e.event_name}</div><div style="font-size:11px; color:var(--color-text-secondary);">Event</div></div></div></td>
-            <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> ${month} ${day}, ${dateObj.getFullYear()}</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">Created On</div></td>
-            <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${e.venue || 'Location TBD'}</div><div style="font-size:11px; color:var(--color-text-secondary); margin-left:20px;">Venue</div></td>
-            <td><div style="font-weight:600; font-size:13px; text-align:center;">${e.total_capacity}</div><div style="font-size:11px; color:var(--color-text-secondary); text-align:center;">Capacity</div></td>
-            <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
+            <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> ${displayDate}</div></td>
+            <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">${e.start_time || 'TBD'}</div></td>
+            <td><div style="display:flex; gap:6px; font-weight:500; font-size:12px; color:var(--color-text);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${e.venue || 'Location TBD'}</div></td>
+            <td><div style="font-weight:600; font-size:13px; text-align:center;">${e.total_capacity}</div></td>
+            <td><span style="display:inline-block; padding:4px 10px; border-radius:99px; font-size:11px; font-weight:600; background:${statusBg}; color:${statusCol};">${calcStatus}</span></td>
             <td>${actionBtns}</td>
           </tr>
         `;
       }
-    }); // <--- THE LOOP CLOSES HERE
+    });
 
-    // 6. Populate "Guest Lists -> Event Pills" dynamically (OUTSIDE THE LOOP)
+    // Event KPIs and Donut Update
+    const totalE = data.length;
+    if(document.getElementById('kpiEvTotal')) document.getElementById('kpiEvTotal').innerText = totalE;
+    if(document.getElementById('kpiEvUpcoming')) document.getElementById('kpiEvUpcoming').innerText = upc;
+    if(document.getElementById('kpiEvOngoing')) document.getElementById('kpiEvOngoing').innerText = ong;
+    if(document.getElementById('kpiEvCompleted')) document.getElementById('kpiEvCompleted').innerText = com;
+    if(document.getElementById('kpiEvCancelled')) document.getElementById('kpiEvCancelled').innerText = can;
+
+    if(document.getElementById('eventsDonutTotal')) {
+        document.getElementById('eventsDonutTotal').innerText = totalE;
+        document.getElementById('evtLegUpc').innerText = upc;
+        document.getElementById('evtLegOng').innerText = ong;
+        document.getElementById('evtLegCom').innerText = com;
+        document.getElementById('evtLegCan').innerText = can;
+
+        const pctUpc = totalE > 0 ? Math.round((upc/totalE)*100) : 0;
+        const pctOng = totalE > 0 ? Math.round((ong/totalE)*100) : 0;
+        const pctCom = totalE > 0 ? Math.round((com/totalE)*100) : 0;
+        const pctCan = totalE > 0 ? Math.round((can/totalE)*100) : 0;
+
+        document.getElementById('evtLegUpcPct').innerText = `(${pctUpc}%)`;
+        document.getElementById('evtLegOngPct').innerText = `(${pctOng}%)`;
+        document.getElementById('evtLegComPct').innerText = `(${pctCom}%)`;
+        document.getElementById('evtLegCanPct').innerText = `(${pctCan}%)`;
+
+        let p1 = pctUpc;
+        let p2 = p1 + pctOng;
+        let p3 = p2 + pctCom;
+
+        document.getElementById('eventsDonutGraph').style.background = `conic-gradient(
+            var(--color-success) 0% ${p1}%,
+            #B4790C ${p1}% ${p2}%,
+            var(--color-info) ${p2}% ${p3}%,
+            var(--color-danger) ${p3}% 100%
+        )`;
+    }
+
+    // Populate "Guest Lists -> Event Pills" dynamically
     const glPills = document.getElementById('guestListEventPills');
     if (glPills) {
-        let pillsHtml = '';
-        
-        // "All Events" Default Pill
-        const allSelected = currentGuestFilterEventId === null;
-        const allBg = allSelected ? 'var(--color-primary-soft)' : 'var(--color-bg)';
-        const allBorder = allSelected ? 'var(--color-primary)' : 'var(--color-border)';
-        pillsHtml += `
-          <div onclick="filterGuestsByEvent(null)" class="card" style="padding: 10px 16px; border-color: ${allBorder}; background: ${allBg}; min-width: 120px; cursor: pointer; display:flex; gap:12px; align-items:center;">
+        let pillsHtml = `
+          <div onclick="filterGuestsByEvent(null)" class="card" style="padding: 10px 16px; border-color: ${currentGuestFilterEventId === null ? 'var(--color-primary)' : 'var(--color-border)'}; background: ${currentGuestFilterEventId === null ? 'var(--color-primary-soft)' : 'var(--color-bg)'}; min-width: 120px; cursor: pointer; display:flex; gap:12px; align-items:center;">
             <div style="font-weight:600; color:var(--color-primary); font-size:13px;">All Events</div>
           </div>
         `;
 
         data.slice(0, 10).forEach((e) => {
             const isSelected = currentGuestFilterEventId === e.id;
-            const bgStr = isSelected ? 'var(--color-primary-soft)' : 'var(--color-bg)';
-            const borderStr = isSelected ? 'var(--color-primary)' : 'var(--color-border)';
             pillsHtml += `
-              <div onclick="filterGuestsByEvent('${e.id}')" class="card" style="padding: 10px 16px; border-color: ${borderStr}; background: ${bgStr}; min-width: 180px; cursor: pointer; display:flex; gap:12px; align-items:center;">
+              <div onclick="filterGuestsByEvent('${e.id}')" class="card" style="padding: 10px 16px; border-color: ${isSelected ? 'var(--color-primary)' : 'var(--color-border)'}; background: ${isSelected ? 'var(--color-primary-soft)' : 'var(--color-bg)'}; min-width: 180px; cursor: pointer; display:flex; gap:12px; align-items:center;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
                 <div><div style="font-weight:600; color:var(--color-primary); font-size:13px;">${e.event_name}</div><div style="font-size:11px; color:var(--color-primary); margin-top:2px;">Capacity: ${e.total_capacity}</div></div>
               </div>
             `;
         });
         pillsHtml += `
-          <div onclick="document.querySelector('button[onclick*=\\'createEventView\\']').click()" style="display: flex; align-items: center; justify-content: center; padding: 10px 16px; cursor: pointer; color: var(--color-primary); font-size: 13px; font-weight: 600; border: 1.5px dashed var(--color-border); border-radius: var(--radius-md); min-width: 140px; transition: 0.2s;">
+          <div onclick="switchView('createEventView')" style="display: flex; align-items: center; justify-content: center; padding: 10px 16px; cursor: pointer; color: var(--color-primary); font-size: 13px; font-weight: 600; border: 1.5px dashed var(--color-border); border-radius: var(--radius-md); min-width: 140px; transition: 0.2s;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Event
           </div>
         `;
@@ -1815,8 +1864,40 @@ if (!data || data.length === 0) {
               </tr>
             `;
         }
-      });
-    }
+      }); // <--- THIS IS THE END OF THE LOOP
+
+      // ==============================================================
+      // === PASTE THE NEW LOGIC RIGHT HERE ===
+      // ==============================================================
+      const evtRecentPasses = document.getElementById('eventsTabRecentPassesList');
+      if (evtRecentPasses) {
+          evtRecentPasses.innerHTML = '';
+          // Sort guests by newest first
+          const sortedGuests = [...guests].sort((a, b) => getSafeDate(b.created_at) - getSafeDate(a.created_at));
+          
+          sortedGuests.slice(0, 5).forEach(g => {
+              const dateObj = getSafeDate(g.created_at);
+              const timeStr = dateObj.toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' });
+              const dateStr = dateObj.toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' });
+              const seqQrId = 'QR-' + String(g.ticket_number || 0).padStart(3, '0');
+
+              evtRecentPasses.innerHTML += `
+                  <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
+                    <div>
+                      <div style="font-size: 12px; font-weight: 600;">${g.guest_name}</div>
+                      <div style="font-size: 11px; color: var(--color-text-secondary);">${g.events ? g.events.event_name : 'Event'} · <span style="font-family:monospace; color:var(--color-primary);">${seqQrId}</span></div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div style="font-size: 11px;">${timeStr}</div>
+                      <div style="font-size: 11px; color: var(--color-text-secondary);">${dateStr}</div>
+                    </div>
+                  </div>
+              `;
+          });
+      }
+      // ==============================================================
+
+    } // <--- THIS CLOSES THE `if (guests) {` BLOCK
 
     // FIX: Initialize defaults for filters and graphs after ALL data loads (whether empty or full)
     const activeFilterBtn = document.querySelector('#dashboardDateFilters .btn-filter-nav.active');
