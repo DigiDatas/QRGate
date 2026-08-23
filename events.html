@@ -2435,13 +2435,28 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
       
       newCanvas.querySelectorAll('.canvas-element').forEach(node => makeDraggable(node));
 
-      // 3. Fill Right Settings Card
+      // 3. Sync Left Panel QR Inputs with the Loaded Template Properties
+      const loadedQrSpot = newCanvas.querySelector('#canvasQRSpot');
+      if (loadedQrSpot) {
+          const s = loadedQrSpot.dataset.qrSize || "310";
+          const d = loadedQrSpot.dataset.qrDark || "#000000";
+          const bg = loadedQrSpot.dataset.qrBg || "#ffffff";
+          const hasBox = loadedQrSpot.dataset.qrHasBox !== 'false';
+          const r = loadedQrSpot.dataset.qrRadius || "20";
+
+          if (document.getElementById('qrCustomSize')) document.getElementById('qrCustomSize').value = s;
+          if (document.getElementById('qrDarkColor')) document.getElementById('qrDarkColor').value = d;
+          if (document.getElementById('qrBgColor')) document.getElementById('qrBgColor').value = bg;
+          if (document.getElementById('qrBgBoxToggle')) document.getElementById('qrBgBoxToggle').checked = hasBox;
+          if (document.getElementById('qrBoxRadius')) document.getElementById('qrBoxRadius').value = r;
+      }
+
+      // 4. Fill Right Settings Card
       document.getElementById('tplName').value = tpl.name || '';
       const eventSelect = document.getElementById('tplEventSelect');
       if (eventSelect) {
           eventSelect.value = tpl.event_id || '';
           
-          // Trigger guest population for this assigned event
           const gDrop = document.getElementById('tplGuestSelect');
           if (gDrop && tpl.event_id) {
               gDrop.innerHTML = '<option value="">Select Guest to Preview...</option>';
@@ -2458,7 +2473,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
 
       currentActiveBgString = tpl.thumbnail_url || "url('./templates/gatepass01.jpg')";
 
-      // 4. Update top template thumbnail selection
+      // 5. Update top template thumbnail selection
       document.querySelectorAll('#templateGallery .tpl-card').forEach(c => {
           const check = c.querySelector('.active-check');
           c.style.border = '1px solid var(--color-border)';
@@ -2486,9 +2501,13 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
       const hasBox = qrSpot.dataset.qrHasBox !== 'false';
       const radius = parseInt(qrSpot.dataset.qrRadius) || 20;
 
-      const boxPadding = 5;
+      const boxPadding = 5; 
       const totalBoxSize = hasBox ? (size + (boxPadding * 2)) : size;
 
+      // Outer Box Wrapper Styling
+      qrSpot.style.display = 'flex';
+      qrSpot.style.alignItems = 'center';
+      qrSpot.style.justifyContent = 'center';
       qrSpot.style.width = totalBoxSize + 'px';
       qrSpot.style.height = totalBoxSize + 'px';
       qrSpot.style.background = hasBox ? bgColor : 'transparent';
@@ -2500,16 +2519,23 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
           inner = qrSpot.querySelector('#qrInnerCode');
       }
 
+      inner.style.display = 'flex';
+      inner.style.alignItems = 'center';
+      inner.style.justifyContent = 'center';
       inner.style.width = size + 'px';
       inner.style.height = size + 'px';
+      inner.style.background = 'transparent';
       inner.innerHTML = '';
+
+      // Set light color to transparent when BG Box is disabled
+      const effectiveLightColor = hasBox ? bgColor : 'rgba(0,0,0,0)';
 
       new QRCode(inner, {
           text: textData,
           width: size,
           height: size,
           colorDark: darkColor,
-          colorLight: hasBox ? bgColor : '#ffffff',
+          colorLight: effectiveLightColor,
           correctLevel: QRCode.CorrectLevel.H
       });
   }
@@ -2517,10 +2543,31 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
   // --- CANCEL EVENT FORM ROUTE ---
   function cancelEventForm() {
       currentEditEventId = null;
+      
+      // Reset all form input fields
       document.getElementById('dedicatedEventName').value = '';
       document.getElementById('dedicatedVenue').value = '';
       document.getElementById('dedicatedEventDate').value = '';
-      document.getElementById('submitDedicatedEventBtn').innerHTML = 'Create Event &rarr;';
+      document.getElementById('dedicatedStartTime').value = '';
+      document.getElementById('dedicatedEndTime').value = '';
+      document.getElementById('dedicatedEventCapacity').value = '100';
+      
+      const addr = document.querySelector('#createEventView input[placeholder="Enter full address"]');
+      const org = document.querySelector('#createEventView input[placeholder="Enter organizer / company name"]');
+      const email = document.querySelector('#createEventView input[type="email"]');
+      const phone = document.querySelector('#createEventView input[placeholder="Enter phone number"]');
+      const desc = document.querySelector('#createEventView textarea');
+
+      if (addr) addr.value = '';
+      if (org) org.value = '';
+      if (email) email.value = '';
+      if (phone) phone.value = '';
+      if (desc) desc.value = '';
+
+      // Reset button UI text & icon
+      document.getElementById('submitDedicatedEventBtn').innerHTML = 'Create Event <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+      
+      // Navigate back to the Create & Manage overview tab
       switchView('createManageView', document.querySelector('button[onclick*="createManageView"]'));
   }
       
@@ -2659,6 +2706,16 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
               if(prev) prev.classList.add('hidden');
               if(qr) qr.classList.add('hidden');
               if(all) all.classList.add('hidden');
+          }
+
+          // Pressing Delete or Backspace removes the currently selected element (unless typing)
+          if ((e.key === "Delete" || e.key === "Backspace") && currentlySelectedElement) {
+              if (currentlySelectedElement.contentEditable === "true") return; // Allow normal typing delete
+              if (currentlySelectedElement.id === 'canvasQRSpot') return; // Do not delete QR container
+              
+              e.preventDefault();
+              currentlySelectedElement.remove();
+              currentlySelectedElement = null;
           }
       });
 
@@ -2805,14 +2862,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
           document.querySelectorAll('.nav-item')[0].click(); 
       }
   }
-function cancelEventForm() {
-      currentEditEventId = null;
-      document.getElementById('dedicatedEventName').value = '';
-      document.getElementById('dedicatedVenue').value = '';
-      document.getElementById('dedicatedEventDate').value = '';
-      document.getElementById('submitDedicatedEventBtn').innerHTML = 'Create Event <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
-      switchView('createManageView', document.querySelector('button[onclick*="createManageView"]'));
-  }
+
 
   // Ensure this remains last
   init();
