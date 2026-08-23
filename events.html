@@ -1831,8 +1831,14 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
       const ticketContainer = document.getElementById('ticketContainer');
       const guest = allFetchedGuests.find(g => g.id === id);
       
-      // STRICT MATCHING: Convert both to strings to guarantee finding the custom template
-      const customTpl = windowSavedTemplates.find(t => String(t.event_id) === String(eventId));
+      // 1. Prioritize guest's individual assigned template, fallback to event's template
+      let customTpl = null;
+      if (guest && guest.template_id) {
+          customTpl = windowSavedTemplates.find(t => String(t.id) === String(guest.template_id));
+      }
+      if (!customTpl) {
+          customTpl = windowSavedTemplates.find(t => String(t.event_id) === String(eventId));
+      }
 
       if (customTpl) {
           // --- RENDER CUSTOM DESIGN ---
@@ -1841,20 +1847,60 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
           
           const cEvent = tempDiv.querySelector('#canvasEventName');
           const cGuest = tempDiv.querySelector('#canvasGuestName');
+          const cVenue = tempDiv.querySelector('#canvasVenue');
+          const cDateTime = tempDiv.querySelector('#canvasDateTime');
           const cQrLabel = tempDiv.querySelector('#canvasQrLabel');
           const cQrSpot = tempDiv.querySelector('#canvasQRSpot');
           
           if(cEvent) cEvent.innerText = eventName;
           if(cGuest) cGuest.innerText = guestName;
-          if(cQrLabel && guest) cQrLabel.innerText = 'QR-' + String(guest.ticket_number || 0).padStart(3, '0');
           
+          const parentEv = allFetchedEvents.find(ev => String(ev.id) === String(eventId));
+          if (parentEv) {
+              if (cVenue) cVenue.innerText = parentEv.venue || 'Venue TBD';
+              if (cDateTime) {
+                  const dStr = parentEv.event_date ? parentEv.event_date.split('T')[0] : '';
+                  const tStr = parentEv.start_time ? ` · ${parentEv.start_time}` : '';
+                  cDateTime.innerText = dStr + tStr;
+              }
+          }
+
+          const formattedQrLabel = 'QR-' + String(guest ? (guest.ticket_number || 0) : 0).padStart(3, '0');
+          if(cQrLabel) cQrLabel.innerText = formattedQrLabel;
+          
+          // Generate the unique QR code for THIS specific guest
           if (cQrSpot) {
-              cQrSpot.innerHTML = '';
-              new QRCode(cQrSpot, { text: id, width: 310, height: 310, colorDark : "#000", colorLight : "#fff", correctLevel : QRCode.CorrectLevel.H });
+              const size = parseInt(cQrSpot.dataset.qrSize) || 310;
+              const darkColor = cQrSpot.dataset.qrDark || "#000000";
+              const bgColor = cQrSpot.dataset.qrBg || "#ffffff";
+              const hasBox = cQrSpot.dataset.qrHasBox !== 'false';
+              const radius = parseInt(cQrSpot.dataset.qrRadius) || 20;
+
+              const boxPadding = 5;
+              const totalBoxSize = hasBox ? (size + (boxPadding * 2)) : size;
+
+              cQrSpot.style.display = 'flex';
+              cQrSpot.style.alignItems = 'center';
+              cQrSpot.style.justifyContent = 'center';
+              cQrSpot.style.width = totalBoxSize + 'px';
+              cQrSpot.style.height = totalBoxSize + 'px';
+              cQrSpot.style.background = hasBox ? bgColor : 'transparent';
+              cQrSpot.style.borderRadius = hasBox ? (radius + 'px') : '0px';
+
+              cQrSpot.innerHTML = `<div id="modalQrInner" style="width:${size}px; height:${size}px; display:flex; align-items:center; justify-content:center;"></div>`;
+              const innerContainer = cQrSpot.querySelector('#modalQrInner');
+
+              new QRCode(innerContainer, { 
+                  text: id, 
+                  width: size, 
+                  height: size, 
+                  colorDark: darkColor, 
+                  colorLight: hasBox ? bgColor : 'rgba(0,0,0,0)', 
+                  correctLevel: QRCode.CorrectLevel.H 
+              });
           }
           
           const customCanvas = tempDiv.firstElementChild;
-          // PERFECT CENTER SCALING FIX
           customCanvas.style.position = 'absolute';
           customCanvas.style.top = '50%';
           customCanvas.style.left = '50%';
@@ -1872,7 +1918,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
           ticketContainer.appendChild(customCanvas);
 
       } else {
-          // --- RENDER DEFAULT FALLBACK DESIGN (If no custom template is assigned to this event) ---
+          // --- RENDER DEFAULT FALLBACK ---
           ticketContainer.style.width = '340px';
           ticketContainer.style.height = 'auto';
           ticketContainer.style.background = 'white';
@@ -1906,7 +1952,6 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
           new QRCode(qrContainer, { text: id, width: 120, height: 120, colorDark : "#000", colorLight : "#fff", correctLevel : QRCode.CorrectLevel.H });
       }
 
-      // Show modal (Action buttons are outside ticketContainer, so they remain perfectly intact!)
       document.getElementById('qrModal').classList.remove('hidden');
   }
 
@@ -2484,10 +2529,15 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
               filteredGuests.forEach(g => {
                   gDrop.innerHTML += `<option value="${g.id}">${g.guest_name}</option>`;
               });
-              if (filteredGuests.length > 0) {
+              
+              // Automatically select the guest assigned to this template, or default to the first
+              const assignedGuest = filteredGuests.find(g => String(g.template_id) === String(tpl.id));
+              if (assignedGuest) {
+                  gDrop.value = assignedGuest.id;
+              } else if (filteredGuests.length > 0) {
                   gDrop.value = filteredGuests[0].id;
-                  gDrop.dispatchEvent(new Event('change'));
               }
+              gDrop.dispatchEvent(new Event('change'));
           }
       }
 
@@ -2654,27 +2704,61 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
     if (!tplName) return alert("Please enter a Template Name before saving!");
 
     document.querySelectorAll('.canvas-element').forEach(node => node.style.outline = "none");
-    const canvasHtml = document.getElementById('editorCanvas').outerHTML;
     
-    // Save the actual active background instead of hardcoded default
+    // 1. Create a clean clone of the canvas without frozen guest data
+    const canvasClone = document.getElementById('editorCanvas').cloneNode(true);
+    
+    // Reset preview texts back to dynamic placeholders so they don't freeze
+    const cEvt = canvasClone.querySelector('#canvasEventName');
+    const cGst = canvasClone.querySelector('#canvasGuestName');
+    const cQrLbl = canvasClone.querySelector('#canvasQrLabel');
+    if (cEvt) cEvt.innerText = '{{event_name}}';
+    if (cGst) cGst.innerText = '{{guest_name}}';
+    if (cQrLbl) cQrLbl.innerText = '{{qr_id}}';
+
+    // Reset QR canvas to clean placeholder so the graphic isn't frozen
+    const cQrSpot = canvasClone.querySelector('#canvasQRSpot');
+    if (cQrSpot) {
+        cQrSpot.innerHTML = `
+          <div id="qrInnerCode" style="display:flex; align-items:center; justify-content:center; width:${cQrSpot.dataset.qrSize || '310'}px; height:${cQrSpot.dataset.qrSize || '310'}px;">
+            <div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight:bold;">QR SPOT</div>
+          </div>`;
+    }
+
+    const cleanCanvasHtml = canvasClone.outerHTML;
     const assignedEventId = document.getElementById('tplEventSelect').value || null;
+    const selectedGuestId = document.getElementById('tplGuestSelect').value || null;
+
     const payload = {
        name: tplName, 
        event_type: 'Custom', 
-       html_layout: canvasHtml, 
+       html_layout: cleanCanvasHtml, 
        thumbnail_url: currentActiveBgString,
-       event_id: assignedEventId // Save the event link!
+       event_id: assignedEventId
     };
+
+    let savedTemplateId = currentEditingTemplateId;
 
     if (currentEditingTemplateId && !saveAsNew) {
         const { error } = await supabaseClient.from('templates').update(payload).eq('id', currentEditingTemplateId);
-        if (error) alert("Error updating: " + error.message);
-        else { alert("Template updated!"); fetchSavedTemplates(); }
+        if (error) return alert("Error updating: " + error.message);
     } else {
-        const { error } = await supabaseClient.from('templates').insert([payload]);
-        if (error) alert("Error saving: " + error.message);
-        else { alert("New template saved!"); fetchSavedTemplates(); }
+        const { data, error } = await supabaseClient.from('templates').insert([payload]).select();
+        if (error) return alert("Error saving: " + error.message);
+        if (data && data[0]) {
+            savedTemplateId = data[0].id;
+            currentEditingTemplateId = savedTemplateId;
+        }
     }
+
+    // 2. If a specific guest was selected, bind this template directly to that guest
+    if (selectedGuestId && savedTemplateId) {
+        await supabaseClient.from('guests').update({ template_id: savedTemplateId }).eq('id', selectedGuestId);
+    }
+
+    alert("Template saved successfully!");
+    await fetchSavedTemplates();
+    await fetchAllGuestsForKPIs();
   }
 
   // Combined save function for BOTH the Profile Tab and the Dashboard Banner
