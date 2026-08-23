@@ -1224,6 +1224,7 @@
                       <div id="canvasQrLabel" class="canvas-element non-text-editable" data-no-edit="true" style="position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 32px; font-weight: bold; color: #fff; font-family: monospace; width: max-content; pointer-events: auto; cursor: pointer;">QR-001</div>
                   </div>
               </div>
+            </div>
 
             <!-- Right: Settings Sidebar -->
             <div class="card panel no-scrollbar" style="padding: 16px; overflow-y: auto; display: flex; flex-direction: column;">
@@ -2287,7 +2288,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
       el.style.cursor = 'move';
       el.contentEditable = "false"; 
 
-      // Attach resize handle if text element and handle doesn't exist
+      // Attach resize handle for plain text boxes
       if (!el.classList.contains('qr-group-box') && !el.classList.contains('non-text-editable') && !el.querySelector('.resize-handle')) {
           const handle = document.createElement('div');
           handle.className = 'resize-handle right';
@@ -2295,7 +2296,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
       }
       
       el.addEventListener('mousedown', (e) => {
-          // Check if clicking the resize handle
+          // 1. Text box horizontal edge resize handle
           if (e.target.classList.contains('resize-handle')) {
               e.preventDefault();
               e.stopPropagation();
@@ -2318,7 +2319,8 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
           }
 
           if (el.contentEditable === "true") return; 
-          e.preventDefault(); 
+          e.preventDefault();
+          e.stopPropagation(); // Prevents child clicks from dragging the parent unexpectedly
           
           currentlySelectedElement = el;
           document.querySelectorAll('.canvas-element').forEach(node => {
@@ -2328,6 +2330,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
           el.style.outline = "3px dashed var(--color-primary)";
           el.classList.add('active-element');
           
+          // Populate tools panel inputs with selected element styles
           const style = window.getComputedStyle(el);
           const sizeInput = document.getElementById('elementFontSize');
           const colorInput = document.getElementById('elementColor');
@@ -2336,7 +2339,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
           if (sizeInput) sizeInput.value = parseInt(style.fontSize) || 32;
           if (colorInput) {
               const rgb = style.color;
-              if (rgb.includes('rgb')) {
+              if (rgb && rgb.includes('rgb')) {
                   const parts = rgb.match(/\d+/g);
                   if (parts && parts.length >= 3) {
                       const hex = "#" + parts.slice(0,3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
@@ -2349,17 +2352,18 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
           isDragging = true;
           dragTarget = el;
           
-          const parentRect = document.getElementById('editorCanvas').getBoundingClientRect();
-          const scale = parentRect.width / 1080;
+          // If moving a nested child (like the ID label), measure offset against its immediate parent container
+          const referenceRect = el.parentElement.getBoundingClientRect();
+          const scale = referenceRect.width / (el.parentElement.id === 'editorCanvas' ? 1080 : el.parentElement.offsetWidth);
           
           offsetX = (e.clientX - el.getBoundingClientRect().left) / scale;
           offsetY = (e.clientY - el.getBoundingClientRect().top) / scale;
       });
 
-      // Double-click to edit text (DISABLED for QR-ID)
+      // Double-click to edit text (LOCKED for QR box and QR ID label)
       el.addEventListener('dblclick', (e) => {
-          if (el.dataset.noEdit === "true" || el.classList.contains('non-text-editable') || el.classList.contains('qr-group-box')) {
-              return; // Protected non-editable text
+          if (el.dataset.noEdit === "true" || el.classList.contains('non-text-editable') || el.classList.contains('qr-group-box') || el.id === 'canvasQrLabel') {
+              return; // Protected non-text editable
           }
           el.contentEditable = "true";
           el.focus();
@@ -2375,15 +2379,18 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
 
   document.addEventListener('mousemove', (e) => {
       if (!isDragging || !dragTarget) return;
-      const canvas = document.getElementById('editorCanvas');
-      const parentRect = canvas.getBoundingClientRect();
-      const scale = parentRect.width / 1080;
+      
+      const parentContainer = dragTarget.parentElement;
+      const parentRect = parentContainer.getBoundingClientRect();
+      const referenceWidth = parentContainer.id === 'editorCanvas' ? 1080 : parentContainer.offsetWidth;
+      const scale = parentRect.width / referenceWidth;
       
       let x = (e.clientX - parentRect.left) / scale - offsetX;
       let y = (e.clientY - parentRect.top) / scale - offsetY;
 
       dragTarget.style.left = x + 'px';
       dragTarget.style.top = y + 'px';
+      dragTarget.style.bottom = 'auto';
       dragTarget.style.transform = 'none'; 
   });
 
@@ -2570,21 +2577,26 @@ function deleteSelectedElement() {
       const activeCard = document.getElementById('saved-card-' + id);
       if(activeCard) activeCard.style.border = '2px solid var(--color-primary)';
 
-      // 2. Inject Canvas HTML
-      const canvasWrapper = document.getElementById('editorCanvas').parentElement;
-      document.getElementById('editorCanvas').outerHTML = tpl.html_layout;
-      
-      const newCanvas = canvasWrapper.querySelector('#editorCanvas');
-      newCanvas.style.position = 'absolute';
-      newCanvas.style.top = '50%';
-      newCanvas.style.left = '50%';
-      newCanvas.style.transform = 'translate(-50%, -50%) scale(0.26)';
-      newCanvas.style.transformOrigin = 'center';
-      
-      newCanvas.querySelectorAll('.canvas-element').forEach(node => makeDraggable(node));
+      // 2. Safely replace Canvas DOM inside its wrapper panel
+      const currentCanvas = document.getElementById('editorCanvas');
+      if (currentCanvas) {
+          const wrapper = currentCanvas.parentElement;
+          currentCanvas.outerHTML = tpl.html_layout;
+          
+          const newCanvas = wrapper.querySelector('#editorCanvas');
+          if (newCanvas) {
+              newCanvas.style.position = 'absolute';
+              newCanvas.style.top = '50%';
+              newCanvas.style.left = '50%';
+              newCanvas.style.transform = 'translate(-50%, -50%) scale(0.26)';
+              newCanvas.style.transformOrigin = 'center';
+              
+              newCanvas.querySelectorAll('.canvas-element').forEach(node => makeDraggable(node));
+          }
+      }
 
       // 3. Sync Left Panel QR Inputs with the Loaded Template Properties
-      const loadedQrSpot = newCanvas.querySelector('#canvasQRSpot');
+      const loadedQrSpot = document.getElementById('canvasQRSpot');
       if (loadedQrSpot) {
           const s = loadedQrSpot.dataset.qrSize || "310";
           const d = loadedQrSpot.dataset.qrDark || "#000000";
@@ -2613,7 +2625,6 @@ function deleteSelectedElement() {
                   gDrop.innerHTML += `<option value="${g.id}">${g.guest_name}</option>`;
               });
               
-              // Automatically select the guest assigned to this template, or default to the first
               const assignedGuest = filteredGuests.find(g => String(g.template_id) === String(tpl.id));
               if (assignedGuest) {
                   gDrop.value = assignedGuest.id;
@@ -2654,11 +2665,12 @@ function deleteSelectedElement() {
       const hasBox = qrSpot.dataset.qrHasBox !== 'false';
       const radius = parseInt(qrSpot.dataset.qrRadius) || 20;
 
-      // 5px padding on top, bottom, left, and right (+10px total)
+      // 5px padding on all sides (+10px total)
       const boxPadding = 5; 
       const totalBoxSize = hasBox ? (size + (boxPadding * 2)) : size;
 
       qrSpot.style.display = 'flex';
+      qrSpot.style.flexDirection = 'column';
       qrSpot.style.alignItems = 'center';
       qrSpot.style.justifyContent = 'center';
       qrSpot.style.width = totalBoxSize + 'px';
