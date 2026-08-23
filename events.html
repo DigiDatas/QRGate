@@ -1167,11 +1167,18 @@
                           <option value="'Times New Roman', serif">Times New Roman</option>
                           <option value="'Georgia', serif">Georgia</option>
                       </select>
-                      <select id="elementTextAlign" class="input-field" style="margin: 0; padding: 4px 8px; font-size: 12px; height: 32px;">
-                          <option value="center">Center Align</option>
-                          <option value="left">Left Align</option>
-                          <option value="right">Right Align</option>
-                      </select>
+                      <!-- 3 Segmented Alignment Buttons (Replaced the old select dropdown) -->
+                      <div style="display: flex; gap: 4px; width: 100%;">
+                        <button type="button" class="btn-align-toggle btn-filter-nav" data-align="left" style="flex:1; padding:4px; justify-content:center; height:30px;" title="Align Left">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+                        </button>
+                        <button type="button" class="btn-align-toggle btn-filter-nav active" data-align="center" style="flex:1; padding:4px; justify-content:center; height:30px;" title="Align Center">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="10" x2="6" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="18" y1="14" x2="6" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+                        </button>
+                        <button type="button" class="btn-align-toggle btn-filter-nav" data-align="right" style="flex:1; padding:4px; justify-content:center; height:30px;" title="Align Right">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="7" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+                        </button>
+                      </div>
                   </div>
 
                   <div style="height: 1px; background: var(--color-border); margin: 10px 0;"></div>
@@ -1195,6 +1202,11 @@
                         <span>Box Radius:</span>
                         <input type="number" id="qrBoxRadius" value="20" min="0" max="100" class="input-field" style="width: 70px; margin: 0; padding: 2px 6px; height: 26px; font-size: 11px;">
                       </div>
+                      <!-- New Box Padding input field -->
+                      <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px;">
+                        <span>Box Padding:</span>
+                        <input type="number" id="qrBoxPadding" value="10" min="0" max="60" class="input-field" style="width: 70px; margin: 0; padding: 2px 6px; height: 26px; font-size: 11px;">
+                      </div>
                   </div>
 
                   <button onclick="deleteSelectedElement()" class="btn-primary" style="background: var(--color-danger-soft); color: var(--color-danger); font-size: 11px; padding: 6px;">Delete Selected</button>
@@ -1205,23 +1217,24 @@
             <div class="card panel" style="background: var(--color-surface-soft); position: relative; overflow: hidden; min-height: 0; padding: 0;">
               <div id="editorCanvas" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.26); transform-origin: center; width: 1080px; height: 1440px; background-image: url('./templates/gatepass01.jpg'); background-size: 100% 100%; background-repeat: no-repeat; background-position: center; box-shadow: 0 40px 100px rgba(0,0,0,0.15); border-radius: 20px; background-color: #fff;">
                   
-                  <!-- Only 2 Default Texts with Resizable Handles -->
-                  <div id="canvasEventName" class="canvas-element resizable-text" contenteditable="false" style="position: absolute; top: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 70px; font-weight: 800; color: #fff; font-family: var(--font-family); outline: none; cursor: move; width: 800px; min-height: 80px;">
-                    Event Name
+                  <!-- Editable Custom Header Text -->
+                  <div class="canvas-element resizable-text" contenteditable="false" style="position: absolute; top: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 70px; font-weight: 800; color: #fff; font-family: var(--font-family); outline: none; cursor: move; width: 800px; min-height: 80px;">
+                    Event Title Here
                     <div class="resize-handle right"></div>
                   </div>
 
-                  <div id="canvasGuestName" class="canvas-element resizable-text" contenteditable="false" style="position: absolute; top: 270px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 45px; color: #e2e8f0; font-family: var(--font-family); outline: none; cursor: move; width: 700px; min-height: 60px;">
-                    Guest Name
+                  <!-- Editable Custom Subtitle Text -->
+                  <div class="canvas-element resizable-text" contenteditable="false" style="position: absolute; top: 270px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 45px; color: #e2e8f0; font-family: var(--font-family); outline: none; cursor: move; width: 700px; min-height: 60px;">
+                    Guest Pass Notice
                     <div class="resize-handle right"></div>
                   </div>
 
-                  <!-- Unified Movable QR Code Group (Moves Label Together) -->
-                  <div id="canvasQRSpot" class="canvas-element qr-group-box" data-qr-size="310" data-qr-dark="#000000" data-qr-bg="#ffffff" data-qr-has-box="true" data-qr-radius="20" style="position: absolute; bottom: 180px; left: 50%; transform: translateX(-50%); width: 320px; height: 320px; background: #ffffff; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: move; outline: none;">
+                  <!-- Unified Movable QR Box with Protected, Movable ID Child -->
+                  <div id="canvasQRSpot" class="canvas-element qr-group-box" data-qr-size="310" data-qr-dark="#000000" data-qr-bg="#ffffff" data-qr-has-box="true" data-qr-radius="20" data-qr-padding="10" style="position: absolute; bottom: 180px; left: 50%; transform: translateX(-50%); width: 330px; height: 330px; background: #ffffff; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: move; outline: none;">
                       <div id="qrInnerCode" style="display: flex; align-items: center; justify-content: center; width: 310px; height: 310px;">
                         <div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight: bold;">QR SPOT</div>
                       </div>
-                      <div id="canvasQrLabel" class="canvas-element non-text-editable" data-no-edit="true" style="position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 32px; font-weight: bold; color: #fff; font-family: monospace; width: max-content; pointer-events: auto; cursor: pointer;">QR-001</div>
+                      <div id="canvasQrLabel" class="canvas-element non-text-editable" data-no-edit="true" style="position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 32px; font-weight: bold; color: #fff; font-family: monospace; width: max-content; cursor: move;">QR-001</div>
                   </div>
               </div>
             </div>
@@ -2518,51 +2531,45 @@ function deleteSelectedElement() {
   // --- RESET TEMPLATE ---
   function resetTemplate() {
       currentEditingTemplateId = null;
-      
-      // 1. Deselect bottom saved templates
       document.querySelectorAll('.saved-tpl-card').forEach(c => c.style.border = '1px solid var(--color-border)');
       
-      // 2. Select top default template
       const defaultTplCard = document.querySelectorAll('#templateGallery .tpl-card')[0];
       if (defaultTplCard) defaultTplCard.click();
       
-      // 3. Clear settings inputs
       document.getElementById('tplName').value = '';
       const eventSelect = document.getElementById('tplEventSelect');
       const guestSelect = document.getElementById('tplGuestSelect');
       if (eventSelect) eventSelect.value = '';
       if (guestSelect) guestSelect.innerHTML = '<option value="">First Select Event...</option>';
       
-      // 4. Rebuild Clean Default Canvas (Removes any dynamically inserted text elements)
       const canvas = document.getElementById('editorCanvas');
       canvas.innerHTML = `
-          <div id="canvasEventName" class="canvas-element resizable-text" contenteditable="false" style="position: absolute; top: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 70px; font-weight: 800; color: #fff; font-family: var(--font-family); outline: none; cursor: move; width: 800px; min-height: 80px;">
-            Event Name
+          <div class="canvas-element resizable-text" contenteditable="false" style="position: absolute; top: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 70px; font-weight: 800; color: #fff; font-family: var(--font-family); outline: none; cursor: move; width: 800px; min-height: 80px;">
+            Event Title Here
             <div class="resize-handle right"></div>
           </div>
 
-          <div id="canvasGuestName" class="canvas-element resizable-text" contenteditable="false" style="position: absolute; top: 270px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 45px; color: #e2e8f0; font-family: var(--font-family); outline: none; cursor: move; width: 700px; min-height: 60px;">
-            Guest Name
+          <div class="canvas-element resizable-text" contenteditable="false" style="position: absolute; top: 270px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 45px; color: #e2e8f0; font-family: var(--font-family); outline: none; cursor: move; width: 700px; min-height: 60px;">
+            Guest Pass Notice
             <div class="resize-handle right"></div>
           </div>
 
-          <div id="canvasQRSpot" class="canvas-element qr-group-box" data-qr-size="310" data-qr-dark="#000000" data-qr-bg="#ffffff" data-qr-has-box="true" data-qr-radius="20" style="position: absolute; bottom: 180px; left: 50%; transform: translateX(-50%); width: 320px; height: 320px; background: #ffffff; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: move; outline: none;">
+          <div id="canvasQRSpot" class="canvas-element qr-group-box" data-qr-size="310" data-qr-dark="#000000" data-qr-bg="#ffffff" data-qr-has-box="true" data-qr-radius="20" data-qr-padding="10" style="position: absolute; bottom: 180px; left: 50%; transform: translateX(-50%); width: 330px; height: 330px; background: #ffffff; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: move; outline: none;">
               <div id="qrInnerCode" style="display: flex; align-items: center; justify-content: center; width: 310px; height: 310px;">
                 <div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight: bold;">QR SPOT</div>
               </div>
-              <div id="canvasQrLabel" class="canvas-element non-text-editable" data-no-edit="true" style="position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 32px; font-weight: bold; color: #fff; font-family: monospace; width: max-content; pointer-events: auto; cursor: pointer;">QR-001</div>
+              <div id="canvasQrLabel" class="canvas-element non-text-editable" data-no-edit="true" style="position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 32px; font-weight: bold; color: #fff; font-family: monospace; width: max-content; cursor: move;">QR-001</div>
           </div>
       `;
 
-      // Re-bind dragging to fresh elements
       canvas.querySelectorAll('.canvas-element').forEach(el => makeDraggable(el));
 
-      // Reset QR tool panel inputs
       if (document.getElementById('qrCustomSize')) document.getElementById('qrCustomSize').value = "310";
       if (document.getElementById('qrDarkColor')) document.getElementById('qrDarkColor').value = "#000000";
       if (document.getElementById('qrBgColor')) document.getElementById('qrBgColor').value = "#ffffff";
       if (document.getElementById('qrBgBoxToggle')) document.getElementById('qrBgBoxToggle').checked = true;
       if (document.getElementById('qrBoxRadius')) document.getElementById('qrBoxRadius').value = "20";
+      if (document.getElementById('qrBoxPadding')) document.getElementById('qrBoxPadding').value = "10";
   }
 
   // --- LOAD SAVED TEMPLATE ---
@@ -2654,7 +2661,7 @@ function deleteSelectedElement() {
       if(modal) modal.classList.add('hidden');
   }
 
-  // --- RE-RENDER QR WITH LIVE STYLES ---
+  // --- RE-RENDER QR WITH LIVE ADJUSTABLE BOX PADDING ---
   function renderCanvasQR(textData = 'PREVIEW') {
       const qrSpot = document.getElementById('canvasQRSpot');
       if (!qrSpot) return;
@@ -2664,9 +2671,8 @@ function deleteSelectedElement() {
       const bgColor = qrSpot.dataset.qrBg || '#ffffff';
       const hasBox = qrSpot.dataset.qrHasBox !== 'false';
       const radius = parseInt(qrSpot.dataset.qrRadius) || 20;
+      const boxPadding = parseInt(qrSpot.dataset.qrPadding) || 10;
 
-      // 5px padding on all sides (+10px total)
-      const boxPadding = 5; 
       const totalBoxSize = hasBox ? (size + (boxPadding * 2)) : size;
 
       qrSpot.style.display = 'flex';
@@ -2794,30 +2800,23 @@ function deleteSelectedElement() {
       }
   }
 
+  // --- SAVE TEMPLATE (PRESERVES QR ID POSITION & STYLES) ---
   async function saveGatePassTemplate(saveAsNew = false) {
     const tplName = document.getElementById('tplName').value.trim();
     if (!tplName) return alert("Please enter a Template Name before saving!");
 
     document.querySelectorAll('.canvas-element').forEach(node => node.style.outline = "none");
     
-    // 1. Create a clean clone of the canvas without frozen guest data
+    // Clone without destroying user's customized QR label position/styling
     const canvasClone = document.getElementById('editorCanvas').cloneNode(true);
-    
-    // Reset preview texts back to dynamic placeholders so they don't freeze
-    const cEvt = canvasClone.querySelector('#canvasEventName');
-    const cGst = canvasClone.querySelector('#canvasGuestName');
-    const cQrLbl = canvasClone.querySelector('#canvasQrLabel');
-    if (cEvt) cEvt.innerText = '{{event_name}}';
-    if (cGst) cGst.innerText = '{{guest_name}}';
-    if (cQrLbl) cQrLbl.innerText = '{{qr_id}}';
 
-    // Reset QR canvas to clean placeholder so the graphic isn't frozen
+    // Keep placeholder QR graphic clean while keeping dataset properties
     const cQrSpot = canvasClone.querySelector('#canvasQRSpot');
     if (cQrSpot) {
-        cQrSpot.innerHTML = `
-          <div id="qrInnerCode" style="display:flex; align-items:center; justify-content:center; width:${cQrSpot.dataset.qrSize || '310'}px; height:${cQrSpot.dataset.qrSize || '310'}px;">
-            <div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight:bold;">QR SPOT</div>
-          </div>`;
+        const inner = cQrSpot.querySelector('#qrInnerCode');
+        if (inner) {
+            inner.innerHTML = `<div style="width:100%; height:100%; background:#cbd5e1; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:30px; font-weight:bold;">QR SPOT</div>`;
+        }
     }
 
     const cleanCanvasHtml = canvasClone.outerHTML;
@@ -2846,7 +2845,6 @@ function deleteSelectedElement() {
         }
     }
 
-    // 2. If a specific guest was selected, bind this template directly to that guest
     if (selectedGuestId && savedTemplateId) {
         await supabaseClient.from('guests').update({ template_id: savedTemplateId }).eq('id', selectedGuestId);
     }
@@ -2933,21 +2931,34 @@ function deleteSelectedElement() {
           if (currentlySelectedElement) currentlySelectedElement.style.textAlign = e.target.value;
       });
 
-// 1. QR Live Customizer Listeners
+// 1. Text Alignment Toggle Buttons
+      document.querySelectorAll('.btn-align-toggle').forEach(btn => {
+          btn.addEventListener('click', () => {
+              document.querySelectorAll('.btn-align-toggle').forEach(b => b.classList.remove('active'));
+              btn.classList.add('active');
+              if (currentlySelectedElement) {
+                  currentlySelectedElement.style.textAlign = btn.dataset.align;
+              }
+          });
+      });
+
+      // 2. QR Live Customizer (Includes Padding Slider)
       const qrSizeInput = document.getElementById('qrCustomSize');
       const qrDarkInput = document.getElementById('qrDarkColor');
       const qrBgBoxToggle = document.getElementById('qrBgBoxToggle');
       const qrBgInput = document.getElementById('qrBgColor');
       const qrRadiusInput = document.getElementById('qrBoxRadius');
+      const qrPaddingInput = document.getElementById('qrBoxPadding');
 
       function updateQRProperties() {
           const qrSpot = document.getElementById('canvasQRSpot');
           if (!qrSpot) return;
-          qrSpot.dataset.qrSize = qrSizeInput.value;
-          qrSpot.dataset.qrDark = qrDarkInput.value;
-          qrSpot.dataset.qrBg = qrBgInput.value;
-          qrSpot.dataset.qrHasBox = qrBgBoxToggle.checked ? "true" : "false";
-          qrSpot.dataset.qrRadius = qrRadiusInput.value;
+          if (qrSizeInput) qrSpot.dataset.qrSize = qrSizeInput.value;
+          if (qrDarkInput) qrSpot.dataset.qrDark = qrDarkInput.value;
+          if (qrBgInput) qrSpot.dataset.qrBg = qrBgInput.value;
+          if (qrBgBoxToggle) qrSpot.dataset.qrHasBox = qrBgBoxToggle.checked ? "true" : "false";
+          if (qrRadiusInput) qrSpot.dataset.qrRadius = qrRadiusInput.value;
+          if (qrPaddingInput) qrSpot.dataset.qrPadding = qrPaddingInput.value;
 
           const gDrop = document.getElementById('tplGuestSelect');
           const currentText = (gDrop && gDrop.value) ? gDrop.value : 'PREVIEW_QR';
@@ -2959,6 +2970,7 @@ function deleteSelectedElement() {
       if (qrBgBoxToggle) qrBgBoxToggle.addEventListener('change', updateQRProperties);
       if (qrBgInput) qrBgInput.addEventListener('input', updateQRProperties);
       if (qrRadiusInput) qrRadiusInput.addEventListener('input', updateQRProperties);
+      if (qrPaddingInput) qrPaddingInput.addEventListener('input', updateQRProperties);
 
       // 2. Dropdown Sync (Event Selection -> Auto-links to Guest and Saved Templates)
       const eventDropdown = document.getElementById('tplEventSelect');
