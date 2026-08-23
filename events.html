@@ -506,7 +506,6 @@
                 <button class="btn-filter-nav">Upcoming <span class="badge-count">4</span></button>
                 <button class="btn-filter-nav">Ongoing <span class="badge-count">2</span></button>
                 <button class="btn-filter-nav">Completed <span class="badge-count">4</span></button>
-                <button type="button" onclick="cancelEventForm()" class="btn-filter-nav">Cancel</button>
               </div>
               <div style="display: flex; gap: 12px;">
                 <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filter</button>
@@ -877,7 +876,7 @@
                 </div>
                 
                 <div style="display: flex; gap: 16px; margin-top: 32px;">
-                  <button onclick="document.querySelector('button[onclick*=\'createManageView\']').click()" style="background: white; border: 1px solid var(--color-border); color: var(--color-text); font-weight: 600; font-size: 13px; padding: 10px 24px; border-radius: 8px; cursor: pointer;">Cancel</button>
+                  <button type="button" onclick="cancelEventForm()" style="background: white; border: 1px solid var(--color-border); color: var(--color-text); font-weight: 600; font-size: 13px; padding: 10px 24px; border-radius: 8px; cursor: pointer;">Cancel</button>
                   <button id="submitDedicatedEventBtn" class="btn-primary" style="padding: 10px 24px; border-radius: 8px; display: flex; align-items: center; gap: 8px;">Create Event &rarr;</button>
                 </div>
               </div>
@@ -1123,11 +1122,19 @@
                   <button class="nav-item tool-btn w-full" onclick="addCanvasText()" style="justify-content: flex-start; height: 34px; font-size:12px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg> Add Text</button>
                   <button class="nav-item tool-btn w-full" onclick="alert('Image upload coming soon!')" style="justify-content: flex-start; height: 34px; font-size:12px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Add Image</button>
                   
-                  <div style="height: 1px; background: var(--color-border); margin: 12px 0;"></div>
-                  <div style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 8px; text-transform: uppercase;">Element Settings</div>
-                  
-                  <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
-                      <div style="display: flex; gap: 8px;">
+                  <div style="height: 1px; background: var(--color-border); margin: 10px 0;"></div>
+                  <div style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;">Insert Dynamic Tags</div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 8px;">
+                    <button type="button" class="btn-filter-nav" onclick="addDynamicField('venue')" style="font-size: 10px; padding: 4px 6px; justify-content: center;">+ Venue</button>
+                    <button type="button" class="btn-filter-nav" onclick="addDynamicField('date')" style="font-size: 10px; padding: 4px 6px; justify-content: center;">+ Date</button>
+                    <button type="button" class="btn-filter-nav" onclick="addDynamicField('time')" style="font-size: 10px; padding: 4px 6px; justify-content: center;">+ Time</button>
+                    <button type="button" class="btn-filter-nav" onclick="addDynamicField('tier')" style="font-size: 10px; padding: 4px 6px; justify-content: center;">+ Tier</button>
+                  </div>
+
+                  <div style="height: 1px; background: var(--color-border); margin: 10px 0;"></div>
+                  <div style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;">Text Formatting</div>
+                  <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px;">
+                      <div style="display: flex; gap: 6px; align-items: center;">
                           <input type="color" id="elementColor" value="#ffffff" style="width: 32px; height: 32px; padding: 0; border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer;" title="Text Color">
                           <input type="number" id="elementFontSize" class="input-field" style="margin: 0; padding: 4px 8px; font-size: 12px; height: 32px;" placeholder="Size (px)" title="Font Size">
                       </div>
@@ -1145,6 +1152,29 @@
                       </select>
                   </div>
 
+                  <div style="height: 1px; background: var(--color-border); margin: 10px 0;"></div>
+                  <div style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;">QR Properties</div>
+                  <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px;">
+                      <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px;">
+                        <span>QR Size:</span>
+                        <input type="number" id="qrCustomSize" value="310" min="150" max="600" class="input-field" style="width: 70px; margin: 0; padding: 2px 6px; height: 26px; font-size: 11px;">
+                      </div>
+                      <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px;">
+                        <span>QR Color:</span>
+                        <input type="color" id="qrDarkColor" value="#000000" style="width: 28px; height: 24px; padding: 0; border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer;">
+                      </div>
+                      <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px;">
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                          <input type="checkbox" id="qrBgBoxToggle" checked> BG Box
+                        </label>
+                        <input type="color" id="qrBgColor" value="#ffffff" style="width: 28px; height: 24px; padding: 0; border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer;">
+                      </div>
+                      <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px;">
+                        <span>Box Radius:</span>
+                        <input type="number" id="qrBoxRadius" value="20" min="0" max="100" class="input-field" style="width: 70px; margin: 0; padding: 2px 6px; height: 26px; font-size: 11px;">
+                      </div>
+                  </div>
+
                   <button onclick="deleteSelectedElement()" class="btn-primary" style="background: var(--color-danger-soft); color: var(--color-danger); font-size: 11px; padding: 6px;">Delete Selected</button>
                </div>
             </div>
@@ -1153,11 +1183,15 @@
             <div class="card panel" style="background: var(--color-surface-soft); position: relative; overflow: hidden; min-height: 0; padding: 0;">
               <div id="editorCanvas" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.26); transform-origin: center; width: 1080px; height: 1440px; background-image: url('./templates/gatepass01.jpg'); background-size: 100% 100%; background-repeat: no-repeat; background-position: center; box-shadow: 0 40px 100px rgba(0,0,0,0.15); border-radius: 20px; background-color: #fff;">
                   
-                  <div id="canvasEventName" class="canvas-element" contenteditable="false" style="position: absolute; top: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 70px; font-weight: 800; color: #fff; font-family: var(--font-family); outline: none; cursor: move; width: max-content;">Event Name</div>
-                  <div id="canvasGuestName" class="canvas-element" contenteditable="false" style="position: absolute; top: 260px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 45px; color: #e2e8f0; font-family: var(--font-family); outline: none; cursor: move; width: max-content;">Guest Name</div>
-                  
-                  <div id="canvasQRSpot" style="position: absolute; bottom: 220px; left: 50%; transform: translateX(-50%); width: 350px; height: 350px; background: white; border-radius: 20px; padding: 20px; display: flex; align-items: center; justify-content: center;">
-                      <div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight:bold;">QR SPOT</div>
+                  <div id="canvasEventName" class="canvas-element" contenteditable="false" style="position: absolute; top: 120px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 70px; font-weight: 800; color: #fff; font-family: var(--font-family); outline: none; cursor: move; width: max-content;">Event Name</div>
+                  <div id="canvasGuestName" class="canvas-element" contenteditable="false" style="position: absolute; top: 220px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 45px; color: #e2e8f0; font-family: var(--font-family); outline: none; cursor: move; width: max-content;">Guest Name</div>
+                  <div id="canvasVenue" class="canvas-element" contenteditable="false" style="position: absolute; top: 300px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 32px; color: #cbd5e1; font-family: var(--font-family); outline: none; cursor: move; width: max-content;">Venue Location</div>
+                  <div id="canvasDateTime" class="canvas-element" contenteditable="false" style="position: absolute; top: 350px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 28px; color: #cbd5e1; font-family: var(--font-family); outline: none; cursor: move; width: max-content;">Date & Time</div>
+
+                  <div id="canvasQRSpot" class="canvas-element" data-qr-size="310" data-qr-dark="#000000" data-qr-bg="#ffffff" data-qr-has-box="true" data-qr-radius="20" style="position: absolute; bottom: 220px; left: 50%; transform: translateX(-50%); width: 320px; height: 320px; background: #ffffff; border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: move; outline: none;">
+                      <div id="qrInnerCode" style="display: flex; align-items: center; justify-content: center; width: 310px; height: 310px;">
+                        <div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight: bold;">QR SPOT</div>
+                      </div>
                   </div>
                   <div id="canvasQrLabel" class="canvas-element" contenteditable="false" style="position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 32px; font-weight: bold; color: #fff; font-family: monospace; cursor: move; width: max-content;">GST-ID-001</div>
               </div>
@@ -2251,25 +2285,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
       if(gstName) gstName.style.color = color2;
   }
 
-  function addCanvasText() {
-      const canvas = document.getElementById('editorCanvas');
-      const newText = document.createElement('div');
-      newText.contentEditable = "false";
-      newText.innerText = "Double Click to Edit";
-      newText.style.position = "absolute";
-      newText.style.top = "500px";
-      newText.style.left = "300px";
-      newText.style.fontSize = "40px";
-      newText.style.fontWeight = "600";
-      newText.style.color = "#000000";
-      newText.style.textAlign = "center";
-      newText.style.fontFamily = "var(--font-family)";
-      newText.style.outline = "none";
-      newText.style.width = "400px"; // Default width to allow alignment to work
-      
-      makeDraggable(newText);
-      canvas.appendChild(newText);
-  }
+  
 
   function deleteSelectedElement() {
       if(currentlySelectedElement && currentlySelectedElement.id !== 'canvasQRSpot') {
@@ -2300,21 +2316,215 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
       document.getElementById('previewModal').classList.remove('hidden');
   }
 
+  // --- DYNAMIC DATA INSERTER ---
+  function addCanvasText() {
+      const canvas = document.getElementById('editorCanvas');
+      const newText = document.createElement('div');
+      newText.contentEditable = "false";
+      newText.innerText = "Double Click to Edit";
+      newText.style.position = "absolute";
+      newText.style.top = "500px";
+      newText.style.left = "300px";
+      newText.style.fontSize = "40px";
+      newText.style.fontWeight = "600";
+      newText.style.color = "#000000";
+      newText.style.textAlign = "center";
+      newText.style.fontFamily = "var(--font-family)";
+      newText.style.outline = "none";
+      newText.style.width = "400px";
+      
+      makeDraggable(newText);
+      canvas.appendChild(newText);
+  }
+
+  function addDynamicField(type) {
+      const canvas = document.getElementById('editorCanvas');
+      const el = document.createElement('div');
+      el.contentEditable = "false";
+      el.style.position = "absolute";
+      el.style.top = "450px";
+      el.style.left = "300px";
+      el.style.fontSize = "32px";
+      el.style.fontWeight = "600";
+      el.style.color = "#ffffff";
+      el.style.textAlign = "center";
+      el.style.fontFamily = "var(--font-family)";
+      el.style.outline = "none";
+      el.style.width = "max-content";
+
+      if(type === 'venue') { el.id = 'canvasVenue'; el.innerText = "Venue Location"; }
+      else if(type === 'date') { el.id = 'canvasDate'; el.innerText = "Event Date"; }
+      else if(type === 'time') { el.id = 'canvasTime'; el.innerText = "00:00 AM - 00:00 PM"; }
+      else if(type === 'tier') { el.id = 'canvasTier'; el.innerText = "VIP / General"; }
+
+      makeDraggable(el);
+      canvas.appendChild(el);
+  }
+
+  // --- RESET TEMPLATE ---
   function resetTemplate() {
-      if(confirm("Reset canvas to default?")) {
-          currentEditingTemplateId = null; 
-          document.querySelector('button[onclick*="designTemplatesView"]').click();
-          document.querySelectorAll('.tpl-card')[0].click();
-          document.getElementById('tplName').value = '';
-          const evtName = document.getElementById('canvasEventName');
-          const gstName = document.getElementById('canvasGuestName');
-          if(evtName) evtName.innerText = 'Event Name';
-          if(gstName) gstName.innerText = 'Guest Name';
-          document.getElementById('tplGuestSelect').value = '';
-          document.getElementById('canvasQRSpot').innerHTML = '<div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight:bold;">QR SPOT</div>';
-          document.getElementById('canvasQrLabel').innerText = 'GST-ID-001';
+      currentEditingTemplateId = null;
+      
+      // 1. Deselect bottom saved templates
+      document.querySelectorAll('.saved-tpl-card').forEach(c => c.style.border = '1px solid var(--color-border)');
+      
+      // 2. Select top default template
+      const defaultTplCard = document.querySelectorAll('#templateGallery .tpl-card')[0];
+      if (defaultTplCard) defaultTplCard.click();
+      
+      // 3. Clear settings inputs
+      document.getElementById('tplName').value = '';
+      const eventSelect = document.getElementById('tplEventSelect');
+      const guestSelect = document.getElementById('tplGuestSelect');
+      if (eventSelect) eventSelect.value = '';
+      if (guestSelect) guestSelect.innerHTML = '<option value="">First Select Event...</option>';
+      
+      // 4. Reset Canvas Content
+      const evtName = document.getElementById('canvasEventName');
+      const gstName = document.getElementById('canvasGuestName');
+      const venue = document.getElementById('canvasVenue');
+      const dt = document.getElementById('canvasDateTime');
+      const qrLabel = document.getElementById('canvasQrLabel');
+      
+      if(evtName) evtName.innerText = 'Event Name';
+      if(gstName) gstName.innerText = 'Guest Name';
+      if(venue) venue.innerText = 'Venue Location';
+      if(dt) dt.innerText = 'Date & Time';
+      if(qrLabel) qrLabel.innerText = 'GST-ID-001';
+
+      const qrSpot = document.getElementById('canvasQRSpot');
+      if (qrSpot) {
+          qrSpot.dataset.qrSize = "310";
+          qrSpot.dataset.qrDark = "#000000";
+          qrSpot.dataset.qrBg = "#ffffff";
+          qrSpot.dataset.qrHasBox = "true";
+          qrSpot.dataset.qrRadius = "20";
+          qrSpot.style.width = "320px";
+          qrSpot.style.height = "320px";
+          qrSpot.style.background = "#ffffff";
+          qrSpot.style.borderRadius = "20px";
+          qrSpot.innerHTML = `
+            <div id="qrInnerCode" style="display:flex; align-items:center; justify-content:center; width:310px; height:310px;">
+              <div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight:bold;">QR SPOT</div>
+            </div>`;
       }
   }
+
+  // --- LOAD SAVED TEMPLATE ---
+  function loadSavedTemplate(id) {
+      const tpl = windowSavedTemplates.find(x => x.id === id);
+      if(!tpl) return;
+      
+      currentEditingTemplateId = id;
+
+      // 1. Highlight clicked card in bottom gallery
+      document.querySelectorAll('.saved-tpl-card').forEach(c => c.style.border = '1px solid var(--color-border)');
+      const activeCard = document.getElementById('saved-card-' + id);
+      if(activeCard) activeCard.style.border = '2px solid var(--color-primary)';
+
+      // 2. Inject Canvas HTML
+      const canvasWrapper = document.getElementById('editorCanvas').parentElement;
+      document.getElementById('editorCanvas').outerHTML = tpl.html_layout;
+      
+      const newCanvas = canvasWrapper.querySelector('#editorCanvas');
+      newCanvas.style.position = 'absolute';
+      newCanvas.style.top = '50%';
+      newCanvas.style.left = '50%';
+      newCanvas.style.transform = 'translate(-50%, -50%) scale(0.26)';
+      newCanvas.style.transformOrigin = 'center';
+      
+      newCanvas.querySelectorAll('.canvas-element').forEach(node => makeDraggable(node));
+
+      // 3. Fill Right Settings Card
+      document.getElementById('tplName').value = tpl.name || '';
+      const eventSelect = document.getElementById('tplEventSelect');
+      if (eventSelect) {
+          eventSelect.value = tpl.event_id || '';
+          
+          // Trigger guest population for this assigned event
+          const gDrop = document.getElementById('tplGuestSelect');
+          if (gDrop && tpl.event_id) {
+              gDrop.innerHTML = '<option value="">Select Guest to Preview...</option>';
+              const filteredGuests = allFetchedGuests.filter(g => String(g.event_id) === String(tpl.event_id));
+              filteredGuests.forEach(g => {
+                  gDrop.innerHTML += `<option value="${g.id}">${g.guest_name}</option>`;
+              });
+              if (filteredGuests.length > 0) {
+                  gDrop.value = filteredGuests[0].id;
+                  gDrop.dispatchEvent(new Event('change'));
+              }
+          }
+      }
+
+      currentActiveBgString = tpl.thumbnail_url || "url('./templates/gatepass01.jpg')";
+
+      // 4. Update top template thumbnail selection
+      document.querySelectorAll('#templateGallery .tpl-card').forEach(c => {
+          const check = c.querySelector('.active-check');
+          c.style.border = '1px solid var(--color-border)';
+          if(check) check.style.display = 'none';
+          
+          const onclickStr = c.getAttribute('onclick') || '';
+          if (onclickStr.includes(currentActiveBgString.replace(/"/g, "'"))) {
+              c.style.border = '2px solid var(--color-primary)';
+              if(check) check.style.display = 'flex';
+          }
+      });
+
+      const modal = document.getElementById('allTemplatesModal');
+      if(modal) modal.classList.add('hidden');
+  }
+
+  // --- RE-RENDER QR WITH LIVE STYLES ---
+  function renderCanvasQR(textData = 'PREVIEW') {
+      const qrSpot = document.getElementById('canvasQRSpot');
+      if (!qrSpot) return;
+
+      const size = parseInt(qrSpot.dataset.qrSize) || 310;
+      const darkColor = qrSpot.dataset.qrDark || '#000000';
+      const bgColor = qrSpot.dataset.qrBg || '#ffffff';
+      const hasBox = qrSpot.dataset.qrHasBox !== 'false';
+      const radius = parseInt(qrSpot.dataset.qrRadius) || 20;
+
+      const boxPadding = 5;
+      const totalBoxSize = hasBox ? (size + (boxPadding * 2)) : size;
+
+      qrSpot.style.width = totalBoxSize + 'px';
+      qrSpot.style.height = totalBoxSize + 'px';
+      qrSpot.style.background = hasBox ? bgColor : 'transparent';
+      qrSpot.style.borderRadius = hasBox ? (radius + 'px') : '0px';
+
+      let inner = qrSpot.querySelector('#qrInnerCode');
+      if (!inner) {
+          qrSpot.innerHTML = `<div id="qrInnerCode"></div>`;
+          inner = qrSpot.querySelector('#qrInnerCode');
+      }
+
+      inner.style.width = size + 'px';
+      inner.style.height = size + 'px';
+      inner.innerHTML = '';
+
+      new QRCode(inner, {
+          text: textData,
+          width: size,
+          height: size,
+          colorDark: darkColor,
+          colorLight: hasBox ? bgColor : '#ffffff',
+          correctLevel: QRCode.CorrectLevel.H
+      });
+  }
+
+  // --- CANCEL EVENT FORM ROUTE ---
+  function cancelEventForm() {
+      currentEditEventId = null;
+      document.getElementById('dedicatedEventName').value = '';
+      document.getElementById('dedicatedVenue').value = '';
+      document.getElementById('dedicatedEventDate').value = '';
+      document.getElementById('submitDedicatedEventBtn').innerHTML = 'Create Event &rarr;';
+      switchView('createManageView', document.querySelector('button[onclick*="createManageView"]'));
+  }
+      
+
 
   // --- DATABASE SAVING & LOADING ---
   async function fetchSavedTemplates() {
@@ -2368,48 +2578,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
     }
   }
 
-  function loadSavedTemplate(id) {
-      const tpl = windowSavedTemplates.find(x => x.id === id);
-      if(!tpl) return;
-      
-      // Highlight the selected bottom card
-      document.querySelectorAll('.saved-tpl-card').forEach(c => c.style.border = '1px solid var(--color-border)');
-      const activeCard = document.getElementById('saved-card-' + id);
-      if(activeCard) activeCard.style.border = '2px solid var(--color-primary)';
-
-      const canvasWrapper = document.getElementById('editorCanvas').parentElement;
-      document.getElementById('editorCanvas').outerHTML = tpl.html_layout;
-      
-      const newCanvas = canvasWrapper.querySelector('#editorCanvas');
-      newCanvas.style.position = 'absolute';
-      newCanvas.style.top = '50%';
-      newCanvas.style.left = '50%';
-      newCanvas.style.transform = 'translate(-50%, -50%) scale(0.26)';
-      newCanvas.style.transformOrigin = 'center';
-      
-      newCanvas.querySelectorAll('.canvas-element').forEach(node => makeDraggable(node));
-
-      document.getElementById('tplName').value = tpl.name;
-      document.getElementById('tplEventSelect').value = tpl.event_id || ''; // Load saved event
-      
-      currentEditingTemplateId = id; 
-      currentActiveBgString = tpl.thumbnail_url || "url('./templates/gatepass01.jpg')";
-
-      document.querySelectorAll('#templateGallery .tpl-card').forEach(c => {
-          const check = c.querySelector('.active-check');
-          c.style.border = '1px solid var(--color-border)';
-          if(check) check.style.display = 'none';
-          
-          const onclickStr = c.getAttribute('onclick') || '';
-          if (onclickStr.includes(currentActiveBgString.replace(/"/g, "'"))) {
-              c.style.border = '2px solid var(--color-primary)';
-              if(check) check.style.display = 'flex';
-          }
-      });
-
-      const modal = document.getElementById('allTemplatesModal');
-      if(modal) modal.classList.add('hidden');
-  }
+  
 
   async function deleteTemplate(id) {
       if(confirm("Permanently delete this template?")) {
@@ -2511,65 +2680,106 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
           if (currentlySelectedElement) currentlySelectedElement.style.textAlign = e.target.value;
       });
 
-const eventDropdown = document.getElementById('tplEventSelect');
+// 1. QR Live Customizer Listeners
+      const qrSizeInput = document.getElementById('qrCustomSize');
+      const qrDarkInput = document.getElementById('qrDarkColor');
+      const qrBgBoxToggle = document.getElementById('qrBgBoxToggle');
+      const qrBgInput = document.getElementById('qrBgColor');
+      const qrRadiusInput = document.getElementById('qrBoxRadius');
+
+      function updateQRProperties() {
+          const qrSpot = document.getElementById('canvasQRSpot');
+          if (!qrSpot) return;
+          qrSpot.dataset.qrSize = qrSizeInput.value;
+          qrSpot.dataset.qrDark = qrDarkInput.value;
+          qrSpot.dataset.qrBg = qrBgInput.value;
+          qrSpot.dataset.qrHasBox = qrBgBoxToggle.checked ? "true" : "false";
+          qrSpot.dataset.qrRadius = qrRadiusInput.value;
+
+          const gDrop = document.getElementById('tplGuestSelect');
+          const currentText = (gDrop && gDrop.value) ? gDrop.value : 'PREVIEW_QR';
+          renderCanvasQR(currentText);
+      }
+
+      if (qrSizeInput) qrSizeInput.addEventListener('input', updateQRProperties);
+      if (qrDarkInput) qrDarkInput.addEventListener('input', updateQRProperties);
+      if (qrBgBoxToggle) qrBgBoxToggle.addEventListener('change', updateQRProperties);
+      if (qrBgInput) qrBgInput.addEventListener('input', updateQRProperties);
+      if (qrRadiusInput) qrRadiusInput.addEventListener('input', updateQRProperties);
+
+      // 2. Dropdown Sync (Event Selection -> Auto-links to Guest and Saved Templates)
+      const eventDropdown = document.getElementById('tplEventSelect');
       if (eventDropdown) {
           eventDropdown.addEventListener('change', (e) => {
               const eventId = e.target.value;
               const gDrop = document.getElementById('tplGuestSelect');
               if (!gDrop) return;
-              
-              // 1. Auto-load saved template assigned to this event if it exists
+
+              // Check if a saved template exists for this event
               const matchedTpl = windowSavedTemplates.find(t => String(t.event_id) === String(eventId));
-              if (matchedTpl) {
+              if (matchedTpl && currentEditingTemplateId !== matchedTpl.id) {
                   loadSavedTemplate(matchedTpl.id);
+                  return;
               }
 
-              // 2. Filter guests for this event
               gDrop.innerHTML = '<option value="">Select Guest to Preview...</option>';
               if (!eventId) {
                   gDrop.dispatchEvent(new Event('change'));
                   return;
               }
 
-              const filteredGuests = allFetchedGuests.filter(g => g.event_id === eventId);
+              const filteredGuests = allFetchedGuests.filter(g => String(g.event_id) === String(eventId));
               filteredGuests.forEach(g => {
                   gDrop.innerHTML += `<option value="${g.id}">${g.guest_name}</option>`;
               });
-              
+
+              if (filteredGuests.length > 0) {
+                  gDrop.value = filteredGuests[0].id;
+              }
               gDrop.dispatchEvent(new Event('change'));
           });
       }
+
+      // 3. Guest Selection -> Fills All Database Fields (Name, Event, Venue, Date, Time, QR)
       const guestDropdown = document.getElementById('tplGuestSelect');
       if(guestDropdown) {
           guestDropdown.addEventListener('change', (e) => {
               const guestId = e.target.value;
-              const qrSpot = document.getElementById('canvasQRSpot');
+              const guest = allFetchedGuests.find(g => g.id === guestId);
+              
               const guestNameEl = document.getElementById('canvasGuestName');
               const eventNameEl = document.getElementById('canvasEventName');
+              const venueEl = document.getElementById('canvasVenue');
+              const dtEl = document.getElementById('canvasDateTime');
               const qrLabelEl = document.getElementById('canvasQrLabel');
-              
-              if(!guestId) {
-                  if(qrSpot) qrSpot.innerHTML = '<div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight:bold;">QR SPOT</div>';
-                  if(qrLabelEl) qrLabelEl.innerText = 'GST-ID-001';
+
+              if(!guest) {
                   if(guestNameEl) guestNameEl.innerText = 'Guest Name';
+                  if(eventNameEl) eventNameEl.innerText = 'Event Name';
+                  if(venueEl) venueEl.innerText = 'Venue Location';
+                  if(dtEl) dtEl.innerText = 'Date & Time';
+                  if(qrLabelEl) qrLabelEl.innerText = 'GST-ID-001';
                   return;
               }
 
-              // Safely find the guest and calculate sequential ID
-              const guest = allFetchedGuests.find(g => g.id === guestId);
-              if(!guest) return;
-
-              // Uses the permanent database ticket number, padded to 3 digits (e.g., GST-ID-007)
-const seqId = 'GST-ID-' + String(guest.ticket_number).padStart(3, '0');
-              
+              // Fill Text Elements with Database Records
               if(guestNameEl) guestNameEl.innerText = guest.guest_name;
-              if(eventNameEl) eventNameEl.innerText = guest.events.event_name;
-              if(qrLabelEl) qrLabelEl.innerText = seqId;
-              
-              if(qrSpot) {
-                  qrSpot.innerHTML = '';
-                  new QRCode(qrSpot, { text: guestId, width: 310, height: 310, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
+              if(eventNameEl && guest.events) eventNameEl.innerText = guest.events.event_name;
+              if(qrLabelEl) qrLabelEl.innerText = 'GST-ID-' + String(guest.ticket_number || 0).padStart(3, '0');
+
+              // Find full event record to extract venue, date, and time
+              const parentEv = allFetchedEvents.find(ev => ev.id === guest.event_id);
+              if (parentEv) {
+                  if(venueEl) venueEl.innerText = parentEv.venue || 'Venue TBD';
+                  if(dtEl) {
+                      const dStr = parentEv.event_date ? parentEv.event_date.split('T')[0] : '';
+                      const tStr = parentEv.start_time ? ` · ${parentEv.start_time}` : '';
+                      dtEl.innerText = dStr + tStr;
+                  }
               }
+
+              // Render Styled QR Code with Guest's ID
+              renderCanvasQR(guest.id);
           });
       }
   });
