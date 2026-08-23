@@ -448,7 +448,7 @@
         <section class="card analytics-panel" style="flex-shrink:0; display:flex; flex-direction:column; padding: 16px 20px; height: 230px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
              <!-- FIX 05: Removed "Last 7 Days" Dropdown -->
-             <h2 class="section-title" style="margin:0;">Analytics Overview (Last 7 Days)</h2>
+             <h2 id="analyticsChartTitle" class="section-title" style="margin:0;">Analytics Overview (This Month)</h2>
           </div>
           
           <div style="display:flex; flex:1; align-items:center; gap:32px; min-height: 0;">
@@ -1613,13 +1613,10 @@ if (!data || data.length === 0) {
   
   async function fetchAllGuestsForKPIs() {
     const { data: events } = await supabaseClient.from('events').select('id, event_name').eq('tenant_id', currentTenantId);
-    if (!events || events.length === 0) return;
     
-    const eventIds = events.map(e => e.id);
-    const { data: guests } = await supabaseClient.from('guests').select('*, events(event_name)').in('event_id', eventIds);
-    
+    // Clear tables
     const dashboardGuestList = document.getElementById('recentGuestsList');
-    dashboardGuestList.innerHTML = '';
+    if (dashboardGuestList) dashboardGuestList.innerHTML = '';
 
     const guestListTable = document.getElementById('guestListTableBody');
     if (guestListTable) guestListTable.innerHTML = '';
@@ -1630,10 +1627,25 @@ if (!data || data.length === 0) {
     const qrCodesTable = document.getElementById('qrCodesTableBody');
     if (qrCodesTable) qrCodesTable.innerHTML = '';
 
+    // FIX: If no events exist, still load the empty graph so it doesn't fail silently
+    if (!events || events.length === 0) {
+        allFetchedGuests = [];
+        const activeBtn = document.querySelector('#dashboardDateFilters .btn-filter-nav.active');
+        applyDashboardFilter('This Month', activeBtn);
+        return;
+    }
+    
+    const eventIds = events.map(e => e.id);
+    const { data: guests } = await supabaseClient.from('guests').select('*, events(event_name)').in('event_id', eventIds);
+    
+    // FIX: ALWAYS assign guests immediately so filters can read it
+    allFetchedGuests = guests || [];
+
     if (guests) {
       document.getElementById('kpiGuests').innerText = guests.length;
       document.getElementById('kpiPasses').innerText = guests.length;
-// --- NEW: CALCULATE DONUT CHART METRICS ---
+
+      // --- CALCULATE DONUT CHART METRICS ---
       let totalGuestsCount = guests.length;
       let checkedInCount = 0;
       
@@ -1675,13 +1687,13 @@ if (!data || data.length === 0) {
               var(--color-danger) ${yellowEnd}% 100%
           )`;
       }
-      // ------------------------------------------
-      allFetchedGuests = guests;
+      
       // Clear Guest Dropdown initially, wait for event selection
       const tplGuest = document.getElementById('tplGuestSelect');
       if (tplGuest) {
           tplGuest.innerHTML = '<option value="">First Select Event...</option>';
       }
+
       guests.forEach((g, index) => {
         const isApproved = document.querySelector(`option[value="${g.event_id}"]`)?.dataset.approved === 'true';
         const shortId = g.id.substring(0, 8).toUpperCase();
@@ -1691,7 +1703,7 @@ if (!data || data.length === 0) {
           : `<button disabled class="btn-qr" style="opacity: 0.5;">Pending</button>`;
 
         // Dashboard Right Sidebar List
-        if (index < 5) {
+        if (dashboardGuestList && index < 5) {
           dashboardGuestList.innerHTML += `
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 4px; border-bottom: 1px solid var(--color-border);">
               <div>
@@ -1714,10 +1726,7 @@ if (!data || data.length === 0) {
                const dateObj = g.created_at ? new Date(g.created_at) : new Date();
                const formattedDate = dateObj.toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' });
                const formattedTime = dateObj.toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' });
-               
                const capacityCount = g.allowed_capacity || 1;
-               const pairText = capacityCount > 1 ? `${capacityCount} Pairs` : `${capacityCount} Pair`;
-
                const gEmail = g.email || 'No email provided';
                const gPhone = g.phone || 'No phone provided';
                const gCompany = g.company || 'Independent';
@@ -1735,13 +1744,9 @@ if (!data || data.length === 0) {
                  ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
                  : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 
-               // 1. Calculate Sequential QR ID (e.g., QR-001)
                const seqQrId = 'QR-' + String(g.ticket_number || 0).padStart(3, '0');
-
-               // 2. Check-in Pair Calculation (e.g., 3/5 In)
                const allowedPairs = g.allowed_capacity || 1;
                const checkedInPairs = g.checked_in_count || 0;
-               const isFullyCheckedIn = checkedInPairs >= allowedPairs;
                const checkInBadgeColor = checkedInPairs > 0 ? 'var(--color-success)' : 'var(--color-text-secondary)';
                const checkInBadgeBg = checkedInPairs > 0 ? 'var(--color-success-soft)' : 'var(--color-surface-soft)';
 
@@ -1781,10 +1786,9 @@ if (!data || data.length === 0) {
                     </td>
                   </tr>
                `;
-           } // End of Filter IF Statement
+           }
         }
 
-        // Gate Passes Tab
         if (gatePassesTable) {
             gatePassesTable.innerHTML += `
               <tr>
@@ -1798,7 +1802,6 @@ if (!data || data.length === 0) {
             `;
         }
 
-        // QR Codes Tab
         if (qrCodesTable) {
             qrCodesTable.innerHTML += `
               <tr>
@@ -1811,24 +1814,25 @@ if (!data || data.length === 0) {
               </tr>
             `;
         }
-      }); // End of guests.forEach loop
-      
-      // Initialize defaults for filters and graphs after data loads
-      applyDashboardFilter('This Month', null);
-      renderDashboardChart();
+      });
     }
+
+    // FIX: Initialize defaults for filters and graphs after ALL data loads (whether empty or full)
+    const activeFilterBtn = document.querySelector('#dashboardDateFilters .btn-filter-nav.active');
+    applyDashboardFilter('This Month', activeFilterBtn);
   }
 
-// --- DASHBOARD FILTER & GRAPH LOGIC ---
+  // --- DASHBOARD FILTER & GRAPH LOGIC ---
   let dashboardChartInstance = null;
 
   function applyDashboardFilter(period, btnElement) {
-      if (btnElement) {
-          const parent = btnElement.parentElement;
-          parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      // 1. Update UI Buttons safely
+      if (btnElement && btnElement.parentElement) {
+          btnElement.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
           btnElement.classList.add('active');
       }
 
+      // 2. Calculate Date Range
       const now = new Date();
       let startDate = new Date();
 
@@ -1846,47 +1850,75 @@ if (!data || data.length === 0) {
           startDate.setHours(0,0,0,0);
       }
 
-      // Re-calculate KPIs based on filter selection
+      // 3. Filter the global arrays based on the selected date range
       const filteredEvents = allFetchedEvents.filter(e => new Date(e.created_at) >= startDate);
       const filteredGuests = allFetchedGuests.filter(g => new Date(g.created_at) >= startDate);
 
-      document.getElementById('kpiEvents').innerText = filteredEvents.length;
-      document.getElementById('kpiGuests').innerText = filteredGuests.length;
-      document.getElementById('kpiPasses').innerText = filteredGuests.length;
+      // 4. Update the 4 KPI Cards dynamically
+      const kpiEv = document.getElementById('kpiEvents');
+      const kpiGu = document.getElementById('kpiGuests');
+      const kpiPa = document.getElementById('kpiPasses');
+      if (kpiEv) kpiEv.innerText = filteredEvents.length;
+      if (kpiGu) kpiGu.innerText = filteredGuests.length;
+      if (kpiPa) kpiPa.innerText = filteredGuests.length;
 
       let checkedIn = 0;
       filteredGuests.forEach(g => {
           if ((g.checked_in_count || 0) >= (g.allowed_capacity || 1)) checkedIn++;
       });
       const attendanceRate = filteredGuests.length > 0 ? Math.round((checkedIn / filteredGuests.length) * 100) : 0;
-      document.getElementById('kpiAttendance').innerText = attendanceRate + '%';
+      
+      const kpiAtt = document.getElementById('kpiAttendance');
+      if (kpiAtt) kpiAtt.innerText = attendanceRate + '%';
+
+      // 5. Update Graph Title
+      const titleEl = document.getElementById('analyticsChartTitle');
+      if (titleEl) titleEl.innerText = `Analytics Overview (${period})`;
+
+      // 6. Draw the Graph
+      renderDashboardChart(period);
   }
 
-  function renderDashboardChart() {
+  function renderDashboardChart(period) {
       const ctx = document.getElementById('dashboardLineChart');
       if (!ctx) return;
       
       const labels = [];
       const eventsData = [];
       const guestsData = [];
-      const today = new Date();
       
-      for(let i=6; i>=0; i--) {
-          const d = new Date(today);
-          d.setDate(d.getDate() - i);
-          labels.push(d.toLocaleDateString('default', { month: 'short', day: 'numeric' }));
-          
-          eventsData.push(allFetchedEvents.filter(e => {
-              const ed = new Date(e.created_at);
-              return ed.getDate() === d.getDate() && ed.getMonth() === d.getMonth() && ed.getFullYear() === d.getFullYear();
-          }).length);
-          
-          guestsData.push(allFetchedGuests.filter(g => {
-              const gd = new Date(g.created_at);
-              return gd.getDate() === d.getDate() && gd.getMonth() === d.getMonth() && gd.getFullYear() === d.getFullYear();
-          }).length);
+      // Dynamic Data Generation based on the selected period
+      if (period === 'Today') {
+          // Show 6 data points across today
+          for(let i=5; i>=0; i--) {
+              let d = new Date();
+              d.setHours(d.getHours() - (i * 4));
+              labels.push(d.toLocaleTimeString('default', { hour: 'numeric', hour12: true }));
+              eventsData.push(allFetchedEvents.filter(e => new Date(e.created_at).getHours() === d.getHours() && new Date(e.created_at).getDate() === d.getDate()).length);
+              guestsData.push(allFetchedGuests.filter(g => new Date(g.created_at).getHours() === d.getHours() && new Date(g.created_at).getDate() === d.getDate()).length);
+          }
+      } else if (period === 'This Year') {
+          // Show 12 months
+          for(let i=11; i>=0; i--) {
+              let d = new Date();
+              d.setMonth(d.getMonth() - i);
+              labels.push(d.toLocaleDateString('default', { month: 'short' }));
+              eventsData.push(allFetchedEvents.filter(e => new Date(e.created_at).getMonth() === d.getMonth() && new Date(e.created_at).getFullYear() === d.getFullYear()).length);
+              guestsData.push(allFetchedGuests.filter(g => new Date(g.created_at).getMonth() === d.getMonth() && new Date(g.created_at).getFullYear() === d.getFullYear()).length);
+          }
+      } else {
+          // 'This Week' (7 days) or 'This Month' (30 days)
+          let daysToShow = period === 'This Week' ? 7 : 30;
+          for(let i=daysToShow-1; i>=0; i--) {
+              let d = new Date();
+              d.setDate(d.getDate() - i);
+              labels.push(d.toLocaleDateString('default', { month: 'short', day: 'numeric' }));
+              eventsData.push(allFetchedEvents.filter(e => new Date(e.created_at).getDate() === d.getDate() && new Date(e.created_at).getMonth() === d.getMonth()).length);
+              guestsData.push(allFetchedGuests.filter(g => new Date(g.created_at).getDate() === d.getDate() && new Date(g.created_at).getMonth() === d.getMonth()).length);
+          }
       }
 
+      // Destroy old chart before drawing new one to prevent canvas overlap glitches
       if (dashboardChartInstance) dashboardChartInstance.destroy();
       
       dashboardChartInstance = new Chart(ctx, {
@@ -1902,7 +1934,7 @@ if (!data || data.length === 0) {
               responsive: true, maintainAspectRatio: false,
               plugins: { legend: { display: true, position: 'top', labels: { boxWidth: 10, font: {size: 10} } } },
               scales: {
-                  x: { grid: { display: false }, ticks: { font: {size: 10} } },
+                  x: { grid: { display: false }, ticks: { font: {size: 10}, maxTicksLimit: 7 } },
                   y: { beginAtZero: true, ticks: { stepSize: 1, font: {size: 10} } }
               }
           }
@@ -2278,17 +2310,17 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
           });
       });
 
-      // 2. WIRE UP ALL "VIEW ALL" LINKS
+     // 2. WIRE UP ALL "VIEW ALL" LINKS
       document.querySelectorAll('a').forEach(link => {
           if(link.innerText.includes('View All')) {
               link.addEventListener('click', (e) => {
                   e.preventDefault();
-                  // If the text above it says "Events", go to Events Tab. Otherwise, Gate Passes Tab.
                   const parentText = link.parentElement.innerText;
                   if(parentText.includes('Events')) {
-                      document.querySelector('button[onclick*="eventsView"]').click();
+                      switchView('eventsView');
                   } else {
-                      document.querySelector('button[onclick*="guestsView"]').click();
+                      // FIX: Route Recent Gate Passes to QR Codes tab
+                      switchView('qrCodesView'); 
                   }
               });
           }
