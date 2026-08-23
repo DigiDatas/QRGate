@@ -251,11 +251,7 @@
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
           Guest Lists
         </button>
-        <button class="nav-item w-full" onclick="switchView('guestsView', this)">
-          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4Z"/></svg></span>
-          Gate Passes
-        </button>
-        <button class="nav-item w-full" onclick="switchView('qrCodesView', this)">
+                <button class="nav-item w-full" onclick="switchView('qrCodesView', this)">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><line x1="17.5" y1="14" x2="17.5" y2="21"/><line x1="14" y1="17.5" x2="21" y2="17.5"/></svg></span>
           QR Codes
         </button>
@@ -643,64 +639,7 @@
         </div>
       </div>
 
-      <!-- TAB: GATE PASSES -->
-      <div id="guestsView" class="view-section">
-        <div class="layout-grid">
-          
-          <div class="left-col">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-shrink: 0;" class="no-scrollbar">
-              <div style="display: flex; gap: 8px;">
-                <button class="btn-filter-nav active">All Gate Passes <span class="badge-count">320</span></button>
-                <button class="btn-filter-nav">Active <span style="color:var(--color-success); font-weight:600; font-size:11px;">260</span></button>
-                <button class="btn-filter-nav">Used <span style="color:var(--color-info); font-weight:600; font-size:11px;">45</span></button>
-              </div>
-              <div style="display: flex; gap: 12px;">
-                <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; border: 1px solid var(--color-border);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline; margin-right:4px;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filter</button>
-                <button style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; border: 1px solid var(--color-border);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline; margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Export</button>
-              </div>
-            </div>
-
-            <div class="kpi-5">
-              <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon purple" style="width:40px; height:40px; background:var(--color-primary-soft);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="kpi-value" style="font-size:22px;">320</div><div class="kpi-label" style="margin:2px 0;">Total Gate Passes</div></div></div>
-            </div>
-
-            <div class="data-table-container no-scrollbar">
-              <table class="data-table">
-                <thead><tr><th>Gate Pass ID</th><th>Event</th><th>Guest</th><th>Ticket / Type</th><th>Status</th><th>Actions</th></tr></thead>
-                <tbody id="gatePassesTableBody"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="right-col no-scrollbar">
-            <!-- Gate Pass Overview -->
-            <div class="card panel" style="padding: 20px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                <h2 class="section-title" style="margin: 0;">Gate Pass Overview</h2>
-              </div>
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--color-success) 0% 81%, var(--color-info) 81% 95%, var(--color-warning) 95% 98%, var(--color-danger) 98% 100%); position: relative; display: flex; align-items: center; justify-content: center;">
-                  <div style="width: 70px; height: 70px; background: var(--color-bg); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;"><div style="font-size: 18px; font-weight: 700;">320</div><div style="font-size: 9px; color: var(--color-text-secondary);">Total</div></div>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-success);"></span> Active</span> <span style="color: var(--color-text-secondary);">260 <span style="font-size:9px;">(81%)</span></span></div>
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-info);"></span> Used</span> <span style="color: var(--color-text-secondary);">45 <span style="font-size:9px;">(14%)</span></span></div>
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #B4790C;"></span> Expired</span> <span style="color: var(--color-text-secondary);">10 <span style="font-size:9px;">(3%)</span></span></div>
-                  <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-danger);"></span> Cancelled</span> <span style="color: var(--color-text-secondary);">5 <span style="font-size:9px;">(1%)</span></span></div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="card panel" style="padding: 20px;">
-              <h2 class="section-title" style="margin: 0; font-size: 14px;">Actions Menu</h2>
-              <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
-                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;"><div style="display:flex; gap:12px; align-items:center;"><div style="width:32px; height:32px; background:var(--color-primary-soft); color:var(--color-primary); border-radius:8px; display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg></div><div><div style="font-size: 12px; font-weight: 600;">Generate Gate Pass</div><div style="font-size:10px; color:var(--color-text-secondary);">Create new pass</div></div></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)"><polyline points="9 18 15 12 9 6"/></svg></div>
-                <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px;"><div style="display:flex; gap:12px; align-items:center;"><div style="width:32px; height:32px; background:var(--color-info-soft); color:var(--color-info); border-radius:8px; display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div><div><div style="font-size: 12px; font-weight: 600;">Bulk Generate</div><div style="font-size:10px; color:var(--color-text-secondary);">Generate multiple</div></div></div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)"><polyline points="9 18 15 12 9 6"/></svg></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      
 
       <!-- TAB: QR CODES -->
       <div id="qrCodesView" class="view-section">
@@ -1398,10 +1337,7 @@ let currentGuestTierFilter = 'All';
     } else if (viewId === 'guestListsView') {
        titleEl.innerText = 'Guest List'; subEl.innerText = 'Manage and invite guests for your events';
        searchBox.style.display = 'block'; searchInput.placeholder = 'Search guests by name, email or phone...';
-    } else if (viewId === 'guestsView') {
-       titleEl.innerText = 'Gate Passes'; subEl.innerText = 'Manage and track all generated gate passes';
-       searchBox.style.display = 'block'; searchInput.placeholder = 'Search gate passes by ID, guest name, event...';
-    } else if (viewId === 'designTemplatesView') {
+        } else if (viewId === 'designTemplatesView') {
        titleEl.innerText = 'Design Templates'; subEl.innerText = 'Choose a template and customize your gate pass';
        searchBox.style.display = 'none';
     } else if (viewId === 'savedDesignsView') {
@@ -1770,9 +1706,7 @@ let currentGuestTierFilter = 'All';
     
     const dashboardGuestList = document.getElementById('recentGuestsList');
     if (dashboardGuestList) dashboardGuestList.innerHTML = '';
-    const gatePassesTable = document.getElementById('gatePassesTableBody');
-    if (gatePassesTable) gatePassesTable.innerHTML = '';
-    const qrCodesTable = document.getElementById('qrCodesTableBody');
+        const qrCodesTable = document.getElementById('qrCodesTableBody');
     if (qrCodesTable) qrCodesTable.innerHTML = '';
 
     if (!events || events.length === 0) {
@@ -1883,19 +1817,7 @@ let currentGuestTierFilter = 'All';
           `;
         }
 
-        if (gatePassesTable) {
-            gatePassesTable.innerHTML += `
-              <tr>
-                <td><div style="display:flex; gap:12px; align-items:center;"><div class="table-avatar" style="background:var(--color-primary-soft); color:var(--color-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div><div style="font-weight:600; color:var(--color-text);">${shortId}</div></div></div></td>
-                <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">${g.events.event_name}</div></td>
-                <td><div style="font-weight:500; font-size:12px; color:var(--color-text);">${g.guest_name}</div></td>
-                <td><div style="font-weight:600; font-size:12px; color:var(--color-text);">${g.ticket_tier}</div></td>
-                <td><div style="display:flex; align-items:center; gap:6px; color:var(--color-success); font-weight:600; font-size:12px;"><span style="width:6px; height:6px; background:var(--color-success); border-radius:50%;"></span> Active</div></td>
-                <td><button onclick="alert('Action Menu: Edit, Duplicate, Delete (Backend coming soon)')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer; transition:0.2s;" onmouseover="this.style.background='var(--color-surface-soft)'" onmouseout="this.style.background='var(--color-bg)'">...</button></td>
-              </tr>
-            `;
-        }
-
+        
         if (qrCodesTable) {
             qrCodesTable.innerHTML += `
               <tr>
