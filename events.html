@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>QRGate · Event Manager Portal</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- Tailwind is included just for the QR modal positioning utility -->
@@ -396,10 +396,11 @@
             <p class="page-subtitle">Here's what's happening with your events.</p>
           </div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="dashboardDateFilters">
-            <!-- FIX 02: Removed Yesterday/Custom, Added Filter Function -->
+            <!-- Added All Time as Default so old test data shows up -->
+            <button class="btn-filter-nav active" onclick="applyDashboardFilter('All Time', this)">All Time</button>
             <button class="btn-filter-nav" onclick="applyDashboardFilter('Today', this)">Today</button>
             <button class="btn-filter-nav" onclick="applyDashboardFilter('This Week', this)">This Week</button>
-            <button class="btn-filter-nav active" onclick="applyDashboardFilter('This Month', this)">This Month</button>
+            <button class="btn-filter-nav" onclick="applyDashboardFilter('This Month', this)">This Month</button>
             <button class="btn-filter-nav" onclick="applyDashboardFilter('This Year', this)">This Year</button>
           </div>
         </div>
@@ -1819,7 +1820,7 @@ if (!data || data.length === 0) {
 
     // FIX: Initialize defaults for filters and graphs after ALL data loads (whether empty or full)
     const activeFilterBtn = document.querySelector('#dashboardDateFilters .btn-filter-nav.active');
-    applyDashboardFilter('This Month', activeFilterBtn);
+    applyDashboardFilter('All Time', activeFilterBtn);
   }
 
   // --- DASHBOARD FILTER & GRAPH LOGIC ---
@@ -1848,6 +1849,8 @@ if (!data || data.length === 0) {
       } else if (period === 'This Year') {
           startDate.setMonth(0, 1);
           startDate.setHours(0,0,0,0);
+      } else if (period === 'All Time') {
+          startDate = new Date('2000-01-01'); // Capture all past test data
       }
 
       // 3. Filter the global arrays based on the selected date range
@@ -1876,7 +1879,11 @@ if (!data || data.length === 0) {
       if (titleEl) titleEl.innerText = `Analytics Overview (${period})`;
 
       // 6. Draw the Graph
-      renderDashboardChart(period);
+      if (typeof Chart !== 'undefined') {
+          renderDashboardChart(period);
+      } else {
+          console.error("Chart.js is still not loaded. Please check your <head> script tag.");
+      }
   }
 
   function renderDashboardChart(period) {
@@ -1897,8 +1904,8 @@ if (!data || data.length === 0) {
               eventsData.push(allFetchedEvents.filter(e => new Date(e.created_at).getHours() === d.getHours() && new Date(e.created_at).getDate() === d.getDate()).length);
               guestsData.push(allFetchedGuests.filter(g => new Date(g.created_at).getHours() === d.getHours() && new Date(g.created_at).getDate() === d.getDate()).length);
           }
-      } else if (period === 'This Year') {
-          // Show 12 months
+      } else if (period === 'This Year' || period === 'All Time') {
+          // Show 12 months for Year and All Time
           for(let i=11; i>=0; i--) {
               let d = new Date();
               d.setMonth(d.getMonth() - i);
