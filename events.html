@@ -591,10 +591,10 @@
 
               <!-- Top Right Action Buttons -->
               <div style="display: flex; gap: 12px; align-items: flex-end; padding-top: 20px;">
-                <button onclick="document.querySelector('button[onclick*=\'importDataView\']').click()" style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; border: 1px solid var(--color-border); display:flex; align-items:center; gap:8px; cursor:pointer;">
+                <button onclick="switchView('importDataView')" style="background: var(--color-bg); color: var(--color-text); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; border: 1px solid var(--color-border); display:flex; align-items:center; gap:8px; cursor:pointer;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import Guests
                 </button>
-                <button onclick="document.querySelector('button[onclick*=\'addGuestView\']').click()" class="btn-primary" style="padding: 8px 16px; display:flex; align-items:center; gap:8px;">
+                <button onclick="switchView('addGuestView')" class="btn-primary" style="padding: 8px 16px; display:flex; align-items:center; gap:8px;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Guest
                 </button>
               </div>
@@ -602,31 +602,39 @@
             </div>
           </div>
 
-          <!-- Filter Navigation -->
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-shrink:0;">
-             <div style="display: flex; gap: 24px; align-items: flex-end; border-bottom: 1px solid var(--color-border); width: 100%;">
-                <div style="padding-bottom: 12px; border-bottom: 2px solid var(--color-primary); color: var(--color-primary); font-weight: 600; font-size: 13px; cursor: pointer;">All Guests (120)</div>
-                <div style="padding-bottom: 12px; color: var(--color-text-secondary); font-weight: 500; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent;">Invited (89)</div>
-                <div style="padding-bottom: 12px; color: var(--color-text-secondary); font-weight: 500; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent;">Accepted (72)</div>
-                <div style="padding-bottom: 12px; color: var(--color-text-secondary); font-weight: 500; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent;">Pending (15)</div>
+          <!-- Filter Navigation & View Toggles -->
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:16px; flex-shrink:0;">
+             <!-- Dynamic Tier Filters injected here -->
+             <div id="guestTierFilters" style="display: flex; gap: 24px; align-items: flex-end; border-bottom: 1px solid var(--color-border); flex: 1;">
+                <div style="padding-bottom: 12px; border-bottom: 2px solid var(--color-primary); color: var(--color-primary); font-weight: 600; font-size: 13px; cursor: pointer;">Loading...</div>
+             </div>
+             
+             <!-- List / Grid View Toggles -->
+             <div style="display: flex; gap: 4px; margin-left: 16px; padding-bottom: 8px;">
+                <button onclick="toggleGuestView('list')" id="btnGuestList" class="btn-filter-nav active" style="padding: 6px; justify-content:center; height: 32px; width: 32px;" title="List View">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                </button>
+                <button onclick="toggleGuestView('grid')" id="btnGuestGrid" class="btn-filter-nav" style="padding: 6px; justify-content:center; height: 32px; width: 32px;" title="Grid View">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                </button>
              </div>
           </div>
 
-          <!-- Main Table -->
-          <div class="data-table-container no-scrollbar" style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: none;">
+          <!-- Main Table Container (List View) -->
+          <div id="guestListContainerList" class="data-table-container no-scrollbar" style="border-bottom-left-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md); border-bottom: 1px solid var(--color-border);">
             <table class="data-table">
               <thead><tr><th>Guest Name</th><th>Event Name</th><th>Contact</th><th>Invitation Status</th><th>Sent Via</th><th>Gate Pass</th><th>Sent On</th><th>Actions</th></tr></thead>
               <tbody id="guestListTableBody"></tbody>
             </table>
           </div>
 
-          <!-- Bottom Footer Action Bar (Image 2 Match) -->
-          <div style="background: var(--color-bg); border: 1px solid var(--color-border); padding: 12px 20px; border-bottom-left-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center; flex-shrink:0;">
-            <div style="display: flex; gap: 12px;">
-              <button style="background: var(--color-bg); border: 1px solid var(--color-border); padding: 8px 12px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display:flex; align-items:center; gap:8px;">Bulk Actions <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
-              <button style="background: var(--color-bg); border: 1px solid var(--color-border); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display:flex; align-items:center; gap:8px; color: #22B35A;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Send via WhatsApp</button>
-              <button style="background: var(--color-bg); border: 1px solid var(--color-border); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display:flex; align-items:center; gap:8px; color: var(--color-info);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Send via Email</button>
-            </div>
+          <!-- Main Grid Container (Grid View) -->
+          <div id="guestListContainerGrid" class="no-scrollbar hidden" style="display: none; grid-template-columns: repeat(6, 1fr); gap: 16px; overflow-y: auto; padding-bottom: 20px;">
+             <!-- Cards injected here via JS -->
+          </div>
+
+          <!-- Bottom Footer Action Bar (Cleaned up) -->
+          <div style="background: var(--color-bg); padding: 12px 0; display: flex; justify-content: flex-end; align-items: center; flex-shrink:0;">
             <div style="font-size: 13px; color: var(--color-text-secondary);">
               Pagination coming soon
             </div>
@@ -1337,6 +1345,8 @@ let allFetchedEvents = [];
 let allFetchedGuests = [];
   let currentEditGuestId = null;
   let currentGuestFilterEventId = null;
+let currentGuestTierFilter = 'All';
+  let currentGuestViewMode = 'list';
 
   // --- TAB NAVIGATION & HEADER ROUTING ---
   function switchView(viewId, navElement) {
@@ -1696,36 +1706,70 @@ let allFetchedGuests = [];
       await fetchEvents();
     }
   }
+// --- GUEST LIST TOGGLES ---
+  function filterGuestsByTier(tier) {
+      currentGuestTierFilter = tier;
+      renderGuestListsTab(); // We will create this modular render function next
+  }
 
+  function toggleGuestView(mode) {
+      currentGuestViewMode = mode;
+      
+      const btnList = document.getElementById('btnGuestList');
+      const btnGrid = document.getElementById('btnGuestGrid');
+      const contList = document.getElementById('guestListContainerList');
+      const contGrid = document.getElementById('guestListContainerGrid');
+
+      if (mode === 'list') {
+          btnList.classList.add('active');
+          btnGrid.classList.remove('active');
+          contList.style.display = 'block';
+          contGrid.style.display = 'none';
+      } else {
+          btnGrid.classList.add('active');
+          btnList.classList.remove('active');
+          contList.style.display = 'none';
+          contGrid.style.display = 'grid'; // 6 columns defined in inline style
+      }
+  }
   
   async function fetchAllGuestsForKPIs() {
     const { data: events } = await supabaseClient.from('events').select('id, event_name').eq('tenant_id', currentTenantId);
     
-    // Clear tables
     const dashboardGuestList = document.getElementById('recentGuestsList');
     if (dashboardGuestList) dashboardGuestList.innerHTML = '';
-
-    const guestListTable = document.getElementById('guestListTableBody');
-    if (guestListTable) guestListTable.innerHTML = '';
-
     const gatePassesTable = document.getElementById('gatePassesTableBody');
     if (gatePassesTable) gatePassesTable.innerHTML = '';
-
     const qrCodesTable = document.getElementById('qrCodesTableBody');
     if (qrCodesTable) qrCodesTable.innerHTML = '';
 
-    // FIX: If no events exist, still load the empty graph so it doesn't fail silently
     if (!events || events.length === 0) {
         allFetchedGuests = [];
         const activeBtn = document.querySelector('#dashboardDateFilters .btn-filter-nav.active');
-        applyDashboardFilter('This Month', activeBtn);
+        applyDashboardFilter('All Time', activeBtn);
+        renderGuestListsTab(); // Run empty render
         return;
     }
     
     const eventIds = events.map(e => e.id);
     const { data: guests } = await supabaseClient.from('guests').select('*, events(event_name)').in('event_id', eventIds);
     
-    // FIX: ALWAYS assign guests immediately so filters can read it
+    // --- SMART SORTING GUESTS ---
+    if (guests) {
+        guests.forEach(g => {
+            const parentEv = allFetchedEvents.find(e => e.id === g.event_id);
+            g._evWeight = parentEv ? parentEv._weight : 5;
+            g._evParsedDate = parentEv ? parentEv._parsedDate : new Date(0);
+        });
+
+        guests.sort((a, b) => {
+            if (a._evWeight !== b._evWeight) return a._evWeight - b._evWeight;
+            if (a._evWeight === 2) return a._evParsedDate - b._evParsedDate; // Upcoming nearest first
+            if (a._evWeight === 3) return b._evParsedDate - a._evParsedDate; // Completed newest first
+            return getSafeDate(b.created_at) - getSafeDate(a.created_at); // Fallback
+        });
+    }
+
     allFetchedGuests = guests || [];
 
     if (guests) {
@@ -1736,7 +1780,6 @@ let allFetchedGuests = [];
       let totalGuestsCount = guests.length;
       let checkedInCount = 0;
       
-      // Count how many are checked in
       guests.forEach(g => {
         if ((g.checked_in_count || 0) >= (g.allowed_capacity || 1)) {
             checkedInCount++;
@@ -1744,27 +1787,22 @@ let allFetchedGuests = [];
       });
 
       let pendingCount = totalGuestsCount - checkedInCount;
-      let noShowCount = 0; // We will leave this at 0 until we build Event Expiry logic
+      let noShowCount = 0; 
       
-      // Calculate Percentages
       let checkedInPct = totalGuestsCount > 0 ? Math.round((checkedInCount / totalGuestsCount) * 100) : 0;
       let pendingPct = totalGuestsCount > 0 ? Math.round((pendingCount / totalGuestsCount) * 100) : 0;
       let noShowPct = totalGuestsCount > 0 ? Math.round((noShowCount / totalGuestsCount) * 100) : 0;
 
-      // Update the DOM Elements
       const donutTotalEl = document.getElementById('donutTotalGuests');
       if(donutTotalEl) {
           donutTotalEl.innerText = totalGuestsCount;
           document.getElementById('legendCheckedIn').innerText = checkedInCount;
           document.getElementById('legendCheckedInPct').innerText = `(${checkedInPct}%)`;
-          
           document.getElementById('legendPending').innerText = pendingCount;
           document.getElementById('legendPendingPct').innerText = `(${pendingPct}%)`;
-          
           document.getElementById('legendNoShow').innerText = noShowCount;
           document.getElementById('legendNoShowPct').innerText = `(${noShowPct}%)`;
 
-          // Dynamically draw the colored CSS circle
           let greenEnd = checkedInPct;
           let yellowEnd = greenEnd + pendingPct;
           
@@ -1775,12 +1813,10 @@ let allFetchedGuests = [];
           )`;
       }
       
-      // Clear Guest Dropdown initially, wait for event selection
       const tplGuest = document.getElementById('tplGuestSelect');
-      if (tplGuest) {
-          tplGuest.innerHTML = '<option value="">First Select Event...</option>';
-      }
+      if (tplGuest) tplGuest.innerHTML = '<option value="">First Select Event...</option>';
 
+      // Render OTHER tabs (Dashboard Lists, Gate Passes Tab, QR Codes Tab)
       guests.forEach((g, index) => {
         const isApproved = document.querySelector(`option[value="${g.event_id}"]`)?.dataset.approved === 'true';
         const shortId = g.id.substring(0, 8).toUpperCase();
@@ -1789,7 +1825,6 @@ let allFetchedGuests = [];
           ? `<button onclick="showTicket('${g.id}', '${encodeURIComponent(g.guest_name)}', '${g.ticket_tier}', ${g.allowed_capacity}, '${encodeURIComponent(g.events.event_name)}', '${g.event_id}')" class="btn-qr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><line x1="17.5" y1="14" x2="17.5" y2="21"/><line x1="14" y1="17.5" x2="21" y2="17.5"/></svg> View Pass</button>`
           : `<button disabled class="btn-qr" style="opacity: 0.5;">Pending</button>`;
 
-        // Dashboard Right Sidebar List
         if (dashboardGuestList && index < 5) {
           dashboardGuestList.innerHTML += `
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 4px; border-bottom: 1px solid var(--color-border);">
@@ -1803,77 +1838,6 @@ let allFetchedGuests = [];
               </div>
             </div>
           `;
-        }
-
-        // Guest Lists Tab
-        if (guestListTable) {
-           // ONLY draw row if it matches the pill filter (or if no filter is active)
-           if (currentGuestFilterEventId === null || currentGuestFilterEventId === g.event_id) {
-               
-               const dateObj = g.created_at ? new Date(g.created_at) : new Date();
-               const formattedDate = dateObj.toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' });
-               const formattedTime = dateObj.toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' });
-               const capacityCount = g.allowed_capacity || 1;
-               const gEmail = g.email || 'No email provided';
-               const gPhone = g.phone || 'No phone provided';
-               const gCompany = g.company || 'Independent';
-               const gStatus = g.invitation_status || 'Pending';
-               const isHidden = g.is_hidden === true;
-               const rowStyle = isHidden ? 'opacity: 0.5; background: var(--color-surface-soft);' : '';
-               
-               let statusColor = 'var(--color-warning)'; let statusBg = '#FEF6E2';
-               if(gStatus === 'Accepted' || gStatus === 'Active') { statusColor = 'var(--color-success)'; statusBg = 'var(--color-success-soft)'; }
-
-               let sentViaIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>';
-               if (g.sent_via === 'WhatsApp') sentViaIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
-
-               const eyeIcon = isHidden 
-                 ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
-                 : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-
-               const seqQrId = 'QR-' + String(g.ticket_number || 0).padStart(3, '0');
-               const allowedPairs = g.allowed_capacity || 1;
-               const checkedInPairs = g.checked_in_count || 0;
-               const checkInBadgeColor = checkedInPairs > 0 ? 'var(--color-success)' : 'var(--color-text-secondary)';
-               const checkInBadgeBg = checkedInPairs > 0 ? 'var(--color-success-soft)' : 'var(--color-surface-soft)';
-
-               guestListTable.innerHTML += `
-                  <tr style="${rowStyle}">
-                    <td>
-                      <div style="display:flex; gap:12px; align-items:center;">
-                        <div class="table-avatar" style="background:#F3E8FF; color:#9333EA;">${g.guest_name.substring(0,2).toUpperCase()}</div>
-                        <div><div style="font-weight:600; color:var(--color-text);">${g.guest_name}</div><div style="font-size:11px; color:var(--color-text-secondary);">${gCompany}</div></div>
-                      </div>
-                    </td>
-                    <td>
-                      <div style="font-weight:600; font-size:13px; color:var(--color-text);">${g.events ? g.events.event_name : 'General Event'}</div>
-                      <div style="font-size:11px; color:var(--color-text-secondary);">${g.ticket_tier || 'General'}</div>
-                    </td>
-                    <td><div style="font-size:12px; color:var(--color-text);">${gEmail}</div><div style="font-size:11px; color:var(--color-text-secondary);">${gPhone}</div></td>
-                    <td><span style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:99px; background:${statusBg}; color:${statusColor}; font-size:11px; font-weight:600;">${gStatus}</span></td>
-                    <td><div style="display:flex; gap:8px;"><div style="width:24px; height:24px; border-radius:50%; background:var(--color-surface-soft); color:var(--color-text-secondary); display:flex; align-items:center; justify-content:center;">${sentViaIcon}</div><span style="font-size: 11px; font-weight: 500; display:flex; align-items:center;">${g.sent_via || 'System'}</span></div></td>
-                    <td>
-                      <div onclick="showTicket('${g.id}', '${encodeURIComponent(g.guest_name)}', '${g.ticket_tier}', ${g.allowed_capacity}, '${encodeURIComponent(g.events ? g.events.event_name : 'Event')}', '${g.event_id}')" style="display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--color-primary); padding: 4px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='var(--color-primary-soft)'" onmouseout="this.style.background='transparent'">
-                        <div style="width:32px; height:32px; background:var(--color-primary-soft); border-radius:6px; display:flex; align-items:center; justify-content:center; color:var(--color-primary); flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
-                        <div style="display:flex; flex-direction:column; gap:2px;">
-                          <div style="font-weight:700; font-size:12px; font-family:monospace; color:var(--color-text);">${seqQrId}</div>
-                          <div style="display:flex; align-items:center; gap:6px;">
-                            <span style="font-size:10px; font-weight:700; color:${checkInBadgeColor}; background:${checkInBadgeBg}; padding:1px 6px; border-radius:4px;">${checkedInPairs}/${allowedPairs} In</span>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td><div style="font-size:12px; color:var(--color-text);">${formattedDate}</div><div style="font-size:11px; color:var(--color-text-secondary);">${formattedTime}</div></td>
-                    <td>
-                      <div style="display:flex; gap:6px;">
-                        <button onclick="toggleHideGuest('${g.id}', ${isHidden})" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer;" title="Show/Hide">${eyeIcon}</button>
-                        <button onclick="editGuest('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-info); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
-                        <button onclick="deleteGuest('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-danger-soft); color:var(--color-danger); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-                      </div>
-                    </td>
-                  </tr>
-               `;
-           }
         }
 
         if (gatePassesTable) {
@@ -1901,15 +1865,11 @@ let allFetchedGuests = [];
               </tr>
             `;
         }
-      }); // <--- THIS IS THE END OF THE LOOP
+      });
 
-      // ==============================================================
-      // === PASTE THE NEW LOGIC RIGHT HERE ===
-      // ==============================================================
       const evtRecentPasses = document.getElementById('eventsTabRecentPassesList');
       if (evtRecentPasses) {
           evtRecentPasses.innerHTML = '';
-          // Sort guests by newest first
           const sortedGuests = [...guests].sort((a, b) => getSafeDate(b.created_at) - getSafeDate(a.created_at));
           
           sortedGuests.slice(0, 5).forEach(g => {
@@ -1932,17 +1892,169 @@ let allFetchedGuests = [];
               `;
           });
       }
-      // ==============================================================
 
-    } // <--- THIS CLOSES THE `if (guests) {` BLOCK
+    } 
 
-    // FIX: Initialize defaults for filters and graphs after ALL data loads (whether empty or full)
     const activeFilterBtn = document.querySelector('#dashboardDateFilters .btn-filter-nav.active');
     applyDashboardFilter('All Time', activeFilterBtn);
+    
+    // FINALLY: Render the Guest List Tab (Handles Tier Filtering, Grid, and List Views)
+    renderGuestListsTab();
+  }
+
+  // --- GUEST LIST RENDERER (WITH GRID & LIST) ---
+  function renderGuestListsTab() {
+      const guestListTable = document.getElementById('guestListTableBody');
+      const guestListGrid = document.getElementById('guestListContainerGrid');
+      const tierFiltersContainer = document.getElementById('guestTierFilters');
+      
+      if (!guestListTable || !guestListGrid || !tierFiltersContainer) return;
+
+      guestListTable.innerHTML = '';
+      guestListGrid.innerHTML = '';
+
+      // 1. Filter by Event First
+      let baseGuests = allFetchedGuests;
+      if (currentGuestFilterEventId !== null) {
+          baseGuests = allFetchedGuests.filter(g => g.event_id === currentGuestFilterEventId);
+      }
+
+      // 2. Build Tier Statistics dynamically based on the active event
+      const tiers = { 'All': baseGuests.length };
+      baseGuests.forEach(g => {
+          const tier = g.ticket_tier || 'General';
+          tiers[tier] = (tiers[tier] || 0) + 1;
+      });
+
+      // 3. Render Dynamic Filter Tabs
+      tierFiltersContainer.innerHTML = '';
+      for (const [tier, count] of Object.entries(tiers)) {
+          const isSelected = currentGuestTierFilter === tier || (currentGuestTierFilter === 'All' && tier === 'All');
+          const colorStr = isSelected ? 'var(--color-primary)' : 'var(--color-text-secondary)';
+          const borderStr = isSelected ? `2px solid var(--color-primary)` : '2px solid transparent';
+          const weightStr = isSelected ? '700' : '500';
+          
+          const tabLabel = tier === 'All' ? 'All Guests' : tier;
+          tierFiltersContainer.innerHTML += `
+              <div onclick="filterGuestsByTier('${tier}')" style="padding-bottom: 12px; border-bottom: ${borderStr}; color: ${colorStr}; font-weight: ${weightStr}; font-size: 13px; cursor: pointer;">
+                  ${tabLabel} (${count})
+              </div>
+          `;
+      }
+
+      // 4. Apply Tier Filter
+      let finalGuests = baseGuests;
+      if (currentGuestTierFilter !== 'All') {
+          finalGuests = baseGuests.filter(g => (g.ticket_tier || 'General') === currentGuestTierFilter);
+      }
+
+      // 5. Render Data
+      if (finalGuests.length === 0) {
+          guestListTable.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px;">No guests match the selected filters.</td></tr>`;
+          guestListGrid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--color-text-secondary);">No guests match the selected filters.</div>`;
+          return;
+      }
+
+      finalGuests.forEach(g => {
+          const dateObj = getSafeDate(g.created_at);
+          const formattedDate = dateObj.toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' });
+          const formattedTime = dateObj.toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' });
+          
+          const capacityCount = g.allowed_capacity || 1;
+          const checkedInPairs = g.checked_in_count || 0;
+          const checkInBadgeColor = checkedInPairs > 0 ? 'var(--color-success)' : 'var(--color-text-secondary)';
+          const checkInBadgeBg = checkedInPairs > 0 ? 'var(--color-success-soft)' : 'var(--color-surface-soft)';
+
+          const gEmail = g.email || 'No email provided';
+          const gPhone = g.phone || 'No phone provided';
+          const gCompany = g.company || 'Independent';
+          const gStatus = g.invitation_status || 'Pending';
+          const isHidden = g.is_hidden === true;
+          const rowStyle = isHidden ? 'opacity: 0.5; background: var(--color-surface-soft);' : '';
+          
+          let statusColor = 'var(--color-warning)'; let statusBg = '#FEF6E2';
+          if(gStatus === 'Accepted' || gStatus === 'Active') { statusColor = 'var(--color-success)'; statusBg = 'var(--color-success-soft)'; }
+
+          let sentViaIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>';
+          if (g.sent_via === 'WhatsApp') sentViaIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
+
+          const eyeIcon = isHidden 
+            ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+            : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+
+          const seqQrId = 'QR-' + String(g.ticket_number || 0).padStart(3, '0');
+          const evName = g.events ? g.events.event_name : 'General Event';
+          const tierName = g.ticket_tier || 'General';
+
+          // RENDER LIST VIEW ROW
+          guestListTable.innerHTML += `
+             <tr style="${rowStyle}">
+               <td>
+                 <div style="display:flex; gap:12px; align-items:center;">
+                   <div class="table-avatar" style="background:#F3E8FF; color:#9333EA;">${g.guest_name.substring(0,2).toUpperCase()}</div>
+                   <div><div style="font-weight:600; color:var(--color-text);">${g.guest_name}</div><div style="font-size:11px; color:var(--color-text-secondary);">${gCompany}</div></div>
+                 </div>
+               </td>
+               <td>
+                 <div style="font-weight:600; font-size:13px; color:var(--color-text);">${evName}</div>
+                 <div style="font-size:11px; color:var(--color-text-secondary);">${tierName}</div>
+               </td>
+               <td><div style="font-size:12px; color:var(--color-text);">${gEmail}</div><div style="font-size:11px; color:var(--color-text-secondary);">${gPhone}</div></td>
+               <td><span style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:99px; background:${statusBg}; color:${statusColor}; font-size:11px; font-weight:600;">${gStatus}</span></td>
+               <td><div style="display:flex; gap:8px;"><div style="width:24px; height:24px; border-radius:50%; background:var(--color-surface-soft); color:var(--color-text-secondary); display:flex; align-items:center; justify-content:center;">${sentViaIcon}</div><span style="font-size: 11px; font-weight: 500; display:flex; align-items:center;">${g.sent_via || 'System'}</span></div></td>
+               <td>
+                 <div onclick="showTicket('${g.id}', '${encodeURIComponent(g.guest_name)}', '${g.ticket_tier}', ${g.allowed_capacity}, '${encodeURIComponent(evName)}', '${g.event_id}')" style="display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--color-primary); padding: 4px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='var(--color-primary-soft)'" onmouseout="this.style.background='transparent'">
+                   <div style="width:32px; height:32px; background:var(--color-primary-soft); border-radius:6px; display:flex; align-items:center; justify-content:center; color:var(--color-primary); flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
+                   <div style="display:flex; flex-direction:column; gap:2px;">
+                     <div style="font-weight:700; font-size:12px; font-family:monospace; color:var(--color-text);">${seqQrId}</div>
+                     <div style="display:flex; align-items:center; gap:6px;">
+                       <span style="font-size:10px; font-weight:700; color:${checkInBadgeColor}; background:${checkInBadgeBg}; padding:1px 6px; border-radius:4px;">${checkedInPairs}/${capacityCount} In</span>
+                     </div>
+                   </div>
+                 </div>
+               </td>
+               <td><div style="font-size:12px; color:var(--color-text);">${formattedDate}</div><div style="font-size:11px; color:var(--color-text-secondary);">${formattedTime}</div></td>
+               <td>
+                 <div style="display:flex; gap:6px;">
+                   <button onclick="toggleHideGuest('${g.id}', ${isHidden})" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer;" title="Show/Hide">${eyeIcon}</button>
+                   <button onclick="editGuest('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-info); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+                   <button onclick="deleteGuest('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-danger-soft); color:var(--color-danger); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                 </div>
+               </td>
+             </tr>
+          `;
+
+          // RENDER GRID VIEW CARD
+          guestListGrid.innerHTML += `
+             <div class="card panel" style="${rowStyle} padding: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; position: relative;">
+               <span style="position:absolute; top:12px; left:12px; padding:2px 8px; border-radius:99px; background:${statusBg}; color:${statusColor}; font-size:10px; font-weight:600;">${gStatus}</span>
+               <button onclick="showTicket('${g.id}', '${encodeURIComponent(g.guest_name)}', '${g.ticket_tier}', ${g.allowed_capacity}, '${encodeURIComponent(evName)}', '${g.event_id}')" style="position:absolute; top:12px; right:12px; border:none; background:var(--color-primary-soft); color:var(--color-primary); border-radius:6px; padding:4px; cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></button>
+               
+               <div style="width: 56px; height: 56px; border-radius: 50%; background: #F3E8FF; color: #9333EA; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 12px;">${g.guest_name.substring(0,2).toUpperCase()}</div>
+               
+               <div>
+                 <div style="font-size: 14px; font-weight: 700; color: var(--color-text); margin-bottom: 2px;">${g.guest_name}</div>
+                 <div style="font-size: 11px; color: var(--color-text-secondary);">${gCompany}</div>
+               </div>
+
+               <div style="width: 100%; border-top: 1px dashed var(--color-border); padding-top: 12px; margin-top: auto;">
+                 <div style="font-size: 12px; font-weight: 600; color: var(--color-text); margin-bottom: 2px;">${evName}</div>
+                 <div style="font-size: 11px; color: var(--color-text-secondary); margin-bottom: 12px;">${tierName}</div>
+                 
+                 <div style="display:flex; justify-content: center; gap:6px;">
+                   <button onclick="toggleHideGuest('${g.id}', ${isHidden})" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer;" title="Show/Hide">${eyeIcon}</button>
+                   <button onclick="editGuest('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-info); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+                   <button onclick="deleteGuest('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-danger-soft); color:var(--color-danger); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                 </div>
+               </div>
+             </div>
+          `;
+      });
   }
 
   // --- DASHBOARD FILTER & GRAPH LOGIC ---
   let dashboardChartInstance = null;
+
 
   // FIX: Helper to safely parse dates, defaulting to right now if missing
   function getSafeDate(dateString) {
