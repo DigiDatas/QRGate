@@ -801,7 +801,7 @@
       <!-- ============================================== -->
       <div id="createEventView" class="view-section">
         <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 24px; flex-shrink: 0;">
-          <button onclick="document.querySelector('button[onclick*=\'createManageView\']').click()" style="background: transparent; border: 1px solid var(--color-border); padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--color-text);">
+          <button type="button" onclick="cancelEventForm()" style="background: transparent; border: 1px solid var(--color-border); padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--color-text);">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back to Create & Manage
           </button>
         </div>
@@ -908,7 +908,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-shrink: 0;">
           <div><h1 class="page-title">Add Guest</h1><p class="page-subtitle" style="margin:0;">Add individual guest details manually and assign to an event.</p></div>
           <div style="display: flex; gap: 12px;">
-            <button onclick="document.querySelector('button[onclick*=\'createManageView\']').click()" style="background: transparent; border: 1px solid var(--color-border); padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--color-text);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back to Create & Manage</button>
+            <button type="button" onclick="cancelEventForm()" style="background: transparent; border: 1px solid var(--color-border); padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--color-text);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back to Create & Manage</button>
             <button onclick="document.querySelector('button[onclick*=\'importDataView\']').click()" style="background: white; border: 1px solid var(--color-border); padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--color-primary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import Guests</button>
           </div>
         </div>
@@ -1326,33 +1326,34 @@ let allFetchedGuests = [];
 
   // --- TAB NAVIGATION & HEADER ROUTING ---
   function switchView(viewId, navElement) {
-    // Hide all views and remove active states
+    // 1. Hide all views and remove active state from buttons
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     
-    // Show the requested view
+    // 2. Show the requested view
     const targetView = document.getElementById(viewId);
     if (targetView) targetView.classList.add('active');
 
-    // Safely highlight the sidebar button (Prevents the crash!)
+    // 3. Highlight sidebar item safely
     if (navElement && navElement.classList && navElement.classList.contains('nav-item')) {
       navElement.classList.add('active');
     } else {
-      const fallbackNav = document.querySelector(`.sidebar button[onclick*="${viewId}"]`);
-      if (fallbackNav) fallbackNav.classList.add('active');
+      // Robust lookup using element matching
+      const allNavButtons = Array.from(document.querySelectorAll('.sidebar button'));
+      const matchingNav = allNavButtons.find(b => b.getAttribute('onclick')?.includes(viewId));
+      if (matchingNav) matchingNav.classList.add('active');
     }
 
-    // Update Header Text
+    // 4. Update Header Titles
     const titleEl = document.getElementById('dynamicPageTitle');
     const subEl = document.getElementById('dynamicPageSubtitle');
     const searchBox = document.getElementById('dynamicSearchContainer');
     const searchInput = document.getElementById('dynamicSearchInput');
 
-    if(viewId === 'dashboardView') {
-
+    if (viewId === 'dashboardView') {
        titleEl.innerText = 'Dashboard'; subEl.innerText = 'Overview of your activities';
        searchBox.style.display = 'none';
-	} else if (viewId === 'profileView') {
+    } else if (viewId === 'profileView') {
        titleEl.innerText = 'My Profile'; subEl.innerText = 'Manage your account and organizer details';
        searchBox.style.display = 'none';
     } else if (viewId === 'createManageView') {
@@ -2121,10 +2122,10 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
               el.onclick = () => document.querySelector('button[onclick*="reportsView"]').click();
           }
           
-          // Route to Dedicated "Create Event" Tab
-          if (text.includes('Create Event') || text.includes('New Event')) {
+          // Route to Dedicated "Create Event" Tab (Skip buttons with assigned onclicks or form buttons)
+          if ((text === 'Create Event' || text === 'New Event') && !el.id && !el.getAttribute('onclick')) {
               el.style.cursor = 'pointer';
-              el.onclick = () => document.querySelector('button[onclick*="createEventView"]').click();
+              el.onclick = () => switchView('createEventView');
           }
           
           // Route to Dedicated "Add Guest" Tab
@@ -2543,8 +2544,19 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
   // --- CANCEL EVENT FORM ROUTE ---
   function cancelEventForm() {
       currentEditEventId = null;
-      document.getElementById('submitDedicatedEventBtn').innerHTML = 'Create Event &rarr;';
-      switchView('createManageView', document.querySelector('button[onclick*="createManageView"]'));
+      const submitBtn = document.getElementById('submitDedicatedEventBtn');
+      if (submitBtn) {
+          submitBtn.innerHTML = 'Create Event &rarr;';
+      }
+      
+      // Fallback: Check if switchView exists, otherwise toggle display directly
+      if (typeof switchView === 'function') {
+          switchView('createManageView');
+      } else {
+          document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+          const target = document.getElementById('createManageView');
+          if (target) target.classList.add('active');
+      }
   }
     function cancelGuestForm() {
     // Only reset edit mode
