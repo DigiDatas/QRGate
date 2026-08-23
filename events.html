@@ -981,7 +981,7 @@
                 </div>
               </div>
               <div style="display: flex; gap: 16px; margin-top: 32px;">
-                <button onclick="document.querySelector('button[onclick*=\'createManageView\']').click()" style="background: white; border: 1px solid var(--color-border); color: var(--color-text); font-weight: 600; font-size: 13px; padding: 10px 24px; border-radius: 8px; cursor: pointer;">Cancel</button>
+                <button type="button" onclick="cancelGuestForm()" style="background: white; border: 1px solid var(--color-border); color: var(--color-text); font-weight: 600; font-size: 13px; padding: 10px 24px; border-radius: 8px; cursor: pointer;">Cancel</button>
                 <button id="submitAddGuestBtn" class="btn-primary" style="padding: 10px 24px; border-radius: 8px; display: flex; align-items: center; gap: 8px; background: var(--color-primary);">Save Guest <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
               </div>
             </div>
@@ -2542,35 +2542,21 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
 
   // --- CANCEL EVENT FORM ROUTE ---
   function cancelEventForm() {
-      currentEditEventId = null;
-      
-      // Reset all form input fields
-      document.getElementById('dedicatedEventName').value = '';
-      document.getElementById('dedicatedVenue').value = '';
-      document.getElementById('dedicatedEventDate').value = '';
-      document.getElementById('dedicatedStartTime').value = '';
-      document.getElementById('dedicatedEndTime').value = '';
-      document.getElementById('dedicatedEventCapacity').value = '100';
-      
-      const addr = document.querySelector('#createEventView input[placeholder="Enter full address"]');
-      const org = document.querySelector('#createEventView input[placeholder="Enter organizer / company name"]');
-      const email = document.querySelector('#createEventView input[type="email"]');
-      const phone = document.querySelector('#createEventView input[placeholder="Enter phone number"]');
-      const desc = document.querySelector('#createEventView textarea');
-
-      if (addr) addr.value = '';
-      if (org) org.value = '';
-      if (email) email.value = '';
-      if (phone) phone.value = '';
-      if (desc) desc.value = '';
-
-      // Reset button UI text & icon
-      document.getElementById('submitDedicatedEventBtn').innerHTML = 'Create Event <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
-      
-      // Navigate back to the Create & Manage overview tab
-      switchView('createManageView', document.querySelector('button[onclick*="createManageView"]'));
-  }
-      
+    // Only reset edit mode so it won't accidentally overwrite old records
+    currentEditEventId = null;
+    document.getElementById('submitDedicatedEventBtn').innerHTML = 'Create Event &rarr;';
+    
+    // Smoothly redirect directly to Create & Manage
+    switchView('createManageView');
+}
+    function cancelGuestForm() {
+    // Only reset edit mode
+    currentEditGuestId = null;
+    document.getElementById('submitAddGuestBtn').innerHTML = 'Save Guest <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+    
+    // Smoothly redirect directly to Create & Manage
+    switchView('createManageView');
+}  
 
 
   // --- DATABASE SAVING & LOADING ---
