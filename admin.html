@@ -6,6 +6,18 @@
   <title>Admin Dashboard - QRGate</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .canvas-element { cursor: move; }
+    .active-element { outline: 3px dashed #ec4899 !important; }
+    .resizable-text { position: relative; user-select: none; box-sizing: border-box; }
+    .resizable-text .resize-handle {
+      position: absolute; right: -8px; top: 50%; transform: translateY(-50%);
+      width: 14px; height: 36px; background: #ec4899; border: 2px solid #fff;
+      border-radius: 4px; cursor: ew-resize; display: none; z-index: 20;
+    }
+    .resizable-text:hover .resize-handle, .resizable-text.active-element .resize-handle { display: block; }
+    .qr-group-box { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased flex h-screen overflow-hidden">
 
@@ -24,10 +36,13 @@
           <span>👥 Manage Tenants</span>
         </a>
         <a href="#" onclick="switchTab('events')" id="navEvents" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 font-medium transition">
-          <span>📅 Approve Events</span>
+          <span>套 Approve Events</span>
+        </a>
+        <a href="#" onclick="switchTab('templates')" id="navTemplates" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 font-medium transition">
+          <span>🎨 Global Templates</span>
         </a>
         <a href="events.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 font-medium transition">
-          <span>⚙️ Event Manager Portal</span>
+          <span>笞呻ｸEvent Manager Portal</span>
         </a>
       </nav>
     </div>
@@ -140,6 +155,58 @@
         </div>
       </div>
 
+      <!-- GLOBAL TEMPLATES SECTION TAB (Hidden by default) -->
+      <div id="templatesSection" class="space-y-6 hidden">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xl font-bold tracking-tight text-slate-100">Create Global System Templates</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- LEFT SIDE: Tools & URL Input -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-6">
+            <div>
+               <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Template Name</label>
+               <input type="text" id="adminTplName" placeholder="e.g. Official VIP Pass" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:border-pink-500 text-slate-200 outline-none">
+            </div>
+            
+            <div class="border-t border-slate-800 pt-6">
+               <label class="block text-xs font-bold text-slate-400 uppercase mb-2">External Background URL</label>
+               <p class="text-xs text-slate-500 mb-3">Paste a direct link to an image (.jpg, .png)</p>
+               <input type="text" id="adminBgUrl" placeholder="https://example.com/image.jpg" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:border-pink-500 text-slate-200 outline-none mb-3">
+               <button onclick="applyAdminBgUrl()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-3 rounded-xl text-sm font-semibold transition border border-slate-700">Apply Background</button>
+            </div>
+
+            <div class="border-t border-slate-800 pt-6 mt-auto">
+               <button onclick="saveAdminGlobalTemplate()" class="w-full bg-pink-600 hover:bg-pink-500 text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-pink-600/20 transition">Save Global Template</button>
+            </div>
+          </div>
+
+          <!-- RIGHT SIDE: Canvas -->
+          <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-center overflow-hidden min-h-[600px] relative">
+              <div id="editorCanvas" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.35); transform-origin: center; width: 1080px; height: 1440px; background-image: url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1080&auto=format&fit=crop'); background-size: 100% 100%; background-repeat: no-repeat; background-position: center; border-radius: 20px; background-color: #fff; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+                  
+                  <!-- Editable Texts -->
+                  <div class="canvas-element resizable-text" contenteditable="false" style="position: absolute; top: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 70px; font-weight: 800; color: #fff; outline: none; cursor: move; width: 800px; min-height: 80px;">
+                    Event Title Here
+                  </div>
+
+                  <div class="canvas-element resizable-text" contenteditable="false" style="position: absolute; top: 270px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 45px; color: #fff; outline: none; cursor: move; width: 700px; min-height: 60px;">
+                    Guest Pass Notice
+                  </div>
+
+                  <!-- Unified QR Box -->
+                  <div id="canvasQRSpot" class="canvas-element qr-group-box" data-qr-size="310" data-qr-dark="#000000" data-qr-bg="#ffffff" data-qr-has-box="true" data-qr-radius="20" data-qr-padding="10" style="position: absolute; bottom: 180px; left: 50%; transform: translateX(-50%); width: 330px; height: 330px; background: #ffffff; border-radius: 20px; cursor: move; outline: none;">
+                      <div id="qrInnerCode" style="display: flex; align-items: center; justify-content: center; width: 310px; height: 310px;">
+                        <div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight: bold;">QR SPOT</div>
+                      </div>
+                      <div id="canvasQrLabel" class="canvas-element non-text-editable" data-no-edit="true" style="position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 32px; font-weight: bold; color: #fff; font-family: monospace; width: max-content; cursor: move;">QR-001</div>
+                  </div>
+              </div>
+          </div>
+        </div>
+      </div>
+
     </main>
   </div>
 
@@ -182,16 +249,28 @@
     }
 
     function switchTab(tab) {
+      // Hide all sections and reset all buttons first
+      document.getElementById('tenantsSection').classList.add('hidden');
+      document.getElementById('eventsSection').classList.add('hidden');
+      document.getElementById('templatesSection').classList.add('hidden');
+      
+      const defaultNavClass = 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 font-medium transition';
+      const activeNavClass = 'flex items-center gap-3 px-4 py-3 rounded-xl bg-pink-600 text-white font-semibold shadow-lg shadow-pink-600/20 transition';
+      
+      document.getElementById('navTenants').className = defaultNavClass;
+      document.getElementById('navEvents').className = defaultNavClass;
+      document.getElementById('navTemplates').className = defaultNavClass;
+
+      // Show requested tab
       if (tab === 'tenants') {
         document.getElementById('tenantsSection').classList.remove('hidden');
-        document.getElementById('eventsSection').classList.add('hidden');
-        document.getElementById('navTenants').className = 'flex items-center gap-3 px-4 py-3 rounded-xl bg-pink-600 text-white font-semibold shadow-lg shadow-pink-600/20 transition';
-        document.getElementById('navEvents').className = 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 font-medium transition';
-      } else {
+        document.getElementById('navTenants').className = activeNavClass;
+      } else if (tab === 'events') {
         document.getElementById('eventsSection').classList.remove('hidden');
-        document.getElementById('tenantsSection').classList.add('hidden');
-        document.getElementById('navEvents').className = 'flex items-center gap-3 px-4 py-3 rounded-xl bg-pink-600 text-white font-semibold shadow-lg shadow-pink-600/20 transition';
-        document.getElementById('navTenants').className = 'flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 font-medium transition';
+        document.getElementById('navEvents').className = activeNavClass;
+      } else if (tab === 'templates') {
+        document.getElementById('templatesSection').classList.remove('hidden');
+        document.getElementById('navTemplates').className = activeNavClass;
       }
     }
 
@@ -301,6 +380,148 @@
       const term = e.target.value.toLowerCase();
       const filteredTenants = allTenantsData.filter(t => (t.company_name && t.company_name.toLowerCase().includes(term)) || (t.email && t.email.toLowerCase().includes(term)));
       renderTenants(filteredTenants);
+    });
+
+    // ==========================================
+    // --- GLOBAL TEMPLATE BUILDER LOGIC ---
+    // ==========================================
+    let currentActiveBgString = "url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1080&auto=format&fit=crop')";
+    let isDragging = false;
+    let dragTarget = null;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    function applyAdminBgUrl() {
+        const urlInput = document.getElementById('adminBgUrl').value.trim();
+        if (!urlInput) return alert("Please paste an image URL first.");
+        
+        const canvas = document.getElementById('editorCanvas');
+        currentActiveBgString = `url('${urlInput}')`;
+        canvas.style.backgroundImage = currentActiveBgString;
+        alert("Background updated!");
+    }
+
+    async function saveAdminGlobalTemplate() {
+        const tplName = document.getElementById('adminTplName').value.trim();
+        if (!tplName) return alert("Please enter a Template Name.");
+
+        // Clear drag outlines before saving
+        document.querySelectorAll('.canvas-element').forEach(node => node.style.outline = "none");
+        
+        // Clone canvas to clean it safely
+        const canvasClone = document.getElementById('editorCanvas').cloneNode(true);
+        const cQrSpot = canvasClone.querySelector('#canvasQRSpot');
+        if (cQrSpot) {
+            const inner = cQrSpot.querySelector('#qrInnerCode');
+            if (inner) inner.innerHTML = `<div style="width:100%; height:100%; background:#cbd5e1; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:30px; font-weight:bold;">QR SPOT</div>`;
+        }
+
+        const cleanCanvasHtml = canvasClone.outerHTML;
+
+        // The critical payload: is_global = true, tenant_id = null
+        const payload = {
+            name: tplName,
+            event_type: 'Global System',
+            html_layout: cleanCanvasHtml,
+            thumbnail_url: currentActiveBgString,
+            is_global: true,
+            tenant_id: null
+        };
+
+        const { error } = await supabaseClient.from('templates').insert([payload]);
+        
+        if (error) {
+            alert("Error saving: " + error.message);
+        } else {
+            alert("Success! Global Template saved and is now available to all tenants.");
+            document.getElementById('adminTplName').value = '';
+            document.getElementById('adminBgUrl').value = '';
+        }
+    }
+
+    // Drag and Drop Initializer
+    function makeDraggable(el) {
+        if(!el.classList.contains('canvas-element')) el.classList.add('canvas-element');
+        
+        // Attach resize handle for text boxes
+        if (!el.classList.contains('qr-group-box') && !el.classList.contains('non-text-editable') && !el.querySelector('.resize-handle')) {
+            const handle = document.createElement('div');
+            handle.className = 'resize-handle right';
+            el.appendChild(handle);
+        }
+        
+        el.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('resize-handle')) {
+                e.preventDefault(); e.stopPropagation();
+                let initialX = e.clientX;
+                let initialWidth = el.offsetWidth;
+                const scale = document.getElementById('editorCanvas').getBoundingClientRect().width / 1080;
+
+                function onMouseMove(moveEvent) {
+                    const dx = (moveEvent.clientX - initialX) / scale;
+                    el.style.width = Math.max(150, initialWidth + dx) + 'px';
+                }
+                function onMouseUp() {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                }
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+                return;
+            }
+
+            if (el.contentEditable === "true") return; 
+            e.preventDefault(); e.stopPropagation();
+            
+            document.querySelectorAll('.canvas-element').forEach(node => {
+                node.style.outline = "none";
+                node.classList.remove('active-element');
+            });
+            el.style.outline = "3px dashed #ec4899";
+            el.classList.add('active-element');
+            
+            isDragging = true;
+            dragTarget = el;
+            
+            const referenceRect = el.parentElement.getBoundingClientRect();
+            const scale = referenceRect.width / (el.parentElement.id === 'editorCanvas' ? 1080 : el.parentElement.offsetWidth);
+            
+            offsetX = (e.clientX - el.getBoundingClientRect().left) / scale;
+            offsetY = (e.clientY - el.getBoundingClientRect().top) / scale;
+        });
+
+        el.addEventListener('dblclick', () => {
+            if (el.dataset.noEdit === "true" || el.classList.contains('qr-group-box')) return;
+            el.contentEditable = "true";
+            el.focus();
+            el.style.cursor = 'text';
+            el.style.outline = "3px solid #ec4899";
+        });
+        
+        el.addEventListener('blur', () => {
+            el.contentEditable = "false";
+            el.style.cursor = 'move';
+        });
+    }
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging || !dragTarget) return;
+        const parentContainer = dragTarget.parentElement;
+        const parentRect = parentContainer.getBoundingClientRect();
+        const scale = parentRect.width / (parentContainer.id === 'editorCanvas' ? 1080 : parentContainer.offsetWidth);
+        
+        let x = (e.clientX - parentRect.left) / scale - offsetX;
+        let y = (e.clientY - parentRect.top) / scale - offsetY;
+
+        dragTarget.style.left = x + 'px';
+        dragTarget.style.top = y + 'px';
+    });
+
+    document.addEventListener('mouseup', () => { isDragging = false; dragTarget = null; });
+    
+    // Initialize Dragging on Load
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('#editorCanvas .canvas-element').forEach(el => makeDraggable(el));
     });
 
     initAdmin();
