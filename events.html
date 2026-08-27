@@ -2395,7 +2395,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
               } else {
                   guestPayload.status = 'Active';
                   guestPayload.invitation_status = 'Pending';
-                  guestPayload.ticket_number = Math.floor(1000 + Math.random() * 9000);
+                  guestPayload.ticket_number = getNextTicketNumber(eventId) + 1;
                   await supabaseClient.from('guests').insert([guestPayload]);
                   alert('Guest successfully saved and pass generated!');
               }
@@ -3296,7 +3296,22 @@ function deleteSelectedElement() {
   // --- BULK UPLOAD & AUTO-GENERATE LOGIC ---
   // ==========================================
 
-  function toggleGuestInputMode(mode) {
+function getNextTicketNumber(eventId) {
+      // Find all guests belonging to this specific event
+      const eventGuests = allFetchedGuests.filter(g => g.event_id === eventId);
+      let maxTicket = 0;
+      
+      // Find the highest existing ticket number
+      eventGuests.forEach(g => {
+          if (g.ticket_number && g.ticket_number > maxTicket) {
+              maxTicket = g.ticket_number;
+          }
+      });
+      
+      return maxTicket;
+  }  
+
+function toggleGuestInputMode(mode) {
       const bulkZone = document.getElementById('bulkUploadZone');
       const autoZone = document.getElementById('autoGenerateZone');
       
@@ -3339,6 +3354,8 @@ function deleteSelectedElement() {
               }
 
               let batchInserts = [];
+              let currentMaxTicket = getNextTicketNumber(eventId); // Get starting sequence
+
               for (let i = 0; i < jsonRows.length; i++) {
                   let row = jsonRows[i];
                   let name = row['Guest Name'] || row['guest_name'] || row['Name'];
@@ -3347,13 +3364,16 @@ function deleteSelectedElement() {
                       document.getElementById('excelFileInput').value = '';
                       return;
                   }
+                  
+                  currentMaxTicket++; // Climb by 1 for each row
+
                   batchInserts.push({
                       event_id: eventId, guest_name: String(name).trim(),
                       ticket_tier: String(row['Ticket Tier'] || 'General').trim(),
                       allowed_capacity: parseInt(row['Capacity']) || 1,
                       email: row['Email'] ? String(row['Email']).trim() : null,
                       phone: row['Phone'] ? String(row['Phone']).trim() : null,
-                      ticket_number: Math.floor(1000 + Math.random() * 9000),
+                      ticket_number: currentMaxTicket,
                       invitation_status: 'Pending', sent_via: 'System'
                   });
               }
@@ -3397,16 +3417,18 @@ function deleteSelectedElement() {
 
       // 2. Generate
       let batchInserts = [];
-      let nextSerial = guestsForThisEvent.length + 1;
+      let currentMaxTicket = getNextTicketNumber(eventId); // Get starting sequence
 
       for (let i = 0; i < countInput; i++) {
+          currentMaxTicket++; // Climb by 1
+
           batchInserts.push({
               event_id: eventId, 
-              guest_name: `${eventName} - ${String(nextSerial + i).padStart(3, '0')}`, 
+              guest_name: `${eventName} - ${String(currentMaxTicket).padStart(3, '0')}`, 
               ticket_tier: tier, 
               allowed_capacity: 1,
               email: null, phone: null, 
-              ticket_number: Math.floor(1000 + Math.random() * 9000),
+              ticket_number: currentMaxTicket,
               invitation_status: 'Active', sent_via: 'System'
           });
       }
