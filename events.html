@@ -2508,17 +2508,17 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
   });
  
   // ==========================================
-  // --- TEMPLATES DATABASE LOGIC & EDITOR CONTROLS ---
-  // ==========================================
+      // --- TEMPLATES DATABASE LOGIC & EDITOR CONTROLS ---
+      // ==========================================
 
-  et windowSavedTemplates = []; 
-  let currentlySelectedElement = null; 
-  let currentEditingTemplateId = null;
-  let isEditingGlobal = false; // Tracks if the loaded template belongs to the Admin
-  let currentActiveBgString = "url('./templates/gatepass01.jpg')"; // Tracks the active background
+      let windowSavedTemplates = []; 
+      let currentlySelectedElement = null; 
+      let currentEditingTemplateId = null;
+      let isEditingGlobal = false; // Tracks if the loaded template belongs to the Admin
+      let currentActiveBgString = "url('./templates/gatepass01.jpg')"; // Tracks the active background
 
-  // --- DRAG vs TYPE UX ---
-  let isDragging = false;
+      // --- DRAG vs TYPE UX ---
+      let isDragging = false;
   let dragTarget = null;
   let offsetX = 0;
   let offsetY = 0;
