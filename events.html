@@ -6,6 +6,7 @@
 <title>QRGate · Event Manager Portal</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- Tailwind is included just for the QR modal positioning utility -->
 <script src="https://cdn.tailwindcss.com"></script>
@@ -265,7 +266,6 @@
         <div style="display: flex; flex-direction: column; gap: 2px; padding-left: 36px; margin-top: 4px;">
           <button class="nav-item w-full" onclick="switchView('createEventView', this)" style="height: 36px; font-size: 13px;">Create Event</button>
           <button class="nav-item w-full" onclick="switchView('addGuestView', this)" style="height: 36px; font-size: 13px;">Add Guest</button>
-          <button class="nav-item w-full" onclick="switchView('importDataView', this)" style="height: 36px; font-size: 13px;">Import Data</button>
         </div>
       </div>
 
@@ -787,16 +787,17 @@
       </div>
 
       <!-- ============================================== -->
-      <!-- TAB: ADD GUEST VIEW -->
+      <!-- <!-- ============================================== -->
+      <!-- TAB: ADD GUEST VIEW (Unified) -->
       <!-- ============================================== -->
       <div id="addGuestView" class="view-section">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-shrink: 0;">
-          <div><h1 class="page-title">Add Guest</h1><p class="page-subtitle" style="margin:0;">Add individual guest details manually and assign to an event.</p></div>
+          <div><h1 class="page-title">Add Guest</h1><p class="page-subtitle" style="margin:0;">Add individual guest details manually, or use bulk tools.</p></div>
           <div style="display: flex; gap: 12px;">
-            <button type="button" onclick="cancelEventForm()" style="background: transparent; border: 1px solid var(--color-border); padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--color-text);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back to Create & Manage</button>
-            <button onclick="document.querySelector('button[onclick*=\'importDataView\']').click()" style="background: white; border: 1px solid var(--color-border); padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--color-primary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import Guests</button>
+            <button type="button" onclick="cancelGuestForm()" style="background: transparent; border: 1px solid var(--color-border); padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--color-text);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back to Create & Manage</button>
           </div>
         </div>
+        
         <div class="layout-grid">
           <div class="left-col no-scrollbar" style="overflow-y: auto;">
             
@@ -809,48 +810,86 @@
               </div>
               <div style="display: flex; gap: 32px; align-items: center; padding-right: 24px;">
                  <div style="text-align: right;"><div style="font-size: 11px; font-weight: 700; color: var(--color-text-secondary); text-transform: uppercase;">Event Capacity</div><div style="font-size: 20px; font-weight: 700; color: var(--color-primary); margin: 4px 0;"><span id="agCurrentGuests">0</span> <span style="font-size: 14px; color: var(--color-text); font-weight: 500;">/ <span id="agMaxGuests">0</span></span></div><div style="font-size: 11px; color: var(--color-text-secondary);">Guests Added</div></div>
-                 <div style="width: 52px; height: 52px; border-radius: 50%; border: 4px solid var(--color-primary-soft); border-top-color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--color-primary);">0%</div>
               </div>
             </div>
 
             <div class="card panel" style="padding: 24px; margin-bottom: 24px;">
-              <h2 class="section-title" style="margin-bottom: 20px;">Guest Information</h2>
-              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Full Name <span style="color: var(--color-danger);">*</span></label><div style="position:relative;"><svg style="position:absolute; left:12px; top:12px; color:var(--color-text-secondary);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><input type="text" id="agGuestName" placeholder="Enter full name" class="input-field" style="margin: 0; padding: 10px 14px 10px 34px;"></div></div>
-                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Email Address</label><div style="position:relative;"><svg style="position:absolute; left:12px; top:12px; color:var(--color-text-secondary);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><input type="email" placeholder="Enter email address" class="input-field" style="margin: 0; padding: 10px 14px 10px 34px;"></div></div>
-                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Phone / WhatsApp <span style="color: var(--color-danger);">*</span></label><div style="position:relative;"><svg style="position:absolute; left:12px; top:12px; color:var(--color-text-secondary);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><input type="text" placeholder="Enter phone number" class="input-field" style="margin: 0; padding: 10px 14px 10px 34px;"></div></div>
-              </div>
-              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Company / Organization</label><input type="text" placeholder="Enter company name" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
-                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Designation</label><div style="position:relative;"><svg style="position:absolute; left:12px; top:12px; color:var(--color-text-secondary);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><input type="text" placeholder="Enter designation" class="input-field" style="margin: 0; padding: 10px 14px 10px 34px;"></div></div>
-                <!-- FIX 7: Nationality Input with Datalist -->
-                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Nationality</label>
-                  <input list="nationalityList" placeholder="Type or select nationality..." class="input-field" style="margin: 0; padding: 10px 14px;">
-                  <datalist id="nationalityList">
-                    <option value="Saudi Arabia"></option><option value="United Arab Emirates"></option><option value="United States"></option>
-                    <option value="United Kingdom"></option><option value="India"></option><option value="Pakistan"></option>
-                    <option value="Philippines"></option><option value="Egypt"></option>
-                  </datalist>
+              <!-- TOP HEADER WITH BUTTONS -->
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 class="section-title" style="margin: 0;">Guest Information</h2>
+                <div style="display: flex; gap: 8px;">
+                  <button onclick="toggleGuestInputMode('bulk')" class="btn-filter-nav" style="font-size: 11px; padding: 6px 12px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Bulk Upload (.xlsx)</button>
+                  <button onclick="toggleGuestInputMode('auto')" class="btn-filter-nav" style="font-size: 11px; padding: 6px 12px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Auto-Generate</button>
                 </div>
               </div>
-              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                <!-- FIX 8: ID Types Dropdown -->
-                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">ID Type</label>
-                  <select class="input-field" style="margin: 0; padding: 10px 14px;">
-                    <option value="National ID">National ID</option>
-                    <option value="Iqama">Iqama</option>
-                    <option value="Passport">Passport</option>
-                  </select>
+
+              <!-- HIDDEN: BULK UPLOAD ZONE -->
+              <div id="bulkUploadZone" style="display: none; border: 1px dashed var(--color-primary); padding: 20px; border-radius: var(--radius-md); background: var(--color-primary-soft); margin-bottom: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                  <div>
+                    <h3 style="font-size: 13px; font-weight: 700; color: var(--color-primary); margin: 0 0 4px;">Upload Excel Guest List</h3>
+                    <p style="font-size: 11px; color: var(--color-text-secondary); margin: 0;">Requires columns: <b>Guest Name</b>, <b>Ticket Tier</b>, <b>Capacity</b>.</p>
+                  </div>
+                  <button onclick="downloadGuestTemplate()" style="background: white; border: 1px solid var(--color-primary); color: var(--color-primary); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Download Template</button>
                 </div>
-                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">ID Number</label><div style="position:relative;"><svg style="position:absolute; left:12px; top:12px; color:var(--color-text-secondary);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><input type="text" placeholder="Enter ID number" class="input-field" style="margin: 0; padding: 10px 14px 10px 34px;"></div></div>
-                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Ticket / Type</label><select id="agTierInput" class="input-field" style="margin: 0; padding: 10px 14px;"><option value="General">General</option><option value="VIP">VIP</option><option value="Speaker">Speaker</option></select></div>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                  <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" style="display: none;" onchange="handleExcelFileSelect(event)">
+                  <button onclick="document.getElementById('excelFileInput').click()" class="btn-primary" style="padding: 8px 16px; font-size: 12px;">Choose Excel File</button>
+                  <span id="excelFileNameDisplay" style="font-size: 11px; color: var(--color-text-secondary); font-weight: 600;">No file chosen</span>
+                </div>
               </div>
-              <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
-                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">No. of Pairs / Capacity</label><input type="number" id="agCapacityInput" value="1" min="1" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
-                <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Notes (Optional)</label><textarea placeholder="Add any additional notes about this guest" class="input-field" style="margin: 0; padding: 10px 14px; height: 42px; resize: none;"></textarea></div>
+
+              <!-- HIDDEN: AUTO-GENERATE ZONE -->
+              <div id="autoGenerateZone" style="display: none; border: 1px dashed #B4790C; padding: 20px; border-radius: var(--radius-md); background: #FEF6E2; margin-bottom: 24px;">
+                <h3 style="font-size: 13px; font-weight: 700; color: #B4790C; margin: 0 0 4px;">Auto-Generate Anonymous Passes</h3>
+                <p style="font-size: 11px; color: var(--color-text-secondary); margin: 0 0 16px;">Generates batch passes named sequentially (e.g. VIP Pass - 001). Leave personal fields blank.</p>
+                <div style="display: flex; gap: 16px; align-items: flex-end;">
+                  <div style="flex: 1;">
+                    <label style="font-size: 11px; font-weight: 700; margin-bottom: 4px; display: block;">Number of Passes *</label>
+                    <input type="number" id="autoGenCount" placeholder="e.g. 50" min="1" class="input-field" style="margin: 0; padding: 8px 12px;">
+                  </div>
+                  <div style="flex: 1;">
+                    <label style="font-size: 11px; font-weight: 700; margin-bottom: 4px; display: block;">Ticket Tier</label>
+                    <select id="autoGenTier" class="input-field" style="margin: 0; padding: 8px 12px;">
+                      <option value="General">General</option><option value="VIP">VIP</option><option value="Speaker">Speaker</option>
+                    </select>
+                  </div>
+                  <button onclick="executeAutoGenerate()" class="btn-primary" style="background: #B4790C; padding: 8px 16px; font-size: 12px;">Generate Passes</button>
+                </div>
+              </div>
+
+              <!-- DEFAULT: SINGLE GUEST FORM -->
+              <div id="singleGuestZone">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Full Name <span style="color: var(--color-danger);">*</span></label><input type="text" id="agGuestName" placeholder="Enter full name" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Email Address</label><input type="email" placeholder="Enter email address" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Phone / WhatsApp <span style="color: var(--color-danger);">*</span></label><input type="text" placeholder="Enter phone number" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Company / Organization</label><input type="text" placeholder="Enter company name" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Designation</label><input type="text" placeholder="Enter designation" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Nationality</label>
+                    <input list="nationalityList" placeholder="Type or select nationality..." class="input-field" style="margin: 0; padding: 10px 14px;">
+                    <datalist id="nationalityList">
+                      <option value="Saudi Arabia"></option><option value="United Arab Emirates"></option><option value="United States"></option>
+                    </datalist>
+                  </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">ID Type</label>
+                    <select class="input-field" style="margin: 0; padding: 10px 14px;"><option value="National ID">National ID</option><option value="Iqama">Iqama</option><option value="Passport">Passport</option></select>
+                  </div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">ID Number</label><input type="text" placeholder="Enter ID number" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Ticket / Type</label><select id="agTierInput" class="input-field" style="margin: 0; padding: 10px 14px;"><option value="General">General</option><option value="VIP">VIP</option><option value="Speaker">Speaker</option></select></div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">No. of Pairs / Capacity</label><input type="number" id="agCapacityInput" value="1" min="1" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Notes (Optional)</label><textarea placeholder="Add any additional notes about this guest" class="input-field" style="margin: 0; padding: 10px 14px; height: 42px; resize: none;"></textarea></div>
+                </div>
               </div>
             </div>
 
+            <!-- INVITATION OPTIONS (Applies to Single Guest) -->
             <div class="card panel" style="padding: 24px;">
               <h2 class="section-title" style="margin-bottom: 20px;">Guest Invitation (Optional)</h2>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
@@ -867,85 +906,24 @@
               </div>
               <div style="display: flex; gap: 16px; margin-top: 32px;">
                 <button type="button" onclick="cancelGuestForm()" style="background: white; border: 1px solid var(--color-border); color: var(--color-text); font-weight: 600; font-size: 13px; padding: 10px 24px; border-radius: 8px; cursor: pointer;">Cancel</button>
-                <button id="submitAddGuestBtn" class="btn-primary" style="padding: 10px 24px; border-radius: 8px; display: flex; align-items: center; gap: 8px; background: var(--color-primary);">Save Guest <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                <button id="submitAddGuestBtn" class="btn-primary" style="padding: 10px 24px; border-radius: 8px; display: flex; align-items: center; gap: 8px; background: var(--color-primary);">Save Single Guest <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
               </div>
             </div>
           </div>
 
           <div class="right-col no-scrollbar">
+            <!-- Event Capacity Status Panel (Unchanged) -->
             <div class="card panel" style="padding: 24px;">
               <h3 style="font-size: 14px; font-weight: 700; margin: 0 0 16px; display: flex; align-items: center; gap: 8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Guests in this Event</h3>
-              <p style="font-size: 11px; color: var(--color-text-secondary); margin: 0 0 20px;">Overview of guests added to this event</p>
               <div style="display: flex; flex-direction: column; gap: 16px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; font-size: 12px;"><span style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Total Capacity</span><span style="font-weight: 700;" id="agStatTotal">0</span></div>
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; font-size: 12px;"><span style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg> Guests Added</span><span style="font-weight: 700; color: var(--color-success);" id="agStatAdded">0</span></div>
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; font-size: 12px;"><span style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Remaining Slots</span><span style="font-weight: 700; color: var(--color-danger);" id="agStatRemain">0</span></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; font-size: 12px;"><span style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary);">Total Capacity</span><span style="font-weight: 700;" id="agStatTotal">0</span></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; font-size: 12px;"><span style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary);">Guests Added</span><span style="font-weight: 700; color: var(--color-success);" id="agStatAdded">0</span></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; font-size: 12px;"><span style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary);">Remaining Slots</span><span style="font-weight: 700; color: var(--color-danger);" id="agStatRemain">0</span></div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- ============================================== -->
-      <!-- TAB: IMPORT DATA VIEW -->
-      <!-- ============================================== -->
-      <div id="importDataView" class="view-section">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-shrink: 0;">
-          <div><h1 class="page-title">Import Guests</h1><p class="page-subtitle" style="margin:0;">Import guest details in bulk using Excel (.xlsx) or CSV files.</p></div>
-          <div style="display: flex; gap: 12px;">
-            <button onclick="document.querySelector('button[onclick*=\'addGuestView\']').click()" style="background: transparent; border: 1px solid var(--color-border); padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--color-text);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back to Add Guest</button>
-            <button style="background: white; border: 1px solid var(--color-primary); padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--color-primary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Download Template</button>
-          </div>
-        </div>
-
-        <div class="layout-grid">
-          <div class="left-col no-scrollbar" style="overflow-y: auto;">
-            
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding: 0 20px;">
-              <div style="display: flex; align-items: center; gap: 8px; color: var(--color-primary); font-size: 12px; font-weight: 700;"><div style="width: 24px; height: 24px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center;">1</div> Upload File</div>
-              <div style="height: 1px; flex: 1; background: var(--color-border); margin: 0 16px;"></div>
-              <div style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary); font-size: 12px; font-weight: 600;"><div style="width: 24px; height: 24px; border-radius: 50%; background: var(--color-surface-soft); display: flex; align-items: center; justify-content: center;">2</div> Map Columns</div>
-              <div style="height: 1px; flex: 1; background: var(--color-border); margin: 0 16px;"></div>
-              <div style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary); font-size: 12px; font-weight: 600;"><div style="width: 24px; height: 24px; border-radius: 50%; background: var(--color-surface-soft); display: flex; align-items: center; justify-content: center;">3</div> Import</div>
-            </div>
-
-            <div class="card panel" style="padding: 32px;">
-              <h2 class="section-title" style="margin-bottom: 20px;">1. Upload File</h2>
-              <p style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 24px;">Choose a file from your device.</p>
-              
-              <div style="border: 2px dashed var(--color-primary); border-radius: var(--radius-md); background: var(--color-primary-soft); padding: 48px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: 0.2s;">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="1.5" style="margin-bottom: 16px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <h3 style="font-size: 16px; font-weight: 700; color: var(--color-primary); margin: 0 0 8px;">Drag & drop your file here</h3>
-                <p style="font-size: 12px; color: var(--color-text-secondary); margin: 0 0 16px;">or</p>
-                <button class="btn-primary" style="padding: 10px 24px; border-radius: 8px;">Choose File</button>
-                <p style="font-size: 11px; color: var(--color-text-muted); margin: 16px 0 0 0;">Supported formats: .xlsx, .csv  |  Maximum file size: 10MB</p>
-              </div>
-            </div>
-
-          </div>
-          
-          <div class="right-col no-scrollbar">
-            <div class="card panel" style="padding: 24px; margin-bottom: 24px;">
-              <h3 style="font-size: 14px; font-weight: 700; margin: 0 0 16px;">Import Guidelines</h3>
-              <div style="display: flex; flex-direction: column; gap: 12px;">
-                <div style="display: flex; gap: 12px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg><p style="font-size: 12px; color: var(--color-text); margin: 0;">Use Excel (.xlsx) or CSV format.</p></div>
-                <div style="display: flex; gap: 12px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg><p style="font-size: 12px; color: var(--color-text); margin: 0;">First row should contain column headers.</p></div>
-                <div style="display: flex; gap: 12px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg><p style="font-size: 12px; color: var(--color-text); margin: 0;">Avoid empty rows or columns.</p></div>
-              </div>
-              <a href="#" style="font-size: 12px; color: var(--color-primary); font-weight: 600; display: inline-block; margin-top: 16px;">View detailed guide &rarr;</a>
-            </div>
-
-            <div class="card panel" style="padding: 24px;">
-              <h3 style="font-size: 14px; font-weight: 700; margin: 0 0 16px;">Required Fields</h3>
-              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <span style="background: var(--color-primary-soft); color: var(--color-primary); padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600;">Full Name *</span>
-                <span style="background: var(--color-primary-soft); color: var(--color-primary); padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600;">Email or Phone *</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
 
 
 <!-- ============================================== -->
@@ -1220,7 +1198,7 @@
 <script>
   // --- DATABASE SETUP ---
   const SUPABASE_URL = 'https://wpqpqlwjprtwoblhvenw.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_89l1fu6nVSWxGVOH-g1dQw_i99aUXt9';
+  const SUPABASE_ANON_KEY = 'sb_publishable_89l1fu6nVSWxGVOH-g1dQw_i99aUXt9'; 
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   let currentTenantId = null;
 let allFetchedEvents = []; 
@@ -1270,10 +1248,7 @@ let currentGuestTierFilter = 'All';
        titleEl.innerText = 'Create New Event'; subEl.innerText = 'Dashboard > Create & Manage > Create New Event';
        searchBox.style.display = 'none';
     } else if (viewId === 'addGuestView') { 
-       titleEl.innerText = 'Add Guest'; subEl.innerText = 'Dashboard > Create & Manage > Add individual guest details.';
-       searchBox.style.display = 'none';
-    } else if (viewId === 'importDataView') { 
-       titleEl.innerText = 'Import Data'; subEl.innerText = 'Dashboard > Create & Manage > Import guests in bulk.';
+       titleEl.innerText = 'Add Guest'; subEl.innerText = 'Dashboard > Create & Manage > Add guests manually or in bulk.';
        searchBox.style.display = 'none';
     } else if (viewId === 'eventsView') {
        titleEl.innerText = 'Events'; subEl.innerText = 'Manage all your events';
@@ -2383,7 +2358,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
           });
       }
 
-      // 2. ADD GUEST
+      // 2. ADD GUEST (Unified Submission)
       const submitAddGuestBtn = document.getElementById('submitAddGuestBtn');
       if(submitAddGuestBtn) {
           submitAddGuestBtn.addEventListener('click', async () => {
@@ -2400,8 +2375,6 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
 
               if (!eventId || !name || !phone) return alert('Please select an event, and enter Guest Name and Phone Number.');
 
-              if (!eventId || !name || !phone) return alert('Please select an event, and enter Guest Name and Phone Number.');
-
               // Check which send method was toggled on the UI
               let selectedMethod = 'System';
               const waBtn = document.getElementById('btnWhatsappOption');
@@ -2415,22 +2388,18 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
               };
 
               if (currentEditGuestId) {
-                  // UPDATE EXISTING
                   await supabaseClient.from('guests').update(guestPayload).eq('id', currentEditGuestId);
                   alert('Guest updated successfully!');
-                  currentEditGuestId = null; // Reset
-                  
-                  // Reset Button UI
-                  document.getElementById('submitAddGuestBtn').innerHTML = 'Save Guest <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+                  currentEditGuestId = null;
+                  document.getElementById('submitAddGuestBtn').innerHTML = 'Save Single Guest <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
               } else {
-                  // CREATE NEW
                   guestPayload.status = 'Active';
                   guestPayload.invitation_status = 'Pending';
+                  guestPayload.ticket_number = Math.floor(1000 + Math.random() * 9000);
                   await supabaseClient.from('guests').insert([guestPayload]);
                   alert('Guest successfully saved and pass generated!');
               }
 
-              // Clear Inputs & Refresh
               document.getElementById('agGuestName').value = '';
               document.querySelector('#addGuestView input[placeholder="Enter phone number"]').value = '';
               fetchAllGuestsForKPIs();
@@ -3321,6 +3290,136 @@ function deleteSelectedElement() {
       } else {
           // Fallback to the Dashboard tab if the Events tab can't be found
           document.querySelectorAll('.nav-item')[0].click(); 
+      }
+  }
+// ==========================================
+  // --- BULK UPLOAD & AUTO-GENERATE LOGIC ---
+  // ==========================================
+
+  function toggleGuestInputMode(mode) {
+      const bulkZone = document.getElementById('bulkUploadZone');
+      const autoZone = document.getElementById('autoGenerateZone');
+      
+      if (mode === 'bulk') {
+          if (bulkZone.style.display === 'block') { bulkZone.style.display = 'none'; return; }
+          bulkZone.style.display = 'block';
+          autoZone.style.display = 'none';
+      } else if (mode === 'auto') {
+          if (autoZone.style.display === 'block') { autoZone.style.display = 'none'; return; }
+          autoZone.style.display = 'block';
+          bulkZone.style.display = 'none';
+      }
+  }
+
+  function downloadGuestTemplate() {
+      const ws_data = [ ["Guest Name", "Ticket Tier", "Capacity", "Email", "Phone"] ];
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(ws_data);
+      XLSX.utils.book_append_sheet(wb, ws, "Guests Template");
+      XLSX.writeFile(wb, "QRGate_Guest_Import.xlsx");
+  }
+
+  function handleExcelFileSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      document.getElementById('excelFileNameDisplay').innerText = file.name;
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+          try {
+              const data = new Uint8Array(e.target.result);
+              const workbook = XLSX.read(data, { type: 'array' });
+              const jsonRows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+
+              const eventId = document.getElementById('addGuestEventSelect').value;
+              if (!eventId) {
+                  alert('Please select a Target Event from the dropdown above before uploading.');
+                  document.getElementById('excelFileInput').value = '';
+                  return;
+              }
+
+              let batchInserts = [];
+              for (let i = 0; i < jsonRows.length; i++) {
+                  let row = jsonRows[i];
+                  let name = row['Guest Name'] || row['guest_name'] || row['Name'];
+                  if (!name) {
+                      alert(`Upload cancelled! Row ${i + 2} is missing a "Guest Name". Please fix your file and try again.`);
+                      document.getElementById('excelFileInput').value = '';
+                      return;
+                  }
+                  batchInserts.push({
+                      event_id: eventId, guest_name: String(name).trim(),
+                      ticket_tier: String(row['Ticket Tier'] || 'General').trim(),
+                      allowed_capacity: parseInt(row['Capacity']) || 1,
+                      email: row['Email'] ? String(row['Email']).trim() : null,
+                      phone: row['Phone'] ? String(row['Phone']).trim() : null,
+                      ticket_number: Math.floor(1000 + Math.random() * 9000),
+                      invitation_status: 'Pending', sent_via: 'System'
+                  });
+              }
+
+              const { error } = await supabaseClient.from('guests').insert(batchInserts);
+              if (error) {
+                  alert('Database bulk insert error: ' + error.message);
+              } else {
+                  alert(`Successfully imported ${batchInserts.length} guests!`);
+                  document.getElementById('excelFileInput').value = '';
+                  document.getElementById('excelFileNameDisplay').innerText = 'No file chosen';
+                  document.getElementById('bulkUploadZone').style.display = 'none';
+                  fetchAllGuestsForKPIs();
+                  switchView('guestListsView');
+              }
+          } catch (err) { alert('Error parsing Excel file. Ensure it is a valid .xlsx format.'); }
+      };
+      reader.readAsArrayBuffer(file);
+  }
+
+  async function executeAutoGenerate() {
+      const eventId = document.getElementById('addGuestEventSelect').value;
+      const countInput = parseInt(document.getElementById('autoGenCount').value);
+      const tier = document.getElementById('autoGenTier').value.trim() || 'General';
+
+      if (!eventId) { alert('Please select a target event.'); return; }
+      if (!countInput || countInput <= 0) { alert('Please enter a valid pass count.'); return; }
+
+      // 1. Check Capacity Limit
+      const targetEvent = allFetchedEvents.find(e => e.id === eventId);
+      const eventName = targetEvent ? targetEvent.event_name : 'Event';
+      const eventCapacity = targetEvent ? parseInt(targetEvent.total_capacity) || 100 : 100;
+      
+      const guestsForThisEvent = allFetchedGuests.filter(g => g.event_id === eventId);
+      const remainingSpots = eventCapacity - guestsForThisEvent.length;
+
+      if (countInput > remainingSpots) {
+          alert(`Cannot generate ${countInput} passes. Only ${remainingSpots} spots remaining for this event!`);
+          return;
+      }
+
+      // 2. Generate
+      let batchInserts = [];
+      let nextSerial = guestsForThisEvent.length + 1;
+
+      for (let i = 0; i < countInput; i++) {
+          batchInserts.push({
+              event_id: eventId, 
+              guest_name: `${eventName} - ${String(nextSerial + i).padStart(3, '0')}`, 
+              ticket_tier: tier, 
+              allowed_capacity: 1,
+              email: null, phone: null, 
+              ticket_number: Math.floor(1000 + Math.random() * 9000),
+              invitation_status: 'Active', sent_via: 'System'
+          });
+      }
+
+      const { error } = await supabaseClient.from('guests').insert(batchInserts);
+      if (error) {
+          alert('Error generating passes: ' + error.message);
+      } else {
+          alert(`Successfully auto-generated ${countInput} passes!`);
+          document.getElementById('autoGenCount').value = '';
+          document.getElementById('autoGenerateZone').style.display = 'none';
+          fetchAllGuestsForKPIs();
+          switchView('guestListsView');
       }
   }
 
