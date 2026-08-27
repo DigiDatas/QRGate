@@ -33,16 +33,20 @@
       <!-- Navigation Links -->
       <nav class="p-4 space-y-1">
         <a href="#" onclick="switchTab('tenants')" id="navTenants" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-pink-600 text-white font-semibold shadow-lg shadow-pink-600/20 transition">
-          <span>👥 Manage Tenants</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
+          <span>Manage Tenants</span>
         </a>
         <a href="#" onclick="switchTab('events')" id="navEvents" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 font-medium transition">
-          <span>套 Approve Events</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+          <span>Approve Events</span>
         </a>
         <a href="#" onclick="switchTab('templates')" id="navTemplates" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 font-medium transition">
-          <span>🎨 Global Templates</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
+          <span>Global Templates</span>
         </a>
         <a href="events.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 font-medium transition">
-          <span>笞呻ｸEvent Manager Portal</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          <span>Event Manager Portal</span>
         </a>
       </nav>
     </div>
@@ -156,58 +160,105 @@
       </div>
 
       <!-- GLOBAL TEMPLATES SECTION TAB (Hidden by default) -->
-      <div id="templatesSection" class="space-y-6 hidden">
-        <div class="flex justify-between items-center">
-          <h2 class="text-xl font-bold tracking-tight text-slate-100">Create Global System Templates</h2>
+      <div id="templatesSection" class="space-y-4 hidden h-full flex flex-col min-h-0 overflow-hidden pb-6">
+        <div class="flex justify-between items-center shrink-0">
+          <h2 class="text-xl font-bold tracking-tight text-slate-100">Global System Templates</h2>
+          <p class="text-sm text-slate-400">Design templates that will be available to all tenants.</p>
         </div>
         
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- 3-Column Layout exactly like events.html -->
+        <div class="flex-1 grid grid-cols-[260px_1fr_280px] gap-6 min-h-0 overflow-hidden">
           
-          <!-- LEFT SIDE: Tools & URL Input -->
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-6">
-            <div>
-               <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Template Name</label>
-               <input type="text" id="adminTplName" placeholder="e.g. Official VIP Pass" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:border-pink-500 text-slate-200 outline-none">
-            </div>
-            
-            <div class="border-t border-slate-800 pt-6">
-               <label class="block text-xs font-bold text-slate-400 uppercase mb-2">External Background URL</label>
-               <p class="text-xs text-slate-500 mb-3">Paste a direct link to an image (.jpg, .png)</p>
-               <input type="text" id="adminBgUrl" placeholder="https://example.com/image.jpg" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:border-pink-500 text-slate-200 outline-none mb-3">
-               <button onclick="applyAdminBgUrl()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-3 rounded-xl text-sm font-semibold transition border border-slate-700">Apply Background</button>
-            </div>
+          <!-- LEFT: Tools -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col overflow-y-auto no-scrollbar">
+               <h3 class="text-sm font-bold text-slate-200 mb-4">Tools</h3>
+               
+               <div class="flex flex-col gap-2 mb-6">
+                  <button onclick="addCanvasText()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center gap-3 transition border border-slate-700"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg> Add Text</button>
+                  
+                  <input type="file" id="adminBgUploadInput" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="uploadCanvasBackground(event, true)">
+                  <button onclick="document.getElementById('adminBgUploadInput').click()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center gap-3 transition border border-slate-700"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Upload BG Image</button>
+               </div>
+               
+               <div class="h-px bg-slate-800 my-2"></div>
+               
+               <div class="text-[10px] font-bold text-slate-500 mb-3 uppercase tracking-wider">Formatting</div>
+               <div class="flex flex-col gap-3 mb-6">
+                  <div class="flex gap-2 items-center">
+                      <input type="color" id="elementColor" value="#ffffff" class="w-8 h-8 rounded bg-slate-950 border border-slate-800 cursor-pointer">
+                      <input type="number" id="elementFontSize" placeholder="Size (px)" class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 outline-none">
+                  </div>
+                  <select id="elementFontFamily" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 outline-none">
+                      <option value="Inter, sans-serif">Default Font</option><option value="Arial, sans-serif">Arial</option><option value="'Courier New', monospace">Courier New</option><option value="'Times New Roman', serif">Times New Roman</option><option value="'Georgia', serif">Georgia</option>
+                  </select>
+                  <div class="flex gap-1 w-full">
+                    <button type="button" class="btn-align-toggle active flex-1 bg-slate-800 text-slate-300 py-1.5 rounded border border-slate-700 flex justify-center" data-align="left"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg></button>
+                    <button type="button" class="btn-align-toggle flex-1 bg-slate-800 text-slate-300 py-1.5 rounded border border-slate-700 flex justify-center" data-align="center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="10" x2="6" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="18" y1="14" x2="6" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg></button>
+                    <button type="button" class="btn-align-toggle flex-1 bg-slate-800 text-slate-300 py-1.5 rounded border border-slate-700 flex justify-center" data-align="right"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="7" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg></button>
+                  </div>
+               </div>
 
-            <div class="border-t border-slate-800 pt-6 mt-auto">
-               <button onclick="saveAdminGlobalTemplate()" class="w-full bg-pink-600 hover:bg-pink-500 text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-pink-600/20 transition">Save Global Template</button>
-            </div>
+               <div class="h-px bg-slate-800 my-2"></div>
+
+               <div class="text-[10px] font-bold text-slate-500 mb-3 uppercase tracking-wider">QR Properties</div>
+               <div class="flex flex-col gap-3 mb-6 text-xs text-slate-300">
+                  <div class="flex justify-between items-center"><span>QR Size:</span><input type="number" id="qrCustomSize" value="310" class="w-16 bg-slate-950 border border-slate-800 rounded px-2 py-1 outline-none text-right"></div>
+                  <div class="flex justify-between items-center"><span>QR Color:</span><input type="color" id="qrDarkColor" value="#000000" class="w-8 h-6 rounded bg-slate-950 border border-slate-800 cursor-pointer"></div>
+                  <div class="flex justify-between items-center"><label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="qrBgBoxToggle" checked> BG Box</label><input type="color" id="qrBgColor" value="#ffffff" class="w-8 h-6 rounded bg-slate-950 border border-slate-800 cursor-pointer"></div>
+                  <div class="flex justify-between items-center"><span>Box Radius:</span><input type="number" id="qrBoxRadius" value="20" class="w-16 bg-slate-950 border border-slate-800 rounded px-2 py-1 outline-none text-right"></div>
+                  <div class="flex justify-between items-center"><span>Box Padding:</span><input type="number" id="qrBoxPadding" value="10" class="w-16 bg-slate-950 border border-slate-800 rounded px-2 py-1 outline-none text-right"></div>
+               </div>
+               
+               <button onclick="deleteSelectedElement()" class="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 py-2.5 rounded-xl text-xs font-semibold transition border border-red-500/20 mt-auto">Delete Selected</button>
           </div>
 
-          <!-- RIGHT SIDE: Canvas -->
-          <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-center overflow-hidden min-h-[600px] relative">
-              <div id="editorCanvas" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.35); transform-origin: center; width: 1080px; height: 1440px; background-image: url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1080&auto=format&fit=crop'); background-size: 100% 100%; background-repeat: no-repeat; background-position: center; border-radius: 20px; background-color: #fff; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+          <!-- MIDDLE: Canvas (with scroll zoom enabled) -->
+          <div class="bg-[#e2e8f0] border border-slate-800 rounded-2xl relative overflow-hidden h-full">
+              <div id="editorCanvas" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.35); transform-origin: center; width: 1080px; height: 1440px; background-image: url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1080&auto=format&fit=crop'); background-size: 100% 100%; background-repeat: no-repeat; background-position: center; border-radius: 20px; background-color: #fff; box-shadow: 0 40px 100px rgba(0,0,0,0.2);">
                   
-                  <!-- Editable Texts -->
-                  <div class="canvas-element resizable-text" contenteditable="false" style="position: absolute; top: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 70px; font-weight: 800; color: #fff; outline: none; cursor: move; width: 800px; min-height: 80px;">
-                    Event Title Here
-                  </div>
+                  <div class="canvas-element resizable-text" contenteditable="false" style="position: absolute; top: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 70px; font-weight: 800; color: #fff; outline: none; cursor: move; width: 800px; min-height: 80px;">Event Title Here<div class="resize-handle right"></div></div>
+                  <div class="canvas-element resizable-text" contenteditable="false" style="position: absolute; top: 270px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 45px; color: #fff; outline: none; cursor: move; width: 700px; min-height: 60px;">Guest Pass Notice<div class="resize-handle right"></div></div>
 
-                  <div class="canvas-element resizable-text" contenteditable="false" style="position: absolute; top: 270px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 45px; color: #fff; outline: none; cursor: move; width: 700px; min-height: 60px;">
-                    Guest Pass Notice
-                  </div>
-
-                  <!-- Unified QR Box -->
                   <div id="canvasQRSpot" class="canvas-element qr-group-box" data-qr-size="310" data-qr-dark="#000000" data-qr-bg="#ffffff" data-qr-has-box="true" data-qr-radius="20" data-qr-padding="10" style="position: absolute; bottom: 180px; left: 50%; transform: translateX(-50%); width: 330px; height: 330px; background: #ffffff; border-radius: 20px; cursor: move; outline: none;">
-                      <div id="qrInnerCode" style="display: flex; align-items: center; justify-content: center; width: 310px; height: 310px;">
-                        <div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight: bold;">QR SPOT</div>
-                      </div>
+                      <div id="qrInnerCode" style="display: flex; align-items: center; justify-content: center; width: 310px; height: 310px;"><div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight: bold;">QR SPOT</div></div>
                       <div id="canvasQrLabel" class="canvas-element non-text-editable" data-no-edit="true" style="position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 32px; font-weight: bold; color: #fff; font-family: monospace; width: max-content; cursor: move;">QR-001</div>
                   </div>
               </div>
+          </div>
+
+          <!-- RIGHT: Settings & Saving -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col">
+               <h3 class="text-sm font-bold text-slate-200 mb-6">Template Settings</h3>
+               
+               <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Global Template Name</label>
+               <input type="text" id="adminTplName" placeholder="e.g. Official VIP Pass" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:border-pink-500 text-slate-200 outline-none mb-6">
+               
+               <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Or Paste URL</label>
+               <input type="text" id="adminBgUrl" placeholder="https://..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:border-pink-500 text-slate-200 outline-none mb-2">
+               <button onclick="applyAdminBgUrl()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-2 rounded-xl text-xs font-semibold transition border border-slate-700 mb-6">Apply URL Image</button>
+
+               <div class="mt-auto flex flex-col gap-3">
+                  <div class="flex gap-3">
+                     <button onclick="previewTemplate()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 py-3 rounded-xl text-xs font-semibold transition border border-slate-700">Preview</button>
+                     <button onclick="resetTemplate()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 py-3 rounded-xl text-xs font-semibold transition border border-slate-700">Reset</button>
+                  </div>
+                  <button onclick="saveAdminGlobalTemplate()" class="w-full bg-pink-600 hover:bg-pink-500 text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-pink-600/20 transition">Save to Global Gallery</button>
+               </div>
           </div>
         </div>
       </div>
 
     </main>
+  </div>
+  
+  <!-- PREVIEW MODAL -->
+  <div id="previewModal" onclick="if(event.target === this) this.classList.add('hidden')" class="hidden fixed inset-0 flex items-center justify-center p-4" style="background: rgba(15,23,42,0.95); z-index: 10000; flex-direction: column;">
+    <div style="display: flex; justify-content: flex-end; width: 100%; max-width: 800px; margin-bottom: 16px;">
+      <button onclick="document.getElementById('previewModal').classList.add('hidden')" class="bg-white text-black px-4 py-2 rounded-xl text-sm font-bold">Close Preview</button>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
+        <div id="previewContainer" style="width: 1080px; height: 1440px; transform: scale(0.55); transform-origin: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-radius: 20px; overflow: hidden; flex-shrink: 0; background: white;"></div>
+    </div>
   </div>
 
   <script>
@@ -386,29 +437,125 @@
     // --- GLOBAL TEMPLATE BUILDER LOGIC ---
     // ==========================================
     let currentActiveBgString = "url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1080&auto=format&fit=crop')";
+    let currentlySelectedElement = null;
     let isDragging = false;
     let dragTarget = null;
     let offsetX = 0;
     let offsetY = 0;
 
+    // --- UPLOAD TO SUPABASE BUCKET ---
+    async function uploadCanvasBackground(event, isGlobal = true) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const canvas = document.getElementById('editorCanvas');
+      const originalBg = canvas.style.backgroundImage;
+      canvas.innerHTML += `<div id="bgUploadingOverlay" style="position:absolute; inset:0; background:rgba(15,23,42,0.8); display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:bold; color:#ec4899; z-index:100;">Uploading...</div>`;
+
+      try {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+          const folderPath = `admin_templates/${fileName}`;
+
+          const { data, error } = await supabaseClient.storage.from('gate-pass-assets').upload(folderPath, file, { upsert: false });
+          if (error) throw error;
+          const { data: { publicUrl } } = supabaseClient.storage.from('gate-pass-assets').getPublicUrl(folderPath);
+
+          currentActiveBgString = `url('${publicUrl}')`;
+          canvas.style.backgroundImage = currentActiveBgString;
+          canvas.style.backgroundSize = '100% 100%';
+      } catch (err) {
+          alert("Error uploading image: " + err.message);
+          canvas.style.backgroundImage = originalBg;
+      } finally {
+          const overlay = document.getElementById('bgUploadingOverlay');
+          if (overlay) overlay.remove();
+          event.target.value = ''; 
+      }
+    }
+
     function applyAdminBgUrl() {
         const urlInput = document.getElementById('adminBgUrl').value.trim();
-        if (!urlInput) return alert("Please paste an image URL first.");
-        
+        if (!urlInput) return alert("Please paste an image URL.");
         const canvas = document.getElementById('editorCanvas');
         currentActiveBgString = `url('${urlInput}')`;
         canvas.style.backgroundImage = currentActiveBgString;
-        alert("Background updated!");
+        canvas.style.backgroundSize = '100% 100%';
     }
 
+    // --- CANVAS ZOOM ---
+    let canvasZoom = 0.35; 
+    document.addEventListener('DOMContentLoaded', () => {
+        const canvasWrapper = document.getElementById('editorCanvas').parentElement;
+        if(canvasWrapper) {
+            canvasWrapper.addEventListener('wheel', (e) => {
+                if(e.ctrlKey || e.metaKey || e.shiftKey) return; 
+                e.preventDefault();
+                if(e.deltaY < 0) canvasZoom = Math.min(canvasZoom + 0.05, 0.9);
+                else canvasZoom = Math.max(canvasZoom - 0.05, 0.15);
+                document.getElementById('editorCanvas').style.transform = `translate(-50%, -50%) scale(${canvasZoom})`;
+            });
+        }
+    });
+
+    // --- TOOLS & PREVIEW ---
+    function addCanvasText() {
+        const canvas = document.getElementById('editorCanvas');
+        const newText = document.createElement('div');
+        newText.contentEditable = "false";
+        newText.className = "canvas-element resizable-text";
+        newText.innerHTML = `Double Click to Edit<div class="resize-handle right"></div>`;
+        newText.style.position = "absolute";
+        newText.style.top = "500px"; newText.style.left = "300px";
+        newText.style.fontSize = "40px"; newText.style.fontWeight = "600";
+        newText.style.color = "#ffffff"; newText.style.textAlign = "center";
+        newText.style.fontFamily = "Inter, sans-serif";
+        newText.style.outline = "none"; newText.style.width = "450px"; newText.style.minHeight = "50px";
+        makeDraggable(newText);
+        canvas.appendChild(newText);
+    }
+
+    function deleteSelectedElement() {
+        if (!currentlySelectedElement) return alert("Click an element first.");
+        if (currentlySelectedElement.id === 'canvasQRSpot' || currentlySelectedElement.id === 'canvasQrLabel') return alert("QR Spot is permanent.");
+        currentlySelectedElement.remove();
+        currentlySelectedElement = null;
+    }
+
+    function previewTemplate() {
+        const previewContainer = document.getElementById('previewContainer');
+        const canvas = document.getElementById('editorCanvas');
+        document.querySelectorAll('.canvas-element').forEach(node => node.style.outline = "none");
+        previewContainer.innerHTML = '';
+        const clone = canvas.cloneNode(true);
+        clone.style.transform = "none"; clone.style.top = "0"; clone.style.left = "0";
+        clone.style.position = "relative"; clone.style.width = "100%"; clone.style.height = "100%";
+        previewContainer.appendChild(clone);
+        document.getElementById('previewModal').classList.remove('hidden');
+    }
+
+    function resetTemplate() {
+        document.getElementById('adminTplName').value = '';
+        document.getElementById('adminBgUrl').value = '';
+        currentActiveBgString = "url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1080&auto=format&fit=crop')";
+        const canvas = document.getElementById('editorCanvas');
+        canvas.style.backgroundImage = currentActiveBgString;
+        canvas.innerHTML = `
+          <div class="canvas-element resizable-text" contenteditable="false" style="position: absolute; top: 150px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 70px; font-weight: 800; color: #fff; outline: none; cursor: move; width: 800px; min-height: 80px;">Event Title Here<div class="resize-handle right"></div></div>
+          <div class="canvas-element resizable-text" contenteditable="false" style="position: absolute; top: 270px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 45px; color: #fff; outline: none; cursor: move; width: 700px; min-height: 60px;">Guest Pass Notice<div class="resize-handle right"></div></div>
+          <div id="canvasQRSpot" class="canvas-element qr-group-box" data-qr-size="310" data-qr-dark="#000000" data-qr-bg="#ffffff" data-qr-has-box="true" data-qr-radius="20" data-qr-padding="10" style="position: absolute; bottom: 180px; left: 50%; transform: translateX(-50%); width: 330px; height: 330px; background: #ffffff; border-radius: 20px; cursor: move; outline: none;">
+              <div id="qrInnerCode" style="display: flex; align-items: center; justify-content: center; width: 310px; height: 310px;"><div style="width: 100%; height: 100%; background: #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 30px; font-weight: bold;">QR SPOT</div></div>
+              <div id="canvasQrLabel" class="canvas-element non-text-editable" data-no-edit="true" style="position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 32px; font-weight: bold; color: #fff; font-family: monospace; width: max-content; cursor: move;">QR-001</div>
+          </div>
+        `;
+        canvas.querySelectorAll('.canvas-element').forEach(el => makeDraggable(el));
+    }
+
+    // --- SAVE LOGIC ---
     async function saveAdminGlobalTemplate() {
         const tplName = document.getElementById('adminTplName').value.trim();
         if (!tplName) return alert("Please enter a Template Name.");
-
-        // Clear drag outlines before saving
         document.querySelectorAll('.canvas-element').forEach(node => node.style.outline = "none");
         
-        // Clone canvas to clean it safely
         const canvasClone = document.getElementById('editorCanvas').cloneNode(true);
         const cQrSpot = canvasClone.querySelector('#canvasQRSpot');
         if (cQrSpot) {
@@ -416,112 +563,116 @@
             if (inner) inner.innerHTML = `<div style="width:100%; height:100%; background:#cbd5e1; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:30px; font-weight:bold;">QR SPOT</div>`;
         }
 
-        const cleanCanvasHtml = canvasClone.outerHTML;
-
-        // The critical payload: is_global = true, tenant_id = null
         const payload = {
-            name: tplName,
-            event_type: 'Global System',
-            html_layout: cleanCanvasHtml,
-            thumbnail_url: currentActiveBgString,
-            is_global: true,
-            tenant_id: null
+            name: tplName, event_type: 'Global System', html_layout: canvasClone.outerHTML,
+            thumbnail_url: currentActiveBgString, is_global: true, tenant_id: null
         };
 
         const { error } = await supabaseClient.from('templates').insert([payload]);
-        
-        if (error) {
-            alert("Error saving: " + error.message);
-        } else {
-            alert("Success! Global Template saved and is now available to all tenants.");
-            document.getElementById('adminTplName').value = '';
-            document.getElementById('adminBgUrl').value = '';
+        if (error) alert("Error saving: " + error.message);
+        else {
+            alert("Success! Global Template saved for all tenants.");
+            resetTemplate();
         }
     }
 
-    // Drag and Drop Initializer
+    // --- DRAG & DROP & FORMATTING ---
     function makeDraggable(el) {
         if(!el.classList.contains('canvas-element')) el.classList.add('canvas-element');
-        
-        // Attach resize handle for text boxes
         if (!el.classList.contains('qr-group-box') && !el.classList.contains('non-text-editable') && !el.querySelector('.resize-handle')) {
-            const handle = document.createElement('div');
-            handle.className = 'resize-handle right';
-            el.appendChild(handle);
+            const handle = document.createElement('div'); handle.className = 'resize-handle right'; el.appendChild(handle);
         }
         
         el.addEventListener('mousedown', (e) => {
             if (e.target.classList.contains('resize-handle')) {
                 e.preventDefault(); e.stopPropagation();
-                let initialX = e.clientX;
-                let initialWidth = el.offsetWidth;
+                let initialX = e.clientX; let initialWidth = el.offsetWidth;
                 const scale = document.getElementById('editorCanvas').getBoundingClientRect().width / 1080;
-
-                function onMouseMove(moveEvent) {
-                    const dx = (moveEvent.clientX - initialX) / scale;
-                    el.style.width = Math.max(150, initialWidth + dx) + 'px';
-                }
-                function onMouseUp() {
-                    document.removeEventListener('mousemove', onMouseMove);
-                    document.removeEventListener('mouseup', onMouseUp);
-                }
-                document.addEventListener('mousemove', onMouseMove);
-                document.addEventListener('mouseup', onMouseUp);
+                function onMouseMove(moveEvent) { el.style.width = Math.max(150, initialWidth + (moveEvent.clientX - initialX) / scale) + 'px'; }
+                function onMouseUp() { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); }
+                document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp);
                 return;
             }
 
             if (el.contentEditable === "true") return; 
             e.preventDefault(); e.stopPropagation();
             
-            document.querySelectorAll('.canvas-element').forEach(node => {
-                node.style.outline = "none";
-                node.classList.remove('active-element');
-            });
-            el.style.outline = "3px dashed #ec4899";
-            el.classList.add('active-element');
+            currentlySelectedElement = el;
+            document.querySelectorAll('.canvas-element').forEach(node => { node.style.outline = "none"; node.classList.remove('active-element'); });
+            el.style.outline = "3px dashed #ec4899"; el.classList.add('active-element');
             
-            isDragging = true;
-            dragTarget = el;
+            // Sync Tools Panel
+            const style = window.getComputedStyle(el);
+            if (document.getElementById('elementFontSize')) document.getElementById('elementFontSize').value = parseInt(style.fontSize) || 32;
+            if (document.getElementById('elementColor')) {
+                const rgb = style.color;
+                if (rgb && rgb.includes('rgb')) {
+                    const parts = rgb.match(/\d+/g);
+                    if (parts && parts.length >= 3) document.getElementById('elementColor').value = "#" + parts.slice(0,3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
+                }
+            }
             
+            isDragging = true; dragTarget = el;
             const referenceRect = el.parentElement.getBoundingClientRect();
             const scale = referenceRect.width / (el.parentElement.id === 'editorCanvas' ? 1080 : el.parentElement.offsetWidth);
-            
-            offsetX = (e.clientX - el.getBoundingClientRect().left) / scale;
-            offsetY = (e.clientY - el.getBoundingClientRect().top) / scale;
+            offsetX = (e.clientX - el.getBoundingClientRect().left) / scale; offsetY = (e.clientY - el.getBoundingClientRect().top) / scale;
         });
 
         el.addEventListener('dblclick', () => {
             if (el.dataset.noEdit === "true" || el.classList.contains('qr-group-box')) return;
-            el.contentEditable = "true";
-            el.focus();
-            el.style.cursor = 'text';
-            el.style.outline = "3px solid #ec4899";
+            el.contentEditable = "true"; el.focus(); el.style.cursor = 'text'; el.style.outline = "3px solid #ec4899";
         });
-        
-        el.addEventListener('blur', () => {
-            el.contentEditable = "false";
-            el.style.cursor = 'move';
-        });
+        el.addEventListener('blur', () => { el.contentEditable = "false"; el.style.cursor = 'move'; });
     }
 
     document.addEventListener('mousemove', (e) => {
         if (!isDragging || !dragTarget) return;
-        const parentContainer = dragTarget.parentElement;
-        const parentRect = parentContainer.getBoundingClientRect();
-        const scale = parentRect.width / (parentContainer.id === 'editorCanvas' ? 1080 : parentContainer.offsetWidth);
-        
-        let x = (e.clientX - parentRect.left) / scale - offsetX;
-        let y = (e.clientY - parentRect.top) / scale - offsetY;
-
-        dragTarget.style.left = x + 'px';
-        dragTarget.style.top = y + 'px';
+        const parentRect = dragTarget.parentElement.getBoundingClientRect();
+        const scale = parentRect.width / (dragTarget.parentElement.id === 'editorCanvas' ? 1080 : dragTarget.parentElement.offsetWidth);
+        dragTarget.style.left = ((e.clientX - parentRect.left) / scale - offsetX) + 'px';
+        dragTarget.style.top = ((e.clientY - parentRect.top) / scale - offsetY) + 'px';
     });
-
     document.addEventListener('mouseup', () => { isDragging = false; dragTarget = null; });
     
-    // Initialize Dragging on Load
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('#editorCanvas .canvas-element').forEach(el => makeDraggable(el));
+        
+        // Sync Formatting Inputs
+        document.getElementById('elementColor').addEventListener('input', (e) => { if (currentlySelectedElement) currentlySelectedElement.style.color = e.target.value; });
+        document.getElementById('elementFontSize').addEventListener('input', (e) => { if (currentlySelectedElement && e.target.value) currentlySelectedElement.style.fontSize = e.target.value + 'px'; });
+        document.getElementById('elementFontFamily').addEventListener('change', (e) => { if (currentlySelectedElement) currentlySelectedElement.style.fontFamily = e.target.value; });
+        
+        document.querySelectorAll('.btn-align-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.btn-align-toggle').forEach(b => b.classList.remove('bg-pink-600', 'text-white'));
+                btn.classList.add('bg-pink-600', 'text-white');
+                if (currentlySelectedElement) currentlySelectedElement.style.textAlign = btn.dataset.align;
+            });
+        });
+
+        // Sync QR Properties
+        function updateQR() {
+            const qrSpot = document.getElementById('canvasQRSpot');
+            if (!qrSpot) return;
+            qrSpot.dataset.qrSize = document.getElementById('qrCustomSize').value;
+            qrSpot.dataset.qrDark = document.getElementById('qrDarkColor').value;
+            qrSpot.dataset.qrBg = document.getElementById('qrBgColor').value;
+            qrSpot.dataset.qrHasBox = document.getElementById('qrBgBoxToggle').checked ? "true" : "false";
+            qrSpot.dataset.qrRadius = document.getElementById('qrBoxRadius').value;
+            qrSpot.dataset.qrPadding = document.getElementById('qrBoxPadding').value;
+            
+            // Visual feedback loop inside editor
+            const hasBox = qrSpot.dataset.qrHasBox === "true";
+            const size = parseInt(qrSpot.dataset.qrSize);
+            const padding = parseInt(qrSpot.dataset.qrPadding);
+            const totalSize = hasBox ? size + (padding*2) : size;
+            qrSpot.style.width = totalSize + 'px';
+            qrSpot.style.height = totalSize + 'px';
+            qrSpot.style.background = hasBox ? qrSpot.dataset.qrBg : 'transparent';
+            qrSpot.style.borderRadius = hasBox ? qrSpot.dataset.qrRadius + 'px' : '0px';
+        }
+        ['qrCustomSize', 'qrDarkColor', 'qrBgColor', 'qrBoxRadius', 'qrBoxPadding'].forEach(id => document.getElementById(id).addEventListener('input', updateQR));
+        document.getElementById('qrBgBoxToggle').addEventListener('change', updateQR);
     });
 
     initAdmin();

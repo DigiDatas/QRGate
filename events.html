@@ -222,6 +222,8 @@
     animation: pulseOngoing 2s infinite;
   }
 
+
+
 </style>
 </head>
 <body>
@@ -983,7 +985,8 @@
                <h3 class="section-title" style="margin-bottom: 12px; font-size: 13px;">2. Tools</h3>
                <div style="display: flex; flex-direction: column; gap: 4px;">
                   <button class="nav-item tool-btn w-full" onclick="addCanvasText()" style="justify-content: flex-start; height: 34px; font-size:12px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg> Add Text</button>
-                  <button class="nav-item tool-btn w-full" onclick="alert('Image upload coming soon!')" style="justify-content: flex-start; height: 34px; font-size:12px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Add Image</button>
+                  <input type="file" id="tenantBgUploadInput" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="uploadCanvasBackground(event, false)">
+<button class="nav-item tool-btn w-full" onclick="document.getElementById('tenantBgUploadInput').click()" style="justify-content: flex-start; height: 34px; font-size:12px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Upload Background</button>
                   
                   <div style="height: 1px; background: var(--color-border); margin: 10px 0;"></div>
                   <div style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;">Insert Dynamic Tags</div>
@@ -2962,55 +2965,129 @@ function deleteSelectedElement() {
 
   // --- DATABASE SAVING & LOADING ---
   async function fetchSavedTemplates() {
-    const { data, error } = await supabaseClient.from('templates').select('*').order('created_at', { ascending: false });
+    // Fetch ALL templates: Global (Admin) OR Owned by Tenant
+    const { data, error } = await supabaseClient.from('templates').select('*')
+        .or(`tenant_id.eq.${currentTenantId},is_global.eq.true`)
+        .order('created_at', { ascending: false });
+    
     if (error) return;
-
     windowSavedTemplates = data || []; 
-    const gallery = document.getElementById('savedTemplatesGallery');
-    const moreBtn = document.getElementById('moreTemplatesBtnContainer');
-    if (!gallery) return;
 
-    gallery.innerHTML = `
+    // Split data: Global goes Top, Personal goes Bottom
+    const globalTemplates = windowSavedTemplates.filter(t => t.is_global === true);
+    const myTemplates = windowSavedTemplates.filter(t => t.is_global !== true);
+
+    // 1. Inject Global Templates into Top Gallery
+    const topGallery = document.getElementById('templateGallery');
+    if (topGallery) {
+        topGallery.innerHTML = ''; // Clear hardcoded ones
+        globalTemplates.forEach(t => {
+            topGallery.innerHTML += `
+              <div onclick="loadSavedTemplate('${t.id}')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
+                 <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                 <div style="width: 100%; height: 100px; background: ${t.thumbnail_url} center/cover no-repeat; background-color: var(--color-surface-soft);"></div>
+                 <div style="padding: 4px 2px; text-align: center; font-size: 9px; font-weight: 600; line-height: 1;">${t.name}</div>
+              </div>`;
+        });
+        
+        // Re-append the AI Button at the end
+        topGallery.innerHTML += `
+              <div onclick="alert('AI Generation feature is coming in V2!')" class="card" style="min-width: 150px; height: 130px; background: linear-gradient(135deg, #ea7e8c 0%, #9865a7 50%, #4a549a 100%); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; border: none; color: white; box-shadow: 0 6px 16px rgba(152, 101, 167, 0.3);">
+                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 8px;"><path d="M9 3L10.1241 6.55181C10.4287 7.51478 11.134 8.29177 12.0628 8.65345L15 9.79723L12.0628 10.941C11.134 11.3027 10.4287 12.0797 10.1241 13.0426L9 16.5945L7.87588 13.0426C7.57127 12.0797 6.86598 11.3027 5.93718 10.941L3 9.79723L5.93718 8.65345C6.86598 8.29177 7.57127 7.51478 7.87588 6.55181L9 3Z"></path></svg>
+                 <span style="font-size: 13px; font-weight: 700;">Generate by AI</span>
+                 <div style="font-size: 9px; font-weight: 700; background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 12px; margin-top: 8px; letter-spacing: 0.05em; text-transform: uppercase;">Coming Soon</div>
+              </div>`;
+    }
+
+    // 2. Inject Personal Templates into Bottom Gallery
+    const bottomGallery = document.getElementById('savedTemplatesGallery');
+    const moreBtn = document.getElementById('moreTemplatesBtnContainer');
+    if (!bottomGallery) return;
+
+    bottomGallery.innerHTML = `
       <div onclick="resetTemplate()" class="card" style="min-width: 180px; height: 90px; border: 1px dashed var(--color-primary); background: var(--color-primary-soft); color: var(--color-primary); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;">
          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
          <div style="font-size: 11px; font-weight: 600; margin-top: 8px;">New Template</div>
       </div>
     `;
 
-    if (data) {
-      data.forEach((t, index) => {
-        const dateStr = new Date(t.created_at).toLocaleDateString();
-        
-        const cardHtml = `
-          <div id="saved-card-${t.id}" class="card saved-tpl-card" style="min-width: 260px; height: 90px; padding: 12px; display: flex; gap: 12px; align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); position: relative; flex-shrink: 0; transition: 0.2s;">
-             <div onclick="loadSavedTemplate('${t.id}')" style="display:flex; flex:1; gap:12px; cursor:pointer; align-items:center;" title="Click to Edit">
-                 <div style="width: 45px; height: 65px; background: ${t.thumbnail_url || "url('./templates/gatepass01.jpg')"} center/cover no-repeat; background-color: var(--color-surface-soft); border-radius: 4px; border: 1px solid var(--color-border);"></div>
-                 <div>
-                    <div style="font-size: 13px; font-weight: 700; color: var(--color-text); margin-bottom: 2px;">${t.name}</div>
-                    <div style="font-size: 11px; color: var(--color-text-secondary);">${dateStr}</div>
-                 </div>
-             </div>
-             <div style="display:flex; flex-direction:column; gap:6px;">
-                 <button onclick="loadSavedTemplate('${t.id}')" style="background:var(--color-primary-soft); color:var(--color-primary); border:none; border-radius:4px; padding:4px; cursor:pointer;" title="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
-                 <button onclick="deleteTemplate('${t.id}')" style="background:var(--color-danger-soft); color:var(--color-danger); border:none; border-radius:4px; padding:4px; cursor:pointer;" title="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-             </div>
-          </div>
-        `;
-        
-        if (index < 4) gallery.innerHTML += cardHtml;
-        const grid = document.getElementById('allTemplatesGrid');
-        if(grid && index === 0) grid.innerHTML = ''; 
-        if(grid) grid.innerHTML += cardHtml;
-      });
+    myTemplates.forEach((t, index) => {
+      const dateStr = new Date(t.created_at).toLocaleDateString();
+      const cardHtml = `
+        <div id="saved-card-${t.id}" class="card saved-tpl-card" style="min-width: 260px; height: 90px; padding: 12px; display: flex; gap: 12px; align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); position: relative; flex-shrink: 0; transition: 0.2s;">
+           <div onclick="loadSavedTemplate('${t.id}')" style="display:flex; flex:1; gap:12px; cursor:pointer; align-items:center;" title="Click to Edit">
+               <div style="width: 45px; height: 65px; background: ${t.thumbnail_url} center/cover no-repeat; background-color: var(--color-surface-soft); border-radius: 4px; border: 1px solid var(--color-border);"></div>
+               <div>
+                  <div style="font-size: 13px; font-weight: 700; color: var(--color-text); margin-bottom: 2px;">${t.name}</div>
+                  <div style="font-size: 11px; color: var(--color-text-secondary);">${dateStr}</div>
+               </div>
+           </div>
+           <div style="display:flex; flex-direction:column; gap:6px;">
+               <button onclick="loadSavedTemplate('${t.id}')" style="background:var(--color-primary-soft); color:var(--color-primary); border:none; border-radius:4px; padding:4px; cursor:pointer;" title="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+               <button onclick="deleteTemplate('${t.id}')" style="background:var(--color-danger-soft); color:var(--color-danger); border:none; border-radius:4px; padding:4px; cursor:pointer;" title="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+           </div>
+        </div>
+      `;
+      if (index < 4) bottomGallery.innerHTML += cardHtml;
+      const grid = document.getElementById('allTemplatesGrid');
+      if(grid && index === 0) grid.innerHTML = ''; 
+      if(grid) grid.innerHTML += cardHtml;
+    });
 
-      if (data.length > 4) {
-          moreBtn.style.display = 'block';
-          document.getElementById('moreTemplatesCount').innerText = '+' + (data.length - 4);
-      } else {
-          moreBtn.style.display = 'none';
-      }
+    if (myTemplates.length > 4) {
+        moreBtn.style.display = 'block';
+        document.getElementById('moreTemplatesCount').innerText = '+' + (myTemplates.length - 4);
+    } else {
+        moreBtn.style.display = 'none';
     }
   }
+
+  // --- NEW: UPLOAD TO SUPABASE BUCKET & CANVAS ZOOM ---
+  async function uploadCanvasBackground(event, isGlobal = false) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const canvas = document.getElementById('editorCanvas');
+      const originalBg = canvas.style.backgroundImage;
+      canvas.innerHTML += `<div id="bgUploadingOverlay" style="position:absolute; inset:0; background:rgba(255,255,255,0.8); display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:bold; color:var(--color-primary); z-index:100;">Uploading...</div>`;
+
+      try {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+          const folderPath = isGlobal ? `admin_templates/${fileName}` : `tenant_${currentTenantId}/${fileName}`;
+
+          const { data, error } = await supabaseClient.storage.from('gate-pass-assets').upload(folderPath, file, { upsert: false });
+          if (error) throw error;
+
+          const { data: { publicUrl } } = supabaseClient.storage.from('gate-pass-assets').getPublicUrl(folderPath);
+
+          currentActiveBgString = `url('${publicUrl}')`;
+          canvas.style.backgroundImage = currentActiveBgString;
+          canvas.style.backgroundSize = '100% 100%';
+      } catch (err) {
+          alert("Error uploading image: " + err.message);
+          canvas.style.backgroundImage = originalBg;
+      } finally {
+          const overlay = document.getElementById('bgUploadingOverlay');
+          if (overlay) overlay.remove();
+          event.target.value = ''; 
+      }
+  }
+
+  // --- CANVAS ZOOM SCRIPT ---
+  let canvasZoom = 0.26; 
+  document.addEventListener('DOMContentLoaded', () => {
+      const canvasWrapper = document.getElementById('editorCanvas').parentElement;
+      if(canvasWrapper) {
+          canvasWrapper.addEventListener('wheel', (e) => {
+              if(e.ctrlKey || e.metaKey || e.shiftKey) return; 
+              e.preventDefault();
+              if(e.deltaY < 0) canvasZoom = Math.min(canvasZoom + 0.05, 0.8);
+              else canvasZoom = Math.max(canvasZoom - 0.05, 0.15);
+              document.getElementById('editorCanvas').style.transform = `translate(-50%, -50%) scale(${canvasZoom})`;
+          });
+      }
+  });
 
   
 
