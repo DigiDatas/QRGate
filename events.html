@@ -3085,60 +3085,65 @@ function deleteSelectedElement() {
 
   // --- SAVE TEMPLATE (PRESERVES QR ID POSITION & STYLES) ---
   async function saveGatePassTemplate(saveAsNew = false) {
-    const tplName = document.getElementById('tplName').value.trim();
-    if (!tplName) return alert("Please enter a Template Name before saving!");
+      const tplName = document.getElementById('tplName').value.trim();
+      if (!tplName) return alert("Please enter a Template Name before saving!");
 
-    document.querySelectorAll('.canvas-element').forEach(node => node.style.outline = "none");
-    
-    // Clone without destroying user's customized QR label position/styling
-    const canvasClone = document.getElementById('editorCanvas').cloneNode(true);
+      document.querySelectorAll('.canvas-element').forEach(node => node.style.outline = "none");
+      
+      const canvasClone = document.getElementById('editorCanvas').cloneNode(true);
+      const cQrSpot = canvasClone.querySelector('#canvasQRSpot');
+      if (cQrSpot) {
+          const inner = cQrSpot.querySelector('#qrInnerCode');
+          if (inner) {
+              inner.innerHTML = `<div style="width:100%; height:100%; background:#cbd5e1; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:30px; font-weight:bold;">QR SPOT</div>`;
+          }
+      }
 
-    // Keep placeholder QR graphic clean while keeping dataset properties
-    const cQrSpot = canvasClone.querySelector('#canvasQRSpot');
-    if (cQrSpot) {
-        const inner = cQrSpot.querySelector('#qrInnerCode');
-        if (inner) {
-            inner.innerHTML = `<div style="width:100%; height:100%; background:#cbd5e1; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:30px; font-weight:bold;">QR SPOT</div>`;
-        }
-    }
+      const cleanCanvasHtml = canvasClone.outerHTML;
+      const assignedEventId = document.getElementById('tplEventSelect').value || null;
+      const selectedGuestId = document.getElementById('tplGuestSelect').value || null;
 
-    const cleanCanvasHtml = canvasClone.outerHTML;
-    const assignedEventId = document.getElementById('tplEventSelect').value || null;
-    const selectedGuestId = document.getElementById('tplGuestSelect').value || null;
+      const payload = {
+         name: tplName, 
+         event_type: 'Custom', 
+         html_layout: cleanCanvasHtml, 
+         thumbnail_url: currentActiveBgString,
+         event_id: assignedEventId,
+         is_global: false,            // Ensures it saves as personal
+         tenant_id: currentTenantId   // Ensures it belongs only to this tenant
+      };
 
-    const payload = {
-       name: tplName, 
-       event_type: 'Custom', 
-       html_layout: cleanCanvasHtml, 
-       thumbnail_url: currentActiveBgString,
-       event_id: assignedEventId
-    };
+      let savedTemplateId = currentEditingTemplateId;
 
-    let savedTemplateId = currentEditingTemplateId;
+      // Protection Logic: Block tenants from overwriting Admin templates
+      if (currentEditingTemplateId && !saveAsNew) {
+          if (isEditingGlobal) {
+              alert("You cannot overwrite a Global System Template. Saving as a new personal template instead.");
+              saveAsNew = true; 
+          } else {
+              const { error } = await supabaseClient.from('templates').update(payload).eq('id', currentEditingTemplateId);
+              if (error) return alert("Error updating: " + error.message);
+          }
+      } 
+      
+      // If it's a new template, or saveAsNew was forced to true by the protection logic
+      if (!currentEditingTemplateId || saveAsNew) {
+          const { data, error } = await supabaseClient.from('templates').insert([payload]).select();
+          if (error) return alert("Error saving: " + error.message);
+          if (data && data[0]) {
+              savedTemplateId = data[0].id;
+              currentEditingTemplateId = savedTemplateId;
+              isEditingGlobal = false; // They now own this copy
+          }
+      }
 
-    // Protection Logic: Block tenants from overwriting Admin templates
-    if (currentEditingTemplateId && !saveAsNew) {
-        if (isEditingGlobal) {
-            alert("You cannot overwrite a Global System Template. Saving as a new personal template instead.");
-            saveAsNew = true; 
-        } else {
-            const { error } = await supabaseClient.from('templates').update(payload).eq('id', currentEditingTemplateId);
-            if (error) return alert("Error updating: " + error.message);
-        }
-    }
-        if (data && data[0]) {
-            savedTemplateId = data[0].id;
-            currentEditingTemplateId = savedTemplateId;
-        }
-    }
+      if (selectedGuestId && savedTemplateId) {
+          await supabaseClient.from('guests').update({ template_id: savedTemplateId }).eq('id', selectedGuestId);
+      }
 
-    if (selectedGuestId && savedTemplateId) {
-        await supabaseClient.from('guests').update({ template_id: savedTemplateId }).eq('id', selectedGuestId);
-    }
-
-    alert("Template saved successfully!");
-    await fetchSavedTemplates();
-    await fetchAllGuestsForKPIs();
+      alert("Template saved successfully!");
+      await fetchSavedTemplates();
+      await fetchAllGuestsForKPIs();
   }
 
   // Combined save function for BOTH the Profile Tab and the Dashboard Banner
