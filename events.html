@@ -1591,6 +1591,7 @@ let currentGuestTierFilter = 'All';
       }
       
       await fetchEvents();
+      await fetchSavedTemplates(); // FIXED: Fetch templates ONLY after tenant ID is known
     }
   }
 // --- GUEST LIST TOGGLES ---
@@ -2510,9 +2511,10 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
   // --- TEMPLATES DATABASE LOGIC & EDITOR CONTROLS ---
   // ==========================================
 
-  let windowSavedTemplates = []; 
+  et windowSavedTemplates = []; 
   let currentlySelectedElement = null; 
   let currentEditingTemplateId = null;
+  let isEditingGlobal = false; // Tracks if the loaded template belongs to the Admin
   let currentActiveBgString = "url('./templates/gatepass01.jpg')"; // Tracks the active background
 
   // --- DRAG vs TYPE UX ---
@@ -2523,96 +2525,50 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
 
   function makeDraggable(el) {
       if(!el.classList.contains('canvas-element')) el.classList.add('canvas-element');
-      el.style.cursor = 'move';
-      el.contentEditable = "false"; 
-
-      // Attach resize handle for plain text boxes
       if (!el.classList.contains('qr-group-box') && !el.classList.contains('non-text-editable') && !el.querySelector('.resize-handle')) {
-          const handle = document.createElement('div');
-          handle.className = 'resize-handle right';
-          el.appendChild(handle);
+          const handle = document.createElement('div'); handle.className = 'resize-handle right'; el.appendChild(handle);
       }
       
       el.addEventListener('mousedown', (e) => {
-          // 1. Text box horizontal edge resize handle
           if (e.target.classList.contains('resize-handle')) {
-              e.preventDefault();
-              e.stopPropagation();
-              let initialX = e.clientX;
-              let initialWidth = el.offsetWidth;
-              const parentRect = document.getElementById('editorCanvas').getBoundingClientRect();
-              const scale = parentRect.width / 1080;
-
-              function onMouseMove(moveEvent) {
-                  const dx = (moveEvent.clientX - initialX) / scale;
-                  el.style.width = Math.max(150, initialWidth + dx) + 'px';
-              }
-              function onMouseUp() {
-                  document.removeEventListener('mousemove', onMouseMove);
-                  document.removeEventListener('mouseup', onMouseUp);
-              }
-              document.addEventListener('mousemove', onMouseMove);
-              document.addEventListener('mouseup', onMouseUp);
+              e.preventDefault(); e.stopPropagation();
+              let initialX = e.clientX; let initialWidth = el.offsetWidth;
+              const scale = document.getElementById('editorCanvas').getBoundingClientRect().width / 1080;
+              function onMouseMove(moveEvent) { el.style.width = Math.max(150, initialWidth + (moveEvent.clientX - initialX) / scale) + 'px'; }
+              function onMouseUp() { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); }
+              document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp);
               return;
           }
 
           if (el.contentEditable === "true") return; 
-          e.preventDefault();
-          e.stopPropagation(); // Prevents child clicks from dragging the parent unexpectedly
+          e.preventDefault(); e.stopPropagation();
           
           currentlySelectedElement = el;
-          document.querySelectorAll('.canvas-element').forEach(node => {
-              node.style.outline = "none";
-              node.classList.remove('active-element');
-          });
-          el.style.outline = "3px dashed var(--color-primary)";
-          el.classList.add('active-element');
+          document.querySelectorAll('.canvas-element').forEach(node => { node.style.outline = "none"; node.classList.remove('active-element'); });
+          el.style.outline = "3px dashed var(--color-primary)"; el.classList.add('active-element');
           
-          // Populate tools panel inputs with selected element styles
+          // Sync Tools Panel so tenants can change colors and fonts!
           const style = window.getComputedStyle(el);
-          const sizeInput = document.getElementById('elementFontSize');
-          const colorInput = document.getElementById('elementColor');
-          const alignInput = document.getElementById('elementTextAlign');
-          
-          if (sizeInput) sizeInput.value = parseInt(style.fontSize) || 32;
-          if (colorInput) {
+          if (document.getElementById('elementFontSize')) document.getElementById('elementFontSize').value = parseInt(style.fontSize) || 32;
+          if (document.getElementById('elementColor')) {
               const rgb = style.color;
               if (rgb && rgb.includes('rgb')) {
                   const parts = rgb.match(/\d+/g);
-                  if (parts && parts.length >= 3) {
-                      const hex = "#" + parts.slice(0,3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
-                      colorInput.value = hex;
-                  }
+                  if (parts && parts.length >= 3) document.getElementById('elementColor').value = "#" + parts.slice(0,3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
               }
           }
-          if (alignInput) alignInput.value = style.textAlign || 'center';
           
-          isDragging = true;
-          dragTarget = el;
-          
-          // If moving a nested child (like the ID label), measure offset against its immediate parent container
+          isDragging = true; dragTarget = el;
           const referenceRect = el.parentElement.getBoundingClientRect();
           const scale = referenceRect.width / (el.parentElement.id === 'editorCanvas' ? 1080 : el.parentElement.offsetWidth);
-          
-          offsetX = (e.clientX - el.getBoundingClientRect().left) / scale;
-          offsetY = (e.clientY - el.getBoundingClientRect().top) / scale;
+          offsetX = (e.clientX - el.getBoundingClientRect().left) / scale; offsetY = (e.clientY - el.getBoundingClientRect().top) / scale;
       });
 
-      // Double-click to edit text (LOCKED for QR box and QR ID label)
-      el.addEventListener('dblclick', (e) => {
-          if (el.dataset.noEdit === "true" || el.classList.contains('non-text-editable') || el.classList.contains('qr-group-box') || el.id === 'canvasQrLabel') {
-              return; // Protected non-text editable
-          }
-          el.contentEditable = "true";
-          el.focus();
-          el.style.cursor = 'text';
-          el.style.outline = "3px solid var(--color-primary)";
+      el.addEventListener('dblclick', () => {
+          if (el.dataset.noEdit === "true" || el.classList.contains('qr-group-box')) return;
+          el.contentEditable = "true"; el.focus(); el.style.cursor = 'text'; el.style.outline = "3px solid var(--color-primary)";
       });
-      
-      el.addEventListener('blur', () => {
-          el.contentEditable = "false";
-          el.style.cursor = 'move';
-      });
+      el.addEventListener('blur', () => { el.contentEditable = "false"; el.style.cursor = 'move'; });
   }
 
   document.addEventListener('mousemove', (e) => {
@@ -2803,6 +2759,7 @@ function deleteSelectedElement() {
       if(!tpl) return;
       
       currentEditingTemplateId = id;
+      isEditingGlobal = tpl.is_global === true;
 
       // 1. Highlight clicked card in bottom gallery
       document.querySelectorAll('.saved-tpl-card').forEach(c => c.style.border = '1px solid var(--color-border)');
@@ -2965,7 +2922,7 @@ function deleteSelectedElement() {
 
   // --- DATABASE SAVING & LOADING ---
   async function fetchSavedTemplates() {
-    // Fetch ALL templates: Global (Admin) OR Owned by Tenant
+    if (!currentTenantId) return; // Failsafe
     const { data, error } = await supabaseClient.from('templates').select('*')
         .or(`tenant_id.eq.${currentTenantId},is_global.eq.true`)
         .order('created_at', { ascending: false });
@@ -2973,15 +2930,15 @@ function deleteSelectedElement() {
     if (error) return;
     windowSavedTemplates = data || []; 
 
-    // Split data: Global goes Top, Personal goes Bottom
     const globalTemplates = windowSavedTemplates.filter(t => t.is_global === true);
     const myTemplates = windowSavedTemplates.filter(t => t.is_global !== true);
 
-    // 1. Inject Global Templates into Top Gallery
+    // 1. Inject Global Templates (Top Gallery)
     const topGallery = document.getElementById('templateGallery');
     if (topGallery) {
-        topGallery.innerHTML = ''; // Clear hardcoded ones
-        globalTemplates.forEach(t => {
+        topGallery.innerHTML = '';
+        
+        globalTemplates.slice(0, 4).forEach(t => {
             topGallery.innerHTML += `
               <div onclick="loadSavedTemplate('${t.id}')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
                  <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
@@ -2989,17 +2946,23 @@ function deleteSelectedElement() {
                  <div style="padding: 4px 2px; text-align: center; font-size: 9px; font-weight: 600; line-height: 1;">${t.name}</div>
               </div>`;
         });
-        
-        // Re-append the AI Button at the end
+
+        if (globalTemplates.length > 4) {
+            topGallery.innerHTML += `
+              <div onclick="openTemplatesModal('global')" class="card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); background: var(--color-surface-soft); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; color: var(--color-primary);">
+                 <div style="font-size: 16px; font-weight: 700;">+${globalTemplates.length - 4}</div>
+                 <div style="font-size: 10px; font-weight: 600;">More</div>
+              </div>`;
+        }
+
         topGallery.innerHTML += `
               <div onclick="alert('AI Generation feature is coming in V2!')" class="card" style="min-width: 150px; height: 130px; background: linear-gradient(135deg, #ea7e8c 0%, #9865a7 50%, #4a549a 100%); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; border: none; color: white; box-shadow: 0 6px 16px rgba(152, 101, 167, 0.3);">
                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 8px;"><path d="M9 3L10.1241 6.55181C10.4287 7.51478 11.134 8.29177 12.0628 8.65345L15 9.79723L12.0628 10.941C11.134 11.3027 10.4287 12.0797 10.1241 13.0426L9 16.5945L7.87588 13.0426C7.57127 12.0797 6.86598 11.3027 5.93718 10.941L3 9.79723L5.93718 8.65345C6.86598 8.29177 7.57127 7.51478 7.87588 6.55181L9 3Z"></path></svg>
                  <span style="font-size: 13px; font-weight: 700;">Generate by AI</span>
-                 <div style="font-size: 9px; font-weight: 700; background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 12px; margin-top: 8px; letter-spacing: 0.05em; text-transform: uppercase;">Coming Soon</div>
               </div>`;
     }
 
-    // 2. Inject Personal Templates into Bottom Gallery
+    // 2. Inject Personal Templates (Bottom Gallery)
     const bottomGallery = document.getElementById('savedTemplatesGallery');
     const moreBtn = document.getElementById('moreTemplatesBtnContainer');
     if (!bottomGallery) return;
@@ -3011,35 +2974,56 @@ function deleteSelectedElement() {
       </div>
     `;
 
-    myTemplates.forEach((t, index) => {
+    myTemplates.slice(0, 4).forEach((t) => {
       const dateStr = new Date(t.created_at).toLocaleDateString();
-      const cardHtml = `
+      bottomGallery.innerHTML += `
         <div id="saved-card-${t.id}" class="card saved-tpl-card" style="min-width: 260px; height: 90px; padding: 12px; display: flex; gap: 12px; align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); position: relative; flex-shrink: 0; transition: 0.2s;">
            <div onclick="loadSavedTemplate('${t.id}')" style="display:flex; flex:1; gap:12px; cursor:pointer; align-items:center;" title="Click to Edit">
                <div style="width: 45px; height: 65px; background: ${t.thumbnail_url} center/cover no-repeat; background-color: var(--color-surface-soft); border-radius: 4px; border: 1px solid var(--color-border);"></div>
-               <div>
-                  <div style="font-size: 13px; font-weight: 700; color: var(--color-text); margin-bottom: 2px;">${t.name}</div>
-                  <div style="font-size: 11px; color: var(--color-text-secondary);">${dateStr}</div>
-               </div>
+               <div><div style="font-size: 13px; font-weight: 700; color: var(--color-text); margin-bottom: 2px;">${t.name}</div><div style="font-size: 11px; color: var(--color-text-secondary);">${dateStr}</div></div>
            </div>
            <div style="display:flex; flex-direction:column; gap:6px;">
-               <button onclick="loadSavedTemplate('${t.id}')" style="background:var(--color-primary-soft); color:var(--color-primary); border:none; border-radius:4px; padding:4px; cursor:pointer;" title="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
-               <button onclick="deleteTemplate('${t.id}')" style="background:var(--color-danger-soft); color:var(--color-danger); border:none; border-radius:4px; padding:4px; cursor:pointer;" title="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+               <button onclick="loadSavedTemplate('${t.id}')" style="background:var(--color-primary-soft); color:var(--color-primary); border:none; border-radius:4px; padding:4px; cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+               <button onclick="deleteTemplate('${t.id}')" style="background:var(--color-danger-soft); color:var(--color-danger); border:none; border-radius:4px; padding:4px; cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
            </div>
         </div>
       `;
-      if (index < 4) bottomGallery.innerHTML += cardHtml;
-      const grid = document.getElementById('allTemplatesGrid');
-      if(grid && index === 0) grid.innerHTML = ''; 
-      if(grid) grid.innerHTML += cardHtml;
     });
 
     if (myTemplates.length > 4) {
         moreBtn.style.display = 'block';
         document.getElementById('moreTemplatesCount').innerText = '+' + (myTemplates.length - 4);
+        moreBtn.onclick = () => openTemplatesModal('personal');
     } else {
         moreBtn.style.display = 'none';
     }
+  }
+
+  // Helper function to handle the modal popup for either Global or Personal templates
+  function openTemplatesModal(type) {
+      const grid = document.getElementById('allTemplatesGrid');
+      grid.innerHTML = '';
+      
+      const templatesToShow = type === 'global' 
+          ? windowSavedTemplates.filter(t => t.is_global === true) 
+          : windowSavedTemplates.filter(t => t.is_global !== true);
+
+      templatesToShow.forEach(t => {
+          const dateStr = new Date(t.created_at).toLocaleDateString();
+          grid.innerHTML += `
+            <div id="saved-card-${t.id}" class="card saved-tpl-card" style="min-width: 260px; height: 90px; padding: 12px; display: flex; gap: 12px; align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); position: relative; flex-shrink: 0; transition: 0.2s;">
+               <div onclick="loadSavedTemplate('${t.id}')" style="display:flex; flex:1; gap:12px; cursor:pointer; align-items:center;" title="Click to Edit">
+                   <div style="width: 45px; height: 65px; background: ${t.thumbnail_url} center/cover no-repeat; background-color: var(--color-surface-soft); border-radius: 4px; border: 1px solid var(--color-border);"></div>
+                   <div><div style="font-size: 13px; font-weight: 700; color: var(--color-text); margin-bottom: 2px;">${t.name}</div><div style="font-size: 11px; color: var(--color-text-secondary);">${dateStr}</div></div>
+               </div>
+               <div style="display:flex; flex-direction:column; gap:6px;">
+                   <button onclick="loadSavedTemplate('${t.id}')" style="background:var(--color-primary-soft); color:var(--color-primary); border:none; border-radius:4px; padding:4px; cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+                   ${type === 'personal' ? `<button onclick="deleteTemplate('${t.id}')" style="background:var(--color-danger-soft); color:var(--color-danger); border:none; border-radius:4px; padding:4px; cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>` : ''}
+               </div>
+            </div>
+          `;
+      });
+      document.getElementById('allTemplatesModal').classList.remove('hidden');
   }
 
   // --- NEW: UPLOAD TO SUPABASE BUCKET & CANVAS ZOOM ---
@@ -3132,12 +3116,16 @@ function deleteSelectedElement() {
 
     let savedTemplateId = currentEditingTemplateId;
 
+    // Protection Logic: Block tenants from overwriting Admin templates
     if (currentEditingTemplateId && !saveAsNew) {
-        const { error } = await supabaseClient.from('templates').update(payload).eq('id', currentEditingTemplateId);
-        if (error) return alert("Error updating: " + error.message);
-    } else {
-        const { data, error } = await supabaseClient.from('templates').insert([payload]).select();
-        if (error) return alert("Error saving: " + error.message);
+        if (isEditingGlobal) {
+            alert("You cannot overwrite a Global System Template. Saving as a new personal template instead.");
+            saveAsNew = true; 
+        } else {
+            const { error } = await supabaseClient.from('templates').update(payload).eq('id', currentEditingTemplateId);
+            if (error) return alert("Error updating: " + error.message);
+        }
+    }
         if (data && data[0]) {
             savedTemplateId = data[0].id;
             currentEditingTemplateId = savedTemplateId;
@@ -3178,8 +3166,6 @@ function deleteSelectedElement() {
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-      fetchSavedTemplates();
-
       const evtName = document.getElementById('canvasEventName');
       const gstName = document.getElementById('canvasGuestName');
       const qrLabel = document.getElementById('canvasQrLabel');

@@ -165,6 +165,14 @@
           <h2 class="text-xl font-bold tracking-tight text-slate-100">Global System Templates</h2>
           <p class="text-sm text-slate-400">Design templates that will be available to all tenants.</p>
         </div>
+
+        <!-- NEW: SAVED GLOBAL TEMPLATES GALLERY (TOP) -->
+        <div class="shrink-0 mb-2">
+           <h3 class="text-sm font-bold text-slate-200 mb-3">Your Saved Global Templates</h3>
+           <div id="adminTemplatesGallery" class="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
+              <div class="text-xs text-slate-500">Loading templates...</div>
+           </div>
+        </div>
         
         <!-- 3-Column Layout exactly like events.html -->
         <div class="flex-1 grid grid-cols-[260px_1fr_280px] gap-6 min-h-0 overflow-hidden">
@@ -436,8 +444,10 @@
     // ==========================================
     // --- GLOBAL TEMPLATE BUILDER LOGIC ---
     // ==========================================
-    let currentActiveBgString = "url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1080&auto=format&fit=crop')";
+    et currentActiveBgString = "url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1080&auto=format&fit=crop')";
     let currentlySelectedElement = null;
+    let windowAdminTemplates = [];
+    let currentEditingTemplateId = null;
     let isDragging = false;
     let dragTarget = null;
     let offsetX = 0;
@@ -533,7 +543,75 @@
         document.getElementById('previewModal').classList.remove('hidden');
     }
 
+    // --- GALLERY FETCH, LOAD & DELETE ---
+    async function fetchAdminTemplates() {
+        const { data, error } = await supabaseClient.from('templates').select('*').eq('is_global', true).order('created_at', { ascending: false });
+        if (error) return;
+        windowAdminTemplates = data || [];
+        
+        const gallery = document.getElementById('adminTemplatesGallery');
+        if (!gallery) return;
+
+        gallery.innerHTML = `
+          <div onclick="resetTemplate()" class="bg-slate-900 border border-dashed border-slate-700 hover:border-pink-500 rounded-xl flex flex-col items-center justify-center cursor-pointer transition shrink-0" style="min-width: 140px; height: 90px;">
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-pink-500 mb-2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+             <div class="text-xs font-semibold text-slate-300">Create New</div>
+          </div>
+        `;
+
+        windowAdminTemplates.forEach(t => {
+            const dateStr = new Date(t.created_at).toLocaleDateString();
+            gallery.innerHTML += `
+              <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex gap-3 items-center shrink-0" style="min-width: 250px; height: 90px;">
+                 <div onclick="loadAdminTemplate('${t.id}')" class="flex flex-1 gap-3 cursor-pointer items-center" title="Click to Edit">
+                     <div style="width: 40px; height: 60px; background: ${t.thumbnail_url} center/cover no-repeat; border-radius: 4px; border: 1px solid #1e293b;"></div>
+                     <div>
+                        <div class="text-xs font-bold text-slate-200 mb-1" style="max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${t.name}</div>
+                        <div class="text-[10px] text-slate-500">${dateStr}</div>
+                     </div>
+                 </div>
+                 <div class="flex flex-col gap-2">
+                     <button onclick="loadAdminTemplate('${t.id}')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 rounded p-1.5 transition"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+                     <button onclick="deleteAdminTemplate('${t.id}')" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded p-1.5 transition"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                 </div>
+              </div>
+            `;
+        });
+    }
+
+    function loadAdminTemplate(id) {
+        const tpl = windowAdminTemplates.find(x => x.id === id);
+        if(!tpl) return;
+        
+        currentEditingTemplateId = id;
+        document.getElementById('adminTplName').value = tpl.name || '';
+        currentActiveBgString = tpl.thumbnail_url;
+        
+        const canvas = document.getElementById('editorCanvas');
+        const wrapper = canvas.parentElement;
+        canvas.outerHTML = tpl.html_layout;
+        
+        const newCanvas = wrapper.querySelector('#editorCanvas');
+        if (newCanvas) {
+            newCanvas.style.position = 'absolute';
+            newCanvas.style.top = '50%';
+            newCanvas.style.left = '50%';
+            newCanvas.style.transform = `translate(-50%, -50%) scale(${canvasZoom})`;
+            newCanvas.style.transformOrigin = 'center';
+            newCanvas.querySelectorAll('.canvas-element').forEach(node => makeDraggable(node));
+        }
+    }
+
+    async function deleteAdminTemplate(id) {
+        if(confirm("Permanently delete this Global Template? It will be removed from all tenants.")) {
+            await supabaseClient.from('templates').delete().eq('id', id);
+            if (currentEditingTemplateId === id) resetTemplate();
+            fetchAdminTemplates();
+        }
+    }
+
     function resetTemplate() {
+        currentEditingTemplateId = null;
         document.getElementById('adminTplName').value = '';
         document.getElementById('adminBgUrl').value = '';
         currentActiveBgString = "url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1080&auto=format&fit=crop')";
@@ -550,7 +628,7 @@
         canvas.querySelectorAll('.canvas-element').forEach(el => makeDraggable(el));
     }
 
-    // --- SAVE LOGIC ---
+    // --- SAVE & UPDATE LOGIC ---
     async function saveAdminGlobalTemplate() {
         const tplName = document.getElementById('adminTplName').value.trim();
         if (!tplName) return alert("Please enter a Template Name.");
@@ -568,12 +646,17 @@
             thumbnail_url: currentActiveBgString, is_global: true, tenant_id: null
         };
 
-        const { error } = await supabaseClient.from('templates').insert([payload]);
-        if (error) alert("Error saving: " + error.message);
-        else {
+        if (currentEditingTemplateId) {
+            const { error } = await supabaseClient.from('templates').update(payload).eq('id', currentEditingTemplateId);
+            if (error) return alert("Error updating: " + error.message);
+            alert("Success! Global Template updated.");
+        } else {
+            const { data, error } = await supabaseClient.from('templates').insert([payload]).select();
+            if (error) return alert("Error saving: " + error.message);
+            if (data && data[0]) currentEditingTemplateId = data[0].id;
             alert("Success! Global Template saved for all tenants.");
-            resetTemplate();
         }
+        fetchAdminTemplates();
     }
 
     // --- DRAG & DROP & FORMATTING ---
@@ -673,6 +756,7 @@
         }
         ['qrCustomSize', 'qrDarkColor', 'qrBgColor', 'qrBoxRadius', 'qrBoxPadding'].forEach(id => document.getElementById(id).addEventListener('input', updateQR));
         document.getElementById('qrBgBoxToggle').addEventListener('change', updateQR);
+	fetchAdminTemplates();
     });
 
     initAdmin();
