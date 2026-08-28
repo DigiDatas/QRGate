@@ -2754,9 +2754,10 @@ let currentFontCategoryFilter = 'All';
         }
 
         allAvailableFonts.forEach(f => {
-            const fontVal = f.fontFamily ? `'${f.fontFamily}', sans-serif` : f.val;
+            // FIX: Declared only ONCE here using the safeFamilyName logic
+            const fontVal = f.safeFamilyName ? `'${f.safeFamilyName}', sans-serif` : (f.fontFamily ? `'${f.fontFamily}', sans-serif` : f.val);
             const fontName = f.displayName || f.name;
-            const fontCategory = f.category || 'EN'; // Default to EN if missing
+            const fontCategory = f.category || 'EN'; 
             
             // Map short codes to alphabets and display names
             let defaultAlphabet = "Aa Bb Cc Dd Ee Ff";
@@ -2772,12 +2773,10 @@ let currentFontCategoryFilter = 'All';
                 defaultAlphabet = "Aa Bb Cc Dd Ee Ff";
                 displayCategoryName = "English";
             } else {
-                displayCategoryName = fontCategory; // Fallback
+                displayCategoryName = fontCategory; 
             }
             
-            const fontVal = f.safeFamilyName ? `'${f.safeFamilyName}', sans-serif` : (f.fontFamily ? `'${f.fontFamily}', sans-serif` : f.val);
-            
-            // Check if this font matches the currently selected element
+            // Highlight logic: Check if this font matches the currently selected element
             let isSelected = false;
             if (currentlySelectedElement && currentlySelectedElement.style.fontFamily) {
                 const currentFamily = currentlySelectedElement.style.fontFamily.replace(/"/g, "'");
@@ -2801,6 +2800,9 @@ let currentFontCategoryFilter = 'All';
                     currentlySelectedElement.style.fontFamily = fontVal;
                     const select = document.getElementById('elementFontFamily');
                     if(select) select.value = fontVal;
+                    
+                    // Re-render the list immediately to move the active highlight to the new font
+                    renderFontExplorerList(); 
                 } else {
                     alert("Please select a text element on the canvas first.");
                 }
