@@ -7,15 +7,21 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
+    /* HIDES SCROLLBAR BUT KEEPS SCROLL FUNCTIONALITY */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
     .canvas-element { cursor: move; }
     .active-element { outline: 3px dashed #ec4899 !important; }
     .resizable-text { position: relative; user-select: none; box-sizing: border-box; }
+    
     .resizable-text .resize-handle {
       position: absolute; right: -8px; bottom: -8px;
       width: 16px; height: 16px; background: var(--color-primary, #ec4899); 
       border: 2px solid #fff; border-radius: 50%; 
       cursor: nwse-resize; display: none; z-index: 20;
     }
+    
     .resizable-text:hover .resize-handle, .resizable-text.active-element .resize-handle { display: block; }
     .qr-group-box { display: flex; flex-direction: column; align-items: center; justify-content: center; }
   </style>
@@ -755,7 +761,17 @@
             if (el.dataset.noEdit === "true" || el.classList.contains('qr-group-box')) return;
             el.contentEditable = "true"; el.focus(); el.style.cursor = 'text'; el.style.outline = "3px solid var(--color-primary, #ec4899)";
         });
-        el.addEventListener('blur', () => { el.contentEditable = "false"; el.style.cursor = 'move'; });
+       el.addEventListener('blur', () => { 
+            el.contentEditable = "false"; 
+            el.style.cursor = 'move'; 
+            
+            // Re-inject the handle if typing wiped it out
+            if (!el.querySelector('.resize-handle') && !el.classList.contains('qr-group-box') && !el.classList.contains('non-text-editable')) {
+                const handle = document.createElement('div'); 
+                handle.className = 'resize-handle corner'; 
+                el.appendChild(handle);
+            }
+        });
     }
 
     document.addEventListener('mousemove', (e) => {
@@ -783,12 +799,11 @@
             const fontSelect = document.getElementById('elementFontFamily');
             
             fonts.forEach(font => {
-                // Remove spaces to create a unique, safe CSS font-family name (prevents weight overrides)
                 const safeFamilyName = font.displayName.replace(/[^a-zA-Z0-9]/g, '');
                 font.safeFamilyName = safeFamilyName; 
                 
-                // Safely encode the URL to prevent 404 errors with spaces in filenames
-                const safeUrl = encodeURI(font.fileName);
+                // Use strict component encoding to handle spaces perfectly for GitHub
+                const safeUrl = encodeURIComponent(font.fileName);
                 
                 dynamicCSS += `@font-face { font-family: '${safeFamilyName}'; src: url('./fonts/${safeUrl}'); }\n`;
                 if(fontSelect) fontSelect.innerHTML += `<option value="'${safeFamilyName}', sans-serif">${font.displayName}</option>`;
