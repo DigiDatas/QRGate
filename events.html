@@ -2670,10 +2670,11 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
             const fontSelect = document.getElementById('elementFontFamily');
             
             fonts.forEach(font => {
-                const safeFamilyName = font.displayName.replace(/[^a-zA-Z0-9]/g, '');
+                // Generate a TRULY unique CSS name using the filename instead of the display name
+                const baseFileName = font.fileName.split('.')[0]; 
+                const safeFamilyName = baseFileName.replace(/[^a-zA-Z0-9]/g, '');
                 font.safeFamilyName = safeFamilyName; 
                 
-                // Use strict component encoding to handle spaces perfectly for GitHub
                 const safeUrl = encodeURIComponent(font.fileName);
                 
                 dynamicCSS += `@font-face { font-family: '${safeFamilyName}'; src: url('./fonts/${safeUrl}'); }\n`;
@@ -2732,12 +2733,11 @@ let currentFontCategoryFilter = 'All';
         const list = document.getElementById('fontExplorerList');
         if(!list) return;
         
-        // Grab the actual text from the canvas to use as the preview!
         let sampleText = "Preview Text";
         if (currentlySelectedElement && currentlySelectedElement.innerText.trim()) {
             const clone = currentlySelectedElement.cloneNode(true);
             const handle = clone.querySelector('.resize-handle');
-            if (handle) handle.remove(); // Remove the little handle from the preview
+            if (handle) handle.remove(); 
             sampleText = clone.innerText.trim() || "Preview Text";
         }
 
@@ -2749,7 +2749,6 @@ let currentFontCategoryFilter = 'All';
 
         list.innerHTML = ''; 
 
-        // Built-in fonts
         const defaultFonts = [
             { name: 'Default Font', val: isEvents ? 'var(--font-family)' : 'Inter, sans-serif', category: 'EN' },
             { name: 'Arial', val: 'Arial, sans-serif', category: 'EN' },
@@ -2763,12 +2762,19 @@ let currentFontCategoryFilter = 'All';
         }
 
         allAvailableFonts.forEach(f => {
-            // FIX: Declared only ONCE here using the safeFamilyName logic
             const fontVal = f.safeFamilyName ? `'${f.safeFamilyName}', sans-serif` : (f.fontFamily ? `'${f.fontFamily}', sans-serif` : f.val);
-            const fontName = f.displayName || f.name;
+            
+            // Extract the weight/style from the filename to display in the UI (e.g., "Dubai BOLD")
+            let uiDisplayName = f.displayName || f.name;
+            if (f.fileName) {
+                const styleHint = f.fileName.split('.')[0].split(/[-_]/).pop();
+                if (styleHint && !uiDisplayName.toUpperCase().includes(styleHint.toUpperCase())) {
+                    uiDisplayName += ` ${styleHint}`;
+                }
+            }
+
             const fontCategory = f.category || 'EN'; 
             
-            // Map short codes to alphabets and display names
             let defaultAlphabet = "Aa Bb Cc Dd Ee Ff";
             let displayCategoryName = "English";
 
@@ -2785,11 +2791,13 @@ let currentFontCategoryFilter = 'All';
                 displayCategoryName = fontCategory; 
             }
             
-            // Highlight logic: Check if this font matches the currently selected element
+            // STRICT HIGHLIGHT LOGIC: Ensure an exact match to prevent multiple selections
             let isSelected = false;
             if (currentlySelectedElement && currentlySelectedElement.style.fontFamily) {
-                const currentFamily = currentlySelectedElement.style.fontFamily.replace(/"/g, "'");
-                if (currentFamily.includes(f.safeFamilyName || f.fontFamily || f.name)) {
+                const currentFamily = currentlySelectedElement.style.fontFamily.replace(/"/g, "'").trim();
+                const expectedFamily = fontVal.trim();
+                
+                if (currentFamily === expectedFamily || currentFamily.includes(f.safeFamilyName || f.name)) {
                     isSelected = true;
                 }
             }
@@ -2810,7 +2818,6 @@ let currentFontCategoryFilter = 'All';
                     const select = document.getElementById('elementFontFamily');
                     if(select) select.value = fontVal;
                     
-                    // Re-render the list immediately to move the active highlight to the new font
                     renderFontExplorerList(); 
                 } else {
                     alert("Please select a text element on the canvas first.");
@@ -2819,7 +2826,7 @@ let currentFontCategoryFilter = 'All';
             
             card.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 10px; color: ${subCol}; font-weight: 700; text-transform: uppercase;">${fontName}</span>
+                    <span style="font-size: 10px; color: ${subCol}; font-weight: 700; text-transform: uppercase;">${uiDisplayName}</span>
                     <span style="font-size: 8px; color: ${subCol}; background: rgba(100,100,100,0.1); padding: 2px 6px; border-radius: 4px;">${displayCategoryName}</span>
                 </div>
                 <div style="font-family: ${fontVal}; font-size: 15px; color: ${subCol}; line-height: 1;">${defaultAlphabet}</div>
