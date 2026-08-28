@@ -8,5 +8,155 @@
     "displayName": "Tajawal Regular",
     "fontFamily": "Tajawal",
     "fileName": "Tajawal.ttf"
+  },
+{
+    "displayName": "Simplified Arabic",
+    "fontFamily": "SimplifiedArabic",
+    "fileName": "SIMPO.TTF"
+  },
+  {
+    "displayName": "Simplified Arabic",
+    "fontFamily": "SimplifiedArabic",
+    "fileName": "SIMPBDO.TTF"
+  },
+  {
+    "displayName": "Traditional Arabic",
+    "fontFamily": "TraditionalArabic",
+    "fileName": "TRADO.TTF"
+  },
+  {
+    "displayName": "Traditional Arabic",
+    "fontFamily": "TraditionalArabic",
+    "fileName": "TRADBDO.TTF"
+  },
+  {
+    "displayName": "Urdu Typesetting",
+    "fontFamily": "UrduTypesetting",
+    "fileName": "URDTYPE.TTF"
+  },
+  {
+    "displayName": "Urdu Typesetting",
+    "fontFamily": "UrduTypesetting",
+    "fileName": "URDTYPEB.TTF"
+  },
+  {
+    "displayName": "GE SS Two",
+    "fontFamily": "GESSTwo",
+    "fileName": "GE_SS_TWO_MEDIUM.OTF"
+  },
+  {
+    "displayName": "GE SS Two",
+    "fontFamily": "GESSTwo",
+    "fileName": "GE_SS_TWO_BOLD.OTF"
+  },
+  {
+    "displayName": "GE SS Two",
+    "fontFamily": "GESSTwo",
+    "fileName": "GE_SS_TWO_LIGHT.OTF"
+  },
+  {
+    "displayName": "AGA Arabesque Desktop",
+    "fontFamily": "AGAArabesqueDesktop",
+    "fileName": "ARBSQDTP.TTF"
+  },
+  {
+    "displayName": "AGA Arabesque",
+    "fontFamily": "AGAArabesque",
+    "fileName": "ARABSQ.TTF"
+  },
+  {
+    "displayName": "Aldhabi",
+    "fontFamily": "Aldhabi",
+    "fileName": "ALDHABI.TTF"
+  },
+  {
+    "displayName": "Andalus",
+    "fontFamily": "Andalus",
+    "fileName": "ANDLSO.TTF"
+  },
+  {
+    "displayName": "Arabic Typesetting",
+    "fontFamily": "ArabicTypesetting",
+    "fileName": "ARABTYPE.TTF"
+  },
+  {
+    "displayName": "Microsoft Uighur",
+    "fontFamily": "MicrosoftUighur",
+    "fileName": "MSUIGHUR.TTF"
+  },
+  {
+    "displayName": "Microsoft Uighur",
+    "fontFamily": "MicrosoftUighur",
+    "fileName": "MSUIGHUB.TTF"
+  },
+  {
+    "displayName": "Sakkal Majalla",
+    "fontFamily": "SakkalMajalla",
+    "fileName": "MAJALLA.TTF"
+  },
+  {
+    "displayName": "Sakkal Majalla",
+    "fontFamily": "SakkalMajalla",
+    "fileName": "MAJALLAB.TTF"
+  },
+ {
+    "displayName": "IBM Plex Sans Arabic",
+    "fontFamily": "IBMPlexSansArabic",
+    "fileName": "IBMPlexSansArabic-Bold.ttf"
+  },
+  {
+    "displayName": "IBM Plex Sans Arabic",
+    "fontFamily": "IBMPlexSansArabic",
+    "fileName": "IBMPlexSansArabic-ExtraLight.ttf"
+  },
+  {
+    "displayName": "IBM Plex Sans Arabic",
+    "fontFamily": "IBMPlexSansArabic",
+    "fileName": "IBMPlexSansArabic-Light.ttf"
+  },
+  {
+    "displayName": "IBM Plex Sans Arabic",
+    "fontFamily": "IBMPlexSansArabic",
+    "fileName": "IBMPlexSansArabic-Medium.ttf"
+  },
+  {
+    "displayName": "IBM Plex Sans Arabic",
+    "fontFamily": "IBMPlexSansArabic",
+    "fileName": "IBMPlexSansArabic-Regular.ttf"
+  },
+  {
+    "displayName": "IBM Plex Sans Arabic",
+    "fontFamily": "IBMPlexSansArabic",
+    "fileName": "IBMPlexSansArabic-SemiBold.ttf"
+  },
+  {
+    "displayName": "Saudi",
+    "fontFamily": "Saudi",
+    "fileName": "Saudi-Bold.ttf"
+  },
+  {
+    "displayName": "Saudi",
+    "fontFamily": "Saudi",
+    "fileName": "Saudi-Regular.ttf"
+  },
+{
+    "displayName": "Saudi",
+    "fontFamily": "Saudi",
+    "fileName": "Saudi-Regular.ttf"
+  },
+  {
+    "displayName": "Saudi",
+    "fontFamily": "Saudi",
+    "fileName": "Saudi-Bold.ttf"
+  },
+  {
+    "displayName": "IBM Plex Sans Arabic",
+    "fontFamily": "IBMPlexSansArabic",
+    "fileName": "IBMPlexSansArabic-SemiBold.ttf"
+  },
+  {
+    "displayName": "IBM Plex Sans Arabic",
+    "fontFamily": "IBMPlexSansArabic",
+    "fileName": "IBMPlexSansArabic-Regular.ttf"
   }
 ]
