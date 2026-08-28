@@ -11,9 +11,10 @@
     .active-element { outline: 3px dashed #ec4899 !important; }
     .resizable-text { position: relative; user-select: none; box-sizing: border-box; }
     .resizable-text .resize-handle {
-      position: absolute; right: -8px; top: 50%; transform: translateY(-50%);
-      width: 14px; height: 36px; background: #ec4899; border: 2px solid #fff;
-      border-radius: 4px; cursor: ew-resize; display: none; z-index: 20;
+      position: absolute; right: -8px; bottom: -8px;
+      width: 16px; height: 16px; background: var(--color-primary, #ec4899); 
+      border: 2px solid #fff; border-radius: 50%; 
+      cursor: nwse-resize; display: none; z-index: 20;
     }
     .resizable-text:hover .resize-handle, .resizable-text.active-element .resize-handle { display: block; }
     .qr-group-box { display: flex; flex-direction: column; align-items: center; justify-content: center; }
@@ -691,29 +692,46 @@
     function makeDraggable(el) {
         if(!el.classList.contains('canvas-element')) el.classList.add('canvas-element');
         if (!el.classList.contains('qr-group-box') && !el.classList.contains('non-text-editable') && !el.querySelector('.resize-handle')) {
-            const handle = document.createElement('div'); handle.className = 'resize-handle right'; el.appendChild(handle);
+            const handle = document.createElement('div'); 
+            handle.className = 'resize-handle corner'; 
+            el.appendChild(handle);
         }
         
         el.addEventListener('mousedown', (e) => {
+            // HANDLE CORNER RESIZING (FONT SIZE)
             if (e.target.classList.contains('resize-handle')) {
                 e.preventDefault(); e.stopPropagation();
-                let initialX = e.clientX; let initialWidth = el.offsetWidth;
-                const scale = document.getElementById('editorCanvas').getBoundingClientRect().width / 1080;
-                function onMouseMove(moveEvent) { el.style.width = Math.max(150, initialWidth + (moveEvent.clientX - initialX) / scale) + 'px'; }
+                let initialY = e.clientY; 
+                let style = window.getComputedStyle(el);
+                let initialFontSize = parseFloat(style.fontSize) || 40;
+                
+                function onMouseMove(moveEvent) { 
+                    let deltaY = moveEvent.clientY - initialY;
+                    // Scale font size based on vertical drag movement
+                    let newSize = Math.max(12, initialFontSize + (deltaY * 0.5));
+                    el.style.fontSize = newSize + 'px';
+                    
+                    // Sync the input box in the tools panel
+                    const sizeInput = document.getElementById('elementFontSize');
+                    if (sizeInput) sizeInput.value = Math.round(newSize);
+                }
                 function onMouseUp() { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); }
                 document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp);
                 return;
             }
 
+            // HANDLE DRAGGING & SELECTION
             if (el.contentEditable === "true") return; 
             e.preventDefault(); e.stopPropagation();
             
             currentlySelectedElement = el;
-	    if (document.getElementById('fontExplorerPanel') && document.getElementById('fontExplorerPanel').style.display !== 'none') {
-                renderFontExplorerList(); // Live updates the drawer when a new text is clicked!
+            if (document.getElementById('fontExplorerPanel') && document.getElementById('fontExplorerPanel').style.display !== 'none') {
+                renderFontExplorerList(); 
             }
+            
             document.querySelectorAll('.canvas-element').forEach(node => { node.style.outline = "none"; node.classList.remove('active-element'); });
-            el.style.outline = "3px dashed #ec4899"; el.classList.add('active-element');
+            el.style.outline = "3px dashed var(--color-primary, #ec4899)"; 
+            el.classList.add('active-element');
             
             // Sync Tools Panel
             const style = window.getComputedStyle(el);
@@ -729,12 +747,13 @@
             isDragging = true; dragTarget = el;
             const referenceRect = el.parentElement.getBoundingClientRect();
             const scale = referenceRect.width / (el.parentElement.id === 'editorCanvas' ? 1080 : el.parentElement.offsetWidth);
-            offsetX = (e.clientX - el.getBoundingClientRect().left) / scale; offsetY = (e.clientY - el.getBoundingClientRect().top) / scale;
+            offsetX = (e.clientX - el.getBoundingClientRect().left) / scale; 
+            offsetY = (e.clientY - el.getBoundingClientRect().top) / scale;
         });
 
         el.addEventListener('dblclick', () => {
             if (el.dataset.noEdit === "true" || el.classList.contains('qr-group-box')) return;
-            el.contentEditable = "true"; el.focus(); el.style.cursor = 'text'; el.style.outline = "3px solid #ec4899";
+            el.contentEditable = "true"; el.focus(); el.style.cursor = 'text'; el.style.outline = "3px solid var(--color-primary, #ec4899)";
         });
         el.addEventListener('blur', () => { el.contentEditable = "false"; el.style.cursor = 'move'; });
     }
@@ -759,13 +778,20 @@
             if (!response.ok) return; 
             const fonts = await response.json();
             
-            loadedCustomFontsList = fonts; // Save for the live preview drawer
+            loadedCustomFontsList = fonts; 
             let dynamicCSS = '';
             const fontSelect = document.getElementById('elementFontFamily');
             
             fonts.forEach(font => {
-                dynamicCSS += `@font-face { font-family: '${font.fontFamily}'; src: url('./fonts/${font.fileName}'); }\n`;
-                if(fontSelect) fontSelect.innerHTML += `<option value="'${font.fontFamily}', sans-serif">${font.displayName}</option>`;
+                // Remove spaces to create a unique, safe CSS font-family name (prevents weight overrides)
+                const safeFamilyName = font.displayName.replace(/[^a-zA-Z0-9]/g, '');
+                font.safeFamilyName = safeFamilyName; 
+                
+                // Safely encode the URL to prevent 404 errors with spaces in filenames
+                const safeUrl = encodeURI(font.fileName);
+                
+                dynamicCSS += `@font-face { font-family: '${safeFamilyName}'; src: url('./fonts/${safeUrl}'); }\n`;
+                if(fontSelect) fontSelect.innerHTML += `<option value="'${safeFamilyName}', sans-serif">${font.displayName}</option>`;
             });
             
             const styleTag = document.createElement('style');
@@ -870,10 +896,26 @@ let currentFontCategoryFilter = 'All';
                 displayCategoryName = fontCategory; // Fallback
             }
             
+            const fontVal = f.safeFamilyName ? `'${f.safeFamilyName}', sans-serif` : (f.fontFamily ? `'${f.fontFamily}', sans-serif` : f.val);
+            
+            // Check if this font matches the currently selected element
+            let isSelected = false;
+            if (currentlySelectedElement && currentlySelectedElement.style.fontFamily) {
+                const currentFamily = currentlySelectedElement.style.fontFamily.replace(/"/g, "'");
+                if (currentFamily.includes(f.safeFamilyName || f.fontFamily || f.name)) {
+                    isSelected = true;
+                }
+            }
+
+            const activeBorderColor = isSelected ? 'var(--color-primary, #ec4899)' : brdCol;
             const card = document.createElement('div');
-            card.style.cssText = `padding: 12px; border: 1px solid ${brdCol}; border-radius: 8px; cursor: pointer; background: ${bgCol}; margin-bottom: 8px; display: flex; flex-direction: column; gap: 8px;`;
-            card.onmouseover = () => card.style.borderColor = 'var(--color-primary, #ec4899)';
-            card.onmouseout = () => card.style.borderColor = brdCol;
+            
+            card.style.cssText = `padding: 12px; border: 2px solid ${activeBorderColor}; border-radius: 8px; cursor: pointer; background: ${isSelected ? 'var(--color-primary-soft, rgba(236,72,153,0.1))' : bgCol}; margin-bottom: 8px; display: flex; flex-direction: column; gap: 8px; transition: 0.2s;`;
+            
+            if (!isSelected) {
+                card.onmouseover = () => card.style.borderColor = 'var(--color-primary, #ec4899)';
+                card.onmouseout = () => card.style.borderColor = brdCol;
+            }
             
             card.onclick = () => {
                 if (currentlySelectedElement) {
