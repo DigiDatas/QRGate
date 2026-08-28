@@ -1,162 +1,233 @@
 [
   {
-    "displayName": "Arabic Bold",
-    "fontFamily": "ArabicBold",
-    "fileName": "ArabicBold.ttf"
+    "displayName": "ML-TTChithiraHeavy",
+    "fontFamily": "ML-TTChithiraHeavy",
+    "fileName": "ML_TT_CHITHIRA_HEAVYBOLDITALIC.TTF",
+    "category": "Malayalam"
   },
   {
-    "displayName": "Tajawal Regular",
-    "fontFamily": "Tajawal",
-    "fileName": "Tajawal.ttf"
-  },
-{
-    "displayName": "Simplified Arabic",
-    "fontFamily": "SimplifiedArabic",
-    "fileName": "SIMPO.TTF"
+    "displayName": "ML-TTGauri",
+    "fontFamily": "ML-TTGauri",
+    "fileName": "ML_TT_GAURI_BOLD_ITALIC.TTF",
+    "category": "Malayalam"
   },
   {
-    "displayName": "Simplified Arabic",
-    "fontFamily": "SimplifiedArabic",
-    "fileName": "SIMPBDO.TTF"
+    "displayName": "ML-TTRohini",
+    "fontFamily": "ML-TTRohini",
+    "fileName": "ML_TT_ROHINI_BOLD_ITALIC.TTF",
+    "category": "Malayalam"
   },
   {
-    "displayName": "Traditional Arabic",
-    "fontFamily": "TraditionalArabic",
-    "fileName": "TRADO.TTF"
+    "displayName": "ML-TTSruthy",
+    "fontFamily": "ML-TTSruthy",
+    "fileName": "ML_TT_SRUTHY_BOLD_ITALIC.TTF",
+    "category": "Malayalam"
   },
   {
-    "displayName": "Traditional Arabic",
-    "fontFamily": "TraditionalArabic",
-    "fileName": "TRADBDO.TTF"
+    "displayName": "ML-TTJyotsna",
+    "fontFamily": "ML-TTJyotsna",
+    "fileName": "ML_TT_JYOTSNA_BOLD_ITALIC.TTF",
+    "category": "Malayalam"
   },
   {
-    "displayName": "Urdu Typesetting",
-    "fontFamily": "UrduTypesetting",
-    "fileName": "URDTYPE.TTF"
+    "displayName": "ML-TTKaumudi",
+    "fontFamily": "ML-TTKaumudi",
+    "fileName": "ML_TT_KAUMUDI_BOLD.TTF",
+    "category": "Malayalam"
   },
   {
-    "displayName": "Urdu Typesetting",
-    "fontFamily": "UrduTypesetting",
-    "fileName": "URDTYPEB.TTF"
+    "displayName": "ML-TTVinay",
+    "fontFamily": "ML-TTVinay",
+    "fileName": "ML_TT_VINAY_BOLD.TTF",
+    "category": "Malayalam"
+  },
+  {
+    "displayName": "ML-TTVarsha",
+    "fontFamily": "ML-TTVarsha",
+    "fileName": "ML_TT_VARSHA_BOLD.TTF",
+    "category": "Malayalam"
+  },
+  {
+    "displayName": "ML-TTVarsha",
+    "fontFamily": "ML-TTVarsha",
+    "fileName": "ML_TT_VARSHA_ITALIC.TTF",
+    "category": "Malayalam"
+  },
+
+  {
+    "displayName": "IBM Plex Sans Arabic",
+    "fontFamily": "IBMPlexSansArabic",
+    "fileName": "IBMPlexSansArabic-Bold.ttf",
+    "category": "Arabic"
+  },
+  {
+    "displayName": "IBM Plex Sans Arabic",
+    "fontFamily": "IBMPlexSansArabic",
+    "fileName": "IBMPlexSansArabic-ExtraLight.ttf",
+    "category": "Arabic"
+  },
+  {
+    "displayName": "IBM Plex Sans Arabic",
+    "fontFamily": "IBMPlexSansArabic",
+    "fileName": "IBMPlexSansArabic-Light.ttf",
+    "category": "Arabic"
+  },
+  {
+    "displayName": "IBM Plex Sans Arabic",
+    "fontFamily": "IBMPlexSansArabic",
+    "fileName": "IBMPlexSansArabic-Medium.ttf",
+    "category": "Arabic"
+  },
+  {
+    "displayName": "IBM Plex Sans Arabic",
+    "fontFamily": "IBMPlexSansArabic",
+    "fileName": "IBMPlexSansArabic-Regular.ttf",
+    "category": "Arabic"
+  },
+  {
+    "displayName": "IBM Plex Sans Arabic",
+    "fontFamily": "IBMPlexSansArabic",
+    "fileName": "IBMPlexSansArabic-SemiBold.ttf",
+    "category": "Arabic"
+  },
+  {
+    "displayName": "Saudi",
+    "fontFamily": "Saudi",
+    "fileName": "Saudi-Bold.ttf",
+    "category": "Arabic"
+  },
+  {
+    "displayName": "Saudi",
+    "fontFamily": "Saudi",
+    "fileName": "Saudi-Regular.ttf",
+    "category": "Arabic"
+  },
+
+  {
+    "displayName": "GE SS Two",
+    "fontFamily": "GESSTwo",
+    "fileName": "GE_SS_TWO_MEDIUM.OTF",
+    "category": "Arabic"
   },
   {
     "displayName": "GE SS Two",
     "fontFamily": "GESSTwo",
-    "fileName": "GE_SS_TWO_MEDIUM.OTF"
+    "fileName": "GE_SS_TWO_BOLD.OTF",
+    "category": "Arabic"
   },
   {
     "displayName": "GE SS Two",
     "fontFamily": "GESSTwo",
-    "fileName": "GE_SS_TWO_BOLD.OTF"
+    "fileName": "GE_SS_TWO_LIGHT.OTF",
+    "category": "Arabic"
   },
   {
-    "displayName": "GE SS Two",
-    "fontFamily": "GESSTwo",
-    "fileName": "GE_SS_TWO_LIGHT.OTF"
+    "displayName": "Saudi",
+    "fontFamily": "Saudi",
+    "fileName": "SAUDI-BOLD.TTF",
+    "category": "Arabic"
   },
   {
-    "displayName": "AGA Arabesque Desktop",
-    "fontFamily": "AGAArabesqueDesktop",
-    "fileName": "ARBSQDTP.TTF"
+    "displayName": "Saudi",
+    "fontFamily": "Saudi",
+    "fileName": "SAUDI-REGULAR.TTF",
+    "category": "Arabic"
+  },
+  {
+    "displayName": "AF_Najed",
+    "fontFamily": "AF_Najed",
+    "fileName": "AF_NAJED NORMAL TRADITIONAL (1).TTF",
+    "category": "Arabic"
   },
   {
     "displayName": "AGA Arabesque",
     "fontFamily": "AGAArabesque",
-    "fileName": "ARABSQ.TTF"
+    "fileName": "ARABSQ.TTF",
+    "category": "Arabic"
   },
   {
-    "displayName": "Aldhabi",
-    "fontFamily": "Aldhabi",
-    "fileName": "ALDHABI.TTF"
+    "displayName": "Cocon Next Arabic",
+    "fontFamily": "CoconNextArabic",
+    "fileName": "COCON-NEXT-ARABIC.TTF",
+    "category": "Arabic"
   },
   {
-    "displayName": "Andalus",
-    "fontFamily": "Andalus",
-    "fileName": "ANDLSO.TTF"
-  },
-  {
-    "displayName": "Arabic Typesetting",
-    "fontFamily": "ArabicTypesetting",
-    "fileName": "ARABTYPE.TTF"
+    "displayName": "CoconÆ Next Arabic",
+    "fontFamily": "CoconÆNextArabic",
+    "fileName": "COCONNEXTARABIC-BOLD.TTF",
+    "category": "Arabic"
   },
   {
     "displayName": "Microsoft Uighur",
     "fontFamily": "MicrosoftUighur",
-    "fileName": "MSUIGHUR.TTF"
+    "fileName": "MSUIGHUR.TTF",
+    "category": "Arabic"
   },
   {
     "displayName": "Microsoft Uighur",
     "fontFamily": "MicrosoftUighur",
-    "fileName": "MSUIGHUB.TTF"
+    "fileName": "MSUIGHUB.TTF",
+    "category": "Arabic"
   },
   {
-    "displayName": "Sakkal Majalla",
-    "fontFamily": "SakkalMajalla",
-    "fileName": "MAJALLA.TTF"
+    "displayName": "DIN Next LT Arabic",
+    "fontFamily": "DINNextLTArabic",
+    "fileName": "ALFONT_COM_ALFONT_COM_DINNEXTLTARABIC-MEDIUM-2.TTF",
+    "category": "Arabic"
   },
   {
-    "displayName": "Sakkal Majalla",
-    "fontFamily": "SakkalMajalla",
-    "fileName": "MAJALLAB.TTF"
-  },
- {
-    "displayName": "IBM Plex Sans Arabic",
-    "fontFamily": "IBMPlexSansArabic",
-    "fileName": "IBMPlexSansArabic-Bold.ttf"
+    "displayName": "DIN Next LT Arabic",
+    "fontFamily": "DINNextLTArabic",
+    "fileName": "DINNEXTLTARABIC-REGULAR.WOFF.TTF",
+    "category": "Arabic"
   },
   {
-    "displayName": "IBM Plex Sans Arabic",
-    "fontFamily": "IBMPlexSansArabic",
-    "fileName": "IBMPlexSansArabic-ExtraLight.ttf"
+    "displayName": "DIN Next LT Arabic",
+    "fontFamily": "DINNextLTArabic",
+    "fileName": "DIN-NEXT-LT-ARABIC-LIGHT.TTF",
+    "category": "Arabic"
   },
   {
-    "displayName": "IBM Plex Sans Arabic",
-    "fontFamily": "IBMPlexSansArabic",
-    "fileName": "IBMPlexSansArabic-Light.ttf"
+    "displayName": "DIN Next LT Arabic",
+    "fontFamily": "DINNextLTArabic",
+    "fileName": "ARBFONTS-DINNEXTLTARABIC-BLACK-3.TTF",
+    "category": "Arabic"
   },
   {
-    "displayName": "IBM Plex Sans Arabic",
-    "fontFamily": "IBMPlexSansArabic",
-    "fileName": "IBMPlexSansArabic-Medium.ttf"
+    "displayName": "DIN Next LT Arabic",
+    "fontFamily": "DINNextLTArabic",
+    "fileName": "ARBFONTS-DINNEXTLTARABIC-HEAVY2-2.TTF",
+    "category": "Arabic"
   },
   {
-    "displayName": "IBM Plex Sans Arabic",
-    "fontFamily": "IBMPlexSansArabic",
-    "fileName": "IBMPlexSansArabic-Regular.ttf"
+    "displayName": "DIN Next LT Arabic",
+    "fontFamily": "DINNextLTArabic",
+    "fileName": "ARBFONTS-DINNEXTLTARABIC-BOLD-4.TTF",
+    "category": "Arabic"
   },
   {
-    "displayName": "IBM Plex Sans Arabic",
-    "fontFamily": "IBMPlexSansArabic",
-    "fileName": "IBMPlexSansArabic-SemiBold.ttf"
+    "displayName": "Dubai",
+    "fontFamily": "Dubai",
+    "fileName": "DUBAI-REGULAR.TTF",
+    "category": "Arabic"
   },
   {
-    "displayName": "Saudi",
-    "fontFamily": "Saudi",
-    "fileName": "Saudi-Bold.ttf"
+    "displayName": "Dubai",
+    "fontFamily": "Dubai",
+    "fileName": "DUBAI-LIGHT.TTF",
+    "category": "Arabic"
   },
   {
-    "displayName": "Saudi",
-    "fontFamily": "Saudi",
-    "fileName": "Saudi-Regular.ttf"
-  },
-{
-    "displayName": "Saudi",
-    "fontFamily": "Saudi",
-    "fileName": "Saudi-Regular.ttf"
+    "displayName": "Dubai",
+    "fontFamily": "Dubai",
+    "fileName": "DUBAI-MEDIUM.TTF",
+    "category": "Arabic"
   },
   {
-    "displayName": "Saudi",
-    "fontFamily": "Saudi",
-    "fileName": "Saudi-Bold.ttf"
-  },
-  {
-    "displayName": "IBM Plex Sans Arabic",
-    "fontFamily": "IBMPlexSansArabic",
-    "fileName": "IBMPlexSansArabic-SemiBold.ttf"
-  },
-  {
-    "displayName": "IBM Plex Sans Arabic",
-    "fontFamily": "IBMPlexSansArabic",
-    "fileName": "IBMPlexSansArabic-Regular.ttf"
+    "displayName": "Dubai",
+    "fontFamily": "Dubai",
+    "fileName": "DUBAI-BOLD.TTF",
+    "category": "Arabic"
   }
 ]
+
