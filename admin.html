@@ -796,6 +796,22 @@ let currentFontCategoryFilter = 'All';
         renderFontExplorerList();
     }
 
+// ADD THE MISSING FUNCTION RIGHT HERE
+    function toggleFontExplorer() {
+        const panel = document.getElementById('fontExplorerPanel');
+        const grid = document.getElementById('builderLayoutGrid');
+        
+        if (panel.style.display === 'none' || panel.style.display === '') {
+            panel.style.display = 'flex';
+            // Pushes the canvas to make room for the 300px font drawer
+            grid.style.gridTemplateColumns = '260px 300px 1fr 280px';
+            renderFontExplorerList();
+        } else {
+            panel.style.display = 'none';
+            // Snaps back to the default 3-column layout
+            grid.style.gridTemplateColumns = '260px 1fr 280px';
+        }
+    }
     
 
     function renderFontExplorerList() {
