@@ -97,24 +97,24 @@
     <!-- DASHBOARD VIEWPORT SCROLLABLE -->
     <main class="flex-1 overflow-y-auto p-6 md:p-10 space-y-8 bg-slate-950">
       
-      <!-- QUICK ACCESS STAT CARDS -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Total Tenants</p>
-          <p class="text-3xl font-extrabold text-slate-100" id="statTotalTenants">0</p>
-        </div>
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pending Events</p>
-          <p class="text-3xl font-extrabold text-pink-500" id="statPendingEvents">0</p>
-        </div>
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Active Subscriptions (Paid)</p>
-          <p class="text-3xl font-extrabold text-green-400" id="statPaidTenants">0</p>
-        </div>
-      </div>
-
       <!-- TENANTS SECTION TAB -->
-      <div id="tenantsSection" class="space-y-4">
+      <div id="tenantsSection" class="space-y-6">
+        
+        <!-- QUICK ACCESS STAT CARDS (Now hidden when tab switches) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Total Tenants</p>
+            <p class="text-3xl font-extrabold text-slate-100" id="statTotalTenants">0</p>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pending Events</p>
+            <p class="text-3xl font-extrabold text-pink-500" id="statPendingEvents">0</p>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Active Subscriptions (Paid)</p>
+            <p class="text-3xl font-extrabold text-green-400" id="statPaidTenants">0</p>
+          </div>
+        </div>
         <div class="flex justify-between items-center">
           <h2 class="text-xl font-bold tracking-tight text-slate-100">Registered Tenants & Payment Status</h2>
         </div>
@@ -459,7 +459,13 @@
       if (!file) return;
       const canvas = document.getElementById('editorCanvas');
       const originalBg = canvas.style.backgroundImage;
-      canvas.innerHTML += `<div id="bgUploadingOverlay" style="position:absolute; inset:0; background:rgba(15,23,42,0.8); display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:bold; color:#ec4899; z-index:100;">Uploading...</div>`;
+      
+      // SAFE DOM INSERTION (Prevents dragging from breaking)
+      const overlay = document.createElement('div');
+      overlay.id = 'bgUploadingOverlay';
+      overlay.style.cssText = 'position:absolute; inset:0; background:rgba(15,23,42,0.8); display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:bold; color:#ec4899; z-index:100;';
+      overlay.innerText = 'Uploading...';
+      canvas.appendChild(overlay);
 
       try {
           const fileExt = file.name.split('.').pop();
@@ -719,6 +725,18 @@
     
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('#editorCanvas .canvas-element').forEach(el => makeDraggable(el));
+        fetchAdminTemplates(); 
+        
+        // ADMIN DELETE KEYBOARD SHORTCUT
+        document.addEventListener('keydown', (e) => {
+            if ((e.key === "Delete" || e.key === "Backspace") && currentlySelectedElement) {
+                if (currentlySelectedElement.contentEditable === "true") return;
+                if (currentlySelectedElement.id === 'canvasQRSpot' || currentlySelectedElement.id === 'canvasQrLabel') return;
+                e.preventDefault();
+                currentlySelectedElement.remove();
+                currentlySelectedElement = null;
+            }
+        });
         
         // Sync Formatting Inputs
         document.getElementById('elementColor').addEventListener('input', (e) => { if (currentlySelectedElement) currentlySelectedElement.style.color = e.target.value; });

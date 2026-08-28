@@ -2753,6 +2753,18 @@ function deleteSelectedElement() {
       if (document.getElementById('qrBoxPadding')) document.getElementById('qrBoxPadding').value = "10";
   }
 
+
+// --- SMART BACKGROUND SWAP ---
+  function applyGlobalBackground(bgUrl) {
+      if (currentEditingTemplateId && !isEditingGlobal) {
+          // If editing a personal template, just swap the background to keep texts safe!
+          currentActiveBgString = `url('${bgUrl}')`;
+          document.getElementById('editorCanvas').style.backgroundImage = currentActiveBgString;
+      } else {
+          alert("Please select one of your 'Saved Templates' below to edit first. Then click a Global Template above to apply its design to your text.");
+      }
+  }
+
   // --- LOAD SAVED TEMPLATE ---
   function loadSavedTemplate(id) {
       const tpl = windowSavedTemplates.find(x => x.id === id);
@@ -2940,7 +2952,7 @@ function deleteSelectedElement() {
         
         globalTemplates.slice(0, 4).forEach(t => {
             topGallery.innerHTML += `
-              <div onclick="loadSavedTemplate('${t.id}')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
+              <div onclick="applyGlobalBackground('${t.thumbnail_url}')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;" title="Apply this design to your template">
                  <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
                  <div style="width: 100%; height: 100px; background: ${t.thumbnail_url} center/cover no-repeat; background-color: var(--color-surface-soft);"></div>
                  <div style="padding: 4px 2px; text-align: center; font-size: 9px; font-weight: 600; line-height: 1;">${t.name}</div>
@@ -3033,7 +3045,12 @@ function deleteSelectedElement() {
       
       const canvas = document.getElementById('editorCanvas');
       const originalBg = canvas.style.backgroundImage;
-      canvas.innerHTML += `<div id="bgUploadingOverlay" style="position:absolute; inset:0; background:rgba(255,255,255,0.8); display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:bold; color:var(--color-primary); z-index:100;">Uploading...</div>`;
+      
+      const overlay = document.createElement('div');
+      overlay.id = 'bgUploadingOverlay';
+      overlay.style.cssText = 'position:absolute; inset:0; background:rgba(255,255,255,0.8); display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:bold; color:var(--color-primary); z-index:100;';
+      overlay.innerText = 'Uploading...';
+      canvas.appendChild(overlay);
 
       try {
           const fileExt = file.name.split('.').pop();
