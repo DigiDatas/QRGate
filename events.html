@@ -985,8 +985,7 @@
                <h3 class="section-title" style="margin-bottom: 12px; font-size: 13px;">2. Tools</h3>
                <div style="display: flex; flex-direction: column; gap: 4px;">
                   <button class="nav-item tool-btn w-full" onclick="addCanvasText()" style="justify-content: flex-start; height: 34px; font-size:12px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg> Add Text</button>
-                  <input type="file" id="tenantBgUploadInput" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="uploadCanvasBackground(event, false)">
-<button class="nav-item tool-btn w-full" onclick="document.getElementById('tenantBgUploadInput').click()" style="justify-content: flex-start; height: 34px; font-size:12px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Upload Background</button>
+                  <button class="nav-item tool-btn w-full" onclick="openAssetLibrary()" style="justify-content: flex-start; height: 34px; font-size:12px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Image Library</button>
                   
                   <div style="height: 1px; background: var(--color-border); margin: 10px 0;"></div>
                   <div style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;">Insert Dynamic Tags</div>
@@ -1143,6 +1142,26 @@
       <div id="previewContainer" style="width: 1080px; height: 1440px; transform: scale(0.55); transform-origin: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-radius: 20px; overflow: hidden; flex-shrink: 0; background: white;">
           <!-- Canvas will be cloned here -->
       </div>
+  </div>
+</div>
+
+<!-- ASSET LIBRARY MODAL -->
+<div id="assetLibraryModal" onclick="if(event.target === this) this.classList.add('hidden')" class="hidden fixed inset-0 flex items-center justify-center p-4" style="background: rgba(15,23,42,0.85); z-index: 10000;">
+  <div class="card panel" style="width: 100%; max-width: 800px; height: 75vh; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid var(--color-border); flex-shrink: 0;">
+      <div>
+        <h2 class="section-title" style="margin: 0;">My Background Images</h2>
+        <p style="font-size: 11px; color: var(--color-text-secondary); margin: 2px 0 0;">Select an existing image or upload a new one to your storage.</p>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <input type="file" id="modalBgUploadInput" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="uploadToAssetLibrary(event)">
+        <button onclick="document.getElementById('modalBgUploadInput').click()" class="btn-primary" style="padding: 8px 16px; font-size: 12px; display: flex; align-items: center; gap: 8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Upload New</button>
+        <button onclick="document.getElementById('assetLibraryModal').classList.add('hidden')" style="background:none; border:none; font-size:24px; cursor:pointer; color: var(--color-text-secondary);">&times;</button>
+      </div>
+    </div>
+    <div id="assetLibraryGrid" style="flex: 1; overflow-y: auto; padding: 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; background: var(--color-surface-soft);" class="no-scrollbar">
+       <!-- Images inject here -->
+    </div>
   </div>
 </div>
 
@@ -3056,39 +3075,60 @@ function deleteSelectedElement() {
       document.getElementById('allTemplatesModal').classList.remove('hidden');
   }
 
-  // --- NEW: UPLOAD TO SUPABASE BUCKET & CANVAS ZOOM ---
-  async function uploadCanvasBackground(event, isGlobal = false) {
+  // --- ASSET LIBRARY LOGIC ---
+  async function openAssetLibrary() {
+      document.getElementById('assetLibraryModal').classList.remove('hidden');
+      const grid = document.getElementById('assetLibraryGrid');
+      grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: var(--color-text-secondary); margin-top: 40px; font-size: 13px;">Loading your images...</div>';
+      
+      const folderPath = `tenant_${currentTenantId}`;
+      const { data, error } = await supabaseClient.storage.from('gate-pass-assets').list(folderPath);
+      
+      if (error || !data || data.length === 0) {
+          grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: var(--color-text-secondary); margin-top: 40px; font-size: 13px;">No images found. Upload one to get started!</div>';
+          return;
+      }
+
+      const files = data.filter(f => f.name !== '.emptyFolderPlaceholder');
+      grid.innerHTML = '';
+      
+      files.forEach(file => {
+          const { data: { publicUrl } } = supabaseClient.storage.from('gate-pass-assets').getPublicUrl(`${folderPath}/${file.name}`);
+          grid.innerHTML += `
+              <div onclick="setCanvasBackground('${publicUrl}')" style="aspect-ratio: 3/4; border-radius: var(--radius-sm); border: 1px solid var(--color-border); overflow: hidden; cursor: pointer; position: relative; background: var(--color-bg);" class="group" title="Click to use this image">
+                  <div style="width: 100%; height: 100%; background: url('${publicUrl}') center/cover no-repeat;"></div>
+              </div>
+          `;
+      });
+  }
+
+  function setCanvasBackground(url) {
+      currentActiveBgString = `url('${url}')`;
+      document.getElementById('editorCanvas').style.backgroundImage = currentActiveBgString;
+      document.getElementById('assetLibraryModal').classList.add('hidden');
+  }
+
+  async function uploadToAssetLibrary(event) {
       const file = event.target.files[0];
       if (!file) return;
       
-      const canvas = document.getElementById('editorCanvas');
-      const originalBg = canvas.style.backgroundImage;
-      
-      const overlay = document.createElement('div');
-      overlay.id = 'bgUploadingOverlay';
-      overlay.style.cssText = 'position:absolute; inset:0; background:rgba(255,255,255,0.8); display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:bold; color:var(--color-primary); z-index:100;';
-      overlay.innerText = 'Uploading...';
-      canvas.appendChild(overlay);
+      const grid = document.getElementById('assetLibraryGrid');
+      grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: var(--color-primary); font-weight: bold; margin-top: 40px; font-size: 14px;">Uploading image to your storage...</div>';
 
       try {
           const fileExt = file.name.split('.').pop();
           const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-          const folderPath = isGlobal ? `admin_templates/${fileName}` : `tenant_${currentTenantId}/${fileName}`;
+          const folderPath = `tenant_${currentTenantId}/${fileName}`;
 
-          const { data, error } = await supabaseClient.storage.from('gate-pass-assets').upload(folderPath, file, { upsert: false });
+          const { error } = await supabaseClient.storage.from('gate-pass-assets').upload(folderPath, file, { upsert: false });
           if (error) throw error;
-
-          const { data: { publicUrl } } = supabaseClient.storage.from('gate-pass-assets').getPublicUrl(folderPath);
-
-          currentActiveBgString = `url('${publicUrl}')`;
-          canvas.style.backgroundImage = currentActiveBgString;
-          canvas.style.backgroundSize = '100% 100%';
+          
+          // Refresh gallery to show the new image
+          openAssetLibrary();
       } catch (err) {
           alert("Error uploading image: " + err.message);
-          canvas.style.backgroundImage = originalBg;
+          openAssetLibrary(); 
       } finally {
-          const overlay = document.getElementById('bgUploadingOverlay');
-          if (overlay) overlay.remove();
           event.target.value = ''; 
       }
   }
@@ -3137,7 +3177,16 @@ function deleteSelectedElement() {
       const cleanCanvasHtml = canvasClone.outerHTML;
       const assignedEventId = document.getElementById('tplEventSelect').value || null;
       const selectedGuestId = document.getElementById('tplGuestSelect').value || null;
-
+	// NEW STRICT VALIDATION: ONE PASS PER GUEST
+      if (selectedGuestId) {
+          const guest = allFetchedGuests.find(g => g.id === selectedGuestId);
+          if (guest && guest.template_id) {
+              // Block if saving as new, OR if trying to attach a different template to this guest
+              if (saveAsNew || !currentEditingTemplateId || String(guest.template_id) !== String(currentEditingTemplateId)) {
+                  return alert("STRICT RULE: This guest already has a gate pass assigned to them.\n\nYou can only 'Update Pass' on their existing design, you cannot create multiple designs for one guest. Please select a different guest.");
+              }
+          }
+      }
       const payload = {
          name: tplName, 
          event_type: 'Custom', 
