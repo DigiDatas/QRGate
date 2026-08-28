@@ -978,7 +978,7 @@
           </div>
 
           <!-- 2. EDITOR GRID -->
-          <div style="flex: 1; display: grid; grid-template-columns: 220px 1fr 260px; gap: 16px; min-height: 520px; margin-bottom: 12px;">
+          <div id="builderLayoutGrid" style="flex: 1; display: grid; grid-template-columns: 220px 1fr 260px; gap: 16px; min-height: 520px; margin-bottom: 12px; transition: grid-template-columns 0.3s ease-out;">
             
             <!-- Left: Tools Sidebar -->
             <div class="card panel no-scrollbar" style="padding: 12px; display: flex; flex-direction: column; overflow-y: auto;">
@@ -1003,13 +1003,18 @@
                           <input type="color" id="elementColor" value="#ffffff" style="width: 32px; height: 32px; padding: 0; border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer;" title="Text Color">
                           <input type="number" id="elementFontSize" class="input-field" style="margin: 0; padding: 4px 8px; font-size: 12px; height: 32px;" placeholder="Size (px)" title="Font Size">
                       </div>
-                      <select id="elementFontFamily" class="input-field" style="margin: 0; padding: 4px 8px; font-size: 12px; height: 32px;">
-                          <option value="var(--font-family)">Default Font</option>
-                          <option value="Arial, sans-serif">Arial</option>
-                          <option value="'Courier New', monospace">Courier New</option>
-                          <option value="'Times New Roman', serif">Times New Roman</option>
-                          <option value="'Georgia', serif">Georgia</option>
-                      </select>
+                      <div style="display: flex; gap: 4px; align-items: center; width: 100%;">
+                          <select id="elementFontFamily" class="input-field" style="margin: 0; padding: 4px 8px; font-size: 12px; height: 32px; flex: 1;">
+                              <option value="var(--font-family)">Default Font</option>
+                              <option value="Arial, sans-serif">Arial</option>
+                              <option value="'Courier New', monospace">Courier New</option>
+                              <option value="'Times New Roman', serif">Times New Roman</option>
+                              <option value="'Georgia', serif">Georgia</option>
+                          </select>
+                          <button onclick="toggleFontExplorer()" type="button" style="height: 32px; width: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-border); border-radius: 4px; background: var(--color-surface-soft); cursor: pointer;" title="Preview All Fonts">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                          </button>
+                      </div>
                       <!-- 3 Segmented Alignment Buttons (Replaced the old select dropdown) -->
                       <div style="display: flex; gap: 4px; width: 100%;">
                         <button type="button" class="btn-align-toggle btn-filter-nav" data-align="left" style="flex:1; padding:4px; justify-content:center; height:30px;" title="Align Left">
@@ -1054,6 +1059,14 @@
 
                   <button onclick="deleteSelectedElement()" class="btn-primary" style="background: var(--color-danger-soft); color: var(--color-danger); font-size: 11px; padding: 6px;">Delete Selected</button>
                </div>
+            </div>
+<!-- NEW: FONT EXPLORER SLIDING PANEL -->
+            <div id="fontExplorerPanel" class="card panel no-scrollbar" style="display: none; padding: 16px; flex-direction: column; overflow-y: auto;">
+               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-shrink: 0;">
+                  <h3 class="section-title" style="margin: 0; font-size: 13px;">Font Library</h3>
+                  <button onclick="toggleFontExplorer()" style="border: none; background: none; cursor: pointer; color: var(--color-text-secondary); font-size: 20px;">&times;</button>
+               </div>
+               <div id="fontExplorerList" style="display: flex; flex-direction: column;"></div>
             </div>
 
             <!-- Middle: Canvas Area -->
@@ -2563,6 +2576,9 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
           e.preventDefault(); e.stopPropagation();
           
           currentlySelectedElement = el;
+if (document.getElementById('fontExplorerPanel') && document.getElementById('fontExplorerPanel').style.display !== 'none') {
+                renderFontExplorerList(); // Live updates the drawer when a new text is clicked!
+            }
           document.querySelectorAll('.canvas-element').forEach(node => { node.style.outline = "none"; node.classList.remove('active-element'); });
           el.style.outline = "3px dashed var(--color-primary)"; el.classList.add('active-element');
           
@@ -2612,29 +2628,104 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
       dragTarget = null;
   });
 
-  // --- DYNAMIC FONT ENGINE ---
-  async function loadCustomFonts() {
-      try {
-          const response = await fetch('./fonts/fonts.json');
-          if (!response.ok) return; 
-          const fonts = await response.json();
-          
-          let dynamicCSS = '';
-          const fontSelect = document.getElementById('elementFontFamily');
-          if (!fontSelect) return;
-          
-          fonts.forEach(font => {
-              dynamicCSS += `@font-face { font-family: '${font.fontFamily}'; src: url('./fonts/${font.fileName}'); }\n`;
-              fontSelect.innerHTML += `<option value="'${font.fontFamily}', sans-serif">${font.displayName}</option>`;
-          });
-          
-          const styleTag = document.createElement('style');
-          styleTag.innerHTML = dynamicCSS;
-          document.head.appendChild(styleTag);
-      } catch (err) {
-          console.warn("Could not load custom fonts:", err);
-      }
-  }
+  // --- DYNAMIC FONT ENGINE & EXPLORER ---
+    let loadedCustomFontsList = []; // Stores fonts globally for the explorer
+
+    async function loadCustomFonts() {
+        try {
+            const response = await fetch('./fonts/fonts.json');
+            if (!response.ok) return; 
+            const fonts = await response.json();
+            
+            loadedCustomFontsList = fonts; // Save for the live preview drawer
+            let dynamicCSS = '';
+            const fontSelect = document.getElementById('elementFontFamily');
+            
+            fonts.forEach(font => {
+                dynamicCSS += `@font-face { font-family: '${font.fontFamily}'; src: url('./fonts/${font.fileName}'); }\n`;
+                if(fontSelect) fontSelect.innerHTML += `<option value="'${font.fontFamily}', sans-serif">${font.displayName}</option>`;
+            });
+            
+            const styleTag = document.createElement('style');
+            styleTag.innerHTML = dynamicCSS;
+            document.head.appendChild(styleTag);
+        } catch (err) {
+            console.warn("Could not load custom fonts:", err);
+        }
+    }
+
+    function toggleFontExplorer() {
+        const panel = document.getElementById('fontExplorerPanel');
+        const grid = document.getElementById('builderLayoutGrid');
+        const isEventsPage = window.location.pathname.includes('events') || !document.body.classList.contains('bg-slate-950');
+        
+        if (panel.style.display === 'none') {
+            panel.style.display = 'flex';
+            // Slide open by adding a new column to the grid
+            grid.style.gridTemplateColumns = isEventsPage ? '220px 280px 1fr 260px' : '260px 300px 1fr 280px';
+            renderFontExplorerList();
+        } else {
+            panel.style.display = 'none';
+            // Snap closed
+            grid.style.gridTemplateColumns = isEventsPage ? '220px 1fr 260px' : '260px 1fr 280px';
+        }
+    }
+
+    function renderFontExplorerList() {
+        const list = document.getElementById('fontExplorerList');
+        if(!list) return;
+        
+        // Grab the actual text from the canvas to use as the preview!
+        let sampleText = "Preview Text";
+        if (currentlySelectedElement && currentlySelectedElement.innerText.trim()) {
+            const clone = currentlySelectedElement.cloneNode(true);
+            const handle = clone.querySelector('.resize-handle');
+            if (handle) handle.remove(); // Remove the little handle from the preview
+            sampleText = clone.innerText.trim() || "Preview Text";
+        }
+
+        const isEvents = window.location.pathname.includes('events') || !document.body.classList.contains('bg-slate-950');
+        const bgCol = isEvents ? 'var(--color-surface-soft)' : '#0f172a';
+        const brdCol = isEvents ? 'var(--color-border)' : '#1e293b';
+        const txtCol = isEvents ? 'var(--color-text)' : '#f1f5f9';
+        const subCol = isEvents ? 'var(--color-text-secondary)' : '#64748b';
+
+        list.innerHTML = ''; 
+
+        const defaultFonts = [
+            { name: 'Default Font', val: isEvents ? 'var(--font-family)' : 'Inter, sans-serif' },
+            { name: 'Arial', val: 'Arial, sans-serif' },
+            { name: 'Courier New', val: "'Courier New', monospace" },
+            { name: 'Times New Roman', val: "'Times New Roman', serif" },
+            { name: 'Georgia', val: "'Georgia', serif" }
+        ];
+
+        [...defaultFonts, ...loadedCustomFontsList].forEach(f => {
+            const fontVal = f.fontFamily ? `'${f.fontFamily}', sans-serif` : f.val;
+            const fontName = f.displayName || f.name;
+            
+            const card = document.createElement('div');
+            card.style.cssText = `padding: 12px; border: 1px solid ${brdCol}; border-radius: 8px; cursor: pointer; background: ${bgCol}; margin-bottom: 8px;`;
+            card.onmouseover = () => card.style.borderColor = '#ec4899';
+            card.onmouseout = () => card.style.borderColor = brdCol;
+            
+            card.onclick = () => {
+                if (currentlySelectedElement) {
+                    currentlySelectedElement.style.fontFamily = fontVal;
+                    const select = document.getElementById('elementFontFamily');
+                    if(select) select.value = fontVal;
+                } else {
+                    alert("Please select a text element on the canvas first.");
+                }
+            };
+            
+            card.innerHTML = `
+                <div style="font-size: 10px; color: ${subCol}; margin-bottom: 8px; font-weight: 600;">${fontName}</div>
+                <div style="font-family: ${fontVal}; font-size: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: ${txtCol}; line-height: 1.2;">${sampleText}</div>
+            `;
+            list.appendChild(card);
+        });
+    }
 
   // --- EDITOR UI CONTROLS ---
   function applyTemplateBg(cardElement, bgStr, color1, color2) {
