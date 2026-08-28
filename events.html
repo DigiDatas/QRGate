@@ -2612,6 +2612,30 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
       dragTarget = null;
   });
 
+  // --- DYNAMIC FONT ENGINE ---
+  async function loadCustomFonts() {
+      try {
+          const response = await fetch('./fonts/fonts.json');
+          if (!response.ok) return; 
+          const fonts = await response.json();
+          
+          let dynamicCSS = '';
+          const fontSelect = document.getElementById('elementFontFamily');
+          if (!fontSelect) return;
+          
+          fonts.forEach(font => {
+              dynamicCSS += `@font-face { font-family: '${font.fontFamily}'; src: url('./fonts/${font.fileName}'); }\n`;
+              fontSelect.innerHTML += `<option value="'${font.fontFamily}', sans-serif">${font.displayName}</option>`;
+          });
+          
+          const styleTag = document.createElement('style');
+          styleTag.innerHTML = dynamicCSS;
+          document.head.appendChild(styleTag);
+      } catch (err) {
+          console.warn("Could not load custom fonts:", err);
+      }
+  }
+
   // --- EDITOR UI CONTROLS ---
   function applyTemplateBg(cardElement, bgStr, color1, color2) {
       currentActiveBgString = bgStr; // Save active string for the database thumbnail
@@ -3255,6 +3279,8 @@ function deleteSelectedElement() {
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+      loadCustomFonts(); // <-- Trigger Font Engine
+
       const evtName = document.getElementById('canvasEventName');
       const gstName = document.getElementById('canvasGuestName');
       const qrLabel = document.getElementById('canvasQrLabel');

@@ -723,9 +723,40 @@
     });
     document.addEventListener('mouseup', () => { isDragging = false; dragTarget = null; });
     
+    document.addEventListener('mouseup', () => { isDragging = false; dragTarget = null; });
+    
+    // --- DYNAMIC FONT ENGINE ---
+    async function loadCustomFonts() {
+        try {
+            // Fetch the JSON file from your fonts folder
+            const response = await fetch('./fonts/fonts.json');
+            if (!response.ok) return; 
+            const fonts = await response.json();
+            
+            let dynamicCSS = '';
+            const fontSelect = document.getElementById('elementFontFamily');
+            
+            fonts.forEach(font => {
+                // Write CSS and add to dropdown
+                dynamicCSS += `@font-face { font-family: '${font.fontFamily}'; src: url('./fonts/${font.fileName}'); }\n`;
+                fontSelect.innerHTML += `<option value="'${font.fontFamily}', sans-serif">${font.displayName}</option>`;
+            });
+            
+            // Inject CSS into the page
+            const styleTag = document.createElement('style');
+            styleTag.innerHTML = dynamicCSS;
+            document.head.appendChild(styleTag);
+            
+        } catch (err) {
+            console.warn("Could not load custom fonts:", err);
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+        loadCustomFonts(); // <-- Trigger Font Engine
+
         document.querySelectorAll('#editorCanvas .canvas-element').forEach(el => makeDraggable(el));
-        fetchAdminTemplates(); 
+        fetchAdminTemplates();
         
         // ADMIN DELETE KEYBOARD SHORTCUT
         document.addEventListener('keydown', (e) => {
