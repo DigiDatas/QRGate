@@ -3,231 +3,231 @@
     "displayName": "ML-TTChithiraHeavy",
     "fontFamily": "ML-TTChithiraHeavy",
     "fileName": "ML_TT_CHITHIRA_HEAVYBOLDITALIC.TTF",
-    "category": "Malayalam"
+    "category": "ML"
   },
   {
     "displayName": "ML-TTGauri",
     "fontFamily": "ML-TTGauri",
     "fileName": "ML_TT_GAURI_BOLD_ITALIC.TTF",
-    "category": "Malayalam"
+    "category": "ML"
   },
   {
     "displayName": "ML-TTRohini",
     "fontFamily": "ML-TTRohini",
     "fileName": "ML_TT_ROHINI_BOLD_ITALIC.TTF",
-    "category": "Malayalam"
+    "category": "ML"
   },
   {
     "displayName": "ML-TTSruthy",
     "fontFamily": "ML-TTSruthy",
     "fileName": "ML_TT_SRUTHY_BOLD_ITALIC.TTF",
-    "category": "Malayalam"
+    "category": "ML"
   },
   {
     "displayName": "ML-TTJyotsna",
     "fontFamily": "ML-TTJyotsna",
     "fileName": "ML_TT_JYOTSNA_BOLD_ITALIC.TTF",
-    "category": "Malayalam"
+    "category": "ML"
   },
   {
     "displayName": "ML-TTKaumudi",
     "fontFamily": "ML-TTKaumudi",
     "fileName": "ML_TT_KAUMUDI_BOLD.TTF",
-    "category": "Malayalam"
+    "category": "ML"
   },
   {
     "displayName": "ML-TTVinay",
     "fontFamily": "ML-TTVinay",
     "fileName": "ML_TT_VINAY_BOLD.TTF",
-    "category": "Malayalam"
+    "category": "ML"
   },
   {
     "displayName": "ML-TTVarsha",
     "fontFamily": "ML-TTVarsha",
     "fileName": "ML_TT_VARSHA_BOLD.TTF",
-    "category": "Malayalam"
+    "category": "ML"
   },
   {
     "displayName": "ML-TTVarsha",
     "fontFamily": "ML-TTVarsha",
     "fileName": "ML_TT_VARSHA_ITALIC.TTF",
-    "category": "Malayalam"
+    "category": "ML"
   },
 
   {
     "displayName": "IBM Plex Sans Arabic",
     "fontFamily": "IBMPlexSansArabic",
     "fileName": "IBMPlexSansArabic-Bold.ttf",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "IBM Plex Sans Arabic",
     "fontFamily": "IBMPlexSansArabic",
     "fileName": "IBMPlexSansArabic-ExtraLight.ttf",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "IBM Plex Sans Arabic",
     "fontFamily": "IBMPlexSansArabic",
     "fileName": "IBMPlexSansArabic-Light.ttf",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "IBM Plex Sans Arabic",
     "fontFamily": "IBMPlexSansArabic",
     "fileName": "IBMPlexSansArabic-Medium.ttf",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "IBM Plex Sans Arabic",
     "fontFamily": "IBMPlexSansArabic",
     "fileName": "IBMPlexSansArabic-Regular.ttf",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "IBM Plex Sans Arabic",
     "fontFamily": "IBMPlexSansArabic",
     "fileName": "IBMPlexSansArabic-SemiBold.ttf",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "Saudi",
     "fontFamily": "Saudi",
     "fileName": "Saudi-Bold.ttf",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "Saudi",
     "fontFamily": "Saudi",
     "fileName": "Saudi-Regular.ttf",
-    "category": "Arabic"
+    "category": "AR"
   },
 
   {
     "displayName": "GE SS Two",
     "fontFamily": "GESSTwo",
     "fileName": "GE_SS_TWO_MEDIUM.OTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "GE SS Two",
     "fontFamily": "GESSTwo",
     "fileName": "GE_SS_TWO_BOLD.OTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "GE SS Two",
     "fontFamily": "GESSTwo",
     "fileName": "GE_SS_TWO_LIGHT.OTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "Saudi",
     "fontFamily": "Saudi",
     "fileName": "SAUDI-BOLD.TTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "Saudi",
     "fontFamily": "Saudi",
     "fileName": "SAUDI-REGULAR.TTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "AF_Najed",
     "fontFamily": "AF_Najed",
     "fileName": "AF_NAJED NORMAL TRADITIONAL (1).TTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "AGA Arabesque",
     "fontFamily": "AGAArabesque",
     "fileName": "ARABSQ.TTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "Cocon Next Arabic",
     "fontFamily": "CoconNextArabic",
     "fileName": "COCON-NEXT-ARABIC.TTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "CoconÆ Next Arabic",
     "fontFamily": "CoconÆNextArabic",
     "fileName": "COCONNEXTARABIC-BOLD.TTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "Microsoft Uighur",
     "fontFamily": "MicrosoftUighur",
     "fileName": "MSUIGHUR.TTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "Microsoft Uighur",
     "fontFamily": "MicrosoftUighur",
     "fileName": "MSUIGHUB.TTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "DIN Next LT Arabic",
     "fontFamily": "DINNextLTArabic",
     "fileName": "ALFONT_COM_ALFONT_COM_DINNEXTLTARABIC-MEDIUM-2.TTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "DIN Next LT Arabic",
     "fontFamily": "DINNextLTArabic",
     "fileName": "DINNEXTLTARABIC-REGULAR.WOFF.TTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "DIN Next LT Arabic",
     "fontFamily": "DINNextLTArabic",
     "fileName": "DIN-NEXT-LT-ARABIC-LIGHT.TTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "DIN Next LT Arabic",
     "fontFamily": "DINNextLTArabic",
     "fileName": "ARBFONTS-DINNEXTLTARABIC-BLACK-3.TTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "DIN Next LT Arabic",
     "fontFamily": "DINNextLTArabic",
     "fileName": "ARBFONTS-DINNEXTLTARABIC-HEAVY2-2.TTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "DIN Next LT Arabic",
     "fontFamily": "DINNextLTArabic",
     "fileName": "ARBFONTS-DINNEXTLTARABIC-BOLD-4.TTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "Dubai",
     "fontFamily": "Dubai",
     "fileName": "DUBAI-REGULAR.TTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "Dubai",
     "fontFamily": "Dubai",
     "fileName": "DUBAI-LIGHT.TTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "Dubai",
     "fontFamily": "Dubai",
     "fileName": "DUBAI-MEDIUM.TTF",
-    "category": "Arabic"
+    "category": "AR"
   },
   {
     "displayName": "Dubai",
     "fontFamily": "Dubai",
     "fileName": "DUBAI-BOLD.TTF",
-    "category": "Arabic"
+    "category": "AR"
   }
 ]
 
