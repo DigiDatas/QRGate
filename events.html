@@ -2754,15 +2754,33 @@ function deleteSelectedElement() {
   }
 
 
-// --- SMART BACKGROUND SWAP ---
-  function applyGlobalBackground(bgUrl) {
+  // --- SMART BACKGROUND SWAP OR LOAD ---
+  function handleTopGalleryClick(id) {
+      const tpl = windowSavedTemplates.find(x => x.id === id);
+      if (!tpl) return;
+
+      // If tenant is editing their OWN personal template, ask to swap JUST the background
       if (currentEditingTemplateId && !isEditingGlobal) {
-          // If editing a personal template, just swap the background to keep texts safe!
-          currentActiveBgString = `url('${bgUrl}')`;
-          document.getElementById('editorCanvas').style.backgroundImage = currentActiveBgString;
-      } else {
-          alert("Please select one of your 'Saved Templates' below to edit first. Then click a Global Template above to apply its design to your text.");
+          if (confirm("Do you want to apply this background to your current design without changing your text?\n\n(Click 'Cancel' to load the full Global Template instead.)")) {
+              currentActiveBgString = tpl.thumbnail_url;
+              document.getElementById('editorCanvas').style.backgroundImage = currentActiveBgString;
+              
+              // Move the checkmark to the new background visually
+              document.querySelectorAll('#templateGallery .tpl-card').forEach(c => {
+                  c.style.border = '1px solid var(--color-border)';
+                  const check = c.querySelector('.active-check');
+                  if(check) check.style.display = 'none';
+                  if(c.getAttribute('onclick').includes(id)) {
+                      c.style.border = '2px solid var(--color-primary)';
+                      if(check) check.style.display = 'flex';
+                  }
+              });
+              return; 
+          }
       }
+      
+      // Otherwise, normal behavior: load the full template (texts + bg)
+      loadSavedTemplate(id);
   }
 
   // --- LOAD SAVED TEMPLATE ---
@@ -2845,7 +2863,7 @@ function deleteSelectedElement() {
           if(check) check.style.display = 'none';
           
           const onclickStr = c.getAttribute('onclick') || '';
-          if (onclickStr.includes(currentActiveBgString.replace(/"/g, "'"))) {
+          if (onclickStr.includes(id)) {
               c.style.border = '2px solid var(--color-primary)';
               if(check) check.style.display = 'flex';
           }
@@ -2952,7 +2970,7 @@ function deleteSelectedElement() {
         
         globalTemplates.slice(0, 4).forEach(t => {
             topGallery.innerHTML += `
-              <div onclick="applyGlobalBackground('${t.thumbnail_url}')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;" title="Apply this design to your template">
+              <div onclick="handleTopGalleryClick('${t.id}')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;" title="Apply this design to your template">
                  <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
                  <div style="width: 100%; height: 100px; background: ${t.thumbnail_url} center/cover no-repeat; background-color: var(--color-surface-soft);"></div>
                  <div style="padding: 4px 2px; text-align: center; font-size: 9px; font-weight: 600; line-height: 1;">${t.name}</div>
