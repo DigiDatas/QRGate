@@ -78,7 +78,7 @@
     let activeTenantId = null;
     let currentScanMode = 'Entry'; // Default mode
 
-   // 3. Handle PIN Login
+    // 3. Handle PIN Login
     async function handlePinLogin() {
       const pin = document.getElementById('pinInput').value.trim();
       const errorMsg = document.getElementById('loginError');
@@ -86,7 +86,7 @@
       if (!pin) return;
       errorMsg.classList.add('hidden');
 
-      // Query Supabase for the Gateman
+      // Query Supabase for the Gateman (Fetching gate_type)
       const { data: staff, error } = await supabaseClient
         .from('gatemen')
         .select('*, gates(gate_name, gate_type)')
@@ -116,32 +116,9 @@
       btnIn.style.display = (gType === 'Both' || gType === 'Entry') ? 'block' : 'none';
       btnOut.style.display = (gType === 'Both' || gType === 'Exit') ? 'block' : 'none';
       
+      // Auto-select the correct mode
       if (gType === 'Exit') setScanMode('Exit');
       else setScanMode('Entry');
-
-      // Update UI
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('mode-toggles').classList.remove('hidden');
-      document.getElementById('staffInfoDisplay').classList.remove('hidden');
-      document.getElementById('staffNameSpan').innerText = `${staff.name} (${staff.gates.gate_name})`;
-
-      startScanner();
-    }
-
-      if (error || !staff) {
-        errorMsg.classList.remove('hidden');
-        return;
-      }
-
-      if (!staff.assigned_gate_id) {
-        alert("You are not currently assigned to a gate. Contact the organizer.");
-        return;
-      }
-
-      // Store credentials
-      activeGatemanId = staff.id;
-      activeGateId = staff.assigned_gate_id;
-      activeTenantId = staff.tenant_id;
 
       // Update UI
       document.getElementById('login-screen').style.display = 'none';
