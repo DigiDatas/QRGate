@@ -76,6 +76,7 @@
     let activeGatemanId = null;
     let activeGateId = null;
     let activeTenantId = null;
+    let manualOverrideGuest = null;
     let currentScanMode = 'Entry'; // Default mode
 
     // 3. Handle PIN Login
@@ -170,8 +171,7 @@
     }
 
       
-
-    // 5. What happens when a QR code is successfully read?
+// 5. What happens when a QR code is successfully read?
     async function onScanSuccess(decodedText, decodedResult) {
       html5QrCode.stop().then(async () => {
         readerDiv.classList.add('hidden');
@@ -180,10 +180,10 @@
         resultBox.classList.remove('hidden');
         showScanResult('Verifying Ticket...', 'Checking database records...', 'blue');
 
-        // 1. Fetch guest record
+        // 1. Fetch guest record (NOW FETCHING ASSIGNED GATE NAME TOO)
         const { data: guest, error } = await supabaseClient
           .from('guests')
-          .select('*, events(is_approved, expires_at)')
+          .select('*, events(is_approved, expires_at), assigned_gate:gates!guests_assigned_gate_id_fkey(gate_name)')
           .eq('id', decodedText)
           .single(); 
 
@@ -203,53 +203,76 @@
           return;
         }
 
-        // 3. LOGIC FOR 'ENTRY' MODE
-        if (currentScanMode === 'Entry') {
-            const allowed = guest.allowed_capacity || 1;
-            const currentChecked = guest.checked_in_count || 0;
+        // 3. CHECK STRICT GATE ASSIGNMENT
+        if (guest.assigned_gate_id && guest.assigned_gate_id !== activeGateId) {
+          const correctGate = guest.assigned_gate ? guest.assigned_gate.gate_name : 'another gate';
+          showScanResult('Wrong Gate ⛔', `${guest.guest_name} is not allowed here. Please redirect them to: ${correctGate}`, 'red');
+          return;
+        }
 
+        const allowed = guest.allowed_capacity || 1;
+        const currentChecked = guest.checked_in_count || 0;
+
+        // 4. LOGIC FOR 'ENTRY' MODE
+        if (currentScanMode === 'Entry') {
             if (currentChecked >= allowed) {
                 showScanResult('⚠️ Fully Checked In', `All ${allowed} entries for ${guest.guest_name} have already been used!`, 'orange');
                 return;
             }
 
             const newCount = currentChecked + 1;
-
-            // Log the scan and update the guest math
             await logScanToDatabase(guest, 'Entry');
-            const { error: updateErr } = await supabaseClient.from('guests')
-                .update({ checked_in_count: newCount, current_status: 'Inside' })
-                .eq('id', guest.id);
-
-            if (updateErr) {
-                console.error(updateErr);
-                showScanResult('Database Error', 'Could not save check-in data to Supabase.', 'red');
-                return;
-            }
+            await supabaseClient.from('guests').update({ checked_in_count: newCount, current_status: 'Inside' }).eq('id', guest.id);
             
             showScanResult(`Entry Granted (${newCount}/${allowed}) ✅`, `Welcome, ${guest.guest_name}! Entry logged.`, 'green');
         } 
         
-        // 4. LOGIC FOR 'EXIT' MODE
+        // 5. LOGIC FOR 'EXIT' MODE
         else {
-            let warningMsg = '';
-            
-            // REAL WORLD FIX: Allow exit even if they missed the entry scan
-            if (guest.current_status === 'Pending') {
-                warningMsg = `\n(Note: Guest missed Entry scan, but Exit was logged).`;
-            } else if (guest.current_status === 'Exited') {
+            if (guest.current_status === 'Exited') {
                 showScanResult('⚠️ Already Exited', `${guest.guest_name} has already checked out.`, 'orange');
                 return;
             }
 
-            // Log the exit and update status (We DO NOT decrease checked_in_count to prevent pass sharing)
+            // CHECK FOR MISSED ENTRY
+            if (currentChecked < allowed) {
+                manualOverrideGuest = guest; // Store globally for the button to use
+                showScanResult('⚠️ Missed Entry Scan', `${guest.guest_name} has no recorded entry for this pass.`, 'orange');
+                
+                // Inject the manual override button
+                resultBox.innerHTML += `
+                  <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-yellow-800">
+                    <p class="mb-2 font-bold">Fix Database Records?</p>
+                    <button onclick="handleMissedEntry()" class="w-full bg-yellow-500 text-white font-bold py-2 rounded shadow hover:bg-yellow-600">Register Entry (+1) & Log Exit</button>
+                  </div>
+                `;
+                return; // Stop here, wait for gateman to click the button or scan next
+            }
+
+            // Normal Exit
             await logScanToDatabase(guest, 'Exit');
             await supabaseClient.from('guests').update({ current_status: 'Exited' }).eq('id', guest.id);
-            
-            showScanResult('Exit Logged 🚪', `Goodbye, ${guest.guest_name}. Exit successful.${warningMsg}`, 'blue');
+            showScanResult('Exit Logged 🚪', `Goodbye, ${guest.guest_name}. Exit successful.`, 'blue');
         }
 
       }).catch((err) => console.error("Failed to stop camera.", err));
+    }
+
+    // 6. Handle the Missed Entry Manual Button
+    async function handleMissedEntry() {
+        if (!manualOverrideGuest) return;
+        const g = manualOverrideGuest;
+        const newCount = (g.checked_in_count || 0) + 1;
+
+        // 1. Force Entry Log & Math
+        await logScanToDatabase(g, 'Entry');
+        await supabaseClient.from('guests').update({ checked_in_count: newCount, current_status: 'Exited' }).eq('id', g.id);
+        
+        // 2. Force Exit Log
+        await logScanToDatabase(g, 'Exit');
+
+        showScanResult('Records Fixed ✅', `Entry added (${newCount}/${g.allowed_capacity}) and Exit logged for ${g.guest_name}.`, 'green');
+        manualOverrideGuest = null; // clear it
     }
 
     // Helper: Insert the log into the database

@@ -929,8 +929,14 @@
                   <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">ID Number</label><input type="text" placeholder="Enter ID number" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
                   <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Ticket / Type</label><select id="agTierInput" class="input-field" style="margin: 0; padding: 10px 14px;"><option value="General">General</option><option value="VIP">VIP</option><option value="Speaker">Speaker</option></select></div>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 20px;">
                   <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">No. of Pairs / Capacity</label><input type="number" id="agCapacityInput" value="1" min="1" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div>
+                    <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Assign Gate (Optional)</label>
+                    <select id="agGateSelect" class="input-field" style="margin: 0; padding: 10px 14px;">
+                      <option value="">All Gates Allowed</option>
+                    </select>
+                  </div>
                   <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Notes (Optional)</label><textarea placeholder="Add any additional notes about this guest" class="input-field" style="margin: 0; padding: 10px 14px; height: 42px; resize: none;"></textarea></div>
                 </div>
               </div>
@@ -1373,6 +1379,7 @@ let allFetchedGuests = [];
   let currentGuestFilterEventId = null;
 let currentGuestTierFilter = 'All';
   let currentGuestViewMode = 'list';
+let allFetchedLogs = []; // Stores global scan logs for drill-downs
 
   // --- TAB NAVIGATION & HEADER ROUTING ---
   function switchView(viewId, navElement) {
@@ -1841,6 +1848,9 @@ let currentGuestTierFilter = 'All';
     
     const eventIds = events.map(e => e.id);
     const { data: guests } = await supabaseClient.from('guests').select('*, events(event_name)').in('event_id', eventIds);
+// NEW: Fetch all scan logs globally for the drill-downs
+    const { data: logs } = await supabaseClient.from('scan_logs').select('*, gates(gate_name), gatemen(name)').in('event_id', eventIds);
+    allFetchedLogs = logs || [];
     
     // --- SMART SORTING GUESTS ---
     if (guests) {
@@ -2063,9 +2073,24 @@ let currentGuestTierFilter = 'All';
           const evName = g.events ? g.events.event_name : 'General Event';
           const tierName = g.ticket_tier || 'General';
 
-          // RENDER LIST VIEW ROW
+          // --- DRILL DOWN DATA GENERATION ---
+          const guestLogs = allFetchedLogs.filter(l => l.guest_id === g.id).sort((a,b) => new Date(b.scanned_at) - new Date(a.scanned_at));
+          let logsHtml = guestLogs.length === 0 
+              ? '<div style="font-size:11px; color:var(--color-text-secondary); padding: 4px;">No scan records found for this guest yet.</div>' 
+              : guestLogs.map(l => {
+                  const time = new Date(l.scanned_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                  const date = new Date(l.scanned_at).toLocaleDateString([], {month: 'short', day: 'numeric'});
+                  const color = l.scan_type === 'Entry' ? 'var(--color-success)' : 'var(--color-info)';
+                  return `<div style="border-left: 3px solid ${color}; padding-left: 10px; min-width: 160px; background: var(--color-bg); padding: 8px 10px 8px 10px; border-radius: 4px; border-top: 1px solid var(--color-border); border-right: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); flex-shrink: 0;">
+                      <div style="font-size:11px; font-weight:700; color:${color}; margin-bottom: 2px;">${l.scan_type.toUpperCase()} • ${time}</div>
+                      <div style="font-size:12px; font-weight:600; color: var(--color-text);">${l.gates?.gate_name || 'Unknown Gate'}</div>
+                      <div style="font-size:10px; color:var(--color-text-secondary); margin-top: 2px;">${date} • Staff: ${l.gatemen?.name || 'System Override'}</div>
+                  </div>`;
+              }).join('');
+
+          // RENDER LIST VIEW ROW (With Drilldown logic & the eyeIcon included)
           guestListTable.innerHTML += `
-             <tr style="${rowStyle}">
+             <tr onclick="toggleDrilldown('drilldown-guest-${g.id}', event)" style="cursor:pointer; transition: background 0.2s; ${rowStyle}" onmouseover="this.style.background='var(--color-surface-soft)'" onmouseout="this.style.background='transparent'">
                <td>
                  <div style="display:flex; gap:12px; align-items:center;">
                    <div class="table-avatar" style="background:#F3E8FF; color:#9333EA;">${g.guest_name.substring(0,2).toUpperCase()}</div>
@@ -2096,6 +2121,13 @@ let currentGuestTierFilter = 'All';
                    <button onclick="toggleHideGuest('${g.id}', ${isHidden})" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer;" title="Show/Hide">${eyeIcon}</button>
                    <button onclick="editGuest('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-info); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
                    <button onclick="deleteGuest('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-danger-soft); color:var(--color-danger); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                 </div>
+               </td>
+             </tr>
+             <tr id="drilldown-guest-${g.id}" class="drilldown-row" style="display:none; background: var(--color-surface-soft);">
+               <td colspan="8" style="padding: 12px 20px; border-bottom: 1px solid var(--color-border);">
+                 <div style="display:flex; gap:12px; overflow-x:auto; padding-bottom:4px;" class="no-scrollbar">
+                    ${logsHtml}
                  </div>
                </td>
              </tr>
@@ -2583,6 +2615,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
               const tier = document.getElementById('agTierInput').value;
               const capacity = parseInt(document.getElementById('agCapacityInput').value) || 1;
               const notes = document.querySelector('#addGuestView textarea').value.trim();
+              const gateId = document.getElementById('agGateSelect').value || null; // NEW: Captures Gate
 
               if (!eventId || !name || !phone) return alert('Please select an event, and enter Guest Name and Phone Number.');
 
@@ -2595,7 +2628,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
               const guestPayload = {
                   event_id: eventId, guest_name: name, email: email, phone: phone, company: company, designation: designation,
                   id_number: idNumber, ticket_tier: tier, allowed_capacity: capacity, notes: notes,
-                  sent_via: selectedMethod
+                  sent_via: selectedMethod, assigned_gate_id: gateId // NEW: Saves to DB
               };
 
               if (currentEditGuestId) {
@@ -4207,7 +4240,7 @@ function toggleGuestInputMode(mode) {
       if (gateIds.length > 0) {
           const [staffRes, logRes] = await Promise.all([
               supabaseClient.from('gatemen').select('*').in('assigned_gate_id', gateIds),
-              supabaseClient.from('scan_logs').select('*').in('gate_id', gateIds)
+              supabaseClient.from('scan_logs').select('*, guests(guest_name)').in('gate_id', gateIds)
           ]);
           staff = staffRes.data || [];
           logs = logRes.data || [];
@@ -4323,6 +4356,56 @@ function toggleGuestInputMode(mode) {
               ele.scrollLeft = scrollLeft - walk;
           });
       });
+  });
+
+
+// --- ADD GUEST: DYNAMIC GATE DROPDOWN ---
+  document.addEventListener('DOMContentLoaded', () => {
+      const addGuestEventSelect = document.getElementById('addGuestEventSelect');
+      if (addGuestEventSelect) {
+          addGuestEventSelect.addEventListener('change', async (e) => {
+              const evId = e.target.value;
+              const gateSelect = document.getElementById('agGateSelect');
+              if(!gateSelect) return;
+              
+              gateSelect.innerHTML = '<option value="">All Gates Allowed</option>';
+              if(!evId) return;
+
+              const { data: gates } = await supabaseClient.from('gates').select('id, gate_name').eq('event_id', evId);
+              if(gates) {
+                  gates.forEach(g => gateSelect.innerHTML += `<option value="${g.id}">${g.gate_name}</option>`);
+              }
+          });
+      }
+  });
+
+  // --- DRILL-DOWN ROW TOGGLE LOGIC ---
+  function toggleDrilldown(rowId, event) {
+      // Ignore clicks on buttons inside the row
+      if(event.target.closest('button') || event.target.closest('svg') || event.target.closest('.table-avatar')) return;
+      
+      const targetRow = document.getElementById(rowId);
+      const isCurrentlyOpen = targetRow.style.display === 'table-row';
+
+      // 1. Close ALL open drill-down rows first
+      document.querySelectorAll('.drilldown-row').forEach(row => {
+          row.style.display = 'none';
+      });
+
+      // 2. Open the clicked one if it wasn't already open
+      if (!isCurrentlyOpen) {
+          targetRow.style.display = 'table-row';
+      }
+  }
+
+  // --- CLICK OUTSIDE TO CLOSE ---
+  document.addEventListener('click', (e) => {
+      // If click is outside any data table, close all drill-downs
+      if (!e.target.closest('.data-table')) {
+          document.querySelectorAll('.drilldown-row').forEach(row => {
+              row.style.display = 'none';
+          });
+      }
   });
 
 
