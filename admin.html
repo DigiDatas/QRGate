@@ -219,13 +219,17 @@
                   </div>
                   
                   <!-- FIX: The Dropdown AND the Expand Button together -->
-                  <div class="flex gap-2 items-center w-full">
-                      <select id="elementFontFamily" class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 outline-none">
-                          <option value="Inter, sans-serif">Default Font</option><option value="Arial, sans-serif">Arial</option><option value="'Courier New', monospace">Courier New</option><option value="'Times New Roman', serif">Times New Roman</option><option value="'Georgia', serif">Georgia</option>
+                  <div style="display: flex; gap: 8px; align-items: center; width: 100%;">
+                      <select id="elementFontFamily" style="flex: 1; background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 6px 12px; font-size: 12px; color: #e2e8f0; outline: none; height: 34px;">
+                          <option value="Inter, sans-serif">Default Font</option>
+                          <option value="Arial, sans-serif">Arial</option>
+                          <option value="'Courier New', monospace">Courier New</option>
+                          <option value="'Times New Roman', serif">Times New Roman</option>
+                          <option value="'Georgia', serif">Georgia</option>
                       </select>
                       
-                      <!-- THE MISSING BUTTON -->
-                      <button onclick="toggleFontExplorer()" type="button" class="bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 flex items-center justify-center transition" style="height: 34px; width: 34px; flex-shrink: 0;" title="Open Font Library">
+                      <!-- THE EXPAND BUTTON -->
+                      <button onclick="toggleFontExplorer()" type="button" style="height: 34px; width: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1px solid #1e293b; border-radius: 8px; background: #1e293b; color: #cbd5e1; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='#1e293b'" title="Open Font Library">
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
                       </button>
                   </div>
