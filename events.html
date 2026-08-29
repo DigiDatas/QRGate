@@ -246,6 +246,10 @@
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
           Guest Lists
         </button>
+<button class="nav-item w-full" onclick="switchView('gateManagementView', this)">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg></span>
+          Gate Management
+        </button>
   </div>
 
       <div class="nav-group">
@@ -630,6 +634,52 @@
       </div>
 
       
+
+<!-- ============================================== -->
+      <!-- TAB: GATE MANAGEMENT -->
+      <!-- ============================================== -->
+      <div id="gateManagementView" class="view-section">
+        <div style="display: flex; flex-direction: column; height: 100%; gap: 24px; min-height: 0;">
+          
+          <!-- Event Selector & Action Buttons -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0;">
+            <div>
+              <label style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase;">Manage Gates For:</label>
+              <select id="gateEventSelect" class="input-field" style="margin: 4px 0 0; padding: 10px 14px; width: 300px; font-weight: 600;" onchange="loadGateManagementData()">
+                <option value="">Select Event...</option>
+              </select>
+            </div>
+            <div style="display: flex; gap: 12px;">
+              <button onclick="openAddGatemanModal()" style="background: white; border: 1px solid var(--color-border); padding: 10px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer;">+ Assign Gateman</button>
+              <button onclick="openAddGateModal()" class="btn-primary" style="padding: 10px 16px;">+ Add Gate</button>
+            </div>
+          </div>
+
+          <!-- KPI Cards -->
+          <div class="kpi-5">
+            <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon purple" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg></div><div><div class="kpi-label" style="margin:0;">Total Gates</div><div class="kpi-value" id="kpiTotalGates">0</div></div></div>
+            <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon green" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="kpi-label" style="margin:0;">Total Entries</div><div class="kpi-value" id="kpiTotalEntries">0</div></div></div>
+            <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon blue" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div><div><div class="kpi-label" style="margin:0;">Total Exits</div><div class="kpi-value" id="kpiTotalExits">0</div></div></div>
+            <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon" style="width:40px; height:40px; background:#FEF6E2; color:#B4790C;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="kpi-label" style="margin:0;">Currently Inside</div><div class="kpi-value" id="kpiCurrentlyInside">0</div></div></div>
+            <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon pink" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></div><div><div class="kpi-label" style="margin:0;">QR Scanned</div><div class="kpi-value" id="kpiTotalScanned">0</div></div></div>
+          </div>
+
+          <!-- Main Table -->
+          <div class="card panel" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 0;">
+            <div style="padding: 20px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center;">
+              <h2 class="section-title" style="margin: 0;">Gate Details & Staff Operations</h2>
+            </div>
+            <div class="data-table-container no-scrollbar" style="border: none; border-radius: 0;">
+              <table class="data-table">
+                <thead><tr><th>Gate Name</th><th>Type</th><th>Assigned Staff (PIN)</th><th>Status</th><th>Entries</th><th>Exits</th><th>Actions</th></tr></thead>
+                <tbody id="gateManagementTableBody">
+                  <tr><td colspan="7" style="text-align: center; padding: 20px; color: var(--color-text-secondary);">Select an event to view gates.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
 
       
 
@@ -1190,6 +1240,76 @@
     </div>
   </div>
 </div>
+
+
+<!-- ============================================== -->
+<!-- GATE MANAGEMENT MODALS -->
+<!-- ============================================== -->
+<!-- ADD GATE MODAL -->
+<div id="addGateModal" class="hidden fixed inset-0 flex items-center justify-center p-4" style="background: rgba(15,23,42,0.85); z-index: 9999;">
+  <div class="card panel" style="width: 100%; max-width: 400px; padding: 24px; display: flex; flex-direction: column;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h2 class="section-title" style="margin: 0;">Add New Gate</h2>
+      <button onclick="closeAddGateModal()" style="background:none; border:none; font-size:20px; cursor:pointer; color: var(--color-text-secondary);">&times;</button>
+    </div>
+    <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Gate Name <span style="color: var(--color-danger);">*</span></label>
+    <input type="text" id="newGateName" placeholder="e.g. Main Entrance" class="input-field">
+    
+    <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Gate Type</label>
+    <select id="newGateType" class="input-field">
+      <option value="Both">Both (Entry & Exit)</option>
+      <option value="Entry">Entry Only</option>
+      <option value="Exit">Exit Only</option>
+    </select>
+
+    <div style="display: flex; gap: 12px; margin-top: 16px;">
+      <button onclick="closeAddGateModal()" style="flex: 1; background: white; border: 1px solid var(--color-border); padding: 10px; border-radius: 8px; font-weight: 600; font-size: 13px;">Cancel</button>
+      <button onclick="saveNewGate()" class="btn-primary" style="flex: 1; padding: 10px;">Save Gate</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD GATEMAN MODAL -->
+<div id="addGatemanModal" class="hidden fixed inset-0 flex items-center justify-center p-4" style="background: rgba(15,23,42,0.85); z-index: 9999;">
+  <div class="card panel" style="width: 100%; max-width: 450px; padding: 24px; display: flex; flex-direction: column;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h2 class="section-title" style="margin: 0;">Assign Gateman</h2>
+      <button onclick="closeAddGatemanModal()" style="background:none; border:none; font-size:20px; cursor:pointer; color: var(--color-text-secondary);">&times;</button>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div>
+        <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Staff Name <span style="color: var(--color-danger);">*</span></label>
+        <input type="text" id="newGatemanName" placeholder="Staff Name" class="input-field">
+      </div>
+      <div>
+        <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Phone Number</label>
+        <input type="text" id="newGatemanPhone" placeholder="Phone" class="input-field">
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 4px;">
+      <div>
+        <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Scanner PIN <span style="color: var(--color-danger);">*</span></label>
+        <input type="text" id="newGatemanPin" placeholder="4-6 Digit PIN" class="input-field">
+      </div>
+      <div>
+        <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Assign to Gate <span style="color: var(--color-danger);">*</span></label>
+        <select id="assignGateSelect" class="input-field">
+          <option value="">Select Gate...</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 12px; margin-top: 16px;">
+      <button onclick="closeAddGatemanModal()" style="flex: 1; background: white; border: 1px solid var(--color-border); padding: 10px; border-radius: 8px; font-weight: 600; font-size: 13px;">Cancel</button>
+      <button onclick="saveNewGateman()" class="btn-primary" style="flex: 1; padding: 10px;">Assign Staff</button>
+    </div>
+  </div>
+</div>
+
+
+
 <!-- ============================================== -->
 <!-- QR BOARDING PASS MODAL -->
 <!-- ============================================== -->
@@ -1291,7 +1411,10 @@ let currentGuestTierFilter = 'All';
     } else if (viewId === 'guestListsView') {
        titleEl.innerText = 'Guest List'; subEl.innerText = 'Manage and invite guests for your events';
        searchBox.style.display = 'block'; searchInput.placeholder = 'Search guests by name, email or phone...';
-        } else if (viewId === 'designTemplatesView') {
+    } else if (viewId === 'gateManagementView') {
+       titleEl.innerText = 'Gate Management'; subEl.innerText = 'Manage physical gates, assign staff, and monitor entry/exit logs';
+       searchBox.style.display = 'block'; searchInput.placeholder = 'Search gates or staff...';
+    } else if (viewId === 'designTemplatesView') {
        titleEl.innerText = 'Design Templates'; subEl.innerText = 'Choose a template and customize your gate pass';
        searchBox.style.display = 'none';
     } else if (viewId === 'savedDesignsView') {
@@ -1319,6 +1442,8 @@ let currentGuestTierFilter = 'All';
     
     const tplEvent = document.getElementById('tplEventSelect');
     if (tplEvent) tplEvent.innerHTML = '<option value="">Select Event...</option>';    
+const gateEvent = document.getElementById('gateEventSelect');
+    if (gateEvent) gateEvent.innerHTML = '<option value="">Select Event...</option>';
 
     if (!data || data.length === 0) {
       if(list) list.innerHTML = `<p style="font-size:13px; color:var(--color-text-secondary); padding: 20px;">No events found.</p>`;
@@ -1416,6 +1541,10 @@ let currentGuestTierFilter = 'All';
       if (tplEvent && !isHidden) {
           tplEvent.innerHTML += `<option value="${e.id}">${e.event_name}</option>`;
       }
+if (gateEvent && !isHidden) {
+          gateEvent.innerHTML += `<option value="${e.id}">${e.event_name}</option>`;
+      }
+
       if(agSelect) {
         const optAG = document.createElement('option');
         optAG.value = e.id;
@@ -3816,6 +3945,182 @@ function toggleGuestInputMode(mode) {
           fetchAllGuestsForKPIs();
           switchView('guestListsView');
       }
+  }
+
+
+// ==========================================
+  // --- GATE MANAGEMENT LOGIC ---
+  // ==========================================
+
+  function openAddGateModal() {
+      const eventId = document.getElementById('gateEventSelect').value;
+      if (!eventId) return alert("Please select an event from the dropdown first.");
+      document.getElementById('newGateName').value = '';
+      document.getElementById('addGateModal').classList.remove('hidden');
+  }
+
+  function closeAddGateModal() {
+      document.getElementById('addGateModal').classList.add('hidden');
+  }
+
+  async function saveNewGate() {
+      const eventId = document.getElementById('gateEventSelect').value;
+      const name = document.getElementById('newGateName').value.trim();
+      const type = document.getElementById('newGateType').value;
+
+      if (!eventId || !name) return alert("Gate name is required.");
+
+      const payload = {
+          tenant_id: currentTenantId,
+          event_id: eventId,
+          gate_name: name,
+          gate_type: type,
+          status: 'Active'
+      };
+
+      const { error } = await supabaseClient.from('gates').insert([payload]);
+      
+      if (error) {
+          alert("Error adding gate: " + error.message);
+      } else {
+          closeAddGateModal();
+          loadGateManagementData(); // Refresh the table
+      }
+  }
+
+  function openAddGatemanModal() {
+      const eventId = document.getElementById('gateEventSelect').value;
+      if (!eventId) return alert("Please select an event from the dropdown first.");
+      
+      // Before opening, we need to populate the "Assign to Gate" dropdown
+      const assignGateSelect = document.getElementById('assignGateSelect');
+      assignGateSelect.innerHTML = '<option value="">Select Gate...</option>';
+      
+      // Look at the currently loaded gates in our local array (we'll fetch them in loadGateManagementData)
+      if (window.currentEventGates && window.currentEventGates.length > 0) {
+          window.currentEventGates.forEach(g => {
+              assignGateSelect.innerHTML += `<option value="${g.id}">${g.gate_name}</option>`;
+          });
+      } else {
+          return alert("You must create at least one Gate before assigning a Gateman.");
+      }
+
+      document.getElementById('newGatemanName').value = '';
+      document.getElementById('newGatemanPhone').value = '';
+      document.getElementById('newGatemanPin').value = '';
+      document.getElementById('addGatemanModal').classList.remove('hidden');
+  }
+
+  function closeAddGatemanModal() {
+      document.getElementById('addGatemanModal').classList.add('hidden');
+  }
+
+  async function saveNewGateman() {
+      const name = document.getElementById('newGatemanName').value.trim();
+      const phone = document.getElementById('newGatemanPhone').value.trim();
+      const pin = document.getElementById('newGatemanPin').value.trim();
+      const gateId = document.getElementById('assignGateSelect').value;
+
+      if (!name || !pin || !gateId) return alert("Staff Name, PIN, and Gate assignment are required.");
+
+      const payload = {
+          tenant_id: currentTenantId,
+          name: name,
+          phone: phone,
+          access_code: pin,
+          assigned_gate_id: gateId
+      };
+
+      const { error } = await supabaseClient.from('gatemen').insert([payload]);
+      
+      if (error) {
+          if (error.code === '23505') return alert("Error: That PIN is already in use. Please choose a unique PIN.");
+          alert("Error assigning staff: " + error.message);
+      } else {
+          closeAddGatemanModal();
+          loadGateManagementData(); // Refresh the table
+      }
+  }
+
+  // Fetch Gates and Staff for the selected Event
+  async function loadGateManagementData() {
+      const eventId = document.getElementById('gateEventSelect').value;
+      const tbody = document.getElementById('gateManagementTableBody');
+      
+      if (!eventId) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: var(--color-text-secondary);">Select an event to view gates.</td></tr>';
+          return;
+      }
+
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: var(--color-text-secondary);">Loading gates...</td></tr>';
+
+      // 1. Fetch Gates
+      const { data: gates, error: gatesError } = await supabaseClient
+          .from('gates')
+          .select('*')
+          .eq('event_id', eventId);
+
+      if (gatesError) return console.error(gatesError);
+      
+      // Store globally so the Add Gateman modal can access them
+      window.currentEventGates = gates || [];
+
+      // 2. Fetch Gatemen assigned to these gates
+      const gateIds = gates.map(g => g.id);
+      let staff = [];
+      if (gateIds.length > 0) {
+          const { data: staffData } = await supabaseClient
+              .from('gatemen')
+              .select('*')
+              .in('assigned_gate_id', gateIds);
+          staff = staffData || [];
+      }
+
+      // Render the table
+      tbody.innerHTML = '';
+      if (gates.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: var(--color-text-secondary);">No gates created yet. Click "+ Add Gate" to start.</td></tr>';
+          return;
+      }
+
+      gates.forEach(g => {
+          // Find staff assigned to this gate
+          const assignedStaff = staff.filter(s => s.assigned_gate_id === g.id);
+          let staffHtml = '<span style="color: var(--color-text-muted); font-size: 11px;">Unassigned</span>';
+          
+          if (assignedStaff.length > 0) {
+              staffHtml = assignedStaff.map(s => `
+                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                      <div style="width:24px; height:24px; border-radius:50%; background:var(--color-primary-soft); color:var(--color-primary); font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center;">${s.name.charAt(0)}</div>
+                      <div>
+                          <div style="font-size:12px; font-weight:600;">${s.name}</div>
+                          <div style="font-size:10px; color:var(--color-text-secondary);">PIN: ${s.access_code}</div>
+                      </div>
+                  </div>
+              `).join('');
+          }
+
+          const statusBadge = g.status === 'Active' 
+              ? `<span style="padding:4px 10px; border-radius:99px; background:var(--color-success-soft); color:var(--color-success); font-size:11px; font-weight:600;">Active</span>`
+              : `<span style="padding:4px 10px; border-radius:99px; background:var(--color-danger-soft); color:var(--color-danger); font-size:11px; font-weight:600;">Closed</span>`;
+
+          tbody.innerHTML += `
+              <tr style="border-bottom: 1px solid var(--color-border);">
+                  <td style="padding: 14px 20px;">
+                      <div style="font-weight: 600; font-size: 13px;">${g.gate_name}</div>
+                      <div style="font-size: 10px; color: var(--color-text-secondary); font-family: monospace;">ID: ${g.id.substring(0,8)}</div>
+                  </td>
+                  <td style="padding: 14px 20px;"><div style="font-size: 12px; font-weight: 500;">${g.gate_type}</div></td>
+                  <td style="padding: 14px 20px;">${staffHtml}</td>
+                  <td style="padding: 14px 20px;">${statusBadge}</td>
+                  <td style="padding: 14px 20px; font-weight: 600;">0 <span style="font-size:9px; color:var(--color-success);">&uarr;</span></td>
+                  <td style="padding: 14px 20px; font-weight: 600;">0 <span style="font-size:9px; color:var(--color-info);">&darr;</span></td>
+                  <td style="padding: 14px 20px;">
+                      <button onclick="alert('Delete functionality coming soon!')" style="background:var(--color-danger-soft); color:var(--color-danger); border:none; border-radius:4px; padding:6px; cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                  </td>
+              </tr>
+          `;
+      });
   }
 
 
