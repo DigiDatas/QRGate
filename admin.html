@@ -212,18 +212,24 @@
                
                <div class="text-[10px] font-bold text-slate-500 mb-3 uppercase tracking-wider">Formatting</div>
                <div class="flex flex-col gap-3 mb-6">
+                  
                   <div class="flex gap-2 items-center">
                       <input type="color" id="elementColor" value="#ffffff" class="w-8 h-8 rounded bg-slate-950 border border-slate-800 cursor-pointer">
                       <input type="number" id="elementFontSize" placeholder="Size (px)" class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 outline-none">
                   </div>
+                  
+                  <!-- FIX: The Dropdown AND the Expand Button together -->
                   <div class="flex gap-2 items-center w-full">
                       <select id="elementFontFamily" class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 outline-none">
                           <option value="Inter, sans-serif">Default Font</option><option value="Arial, sans-serif">Arial</option><option value="'Courier New', monospace">Courier New</option><option value="'Times New Roman', serif">Times New Roman</option><option value="'Georgia', serif">Georgia</option>
                       </select>
-                      <button onclick="toggleFontExplorer()" type="button" class="bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 flex items-center justify-center transition" style="height: 34px; width: 34px; flex-shrink: 0;" title="Preview All Fonts">
+                      
+                      <!-- THE MISSING BUTTON -->
+                      <button onclick="toggleFontExplorer()" type="button" class="bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 flex items-center justify-center transition" style="height: 34px; width: 34px; flex-shrink: 0;" title="Open Font Library">
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
                       </button>
                   </div>
+
                   <div class="flex gap-1 w-full">
                     <button type="button" class="btn-align-toggle active flex-1 bg-slate-800 text-slate-300 py-1.5 rounded border border-slate-700 flex justify-center" data-align="left"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg></button>
                     <button type="button" class="btn-align-toggle flex-1 bg-slate-800 text-slate-300 py-1.5 rounded border border-slate-700 flex justify-center" data-align="center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="10" x2="6" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="18" y1="14" x2="6" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg></button>
