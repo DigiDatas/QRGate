@@ -197,14 +197,12 @@
         <!-- 3-Column Layout exactly like events.html -->
         <div id="builderLayoutGrid" class="flex-1 grid gap-6 min-h-0 overflow-hidden transition-all duration-300" style="grid-template-columns: 260px 1fr 280px;">
           
-          <!-- LEFT: Tools -->
+          !-- LEFT: Tools -->
           <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col overflow-y-auto no-scrollbar">
                <h3 class="text-sm font-bold text-slate-200 mb-4">Tools</h3>
                
                <div class="flex flex-col gap-2 mb-6">
                   <button onclick="addCanvasText()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center gap-3 transition border border-slate-700"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg> Add Text</button>
-                  
-                  <input type="file" id="adminBgUploadInput" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="uploadCanvasBackground(event, true)">
                   <button onclick="openAssetLibrary()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center gap-3 transition border border-slate-700"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Image Library</button>
                </div>
                
@@ -212,24 +210,17 @@
                
                <div class="text-[10px] font-bold text-slate-500 mb-3 uppercase tracking-wider">Formatting</div>
                <div class="flex flex-col gap-3 mb-6">
-                  
                   <div class="flex gap-2 items-center">
                       <input type="color" id="elementColor" value="#ffffff" class="w-8 h-8 rounded bg-slate-950 border border-slate-800 cursor-pointer">
                       <input type="number" id="elementFontSize" placeholder="Size (px)" class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 outline-none">
                   </div>
                   
-                  <!-- FIX: The Dropdown AND the Expand Button together -->
-                  <div style="display: flex; gap: 8px; align-items: center; width: 100%;">
-                      <select id="elementFontFamily" style="flex: 1; background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 6px 12px; font-size: 12px; color: #e2e8f0; outline: none; height: 34px;">
-                          <option value="Inter, sans-serif">Default Font</option>
-                          <option value="Arial, sans-serif">Arial</option>
-                          <option value="'Courier New', monospace">Courier New</option>
-                          <option value="'Times New Roman', serif">Times New Roman</option>
-                          <option value="'Georgia', serif">Georgia</option>
+                  <!-- THE DROPDOWN AND THE BUTTON TOGETHER -->
+                  <div class="flex gap-2 items-center w-full">
+                      <select id="elementFontFamily" class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 outline-none">
+                          <option value="Inter, sans-serif">Default Font</option><option value="Arial, sans-serif">Arial</option><option value="'Courier New', monospace">Courier New</option><option value="'Times New Roman', serif">Times New Roman</option><option value="'Georgia', serif">Georgia</option>
                       </select>
-                      
-                      <!-- THE EXPAND BUTTON -->
-                      <button onclick="toggleFontExplorer()" type="button" style="height: 34px; width: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1px solid #1e293b; border-radius: 8px; background: #1e293b; color: #cbd5e1; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='#1e293b'" title="Open Font Library">
+                      <button onclick="toggleFontExplorer()" type="button" class="bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 flex items-center justify-center transition" style="height: 34px; width: 34px; flex-shrink: 0;" title="Open Font Library">
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
                       </button>
                   </div>
