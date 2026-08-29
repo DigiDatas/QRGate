@@ -2758,29 +2758,61 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
 
   function makeDraggable(el) {
         if(!el.classList.contains('canvas-element')) el.classList.add('canvas-element');
-        if (!el.classList.contains('qr-group-box') && !el.classList.contains('non-text-editable') && !el.querySelector('.resize-handle')) {
+        
+        // NEW: Automatically grant the resizable class to the QR box so the hover handle appears
+        if(el.classList.contains('qr-group-box')) el.classList.add('resizable-text'); 
+        
+        // NEW: Removed the block that previously prevented the QR box from getting a drag handle
+        if (!el.classList.contains('non-text-editable') && !el.querySelector('.resize-handle')) {
             const handle = document.createElement('div'); 
             handle.className = 'resize-handle corner'; 
             el.appendChild(handle);
         }
         
         el.addEventListener('mousedown', (e) => {
-            // HANDLE CORNER RESIZING (FONT SIZE)
+            // HANDLE CORNER RESIZING (FONT SIZE OR QR SIZE)
             if (e.target.classList.contains('resize-handle')) {
                 e.preventDefault(); e.stopPropagation();
                 let initialY = e.clientY; 
+                let initialX = e.clientX;
                 let style = window.getComputedStyle(el);
-                let initialFontSize = parseFloat(style.fontSize) || 40;
                 
+                let isQR = el.classList.contains('qr-group-box');
+                let initialFontSize = parseFloat(style.fontSize) || 40;
+                let initialQrSize = parseInt(el.dataset.qrSize) || 310;
+                
+                // Dynamically calculate canvas scale so mouse drag feels perfectly 1:1
+                const parentRect = el.parentElement.getBoundingClientRect();
+                const scale = parentRect.width / (el.parentElement.id === 'editorCanvas' ? 1080 : el.parentElement.offsetWidth);
+
                 function onMouseMove(moveEvent) { 
-                    let deltaY = moveEvent.clientY - initialY;
-                    // Scale font size based on vertical drag movement
-                    let newSize = Math.max(12, initialFontSize + (deltaY * 0.5));
-                    el.style.fontSize = newSize + 'px';
+                    let deltaY = (moveEvent.clientY - initialY) / scale;
+                    let deltaX = (moveEvent.clientX - initialX) / scale;
                     
-                    // Sync the input box in the tools panel
-                    const sizeInput = document.getElementById('elementFontSize');
-                    if (sizeInput) sizeInput.value = Math.round(newSize);
+                    if (isQR) {
+                        // For QR: scale uniformly based on the largest mouse movement direction
+                        let delta = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY;
+                        let newSize = Math.max(150, Math.min(600, initialQrSize + delta));
+                        
+                        // 1. Update UI input box on the left panel dynamically
+                        const qrSizeInput = document.getElementById('qrCustomSize');
+                        if (qrSizeInput) qrSizeInput.value = Math.round(newSize);
+                        
+                        // 2. Update Dataset Memory
+                        el.dataset.qrSize = Math.round(newSize);
+                        
+                        // 3. Re-render the QR LIVE
+                        const gDrop = document.getElementById('tplGuestSelect');
+                        const currentText = (gDrop && gDrop.value) ? gDrop.value : 'PREVIEW_QR';
+                        renderCanvasQR(currentText);
+                    } else {
+                        // Standard text resizing
+                        let newSize = Math.max(12, initialFontSize + (deltaY * 0.5));
+                        el.style.fontSize = newSize + 'px';
+                        
+                        const sizeInput = document.getElementById('elementFontSize');
+                        if (sizeInput) sizeInput.value = Math.round(newSize);
+                    }
                 }
                 function onMouseUp() { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); }
                 document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp);
@@ -2800,14 +2832,16 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
             el.style.outline = "3px dashed var(--color-primary, #ec4899)"; 
             el.classList.add('active-element');
             
-            // Sync Tools Panel
+            // Sync Tools Panel Inputs
             const style = window.getComputedStyle(el);
-            if (document.getElementById('elementFontSize')) document.getElementById('elementFontSize').value = parseInt(style.fontSize) || 32;
-            if (document.getElementById('elementColor')) {
-                const rgb = style.color;
-                if (rgb && rgb.includes('rgb')) {
-                    const parts = rgb.match(/\d+/g);
-                    if (parts && parts.length >= 3) document.getElementById('elementColor').value = "#" + parts.slice(0,3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
+            if (!el.classList.contains('qr-group-box')) {
+                if (document.getElementById('elementFontSize')) document.getElementById('elementFontSize').value = parseInt(style.fontSize) || 32;
+                if (document.getElementById('elementColor')) {
+                    const rgb = style.color;
+                    if (rgb && rgb.includes('rgb')) {
+                        const parts = rgb.match(/\d+/g);
+                        if (parts && parts.length >= 3) document.getElementById('elementColor').value = "#" + parts.slice(0,3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
+                    }
                 }
             }
             
@@ -2826,8 +2860,8 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
             el.contentEditable = "false"; 
             el.style.cursor = 'move'; 
             
-            // Re-inject the handle if typing wiped it out
-            if (!el.querySelector('.resize-handle') && !el.classList.contains('qr-group-box') && !el.classList.contains('non-text-editable')) {
+            // Re-inject handle safely if text editing wiped it out
+            if (!el.querySelector('.resize-handle') && !el.classList.contains('non-text-editable')) {
                 const handle = document.createElement('div'); 
                 handle.className = 'resize-handle corner'; 
                 el.appendChild(handle);
@@ -3412,7 +3446,8 @@ function deleteSelectedElement() {
     if (topGallery) {
         topGallery.innerHTML = '';
         
-        globalTemplates.slice(0, 4).forEach(t => {
+        // CHANGED: Slice increased from 4 to 10
+        globalTemplates.slice(0, 10).forEach(t => {
             topGallery.innerHTML += `
               <div onclick="handleTopGalleryClick('${t.id}')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;" title="Apply this design to your template">
                  <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
@@ -3421,10 +3456,11 @@ function deleteSelectedElement() {
               </div>`;
         });
 
-        if (globalTemplates.length > 4) {
+        // CHANGED: Logic updated to 10
+        if (globalTemplates.length > 10) {
             topGallery.innerHTML += `
               <div onclick="openTemplatesModal('global')" class="card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); background: var(--color-surface-soft); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; color: var(--color-primary);">
-                 <div style="font-size: 16px; font-weight: 700;">+${globalTemplates.length - 4}</div>
+                 <div style="font-size: 16px; font-weight: 700;">+${globalTemplates.length - 10}</div>
                  <div style="font-size: 10px; font-weight: 600;">More</div>
               </div>`;
         }
