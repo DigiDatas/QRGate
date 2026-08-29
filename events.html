@@ -3441,12 +3441,12 @@ function deleteSelectedElement() {
     const globalTemplates = windowSavedTemplates.filter(t => t.is_global === true);
     const myTemplates = windowSavedTemplates.filter(t => t.is_global !== true);
 
-    // 1. Inject Global Templates & Bucket Images (Top Gallery)
+    // 1. Inject Global Templates (Top Gallery)
     const topGallery = document.getElementById('templateGallery');
     if (topGallery) {
         topGallery.innerHTML = '';
         
-        // A. Render fully saved Global Templates from the Database
+        // A. Render fully saved Global Templates from the Database (up to 10)
         globalTemplates.slice(0, 10).forEach(t => {
             topGallery.innerHTML += `
               <div onclick="handleTopGalleryClick('${t.id}')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;" title="Apply this design to your template">
@@ -3456,26 +3456,7 @@ function deleteSelectedElement() {
               </div>`;
         });
 
-        // B. Fetch Raw Background Images from the Bucket folder
-        // NOTE: Make sure your folder in Supabase is named exactly 'admin_templates'
-        const { data: bucketImgs } = await supabaseClient.storage.from('gate-pass-assets').list('admin_templates');
-        
-        if (bucketImgs) {
-            const validImgs = bucketImgs.filter(f => f.name && f.name !== '.emptyFolderPlaceholder' && !f.name.startsWith('.'));
-            validImgs.forEach(img => {
-                // Get the public URL for the image
-                const { data: { publicUrl } } = supabaseClient.storage.from('gate-pass-assets').getPublicUrl(`admin_templates/${img.name}`);
-                
-                topGallery.innerHTML += `
-                  <div onclick="applyTemplateBg(this, 'url(${publicUrl})', '#ffffff', '#111827')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;" title="Apply this background">
-                     <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                     <div style="width: 100%; height: 100px; background: url('${publicUrl}') center/cover no-repeat; background-color: var(--color-surface-soft);"></div>
-                     <div style="padding: 4px 2px; text-align: center; font-size: 9px; font-weight: 600; line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${img.name.split('.')[0]}</div>
-                  </div>`;
-            });
-        }
-
-        // C. Render the "+ More" button if there are more than 10 Database Templates
+        // B. Render the "+ More" button if there are more than 10 Database Templates
         if (globalTemplates.length > 10) {
             topGallery.innerHTML += `
               <div onclick="openTemplatesModal('global')" class="card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); background: var(--color-surface-soft); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; color: var(--color-primary);">
@@ -3484,7 +3465,7 @@ function deleteSelectedElement() {
               </div>`;
         }
 
-        // D. Render the AI Generation Button at the very end
+        // C. Render the AI Generation Button at the very end
         topGallery.innerHTML += `
               <div onclick="alert('AI Generation feature is coming in V2!')" class="card" style="min-width: 150px; height: 130px; background: linear-gradient(135deg, #ea7e8c 0%, #9865a7 50%, #4a549a 100%); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; border: none; color: white; box-shadow: 0 6px 16px rgba(152, 101, 167, 0.3); flex-shrink: 0;">
                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 8px;"><path d="M9 3L10.1241 6.55181C10.4287 7.51478 11.134 8.29177 12.0628 8.65345L15 9.79723L12.0628 10.941C11.134 11.3027 10.4287 12.0797 10.1241 13.0426L9 16.5945L7.87588 13.0426C7.57127 12.0797 6.86598 11.3027 5.93718 10.941L3 9.79723L5.93718 8.65345C6.86598 8.29177 7.57127 7.51478 7.87588 6.55181L9 3Z"></path></svg>
