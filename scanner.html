@@ -169,14 +169,7 @@
       }
     }
 
-      // This specifically commands mobile phones to use the main rear camera
-      html5QrCode.start({ facingMode: "environment" }, cameraConfig, onScanSuccess, onScanFailure)
-        .catch((err) => {
-          console.error("Rear camera failed, trying fallback: ", err);
-          // If the rear camera fails, try whatever default camera it can find
-          html5QrCode.start({ facingMode: "user" }, cameraConfig, onScanSuccess, onScanFailure);
-        });
-    }
+      
 
     // 5. What happens when a QR code is successfully read?
     async function onScanSuccess(decodedText, decodedResult) {
