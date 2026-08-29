@@ -172,13 +172,25 @@
       resultBox.classList.add('hidden');
       readerDiv.classList.remove('hidden');
 
-      // Use the direct Html5Qrcode API to bypass the buggy dropdown menu
-      html5QrCode = new Html5Qrcode("reader");
+      // FIX: Only create a new scanner instance if one doesn't already exist!
+      if (!html5QrCode) {
+          html5QrCode = new Html5Qrcode("reader");
+      }
 
       const cameraConfig = { 
         fps: 10, 
         qrbox: { width: 220, height: 220 } 
       };
+
+      // Ensure camera isn't already running before starting it
+      if (html5QrCode.getState() !== 2) { // 2 means SCANNING
+          html5QrCode.start({ facingMode: "environment" }, cameraConfig, onScanSuccess, onScanFailure)
+            .catch((err) => {
+              console.error("Rear camera failed, trying fallback: ", err);
+              html5QrCode.start({ facingMode: "user" }, cameraConfig, onScanSuccess, onScanFailure);
+            });
+      }
+    }
 
       // This specifically commands mobile phones to use the main rear camera
       html5QrCode.start({ facingMode: "environment" }, cameraConfig, onScanSuccess, onScanFailure)
