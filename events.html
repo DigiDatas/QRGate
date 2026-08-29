@@ -2079,49 +2079,65 @@ let allFetchedLogs = []; // Stores global scan logs for drill-downs
           const evName = g.events ? g.events.event_name : 'General Event';
           const tierName = g.ticket_tier || 'General';
 
-          // --- DRILL DOWN DATA GENERATION ---
-              const sortedGateLogs = gateLogs.sort((a,b) => new Date(b.scanned_at) - new Date(a.scanned_at));
-              let logsHtml = sortedGateLogs.length === 0 
-                  ? '<div style="font-size:11px; color:var(--color-text-secondary); padding: 4px;">No scan records at this gate yet.</div>' 
-                  : sortedGateLogs.map(l => {
-                      const time = new Date(l.scanned_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                      const color = l.scan_type === 'Entry' ? 'var(--color-success)' : 'var(--color-info)';
-                      // FIX: Safely pull the guest_name from the Supabase join
-                      const gName = l.guests ? l.guests.guest_name : 'Unknown Guest';
-                      return `<div style="border-left: 3px solid ${color}; padding-left: 10px; min-width: 140px; background: var(--color-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--color-border); flex-shrink: 0;">
-                          <div style="font-size:11px; font-weight:700; color:${color}; margin-bottom: 2px;">${l.scan_type.toUpperCase()} • ${time}</div>
-                          <div style="font-size:12px; font-weight:600; color: var(--color-text);">${gName}</div>
-                      </div>`;
-                  }).join('');
+          // --- DRILL DOWN DATA GENERATION FOR GUESTS ---
+          const guestLogs = allFetchedLogs.filter(l => l.guest_id === g.id).sort((a,b) => new Date(b.scanned_at) - new Date(a.scanned_at));
+          let logsHtml = guestLogs.length === 0 
+              ? '<div style="font-size:11px; color:var(--color-text-secondary); padding: 4px;">No scan records found for this guest yet.</div>' 
+              : guestLogs.map(l => {
+                  const time = new Date(l.scanned_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                  const date = new Date(l.scanned_at).toLocaleDateString([], {month: 'short', day: 'numeric'});
+                  const color = l.scan_type === 'Entry' ? 'var(--color-success)' : 'var(--color-info)';
+                  return `<div style="border-left: 3px solid ${color}; padding-left: 10px; min-width: 160px; background: var(--color-bg); padding: 8px 10px 8px 10px; border-radius: 4px; border-top: 1px solid var(--color-border); border-right: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); flex-shrink: 0;">
+                      <div style="font-size:11px; font-weight:700; color:${color}; margin-bottom: 2px;">${l.scan_type.toUpperCase()} • ${time}</div>
+                      <div style="font-size:12px; font-weight:600; color: var(--color-text);">${l.gates?.gate_name || 'Unknown Gate'}</div>
+                      <div style="font-size:10px; color:var(--color-text-secondary); margin-top: 2px;">${date} • Staff: ${l.gatemen?.name || 'System Override'}</div>
+                  </div>`;
+              }).join('');
 
-              tbody.innerHTML += `
-                  <tr onclick="toggleDrilldown('drilldown-gate-${g.id}', event)" style="cursor:pointer; border-bottom: 1px solid var(--color-border); transition: background 0.2s; ${g.status === 'Closed' ? 'opacity: 0.6;' : ''}" onmouseover="this.style.background='var(--color-surface-soft)'" onmouseout="this.style.background='transparent'">
-                      <td style="padding: 14px 20px;">
-                          <div style="font-weight: 600; font-size: 13px;">${g.gate_name}</div>
-                          <div style="font-size: 10px; color: var(--color-text-secondary); font-family: monospace;">ID: ${g.id.substring(0,8)}</div>
-                      </td>
-                      <td style="padding: 14px 20px;"><div style="font-size: 12px; font-weight: 500;">${g.gate_type}</div></td>
-                      <td style="padding: 14px 20px;">${staffHtml}</td>
-                      <td style="padding: 14px 20px;">${statusBadge}</td>
-                      <td style="padding: 14px 20px; font-weight: 600;">${entries} <span style="font-size:9px; color:var(--color-success);">&uarr;</span></td>
-                      <td style="padding: 14px 20px; font-weight: 600;">${exits} <span style="font-size:9px; color:var(--color-info);">&darr;</span></td>
-                      <td style="padding: 14px 20px; font-weight: 700; color: #B4790C;">${inside}</td>
-                      <td style="padding: 14px 20px;">
-                          <div style="display:flex; gap:6px;">
-                              <button onclick="toggleGateStatus('${g.id}', '${g.status}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer;" title="Toggle Active/Inactive">${eyeIcon}</button>
-                              <button onclick="editGate('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-info); cursor:pointer;" title="Edit Gate"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
-                              <button onclick="deleteGate('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-danger-soft); color:var(--color-danger); cursor:pointer;" title="Delete Gate"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-                          </div>
-                      </td>
-                  </tr>
-                  <tr id="drilldown-gate-${g.id}" class="drilldown-row" style="display:none; background: var(--color-surface-soft);">
-                    <td colspan="8" style="padding: 12px 20px; border-bottom: 1px solid var(--color-border);">
-                      <div style="display:flex; gap:12px; overflow-x:auto; padding-bottom:4px;" class="no-scrollbar">
-                         ${logsHtml}
-                      </div>
-                    </td>
-                  </tr>
-              `;
+          // RENDER LIST VIEW ROW
+          guestListTable.innerHTML += `
+             <tr onclick="toggleDrilldown('drilldown-guest-${g.id}', event)" style="cursor:pointer; transition: background 0.2s; ${rowStyle}" onmouseover="this.style.background='var(--color-surface-soft)'" onmouseout="this.style.background='transparent'">
+               <td>
+                 <div style="display:flex; gap:12px; align-items:center;">
+                   <div class="table-avatar" style="background:#F3E8FF; color:#9333EA;">${g.guest_name.substring(0,2).toUpperCase()}</div>
+                   <div><div style="font-weight:600; color:var(--color-text);">${g.guest_name}</div><div style="font-size:11px; color:var(--color-text-secondary);">${gCompany}</div></div>
+                 </div>
+               </td>
+               <td>
+                 <div style="font-weight:600; font-size:13px; color:var(--color-text);">${evName}</div>
+                 <div style="font-size:11px; color:var(--color-text-secondary);">${tierName}</div>
+               </td>
+               <td><div style="font-size:12px; color:var(--color-text);">${gEmail}</div><div style="font-size:11px; color:var(--color-text-secondary);">${gPhone}</div></td>
+               <td><span style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:99px; background:${statusBg}; color:${statusColor}; font-size:11px; font-weight:600;">${gStatus}</span></td>
+               <td><div style="display:flex; gap:8px;"><div style="width:24px; height:24px; border-radius:50%; background:var(--color-surface-soft); color:var(--color-text-secondary); display:flex; align-items:center; justify-content:center;">${sentViaIcon}</div><span style="font-size: 11px; font-weight: 500; display:flex; align-items:center;">${g.sent_via || 'System'}</span></div></td>
+               <td>
+                 <div onclick="showTicket('${g.id}', '${encodeURIComponent(g.guest_name)}', '${g.ticket_tier}', ${g.allowed_capacity}, '${encodeURIComponent(evName)}', '${g.event_id}')" style="display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--color-primary); padding: 4px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='var(--color-primary-soft)'" onmouseout="this.style.background='transparent'">
+                   <div style="width:32px; height:32px; background:var(--color-primary-soft); border-radius:6px; display:flex; align-items:center; justify-content:center; color:var(--color-primary); flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
+                   <div style="display:flex; flex-direction:column; gap:2px;">
+                     <div style="font-weight:700; font-size:12px; font-family:monospace; color:var(--color-text);">${seqQrId}</div>
+                     <div style="display:flex; align-items:center; gap:6px;">
+                       <span style="font-size:10px; font-weight:700; color:${checkInBadgeColor}; background:${checkInBadgeBg}; padding:1px 6px; border-radius:4px;">${checkedInPairs}/${capacityCount} In</span>
+                     </div>
+                   </div>
+                 </div>
+               </td>
+               <td><div style="font-size:12px; color:var(--color-text);">${formattedDate}</div><div style="font-size:11px; color:var(--color-text-secondary);">${formattedTime}</div></td>
+               <td>
+                 <div style="display:flex; gap:6px;">
+                   <button onclick="toggleHideGuest('${g.id}', ${isHidden})" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer;" title="Show/Hide">${eyeIcon}</button>
+                   <button onclick="editGuest('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-info); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+                   <button onclick="deleteGuest('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-danger-soft); color:var(--color-danger); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                 </div>
+               </td>
+             </tr>
+             <tr id="drilldown-guest-${g.id}" class="drilldown-row" style="display:none; background: var(--color-surface-soft);">
+               <td colspan="8" style="padding: 12px 20px; border-bottom: 1px solid var(--color-border);">
+                 <div style="display:flex; gap:12px; overflow-x:auto; padding-bottom:4px;" class="no-scrollbar">
+                    ${logsHtml}
+                 </div>
+               </td>
+             </tr>
+          `;
 
           // RENDER GRID VIEW CARD
           guestListGrid.innerHTML += `
@@ -4283,8 +4299,22 @@ function toggleGuestInputMode(mode) {
                   ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
                   : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
 
+              // --- DRILL DOWN DATA GENERATION FOR GATES ---
+              const sortedGateLogs = gateLogs.sort((a,b) => new Date(b.scanned_at) - new Date(a.scanned_at));
+              let logsHtml = sortedGateLogs.length === 0 
+                  ? '<div style="font-size:11px; color:var(--color-text-secondary); padding: 4px;">No scan records at this gate yet.</div>' 
+                  : sortedGateLogs.map(l => {
+                      const time = new Date(l.scanned_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                      const color = l.scan_type === 'Entry' ? 'var(--color-success)' : 'var(--color-info)';
+                      const gName = l.guests?.guest_name || 'Unknown Guest';
+                      return `<div style="border-left: 3px solid ${color}; padding-left: 10px; min-width: 140px; background: var(--color-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--color-border); flex-shrink: 0;">
+                          <div style="font-size:11px; font-weight:700; color:${color}; margin-bottom: 2px;">${l.scan_type.toUpperCase()} • ${time}</div>
+                          <div style="font-size:12px; font-weight:600; color: var(--color-text);">${gName}</div>
+                      </div>`;
+                  }).join('');
+
               tbody.innerHTML += `
-                  <tr style="border-bottom: 1px solid var(--color-border); ${g.status === 'Closed' ? 'opacity: 0.6;' : ''}">
+                  <tr onclick="toggleDrilldown('drilldown-gate-${g.id}', event)" style="cursor:pointer; border-bottom: 1px solid var(--color-border); transition: background 0.2s; ${g.status === 'Closed' ? 'opacity: 0.6;' : ''}" onmouseover="this.style.background='var(--color-surface-soft)'" onmouseout="this.style.background='transparent'">
                       <td style="padding: 14px 20px;">
                           <div style="font-weight: 600; font-size: 13px;">${g.gate_name}</div>
                           <div style="font-size: 10px; color: var(--color-text-secondary); font-family: monospace;">ID: ${g.id.substring(0,8)}</div>
@@ -4302,6 +4332,13 @@ function toggleGuestInputMode(mode) {
                               <button onclick="deleteGate('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-danger-soft); color:var(--color-danger); cursor:pointer;" title="Delete Gate"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                           </div>
                       </td>
+                  </tr>
+                  <tr id="drilldown-gate-${g.id}" class="drilldown-row" style="display:none; background: var(--color-surface-soft);">
+                    <td colspan="8" style="padding: 12px 20px; border-bottom: 1px solid var(--color-border);">
+                      <div style="display:flex; gap:12px; overflow-x:auto; padding-bottom:4px;" class="no-scrollbar">
+                         ${logsHtml}
+                      </div>
+                    </td>
                   </tr>
               `;
           });
