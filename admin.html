@@ -660,8 +660,9 @@ async function openAssetLibrary() {
           </div>
         `;
 
-        // SHOW UP TO 10
-        windowAdminTemplates.slice(0, 10).forEach(t => {
+        const displayLimit = 6; // Show up to 6 in the scrolling row
+
+        windowAdminTemplates.slice(0, displayLimit).forEach(t => {
             const dateStr = new Date(t.created_at).toLocaleDateString();
             gallery.innerHTML += `
               <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex gap-3 items-center shrink-0" style="min-width: 250px; height: 90px;">
@@ -680,18 +681,19 @@ async function openAssetLibrary() {
             `;
         });
 
-        // IF MORE THAN 10, SHOW '+ MORE' BUTTON
-        if (windowAdminTemplates.length > 10) {
+        // IF MORE THAN 6, SHOW '+ MORE' BUTTON AT THE RIGHT
+        if (windowAdminTemplates.length > displayLimit) {
             gallery.innerHTML += `
-              <div onclick="openTemplatesModal()" class="bg-slate-900 border border-slate-800 hover:border-pink-500 rounded-xl flex flex-col items-center justify-center cursor-pointer transition shrink-0" style="min-width: 90px; height: 90px; color: #ec4899;">
-                 <div style="font-size: 16px; font-weight: 700;">+${windowAdminTemplates.length - 10}</div>
-                 <div style="font-size: 10px; font-weight: 600;">More</div>
+              <div onclick="openTemplatesModal()" class="bg-slate-900 border border-slate-800 hover:border-pink-500 rounded-xl flex flex-col items-center justify-center cursor-pointer transition shrink-0" style="min-width: 110px; height: 90px; color: #ec4899;">
+                 <div style="font-size: 18px; font-weight: 700;">+${windowAdminTemplates.length - displayLimit}</div>
+                 <div style="font-size: 11px; font-weight: 600;">More</div>
               </div>`;
         }
     }
 
-function openTemplatesModal() {
+    function openTemplatesModal() {
         const grid = document.getElementById('allTemplatesGrid');
+        if(!grid) return;
         grid.innerHTML = '';
         
         windowAdminTemplates.forEach(t => {
@@ -809,18 +811,33 @@ function openTemplatesModal() {
             if (e.target.classList.contains('resize-handle')) {
                 e.preventDefault(); e.stopPropagation();
                 let initialY = e.clientY; 
+                let initialX = e.clientX;
                 let style = window.getComputedStyle(el);
-                let initialFontSize = parseFloat(style.fontSize) || 40;
                 
+                let isQR = el.classList.contains('qr-group-box');
+                let initialFontSize = parseFloat(style.fontSize) || 40;
+                let initialQrSize = parseInt(el.dataset.qrSize) || 310;
+                
+                const parentRect = el.parentElement.getBoundingClientRect();
+                const scale = parentRect.width / (el.parentElement.id === 'editorCanvas' ? 1080 : el.parentElement.offsetWidth);
+
                 function onMouseMove(moveEvent) { 
-                    let deltaY = moveEvent.clientY - initialY;
-                    // Scale font size based on vertical drag movement
-                    let newSize = Math.max(12, initialFontSize + (deltaY * 0.5));
-                    el.style.fontSize = newSize + 'px';
+                    let deltaY = (moveEvent.clientY - initialY) / scale;
+                    let deltaX = (moveEvent.clientX - initialX) / scale;
                     
-                    // Sync the input box in the tools panel
-                    const sizeInput = document.getElementById('elementFontSize');
-                    if (sizeInput) sizeInput.value = Math.round(newSize);
+                    if (isQR) {
+                        let delta = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY;
+                        let newSize = Math.max(150, Math.min(600, initialQrSize + delta));
+                        const qrSizeInput = document.getElementById('qrCustomSize');
+                        if (qrSizeInput) qrSizeInput.value = Math.round(newSize);
+                        el.dataset.qrSize = Math.round(newSize);
+                        updateQR(); // Triggers the live QR update
+                    } else {
+                        let newSize = Math.max(12, initialFontSize + (deltaY * 0.5));
+                        el.style.fontSize = newSize + 'px';
+                        const sizeInput = document.getElementById('elementFontSize');
+                        if (sizeInput) sizeInput.value = Math.round(newSize);
+                    }
                 }
                 function onMouseUp() { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); }
                 document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp);
@@ -840,20 +857,30 @@ function openTemplatesModal() {
             el.style.outline = "3px dashed var(--color-primary, #ec4899)"; 
             el.classList.add('active-element');
             
-            // Sync Tools Panel
             const style = window.getComputedStyle(el);
-            if (document.getElementById('elementFontSize')) document.getElementById('elementFontSize').value = parseInt(style.fontSize) || 32;
-            if (document.getElementById('elementColor')) {
-                const rgb = style.color;
-                if (rgb && rgb.includes('rgb')) {
-                    const parts = rgb.match(/\d+/g);
-                    if (parts && parts.length >= 3) document.getElementById('elementColor').value = "#" + parts.slice(0,3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
+            if (!el.classList.contains('qr-group-box')) {
+                if (document.getElementById('elementFontSize')) document.getElementById('elementFontSize').value = parseInt(style.fontSize) || 32;
+                if (document.getElementById('elementColor')) {
+                    const rgb = style.color;
+                    if (rgb && rgb.includes('rgb')) {
+                        const parts = rgb.match(/\d+/g);
+                        if (parts && parts.length >= 3) document.getElementById('elementColor').value = "#" + parts.slice(0,3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
+                    }
                 }
             }
             
             isDragging = true; dragTarget = el;
-            const referenceRect = el.parentElement.getBoundingClientRect();
-            const scale = referenceRect.width / (el.parentElement.id === 'editorCanvas' ? 1080 : el.parentElement.offsetWidth);
+            const parentRect = el.parentElement.getBoundingClientRect();
+            const scale = parentRect.width / (el.parentElement.id === 'editorCanvas' ? 1080 : el.parentElement.offsetWidth);
+            
+            // FIX: Lock visual bounding box to absolute pixels and strip CSS transform instantly
+            if (style.transform && style.transform !== 'none') {
+                const rect = el.getBoundingClientRect();
+                el.style.left = ((rect.left - parentRect.left) / scale) + 'px';
+                el.style.top = ((rect.top - parentRect.top) / scale) + 'px';
+                el.style.transform = 'none';
+            }
+            
             offsetX = (e.clientX - el.getBoundingClientRect().left) / scale; 
             offsetY = (e.clientY - el.getBoundingClientRect().top) / scale;
         });
@@ -862,15 +889,10 @@ function openTemplatesModal() {
             if (el.dataset.noEdit === "true" || el.classList.contains('qr-group-box')) return;
             el.contentEditable = "true"; el.focus(); el.style.cursor = 'text'; el.style.outline = "3px solid var(--color-primary, #ec4899)";
         });
-       el.addEventListener('blur', () => { 
-            el.contentEditable = "false"; 
-            el.style.cursor = 'move'; 
-            
-            // Re-inject the handle if typing wiped it out
-            if (!el.querySelector('.resize-handle') && !el.classList.contains('qr-group-box') && !el.classList.contains('non-text-editable')) {
-                const handle = document.createElement('div'); 
-                handle.className = 'resize-handle corner'; 
-                el.appendChild(handle);
+        el.addEventListener('blur', () => { 
+            el.contentEditable = "false"; el.style.cursor = 'move'; 
+            if (!el.querySelector('.resize-handle') && !el.classList.contains('non-text-editable')) {
+                const handle = document.createElement('div'); handle.className = 'resize-handle corner'; el.appendChild(handle);
             }
         });
     }
@@ -881,13 +903,7 @@ function openTemplatesModal() {
         const scale = parentRect.width / (dragTarget.parentElement.id === 'editorCanvas' ? 1080 : dragTarget.parentElement.offsetWidth);
         dragTarget.style.left = ((e.clientX - parentRect.left) / scale - offsetX) + 'px';
         dragTarget.style.top = ((e.clientY - parentRect.top) / scale - offsetY) + 'px';
-        
-        // FIX: Neutralize positioning conflicts while dragging
-        dragTarget.style.transform = 'none'; 
-        dragTarget.style.bottom = 'auto';
     });
-    document.addEventListener('mouseup', () => { isDragging = false; dragTarget = null; });
-    
     document.addEventListener('mouseup', () => { isDragging = false; dragTarget = null; });
     
     // --- DYNAMIC FONT ENGINE & EXPLORER ---
@@ -949,8 +965,8 @@ let currentFontCategoryFilter = 'All';
         const grid = document.getElementById('builderLayoutGrid');
         
         if (panel.style.display === 'none' || panel.style.display === '') {
-            // Force flex display with important to override Tailwind classes if needed
-            panel.style.cssText = 'display: flex !important; flex-direction: column;';
+            // Force flex display with important to override Tailwind classes
+            panel.style.setProperty('display', 'flex', 'important');
             // Pushes the canvas to make room for the 300px font drawer
             grid.style.gridTemplateColumns = '260px 300px 1fr 280px';
             renderFontExplorerList();
