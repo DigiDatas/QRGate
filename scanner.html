@@ -17,10 +17,10 @@
 </head>
 <body class="bg-gray-100 p-4 md:p-10 font-sans text-gray-800">
 
-  <div class="max-w-xl mx-auto bg-white p-6 rounded-lg shadow-md mt-10 relative overflow-hidden">
+  <div class="max-w-xl mx-auto bg-white p-6 rounded-lg shadow-md mt-10">
     
     <!-- GATEMAN LOGIN OVERLAY -->
-    <div id="login-screen" class="absolute inset-0 bg-white z-50 flex flex-col items-center justify-center p-6">
+    <div id="login-screen" class="bg-white z-50 flex flex-col items-center justify-center py-10">
       <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       </div>
@@ -86,12 +86,47 @@
       if (!pin) return;
       errorMsg.classList.add('hidden');
 
-      // Query Supabase for the Gateman
+      // Query Supabase for the Gateman (Now fetching gate_type as well)
       const { data: staff, error } = await supabaseClient
         .from('gatemen')
-        .select('*, gates(gate_name)')
+        .select('*, gates(gate_name, gate_type)')
         .eq('access_code', pin)
         .single();
+
+      if (error || !staff) {
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+
+      if (!staff.assigned_gate_id) {
+        alert("You are not currently assigned to a gate. Contact the organizer.");
+        return;
+      }
+
+      // Store credentials
+      activeGatemanId = staff.id;
+      activeGateId = staff.assigned_gate_id;
+      activeTenantId = staff.tenant_id;
+      
+      // Determine Gate Type and adjust buttons
+      const gType = staff.gates.gate_type;
+      const btnIn = document.getElementById('btnModeEntry');
+      const btnOut = document.getElementById('btnModeExit');
+      
+      btnIn.style.display = (gType === 'Both' || gType === 'Entry') ? 'block' : 'none';
+      btnOut.style.display = (gType === 'Both' || gType === 'Exit') ? 'block' : 'none';
+      
+      // Auto-select the correct mode
+      if (gType === 'Exit') setScanMode('Exit');
+      else setScanMode('Entry');
+
+      // Update UI
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('mode-toggles').classList.remove('hidden');
+      document.getElementById('staffInfoDisplay').classList.remove('hidden');
+      document.getElementById('staffNameSpan').innerText = `${staff.name} (${staff.gates.gate_name})`;
+
+      startScanner();
 
       if (error || !staff) {
         errorMsg.classList.remove('hidden');
