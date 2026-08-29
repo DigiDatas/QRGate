@@ -78,7 +78,7 @@
     let activeTenantId = null;
     let currentScanMode = 'Entry'; // Default mode
 
-    // 3. Handle PIN Login
+   // 3. Handle PIN Login
     async function handlePinLogin() {
       const pin = document.getElementById('pinInput').value.trim();
       const errorMsg = document.getElementById('loginError');
@@ -86,7 +86,7 @@
       if (!pin) return;
       errorMsg.classList.add('hidden');
 
-      // Query Supabase for the Gateman (Now fetching gate_type as well)
+      // Query Supabase for the Gateman
       const { data: staff, error } = await supabaseClient
         .from('gatemen')
         .select('*, gates(gate_name, gate_type)')
@@ -116,7 +116,6 @@
       btnIn.style.display = (gType === 'Both' || gType === 'Entry') ? 'block' : 'none';
       btnOut.style.display = (gType === 'Both' || gType === 'Exit') ? 'block' : 'none';
       
-      // Auto-select the correct mode
       if (gType === 'Exit') setScanMode('Exit');
       else setScanMode('Entry');
 
@@ -127,6 +126,7 @@
       document.getElementById('staffNameSpan').innerText = `${staff.name} (${staff.gates.gate_name})`;
 
       startScanner();
+    }
 
       if (error || !staff) {
         errorMsg.classList.remove('hidden');
