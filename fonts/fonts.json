@@ -90,13 +90,7 @@
     "fileName": "IBMPlexSansArabic-SemiBold.ttf",
     "category": "AR"
   },
-  {
-    "displayName": "Saudi",
-    "fontFamily": "Saudi",
-    "fileName": "Saudi-Bold.ttf",
-    "category": "AR"
-  },
-  {
+    {
     "displayName": "Saudi",
     "fontFamily": "Saudi",
     "fileName": "Saudi-Regular.ttf",
@@ -127,13 +121,7 @@
     "fileName": "SAUDI-BOLD.TTF",
     "category": "AR"
   },
-  {
-    "displayName": "Saudi",
-    "fontFamily": "Saudi",
-    "fileName": "SAUDI-REGULAR.TTF",
-    "category": "AR"
-  },
-  {
+   {
     "displayName": "AF_Najed",
     "fontFamily": "AF_Najed",
     "fileName": "AF_NAJED NORMAL TRADITIONAL (1).TTF",
@@ -227,6 +215,156 @@
     "displayName": "Dubai",
     "fontFamily": "Dubai",
     "fileName": "DUBAI-BOLD.TTF",
+    "category": "AR"
+  },
+{
+    "displayName": "Mahameru Arabic DEMO",
+    "fontFamily": "MahameruArabicDEMO",
+    "fileName": "mahameru-arabic-demo.bold.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Mahameru Arabic DEMO",
+    "fontFamily": "MahameruArabicDEMO",
+    "fileName": "mahameru-arabic-demo.regular.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Mahameru Arabic DEMO",
+    "fontFamily": "MahameruArabicDEMO",
+    "fileName": "mahameru-arabic-demo.thin.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "kaman",
+    "fontFamily": "kaman",
+    "fileName": "kaman.regular.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Lutfey Arabic DEMO",
+    "fontFamily": "LutfeyArabicDEMO",
+    "fileName": "lutfey-arabic-demo.outline.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Lutfey Arabic DEMO",
+    "fontFamily": "LutfeyArabicDEMO",
+    "fileName": "lutfey-arabic-demo.regular.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Ink Brush Arabic_DEMO",
+    "fontFamily": "InkBrushArabic_DEMO",
+    "fileName": "ink-brush-arabic-demo.textured.otf",
+    "category": "AR"
+  },
+      {
+    "displayName": "Tinta Arabic",
+    "fontFamily": "TintaArabic",
+    "fileName": "tinta-arabic.light.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Tinta Arabic",
+    "fontFamily": "TintaArabic",
+    "fileName": "tinta-arabic.bold.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Aligarh Arabic FREE PERSONAL USE",
+    "fontFamily": "AligarhArabicFREEPERSONALUSE",
+    "fileName": "aligarh-arabic-free-personal-use.light.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Aligarh Arabic FREE PERSONAL USE",
+    "fontFamily": "AligarhArabicFREEPERSONALUSE",
+    "fileName": "aligarh-arabic-free-personal-use.bold.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Aligarh Arabic FREE PERSONAL USE",
+    "fontFamily": "AligarhArabicFREEPERSONALUSE",
+    "fileName": "aligarh-arabic-free-personal-use.extra-bold.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Aligarh Arabic FREE PERSONAL USE",
+    "fontFamily": "AligarhArabicFREEPERSONALUSE",
+    "fileName": "aligarh-arabic-free-personal-use.black.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Bold Italic Art",
+    "fontFamily": "BoldItalicArt",
+    "fileName": "BLDITLAR.TTF",
+    "category": "AR"
+  },
+  {
+    "displayName": "Diwani Bent",
+    "fontFamily": "DiwaniBent",
+    "fileName": "DIWANBNT.TTF",
+    "category": "AR"
+  },
+  {
+    "displayName": "Diwani Letter",
+    "fontFamily": "DiwaniLetter",
+    "fileName": "DIWANLTR.TTF",
+    "category": "AR"
+  },
+  {
+    "displayName": "DecoType Naskh Variants",
+    "fontFamily": "DecoTypeNaskhVariants",
+    "fileName": "DTNASKH2.TTF",
+    "category": "AR"
+  },
+  {
+    "displayName": "Diwani Outline Shaded",
+    "fontFamily": "DiwaniOutlineShaded",
+    "fileName": "DWNOUTSH.TTF",
+    "category": "AR"
+  },
+  {
+    "displayName": "Diwani Simple Outline 2",
+    "fontFamily": "DiwaniSimpleOutline2",
+    "fileName": "DWNSH2.TTF",
+    "category": "AR"
+  },
+  {
+    "displayName": "Diwani Simple Outline",
+    "fontFamily": "DiwaniSimpleOutline",
+    "fileName": "DWNSPOUT.TTF",
+    "category": "AR"
+  },
+  {
+    "displayName": "Diwani Simple Striped",
+    "fontFamily": "DiwaniSimpleStriped",
+    "fileName": "DWNSPSTR.TTF",
+    "category": "AR"
+  },
+  {
+    "displayName": "Mudir MT",
+    "fontFamily": "MudirMT",
+    "fileName": "MUDIR.TTF",
+    "category": "AR"
+  },
+  {
+    "displayName": "Old Antic Bold",
+    "fontFamily": "OldAnticBold",
+    "fileName": "OLDANBLD.TTF",
+    "category": "AR"
+  },
+  {
+    "displayName": "PT Bold Arch",
+    "fontFamily": "PTBoldArch",
+    "fileName": "PTBLDARC.TTF",
+    "category": "AR"
+  },
+  {
+    "displayName": "Simple Bold Jut Out",
+    "fontFamily": "SimpleBoldJutOut",
+    "fileName": "SPBLDJUT.TTF",
     "category": "AR"
   }
 ]
