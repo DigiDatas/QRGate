@@ -613,7 +613,7 @@
           <!-- Main Table Container (List View) -->
           <div id="guestListContainerList" class="data-table-container no-scrollbar" style="border-bottom-left-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md); border-bottom: 1px solid var(--color-border);">
             <table class="data-table">
-              <thead><tr><th>Guest Name</th><th>Event Name</th><th>Contact</th><th>Invitation Status</th><th>Sent Via</th><th>Gate Pass</th><th>Sent On</th><th>Actions</th></tr></thead>
+              <thead><tr><th>Guest Name</th><th>Event Name</th><th>Contact</th><th>Invitation Status</th><th>Sent Via</th><th>Gate Pass</th><th>Exits</th><th>Sent On</th><th>Actions</th></tr></thead>
               <tbody id="guestListTableBody"></tbody>
             </table>
           </div>
@@ -2043,7 +2043,7 @@ let allFetchedLogs = []; // Stores global scan logs for drill-downs
 
       // 5. Render Data
       if (finalGuests.length === 0) {
-          guestListTable.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px;">No guests match the selected filters.</td></tr>`;
+          guestListTable.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 20px;">No guests match the selected filters.</td></tr>`;
           guestListGrid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--color-text-secondary);">No guests match the selected filters.</div>`;
           return;
       }
@@ -2081,6 +2081,10 @@ let allFetchedLogs = []; // Stores global scan logs for drill-downs
 
           // --- DRILL DOWN DATA GENERATION FOR GUESTS ---
           const guestLogs = allFetchedLogs.filter(l => l.guest_id === g.id).sort((a,b) => new Date(b.scanned_at) - new Date(a.scanned_at));
+          
+          // NEW: Calculate Exited Pairs dynamically from the scan logs!
+          const exitedPairs = guestLogs.filter(l => l.scan_type === 'Exit').length;
+
           let logsHtml = guestLogs.length === 0 
               ? '<div style="font-size:11px; color:var(--color-text-secondary); padding: 4px;">No scan records found for this guest yet.</div>' 
               : guestLogs.map(l => {
@@ -2121,6 +2125,12 @@ let allFetchedLogs = []; // Stores global scan logs for drill-downs
                    </div>
                  </div>
                </td>
+               
+               <!-- NEW: Exits Column -->
+               <td>
+                 <span style="font-size:10px; font-weight:700; color:var(--color-info); background:var(--color-info-soft); padding:4px 8px; border-radius:4px;">${exitedPairs} Out</span>
+               </td>
+
                <td><div style="font-size:12px; color:var(--color-text);">${formattedDate}</div><div style="font-size:11px; color:var(--color-text-secondary);">${formattedTime}</div></td>
                <td>
                  <div style="display:flex; gap:6px;">
@@ -2131,7 +2141,7 @@ let allFetchedLogs = []; // Stores global scan logs for drill-downs
                </td>
              </tr>
              <tr id="drilldown-guest-${g.id}" class="drilldown-row" style="display:none; background: var(--color-surface-soft);">
-               <td colspan="8" style="padding: 12px 20px; border-bottom: 1px solid var(--color-border);">
+               <td colspan="9" style="padding: 12px 20px; border-bottom: 1px solid var(--color-border);">
                  <div style="display:flex; gap:12px; overflow-x:auto; padding-bottom:4px;" class="no-scrollbar">
                     ${logsHtml}
                  </div>
