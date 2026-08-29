@@ -540,14 +540,14 @@
               </div>
             </div>
 
-            <!-- Recent Gate Passes -->
+            <!-- Recent Gates -->
             <div class="card panel" style="padding: 20px;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                 <h2 class="section-title" style="margin: 0; font-size: 14px;">Recent Gate Passes</h2>
+                 <h2 class="section-title" style="margin: 0; font-size: 14px;">Recent Gates</h2>
               </div>
               <div style="display: flex; flex-direction: column; gap: 16px;">
-                <div id="eventsTabRecentPassesList" style="display: flex; flex-direction: column; gap: 12px;"></div>
-                <button onclick="switchView('guestListsView')" style="width: 100%; margin-top: 4px; padding: 8px; background: white; border: 1px solid var(--color-primary); color: var(--color-primary); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; cursor: pointer;">View All Gate Passes</button>
+                <div id="eventsTabRecentGatesList" style="display: flex; flex-direction: column; gap: 12px;"></div>
+                <button onclick="switchView('gateManagementView')" style="width: 100%; margin-top: 4px; padding: 8px; background: white; border: 1px solid var(--color-primary); color: var(--color-primary); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; cursor: pointer;">View All Gates</button>
               </div>
             </div>
 
@@ -1809,7 +1809,8 @@ let allFetchedLogs = []; // Stores global scan logs for drill-downs
       
       await fetchEvents();
       await fetchSavedTemplates(); // FIXED: Fetch templates ONLY after tenant ID is known
-    }
+await updateRecentGatesWidget();    
+}
   }
 // --- GUEST LIST TOGGLES ---
   function filterGuestsByTier(tier) {
@@ -1957,33 +1958,7 @@ let allFetchedLogs = []; // Stores global scan logs for drill-downs
 
        });
 
-      const evtRecentPasses = document.getElementById('eventsTabRecentPassesList');
-      if (evtRecentPasses) {
-          evtRecentPasses.innerHTML = '';
-          const sortedGuests = [...guests].sort((a, b) => getSafeDate(b.created_at) - getSafeDate(a.created_at));
-          
-          sortedGuests.slice(0, 5).forEach(g => {
-              const dateObj = getSafeDate(g.created_at);
-              const timeStr = dateObj.toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' });
-              const dateStr = dateObj.toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' });
-              const seqQrId = 'QR-' + String(g.ticket_number || 0).padStart(3, '0');
-
-              evtRecentPasses.innerHTML += `
-                  <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
-                    <div>
-                      <div style="font-size: 12px; font-weight: 600;">${g.guest_name}</div>
-                      <div style="font-size: 11px; color: var(--color-text-secondary);">${g.events ? g.events.event_name : 'Event'} · <span style="font-family:monospace; color:var(--color-primary);">${seqQrId}</span></div>
-                    </div>
-                    <div style="text-align:right;">
-                      <div style="font-size: 11px;">${timeStr}</div>
-                      <div style="font-size: 11px; color: var(--color-text-secondary);">${dateStr}</div>
-                    </div>
-                  </div>
-              `;
-          });
-      }
-
-    } 
+      } 
 
     const activeFilterBtn = document.querySelector('#dashboardDateFilters .btn-filter-nav.active');
     applyDashboardFilter('All Time', activeFilterBtn);
@@ -4130,7 +4105,8 @@ function toggleGuestInputMode(mode) {
       // Auto-switch view to the event we just assigned it to
       window.currentGateEventFilterId = eventId;
       fetchEvents();
-      loadGateManagementData(); 
+      loadGateManagementData();
+updateRecentGatesWidget(); 
   }
 
 
@@ -4212,9 +4188,55 @@ function toggleGuestInputMode(mode) {
       if(confirm("Are you sure you want to permanently delete this gate? This will also remove assigned staff connections.")) {
           const { error } = await supabaseClient.from('gates').delete().eq('id', id);
           if (error) alert("Error deleting gate: " + error.message);
-          else loadGateManagementData();
+          else {
+              loadGateManagementData();
+              updateRecentGatesWidget(); // NEW: Update sidebar when gate is deleted
+          }
       }
   }
+
+// --- FETCH RECENT GATES FOR SIDEBAR ---
+  async function updateRecentGatesWidget() {
+      const recentGatesList = document.getElementById('eventsTabRecentGatesList');
+      if (!recentGatesList || !currentTenantId) return;
+
+      const { data: recentGates } = await supabaseClient
+          .from('gates')
+          .select('*, events(event_name)')
+          .eq('tenant_id', currentTenantId)
+          .order('created_at', { ascending: false })
+          .limit(5);
+
+      recentGatesList.innerHTML = '';
+      if (!recentGates || recentGates.length === 0) {
+          recentGatesList.innerHTML = '<div style="font-size: 11px; color: var(--color-text-secondary); padding: 4px;">No gates created yet.</div>';
+          return;
+      }
+
+      recentGates.forEach(g => {
+          const dateObj = getSafeDate(g.created_at);
+          const timeStr = dateObj.toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' });
+          const dateStr = dateObj.toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' });
+          const evName = g.events ? g.events.event_name : 'Unknown Event';
+          
+          let badgeColor = g.gate_type === 'Entry' ? 'var(--color-success)' : (g.gate_type === 'Exit' ? 'var(--color-info)' : 'var(--color-primary)');
+          let badgeBg = g.gate_type === 'Entry' ? 'var(--color-success-soft)' : (g.gate_type === 'Exit' ? 'var(--color-info-soft)' : 'var(--color-primary-soft)');
+
+          recentGatesList.innerHTML += `
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;">
+                <div>
+                  <div style="font-size: 12px; font-weight: 600;">${g.gate_name}</div>
+                  <div style="font-size: 11px; color: var(--color-text-secondary); margin-top: 2px;">${evName} · <span style="font-size: 9px; font-weight: 700; color: ${badgeColor}; background: ${badgeBg}; padding: 2px 6px; border-radius: 4px;">${g.gate_type}</span></div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size: 11px;">${timeStr}</div>
+                  <div style="font-size: 11px; color: var(--color-text-secondary);">${dateStr}</div>
+                </div>
+              </div>
+          `;
+      });
+  }
+
 
   // --- FETCH & RENDER DATA ---
   async function loadGateManagementData() {
