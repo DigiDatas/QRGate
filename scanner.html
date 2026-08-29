@@ -184,12 +184,11 @@
       html5QrCode.stop().then(async () => {
         readerDiv.classList.add('hidden');
         document.getElementById('mode-toggles').classList.add('hidden'); 
-        document.getElementById('overrideActionBox').classList.add('hidden'); // Reset UI
+        document.getElementById('overrideActionBox').classList.add('hidden'); 
         
         resultBox.classList.remove('hidden');
         showScanResult('Verifying Ticket...', 'Checking database records...', 'blue');
 
-        // 1. Fetch guest record (NOW FETCHING BOTH GATE RULES)
         const { data: guest, error } = await supabaseClient
           .from('guests')
           .select('*, events(is_approved, expires_at), assigned_entry_gate:gates!guests_assigned_entry_gate_id_fkey(gate_name), assigned_exit_gate:gates!guests_assigned_exit_gate_id_fkey(gate_name)')
@@ -201,7 +200,6 @@
           return;
         }
 
-        // 2. CHECK EVENT APPROVAL & EXPIRATION
         if (!guest.events || !guest.events.is_approved) {
           showScanResult('Event Not Approved ❌', 'This event is pending admin approval.', 'red');
           return;
@@ -211,7 +209,6 @@
           return;
         }
 
-        // 3. STRICT DUAL-GATE ASSIGNMENT CHECK
         if (currentScanMode === 'Entry' && guest.assigned_entry_gate_id && guest.assigned_entry_gate_id !== activeGateId) {
           const correctGate = guest.assigned_entry_gate ? guest.assigned_entry_gate.gate_name : 'another gate';
           showScanResult('Wrong Gate ⛔', `Access Denied. ${guest.guest_name} must ENTER through: ${correctGate}`, 'red');
@@ -223,42 +220,48 @@
           return;
         }
 
+        // --- NEW GROUP MATH LOGIC ---
         const allowed = guest.allowed_capacity || 1;
-        const currentChecked = guest.checked_in_count || 0;
+        const entries = guest.checked_in_count || 0;
+        const exits = guest.checked_out_count || 0;
+        const currentlyInside = entries - exits;
 
         // 4. LOGIC FOR 'ENTRY' MODE
         if (currentScanMode === 'Entry') {
-            if (currentChecked >= allowed) {
+            if (entries >= allowed) {
                 showScanResult('⚠️ Fully Checked In', `All ${allowed} entries for ${guest.guest_name} have already been used!`, 'orange');
                 return;
             }
 
-            const newCount = currentChecked + 1;
+            const newCount = entries + 1;
+            const newStatus = (newCount > exits) ? 'Inside' : 'Exited';
+            
             await logScanToDatabase(guest, 'Entry');
-            await supabaseClient.from('guests').update({ checked_in_count: newCount, current_status: 'Inside' }).eq('id', guest.id);
+            await supabaseClient.from('guests').update({ checked_in_count: newCount, current_status: newStatus }).eq('id', guest.id);
             
             showScanResult(`Entry Granted (${newCount}/${allowed}) ✅`, `Welcome, ${guest.guest_name}! Entry logged.`, 'green');
         } 
         
         // 5. LOGIC FOR 'EXIT' MODE
         else {
-            if (guest.current_status === 'Exited') {
-                showScanResult('⚠️ Already Exited', `${guest.guest_name} has already checked out.`, 'orange');
-                return;
+            // Check if anyone from this pass is actually inside right now
+            if (currentlyInside > 0) {
+                const newExits = exits + 1;
+                const newStatus = (entries > newExits) ? 'Inside' : 'Exited';
+                
+                await logScanToDatabase(guest, 'Exit');
+                await supabaseClient.from('guests').update({ checked_out_count: newExits, current_status: newStatus }).eq('id', guest.id);
+                showScanResult(`Exit Logged (${newExits}/${allowed}) 🚪`, `Goodbye, ${guest.guest_name}. Exit successful.`, 'blue');
+            } else {
+                // No one is inside. Did they miss an entry scan?
+                if (entries < allowed) {
+                    manualOverrideGuest = guest; 
+                    showScanResult('⚠️ Missed Entry Scan', `${guest.guest_name} has no matching entry record for this exit.`, 'orange');
+                    document.getElementById('overrideActionBox').classList.remove('hidden'); 
+                } else {
+                    showScanResult('⚠️ Already Exited', `Everyone on this pass (${allowed}/${allowed}) has already checked out.`, 'orange');
+                }
             }
-
-            // CHECK FOR MISSED ENTRY
-            if (currentChecked < allowed) {
-                manualOverrideGuest = guest; 
-                showScanResult('⚠️ Missed Entry Scan', `${guest.guest_name} has no recorded entry for this pass.`, 'orange');
-                document.getElementById('overrideActionBox').classList.remove('hidden'); // Reveal yellow button
-                return; // Wait for gateman to click the button
-            }
-
-            // Normal Exit
-            await logScanToDatabase(guest, 'Exit');
-            await supabaseClient.from('guests').update({ current_status: 'Exited' }).eq('id', guest.id);
-            showScanResult('Exit Logged 🚪', `Goodbye, ${guest.guest_name}. Exit successful.`, 'blue');
         }
 
       }).catch((err) => console.error("Failed to stop camera.", err));
@@ -268,20 +271,19 @@
     async function handleMissedEntry() {
         if (!manualOverrideGuest) return;
         const g = manualOverrideGuest;
-        const newCount = (g.checked_in_count || 0) + 1;
+        
+        const newEntries = (g.checked_in_count || 0) + 1;
+        const newExits = (g.checked_out_count || 0) + 1;
+        const newStatus = (newEntries > newExits) ? 'Inside' : 'Exited';
 
-        // Instantly hide the yellow override box
         document.getElementById('overrideActionBox').classList.add('hidden');
         showScanResult('Updating Records...', 'Please wait...', 'blue');
 
-        // 1. Force Entry Log & Math
         await logScanToDatabase(g, 'Entry');
-        await supabaseClient.from('guests').update({ checked_in_count: newCount, current_status: 'Exited' }).eq('id', g.id);
-        
-        // 2. Force Exit Log (no need to rescan!)
         await logScanToDatabase(g, 'Exit');
-
-        showScanResult('Records Fixed ✅', `Entry added (${newCount}/${g.allowed_capacity}) and Exit logged for ${g.guest_name}.`, 'green');
+        await supabaseClient.from('guests').update({ checked_in_count: newEntries, checked_out_count: newExits, current_status: newStatus }).eq('id', g.id);
+        
+        showScanResult('Records Fixed ✅', `Entry added (${newEntries}/${g.allowed_capacity}) and Exit logged for ${g.guest_name}.`, 'green');
         manualOverrideGuest = null; 
     }
 

@@ -4398,7 +4398,7 @@ function toggleGuestInputMode(mode) {
   });
 
 
-// --- ADD GUEST: DYNAMIC GATE DROPDOWNS ---
+// --- ADD GUEST: SMART DYNAMIC GATE DROPDOWNS ---
   document.addEventListener('DOMContentLoaded', () => {
       const addGuestEventSelect = document.getElementById('addGuestEventSelect');
       if (addGuestEventSelect) {
@@ -4406,15 +4406,24 @@ function toggleGuestInputMode(mode) {
               const evId = e.target.value;
               const enGate = document.getElementById('agEntryGateSelect');
               const exGate = document.getElementById('agExitGateSelect');
+              
               if(enGate) enGate.innerHTML = '<option value="">Any Gate Allowed</option>';
               if(exGate) exGate.innerHTML = '<option value="">Any Gate Allowed</option>';
               if(!evId) return;
 
-              const { data: gates } = await supabaseClient.from('gates').select('id, gate_name').eq('event_id', evId);
+              // NEW: Fetching gate_type to apply smart filters
+              const { data: gates } = await supabaseClient.from('gates').select('id, gate_name, gate_type').eq('event_id', evId);
+              
               if(gates) {
                   gates.forEach(g => {
-                      if(enGate) enGate.innerHTML += `<option value="${g.id}">${g.gate_name}</option>`;
-                      if(exGate) exGate.innerHTML += `<option value="${g.id}">${g.gate_name}</option>`;
+                      // Only show 'Entry' or 'Both' in the Entry Dropdown
+                      if(enGate && (g.gate_type === 'Entry' || g.gate_type === 'Both')) {
+                          enGate.innerHTML += `<option value="${g.id}">${g.gate_name}</option>`;
+                      }
+                      // Only show 'Exit' or 'Both' in the Exit Dropdown
+                      if(exGate && (g.gate_type === 'Exit' || g.gate_type === 'Both')) {
+                          exGate.innerHTML += `<option value="${g.id}">${g.gate_name}</option>`;
+                      }
                   });
               }
           });
