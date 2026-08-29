@@ -929,12 +929,18 @@
                   <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">ID Number</label><input type="text" placeholder="Enter ID number" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
                   <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Ticket / Type</label><select id="agTierInput" class="input-field" style="margin: 0; padding: 10px 14px;"><option value="General">General</option><option value="VIP">VIP</option><option value="Speaker">Speaker</option></select></div>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 2fr; gap: 20px;">
                   <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">No. of Pairs / Capacity</label><input type="number" id="agCapacityInput" value="1" min="1" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
                   <div>
-                    <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Assign Gate (Optional)</label>
-                    <select id="agGateSelect" class="input-field" style="margin: 0; padding: 10px 14px;">
-                      <option value="">All Gates Allowed</option>
+                    <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Entry Gate</label>
+                    <select id="agEntryGateSelect" class="input-field" style="margin: 0; padding: 10px 14px;">
+                      <option value="">Any Gate Allowed</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Exit Gate</label>
+                    <select id="agExitGateSelect" class="input-field" style="margin: 0; padding: 10px 14px;">
+                      <option value="">Any Gate Allowed</option>
                     </select>
                   </div>
                   <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Notes (Optional)</label><textarea placeholder="Add any additional notes about this guest" class="input-field" style="margin: 0; padding: 10px 14px; height: 42px; resize: none;"></textarea></div>
@@ -2074,64 +2080,48 @@ let allFetchedLogs = []; // Stores global scan logs for drill-downs
           const tierName = g.ticket_tier || 'General';
 
           // --- DRILL DOWN DATA GENERATION ---
-          const guestLogs = allFetchedLogs.filter(l => l.guest_id === g.id).sort((a,b) => new Date(b.scanned_at) - new Date(a.scanned_at));
-          let logsHtml = guestLogs.length === 0 
-              ? '<div style="font-size:11px; color:var(--color-text-secondary); padding: 4px;">No scan records found for this guest yet.</div>' 
-              : guestLogs.map(l => {
-                  const time = new Date(l.scanned_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                  const date = new Date(l.scanned_at).toLocaleDateString([], {month: 'short', day: 'numeric'});
-                  const color = l.scan_type === 'Entry' ? 'var(--color-success)' : 'var(--color-info)';
-                  return `<div style="border-left: 3px solid ${color}; padding-left: 10px; min-width: 160px; background: var(--color-bg); padding: 8px 10px 8px 10px; border-radius: 4px; border-top: 1px solid var(--color-border); border-right: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); flex-shrink: 0;">
-                      <div style="font-size:11px; font-weight:700; color:${color}; margin-bottom: 2px;">${l.scan_type.toUpperCase()} • ${time}</div>
-                      <div style="font-size:12px; font-weight:600; color: var(--color-text);">${l.gates?.gate_name || 'Unknown Gate'}</div>
-                      <div style="font-size:10px; color:var(--color-text-secondary); margin-top: 2px;">${date} • Staff: ${l.gatemen?.name || 'System Override'}</div>
-                  </div>`;
-              }).join('');
+              const sortedGateLogs = gateLogs.sort((a,b) => new Date(b.scanned_at) - new Date(a.scanned_at));
+              let logsHtml = sortedGateLogs.length === 0 
+                  ? '<div style="font-size:11px; color:var(--color-text-secondary); padding: 4px;">No scan records at this gate yet.</div>' 
+                  : sortedGateLogs.map(l => {
+                      const time = new Date(l.scanned_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                      const color = l.scan_type === 'Entry' ? 'var(--color-success)' : 'var(--color-info)';
+                      // FIX: Safely pull the guest_name from the Supabase join
+                      const gName = l.guests ? l.guests.guest_name : 'Unknown Guest';
+                      return `<div style="border-left: 3px solid ${color}; padding-left: 10px; min-width: 140px; background: var(--color-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--color-border); flex-shrink: 0;">
+                          <div style="font-size:11px; font-weight:700; color:${color}; margin-bottom: 2px;">${l.scan_type.toUpperCase()} • ${time}</div>
+                          <div style="font-size:12px; font-weight:600; color: var(--color-text);">${gName}</div>
+                      </div>`;
+                  }).join('');
 
-          // RENDER LIST VIEW ROW (With Drilldown logic & the eyeIcon included)
-          guestListTable.innerHTML += `
-             <tr onclick="toggleDrilldown('drilldown-guest-${g.id}', event)" style="cursor:pointer; transition: background 0.2s; ${rowStyle}" onmouseover="this.style.background='var(--color-surface-soft)'" onmouseout="this.style.background='transparent'">
-               <td>
-                 <div style="display:flex; gap:12px; align-items:center;">
-                   <div class="table-avatar" style="background:#F3E8FF; color:#9333EA;">${g.guest_name.substring(0,2).toUpperCase()}</div>
-                   <div><div style="font-weight:600; color:var(--color-text);">${g.guest_name}</div><div style="font-size:11px; color:var(--color-text-secondary);">${gCompany}</div></div>
-                 </div>
-               </td>
-               <td>
-                 <div style="font-weight:600; font-size:13px; color:var(--color-text);">${evName}</div>
-                 <div style="font-size:11px; color:var(--color-text-secondary);">${tierName}</div>
-               </td>
-               <td><div style="font-size:12px; color:var(--color-text);">${gEmail}</div><div style="font-size:11px; color:var(--color-text-secondary);">${gPhone}</div></td>
-               <td><span style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:99px; background:${statusBg}; color:${statusColor}; font-size:11px; font-weight:600;">${gStatus}</span></td>
-               <td><div style="display:flex; gap:8px;"><div style="width:24px; height:24px; border-radius:50%; background:var(--color-surface-soft); color:var(--color-text-secondary); display:flex; align-items:center; justify-content:center;">${sentViaIcon}</div><span style="font-size: 11px; font-weight: 500; display:flex; align-items:center;">${g.sent_via || 'System'}</span></div></td>
-               <td>
-                 <div onclick="showTicket('${g.id}', '${encodeURIComponent(g.guest_name)}', '${g.ticket_tier}', ${g.allowed_capacity}, '${encodeURIComponent(evName)}', '${g.event_id}')" style="display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--color-primary); padding: 4px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='var(--color-primary-soft)'" onmouseout="this.style.background='transparent'">
-                   <div style="width:32px; height:32px; background:var(--color-primary-soft); border-radius:6px; display:flex; align-items:center; justify-content:center; color:var(--color-primary); flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
-                   <div style="display:flex; flex-direction:column; gap:2px;">
-                     <div style="font-weight:700; font-size:12px; font-family:monospace; color:var(--color-text);">${seqQrId}</div>
-                     <div style="display:flex; align-items:center; gap:6px;">
-                       <span style="font-size:10px; font-weight:700; color:${checkInBadgeColor}; background:${checkInBadgeBg}; padding:1px 6px; border-radius:4px;">${checkedInPairs}/${capacityCount} In</span>
-                     </div>
-                   </div>
-                 </div>
-               </td>
-               <td><div style="font-size:12px; color:var(--color-text);">${formattedDate}</div><div style="font-size:11px; color:var(--color-text-secondary);">${formattedTime}</div></td>
-               <td>
-                 <div style="display:flex; gap:6px;">
-                   <button onclick="toggleHideGuest('${g.id}', ${isHidden})" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer;" title="Show/Hide">${eyeIcon}</button>
-                   <button onclick="editGuest('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-info); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
-                   <button onclick="deleteGuest('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-danger-soft); color:var(--color-danger); cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-                 </div>
-               </td>
-             </tr>
-             <tr id="drilldown-guest-${g.id}" class="drilldown-row" style="display:none; background: var(--color-surface-soft);">
-               <td colspan="8" style="padding: 12px 20px; border-bottom: 1px solid var(--color-border);">
-                 <div style="display:flex; gap:12px; overflow-x:auto; padding-bottom:4px;" class="no-scrollbar">
-                    ${logsHtml}
-                 </div>
-               </td>
-             </tr>
-          `;
+              tbody.innerHTML += `
+                  <tr onclick="toggleDrilldown('drilldown-gate-${g.id}', event)" style="cursor:pointer; border-bottom: 1px solid var(--color-border); transition: background 0.2s; ${g.status === 'Closed' ? 'opacity: 0.6;' : ''}" onmouseover="this.style.background='var(--color-surface-soft)'" onmouseout="this.style.background='transparent'">
+                      <td style="padding: 14px 20px;">
+                          <div style="font-weight: 600; font-size: 13px;">${g.gate_name}</div>
+                          <div style="font-size: 10px; color: var(--color-text-secondary); font-family: monospace;">ID: ${g.id.substring(0,8)}</div>
+                      </td>
+                      <td style="padding: 14px 20px;"><div style="font-size: 12px; font-weight: 500;">${g.gate_type}</div></td>
+                      <td style="padding: 14px 20px;">${staffHtml}</td>
+                      <td style="padding: 14px 20px;">${statusBadge}</td>
+                      <td style="padding: 14px 20px; font-weight: 600;">${entries} <span style="font-size:9px; color:var(--color-success);">&uarr;</span></td>
+                      <td style="padding: 14px 20px; font-weight: 600;">${exits} <span style="font-size:9px; color:var(--color-info);">&darr;</span></td>
+                      <td style="padding: 14px 20px; font-weight: 700; color: #B4790C;">${inside}</td>
+                      <td style="padding: 14px 20px;">
+                          <div style="display:flex; gap:6px;">
+                              <button onclick="toggleGateStatus('${g.id}', '${g.status}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-text-secondary); cursor:pointer;" title="Toggle Active/Inactive">${eyeIcon}</button>
+                              <button onclick="editGate('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-border); color:var(--color-info); cursor:pointer;" title="Edit Gate"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+                              <button onclick="deleteGate('${g.id}')" style="padding:6px; background:var(--color-bg); border-radius:6px; border:1px solid var(--color-danger-soft); color:var(--color-danger); cursor:pointer;" title="Delete Gate"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr id="drilldown-gate-${g.id}" class="drilldown-row" style="display:none; background: var(--color-surface-soft);">
+                    <td colspan="8" style="padding: 12px 20px; border-bottom: 1px solid var(--color-border);">
+                      <div style="display:flex; gap:12px; overflow-x:auto; padding-bottom:4px;" class="no-scrollbar">
+                         ${logsHtml}
+                      </div>
+                    </td>
+                  </tr>
+              `;
 
           // RENDER GRID VIEW CARD
           guestListGrid.innerHTML += `
@@ -2498,6 +2488,8 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
       document.querySelector('#addGuestView input[placeholder="Enter ID number"]').value = g.id_number || '';
       document.getElementById('agTierInput').value = g.ticket_tier || 'General';
       document.getElementById('agCapacityInput').value = g.allowed_capacity || 1;
+      document.getElementById('agEntryGateSelect').value = g.assigned_entry_gate_id || ''; // NEW
+      document.getElementById('agExitGateSelect').value = g.assigned_exit_gate_id || '';   // NEW
       document.querySelector('#addGuestView textarea').value = g.notes || '';
 
       // 3. Update Titles for Edit Mode
@@ -2615,11 +2607,11 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
               const tier = document.getElementById('agTierInput').value;
               const capacity = parseInt(document.getElementById('agCapacityInput').value) || 1;
               const notes = document.querySelector('#addGuestView textarea').value.trim();
-              const gateId = document.getElementById('agGateSelect').value || null; // NEW: Captures Gate
+              const entryGateId = document.getElementById('agEntryGateSelect').value || null;
+              const exitGateId = document.getElementById('agExitGateSelect').value || null;
 
               if (!eventId || !name || !phone) return alert('Please select an event, and enter Guest Name and Phone Number.');
 
-              // Check which send method was toggled on the UI
               let selectedMethod = 'System';
               const waBtn = document.getElementById('btnWhatsappOption');
               if(waBtn && waBtn.style.background.includes('success')) selectedMethod = 'WhatsApp';
@@ -2628,7 +2620,7 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
               const guestPayload = {
                   event_id: eventId, guest_name: name, email: email, phone: phone, company: company, designation: designation,
                   id_number: idNumber, ticket_tier: tier, allowed_capacity: capacity, notes: notes,
-                  sent_via: selectedMethod, assigned_gate_id: gateId // NEW: Saves to DB
+                  sent_via: selectedMethod, assigned_entry_gate_id: entryGateId, assigned_exit_gate_id: exitGateId
               };
 
               if (currentEditGuestId) {
@@ -4359,21 +4351,24 @@ function toggleGuestInputMode(mode) {
   });
 
 
-// --- ADD GUEST: DYNAMIC GATE DROPDOWN ---
+// --- ADD GUEST: DYNAMIC GATE DROPDOWNS ---
   document.addEventListener('DOMContentLoaded', () => {
       const addGuestEventSelect = document.getElementById('addGuestEventSelect');
       if (addGuestEventSelect) {
           addGuestEventSelect.addEventListener('change', async (e) => {
               const evId = e.target.value;
-              const gateSelect = document.getElementById('agGateSelect');
-              if(!gateSelect) return;
-              
-              gateSelect.innerHTML = '<option value="">All Gates Allowed</option>';
+              const enGate = document.getElementById('agEntryGateSelect');
+              const exGate = document.getElementById('agExitGateSelect');
+              if(enGate) enGate.innerHTML = '<option value="">Any Gate Allowed</option>';
+              if(exGate) exGate.innerHTML = '<option value="">Any Gate Allowed</option>';
               if(!evId) return;
 
               const { data: gates } = await supabaseClient.from('gates').select('id, gate_name').eq('event_id', evId);
               if(gates) {
-                  gates.forEach(g => gateSelect.innerHTML += `<option value="${g.id}">${g.gate_name}</option>`);
+                  gates.forEach(g => {
+                      if(enGate) enGate.innerHTML += `<option value="${g.id}">${g.gate_name}</option>`;
+                      if(exGate) exGate.innerHTML += `<option value="${g.id}">${g.gate_name}</option>`;
+                  });
               }
           });
       }

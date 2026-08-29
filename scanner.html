@@ -35,6 +35,7 @@
       <div>
         <h1 class="text-2xl font-bold text-gray-900">Ticket Scanner</h1>
         <p id="staffInfoDisplay" class="text-xs text-gray-500 font-semibold hidden">Logged in as: <span id="staffNameSpan" class="text-blue-600"></span></p>
+        <p id="sessionScanCountDisplay" class="text-xs font-bold text-blue-600 mt-1 hidden">Scans this session: 0</p>
       </div>
       <a href="index.html" class="text-blue-600 hover:underline text-sm">← Dashboard</a>
     </div>
@@ -52,11 +53,17 @@
     <div id="result-box" class="hidden p-4 rounded-md text-center shadow-inner">
       <h2 id="result-title" class="text-xl font-bold mb-2"></h2>
       <p id="result-message" class="text-gray-700"></p>
+      
+      <!-- MISSING ENTRY OVERRIDE BOX -->
+      <div id="overrideActionBox" class="hidden mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-yellow-800">
+        <p class="mb-2 font-bold">Fix Database Records?</p>
+        <button onclick="handleMissedEntry()" class="w-full bg-yellow-500 text-white font-bold py-2 rounded shadow hover:bg-yellow-600">Register Entry (+1) & Log Exit</button>
+      </div>
+
       <button id="scanAgainBtn" class="mt-4 bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-900 w-full">
         Scan Next Ticket
       </button>
     </div>
-  </div>
 
   <script>
     // 1. YOUR KEYS (Keep your real keys here!)
@@ -76,6 +83,7 @@
     let activeGatemanId = null;
     let activeGateId = null;
     let activeTenantId = null;
+    let sessionScanCount = 0;
     let manualOverrideGuest = null;
     let currentScanMode = 'Entry'; // Default mode
 
@@ -176,14 +184,15 @@
       html5QrCode.stop().then(async () => {
         readerDiv.classList.add('hidden');
         document.getElementById('mode-toggles').classList.add('hidden'); 
+        document.getElementById('overrideActionBox').classList.add('hidden'); // Reset UI
         
         resultBox.classList.remove('hidden');
         showScanResult('Verifying Ticket...', 'Checking database records...', 'blue');
 
-        // 1. Fetch guest record (NOW FETCHING ASSIGNED GATE NAME TOO)
+        // 1. Fetch guest record (NOW FETCHING BOTH GATE RULES)
         const { data: guest, error } = await supabaseClient
           .from('guests')
-          .select('*, events(is_approved, expires_at), assigned_gate:gates!guests_assigned_gate_id_fkey(gate_name)')
+          .select('*, events(is_approved, expires_at), assigned_entry_gate:gates!guests_assigned_entry_gate_id_fkey(gate_name), assigned_exit_gate:gates!guests_assigned_exit_gate_id_fkey(gate_name)')
           .eq('id', decodedText)
           .single(); 
 
@@ -192,21 +201,25 @@
           return;
         }
 
-        // 2. CHECK EVENT APPROVAL & EXPIRATION RULES
+        // 2. CHECK EVENT APPROVAL & EXPIRATION
         if (!guest.events || !guest.events.is_approved) {
           showScanResult('Event Not Approved ❌', 'This event is pending admin approval.', 'red');
           return;
         }
-
         if (guest.events.expires_at && new Date(guest.events.expires_at) < new Date()) {
           showScanResult('Event Expired 🔒', 'This event time window has closed.', 'red');
           return;
         }
 
-        // 3. CHECK STRICT GATE ASSIGNMENT
-        if (guest.assigned_gate_id && guest.assigned_gate_id !== activeGateId) {
-          const correctGate = guest.assigned_gate ? guest.assigned_gate.gate_name : 'another gate';
-          showScanResult('Wrong Gate ⛔', `${guest.guest_name} is not allowed here. Please redirect them to: ${correctGate}`, 'red');
+        // 3. STRICT DUAL-GATE ASSIGNMENT CHECK
+        if (currentScanMode === 'Entry' && guest.assigned_entry_gate_id && guest.assigned_entry_gate_id !== activeGateId) {
+          const correctGate = guest.assigned_entry_gate ? guest.assigned_entry_gate.gate_name : 'another gate';
+          showScanResult('Wrong Gate ⛔', `Access Denied. ${guest.guest_name} must ENTER through: ${correctGate}`, 'red');
+          return;
+        }
+        if (currentScanMode === 'Exit' && guest.assigned_exit_gate_id && guest.assigned_exit_gate_id !== activeGateId) {
+          const correctGate = guest.assigned_exit_gate ? guest.assigned_exit_gate.gate_name : 'another gate';
+          showScanResult('Wrong Gate ⛔', `Access Denied. ${guest.guest_name} must EXIT through: ${correctGate}`, 'red');
           return;
         }
 
@@ -236,17 +249,10 @@
 
             // CHECK FOR MISSED ENTRY
             if (currentChecked < allowed) {
-                manualOverrideGuest = guest; // Store globally for the button to use
+                manualOverrideGuest = guest; 
                 showScanResult('⚠️ Missed Entry Scan', `${guest.guest_name} has no recorded entry for this pass.`, 'orange');
-                
-                // Inject the manual override button
-                resultBox.innerHTML += `
-                  <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-yellow-800">
-                    <p class="mb-2 font-bold">Fix Database Records?</p>
-                    <button onclick="handleMissedEntry()" class="w-full bg-yellow-500 text-white font-bold py-2 rounded shadow hover:bg-yellow-600">Register Entry (+1) & Log Exit</button>
-                  </div>
-                `;
-                return; // Stop here, wait for gateman to click the button or scan next
+                document.getElementById('overrideActionBox').classList.remove('hidden'); // Reveal yellow button
+                return; // Wait for gateman to click the button
             }
 
             // Normal Exit
@@ -264,18 +270,22 @@
         const g = manualOverrideGuest;
         const newCount = (g.checked_in_count || 0) + 1;
 
+        // Instantly hide the yellow override box
+        document.getElementById('overrideActionBox').classList.add('hidden');
+        showScanResult('Updating Records...', 'Please wait...', 'blue');
+
         // 1. Force Entry Log & Math
         await logScanToDatabase(g, 'Entry');
         await supabaseClient.from('guests').update({ checked_in_count: newCount, current_status: 'Exited' }).eq('id', g.id);
         
-        // 2. Force Exit Log
+        // 2. Force Exit Log (no need to rescan!)
         await logScanToDatabase(g, 'Exit');
 
         showScanResult('Records Fixed ✅', `Entry added (${newCount}/${g.allowed_capacity}) and Exit logged for ${g.guest_name}.`, 'green');
-        manualOverrideGuest = null; // clear it
+        manualOverrideGuest = null; 
     }
 
-    // Helper: Insert the log into the database
+    // Update logScanToDatabase to increment the Gateman's UI counter
     async function logScanToDatabase(guest, type) {
         await supabaseClient.from('scan_logs').insert([{
             tenant_id: activeTenantId,
@@ -285,8 +295,13 @@
             gateman_id: activeGatemanId,
             scan_type: type
         }]);
+        
+        // Increment live counter
+        sessionScanCount++;
+        const countDisplay = document.getElementById('sessionScanCountDisplay');
+        countDisplay.innerText = `Scans this session: ${sessionScanCount}`;
+        countDisplay.classList.remove('hidden');
     }
-
     // Helper: Paint the result box
     function showScanResult(title, msg, colorStr) {
         let bg = 'bg-gray-50'; let border = 'border-gray-200'; let text = 'text-gray-800';
