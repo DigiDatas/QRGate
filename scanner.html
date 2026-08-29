@@ -175,13 +175,10 @@
     async function onScanSuccess(decodedText, decodedResult) {
       html5QrCode.stop().then(async () => {
         readerDiv.classList.add('hidden');
-        document.getElementById('mode-toggles').classList.add('hidden'); // Hide toggles during result
+        document.getElementById('mode-toggles').classList.add('hidden'); 
         
         resultBox.classList.remove('hidden');
-        resultBox.className = 'p-4 rounded-md text-center shadow-inner bg-blue-50 border-blue-200 border';
-        resultTitle.innerText = 'Verifying Ticket...';
-        resultTitle.className = 'text-xl font-bold mb-2 text-blue-800';
-        resultMessage.innerText = 'Checking database records...';
+        showScanResult('Verifying Ticket...', 'Checking database records...', 'blue');
 
         // 1. Fetch guest record
         const { data: guest, error } = await supabaseClient
@@ -212,38 +209,48 @@
             const currentChecked = guest.checked_in_count || 0;
 
             if (currentChecked >= allowed) {
-                showScanResult('⚠️ Fully Checked In', `Warning: All ${allowed} entries for ${guest.guest_name} have already been used!`, 'orange');
+                showScanResult('⚠️ Fully Checked In', `All ${allowed} entries for ${guest.guest_name} have already been used!`, 'orange');
                 return;
             }
 
-            // Insert Scan Log
-            await logScanToDatabase(guest, 'Entry');
-            
-            // Increment count & update status
             const newCount = currentChecked + 1;
-            await supabaseClient.from('guests').update({ checked_in_count: newCount, current_status: 'Inside' }).eq('id', guest.id);
+
+            // Log the scan and update the guest math
+            await logScanToDatabase(guest, 'Entry');
+            const { error: updateErr } = await supabaseClient.from('guests')
+                .update({ checked_in_count: newCount, current_status: 'Inside' })
+                .eq('id', guest.id);
+
+            if (updateErr) {
+                console.error(updateErr);
+                showScanResult('Database Error', 'Could not save check-in data to Supabase.', 'red');
+                return;
+            }
             
             showScanResult(`Entry Granted (${newCount}/${allowed}) ✅`, `Welcome, ${guest.guest_name}! Entry logged.`, 'green');
         } 
         
         // 4. LOGIC FOR 'EXIT' MODE
         else {
-            if (guest.current_status === 'Exited') {
+            let warningMsg = '';
+            
+            // REAL WORLD FIX: Allow exit even if they missed the entry scan
+            if (guest.current_status === 'Pending') {
+                warningMsg = `\n(Note: Guest missed Entry scan, but Exit was logged).`;
+            } else if (guest.current_status === 'Exited') {
                 showScanResult('⚠️ Already Exited', `${guest.guest_name} has already checked out.`, 'orange');
                 return;
             }
 
-            // Insert Scan Log
+            // Log the exit and update status (We DO NOT decrease checked_in_count to prevent pass sharing)
             await logScanToDatabase(guest, 'Exit');
-            
-            // Update status
             await supabaseClient.from('guests').update({ current_status: 'Exited' }).eq('id', guest.id);
             
-            showScanResult('Exit Logged 🚪', `Goodbye, ${guest.guest_name}. Exit successful.`, 'blue');
+            showScanResult('Exit Logged 🚪', `Goodbye, ${guest.guest_name}. Exit successful.${warningMsg}`, 'blue');
         }
 
       }).catch((err) => console.error("Failed to stop camera.", err));
-    } // <-- This correctly closes the onScanSuccess function
+    }
 
     // Helper: Insert the log into the database
     async function logScanToDatabase(guest, type) {

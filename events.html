@@ -1421,9 +1421,13 @@ let currentGuestTierFilter = 'All';
     } else if (viewId === 'guestListsView') {
        titleEl.innerText = 'Guest List'; subEl.innerText = 'Manage and invite guests for your events';
        searchBox.style.display = 'block'; searchInput.placeholder = 'Search guests by name, email or phone...';
+       // NEW: Force fresh data fetch when tab is clicked
+       fetchAllGuestsForKPIs(); 
     } else if (viewId === 'gateManagementView') {
        titleEl.innerText = 'Gate Management'; subEl.innerText = 'Manage physical gates, assign staff, and monitor entry/exit logs';
        searchBox.style.display = 'block'; searchInput.placeholder = 'Search gates or staff...';
+       // NEW: Force fresh data fetch when tab is clicked
+       loadGateManagementData();
     } else if (viewId === 'designTemplatesView') {
        titleEl.innerText = 'Design Templates'; subEl.innerText = 'Choose a template and customize your gate pass';
        searchBox.style.display = 'none';
