@@ -330,7 +330,31 @@
     #addGuestView .btn-filter-nav { flex: 1 !important; justify-content: center !important; padding: 10px !important; border: 1px solid var(--color-primary) !important; background: var(--color-primary-soft) !important; color: var(--color-primary) !important; font-weight: 700 !important; border-radius: var(--radius-sm) !important; }
     #autoGenerateZone > div[style*="align-items: flex-end;"] { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; }
     
-    /* 7. Editor Layout */
+/* --- BATCH 4: FINAL UI POLISH --- */
+    
+    /* 1. Fix Donut Chart Overlap */
+    .analytics-panel { height: auto !important; padding-bottom: 24px !important; }
+    .analytics-panel > div[style*="align-items:center; gap:32px;"] { flex-direction: column !important; gap: 24px !important; }
+    .analytics-panel > div[style*="align-items:center; gap:32px;"] > div:first-child { width: 100% !important; min-height: 180px !important; }
+    .analytics-panel > div[style*="align-items:center; gap:32px;"] > div:last-child { width: 100% !important; justify-content: center !important; margin-top: 8px !important; }
+
+    /* 2. Guest Card Compression & Status Alignment */
+    #guestListTableBody tr:not(.drilldown-row) { padding: 12px 12px 8px 12px !important; gap: 6px !important; min-height: auto !important; }
+    #guestListTableBody td { gap: 2px !important; }
+    
+    /* Move Active/Pending Status to the Top Right */
+    #guestListTableBody tr:not(.drilldown-row) td:nth-child(4) { position: absolute !important; top: 15px !important; right: 110px !important; width: auto !important; padding: 0 !important; margin: 0 !important; }
+    #guestListTableBody tr:not(.drilldown-row) td:nth-child(4) span { padding: 2px 8px !important; font-size: 10px !important; }
+    
+    /* Move the Exits Badge next to the QR Pass to reduce card height! */
+    #guestListTableBody tr:not(.drilldown-row) td:nth-child(5) { flex: 1 1 30% !important; margin-top: 4px !important; }
+    #guestListTableBody tr:not(.drilldown-row) td:nth-child(6) { flex: 0 0 auto !important; margin-top: 4px !important; }
+    #guestListTableBody tr:not(.drilldown-row) td:nth-child(7) { flex: 0 0 auto !important; margin-top: 4px !important; margin-left: 12px !important; }
+    
+    /* 3. Hide the "Back to Create & Manage" Buttons */
+    button[onclick="cancelEventForm()"], button[onclick="cancelGuestForm()"] { display: none !important; }    
+
+/* 7. Editor Layout */
     #builderLayoutGrid { display: flex !important; flex-direction: column !important; min-height: auto !important; height: auto !important; gap: 24px !important; }
     #builderLayoutGrid > div { width: 100% !important; max-height: none !important; }
     #builderLayoutGrid > .panel:not(.no-scrollbar) { height: 480px !important; min-height: 480px !important; flex: none !important; }
@@ -458,7 +482,7 @@
           <span style="position: absolute; top: -2px; right: -2px; background: var(--color-danger); color: white; font-size: 10px; font-weight: 700; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white;">3</span>
         </button>
         <div style="width: 1px; height: 24px; background: var(--color-border);"></div>
-        <div class="user-menu" onclick="toggleMobileMenu()">
+        <div class="user-menu" onclick="switchView('profileView', this)">
           <div class="avatar" id="userAvatar" style="background:#8b5cf6;">A</div>
           <div class="user-meta">
             <div class="user-name" id="userNameDisplay">Admin User</div>
@@ -503,7 +527,8 @@
             <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Mobile Number</label>
             <input type="text" id="settingPhone" class="input-field">
 
-            <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+              <button onclick="switchView('dashboardView', this)" class="btn-filter-nav" style="padding: 10px 20px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--color-surface-soft); font-weight: 600;">Cancel</button>
               <button onclick="updateUserProfile(false)" class="btn-primary">Save Changes</button>
             </div>
           </div>
