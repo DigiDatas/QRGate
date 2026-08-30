@@ -219,7 +219,7 @@
   .mobile-menu-btn { display: none; }
   .mobile-brand { display: none; }
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     /* Hide Desktop Elements & Transform Sidebar */
     .sidebar { position: fixed !important; top: 0; left: 0; height: 100vh !important; transform: translateX(-100%); z-index: 1000 !important; display: flex !important; box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
     .sidebar.mobile-open { transform: translateX(0); }
@@ -237,8 +237,9 @@
 
     /* Show Mobile Header Elements */
     .mobile-menu-btn { display: flex; align-items: center; justify-content: center; background: none; border: none; color: var(--color-text); cursor: pointer; flex-shrink: 0; }
-    /* Fix Issue 2: Keep Logo next to menu, not absolute */
-    .mobile-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; color: var(--color-text); }
+    
+    /* Fix Issue 2: Added a clean gap from the hamburger menu */
+    .mobile-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; color: var(--color-text); margin-left: 12px; }
     .mobile-brand .brand-mark { width: 28px; height: 28px; border-radius: var(--radius-sm); background: var(--color-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; }
 
     /* Show Bottom Navigation */
