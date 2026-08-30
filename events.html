@@ -354,13 +354,48 @@
     /* 3. Hide the "Back to Create & Manage" Buttons */
     button[onclick="cancelEventForm()"], button[onclick="cancelGuestForm()"] { display: none !important; }    
 
-/* 7. Editor Layout */
-    #builderLayoutGrid { display: flex !important; flex-direction: column !important; min-height: auto !important; height: auto !important; gap: 24px !important; }
+/* 7. Editor Layout & Mobile UX Polish */
+    #builderLayoutGrid { display: flex !important; flex-direction: column !important; min-height: auto !important; height: auto !important; gap: 16px !important; }
     #builderLayoutGrid > div { width: 100% !important; max-height: none !important; }
-    #builderLayoutGrid > .panel:not(.no-scrollbar) { height: 480px !important; min-height: 480px !important; flex: none !important; }
+    
+    /* Scale the Canvas to fit the mobile screen */
+    #builderLayoutGrid > .panel:not(.no-scrollbar) { height: 340px !important; min-height: 340px !important; flex: none !important; overflow: hidden !important; padding: 12px !important; display: flex !important; justify-content: center !important; }
+    #editorCanvas { transform: scale(0.55) !important; transform-origin: top center !important; }
+    
+    /* Compact the Template Gallery */
+    #templateGallery { flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 8px !important; gap: 8px !important; }
+    #templateGallery > div { width: 75px !important; min-width: 75px !important; }
+    #templateGallery img { height: 85px !important; object-fit: cover !important; }
+    
+    /* Font Explorer */
     #fontExplorerPanel { height: 350px !important; min-height: 350px !important; }
-    #templateGallery { flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 12px !important; }
-  }
+
+/* --- BATCH 5: DESIGN EDITOR UX POLISH --- */
+    
+    /* 1. Reorder Flow: Canvas (Top) -> Tools (Middle) -> Settings (Bottom) */
+    #builderLayoutGrid > .panel:nth-child(2) { order: 1 !important; }
+    #builderLayoutGrid > .panel:nth-child(1) { order: 2 !important; }
+    #builderLayoutGrid > .panel:nth-child(3) { order: 3 !important; }
+    
+    /* 2. Sticky & Compact Top Gallery */
+    #designTemplatesView { overflow-x: hidden !important; }
+    #designTemplatesView > div:first-child { position: sticky !important; top: 0 !important; z-index: 50 !important; background: var(--color-surface-soft) !important; padding: 12px 16px 8px 16px !important; margin: -16px -16px 16px -16px !important; border-bottom: 1px solid var(--color-border); box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+    #templateGallery { gap: 8px !important; padding-bottom: 4px !important; }
+    #templateGallery > .card { height: 90px !important; min-width: 65px !important; width: 65px !important; }
+    #templateGallery > .card > div[style*="height: 100px"] { height: 65px !important; }
+    
+    /* 3. Hide Dynamic Tags */
+    .mobile-hide-tags { display: none !important; }
+    
+    /* 4. Perfect Fit Preview Modal */
+    #previewContainer { transform: scale(0.31) !important; transform-origin: top center !important; }
+    #previewModal { padding-top: 50px !important; align-items: flex-start !important; }
+    
+    /* 5. Tighter Tools & Settings */
+    #builderLayoutGrid { gap: 12px !important; }
+
+  } /* <--- THIS IS THE REQUIRED BRACKET! */
+
 </style>
 </head>
 <body>
@@ -1197,9 +1232,9 @@
                   <button class="nav-item tool-btn w-full" onclick="addCanvasText()" style="justify-content: flex-start; height: 34px; font-size:12px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg> Add Text</button>
                   <button class="nav-item tool-btn w-full" onclick="openAssetLibrary()" style="justify-content: flex-start; height: 34px; font-size:12px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Image Library</button>
                   
-                  <div style="height: 1px; background: var(--color-border); margin: 10px 0;"></div>
-                  <div style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;">Insert Dynamic Tags</div>
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 8px;">
+                  <div class="mobile-hide-tags" style="height: 1px; background: var(--color-border); margin: 10px 0;"></div>
+                  <div class="mobile-hide-tags" style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;">Insert Dynamic Tags</div>
+                  <div class="mobile-hide-tags" style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 8px;">
                     <button type="button" class="btn-filter-nav" onclick="addDynamicField('venue')" style="font-size: 10px; padding: 4px 6px; justify-content: center;">+ Venue</button>
                     <button type="button" class="btn-filter-nav" onclick="addDynamicField('date')" style="font-size: 10px; padding: 4px 6px; justify-content: center;">+ Date</button>
                     <button type="button" class="btn-filter-nav" onclick="addDynamicField('time')" style="font-size: 10px; padding: 4px 6px; justify-content: center;">+ Time</button>
