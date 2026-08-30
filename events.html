@@ -254,12 +254,18 @@
     .nav-bottom-item svg { width: 22px; height: 22px; stroke-width: 2; }
 /* --- PHASE 2 & BATCH 3: ADVANCED MOBILE POLISH --- */
     
-    /* 1. Unlock Scrolling */
-    body, .app-shell, .content-shell { height: auto !important; min-height: 100vh; overflow-y: visible !important; }
-    .main-content { height: auto !important; overflow-y: visible !important; padding: 16px 16px 100px 16px !important; }
+    /* 1. Unlock Scrolling & Header Fixes */
+    body, .app-shell, .content-shell { height: auto !important; min-height: 100vh; overflow-y: visible !important; overflow-x: hidden !important; }
+    .main-content { height: auto !important; overflow-y: visible !important; padding: 16px 16px 100px 16px !important; overflow-x: hidden !important; }
     .view-section { height: auto !important; overflow: visible !important; padding-bottom: 20px !important; gap: 16px !important; }
     
-    /* 2. Ultra-Compact KPI Cards (Fixes left gap & reduces height) */
+    /* Sticky Top Header & Prevent Profile Icon Hiding */
+    .top-header { position: sticky !important; top: 0 !important; z-index: 100 !important; padding: 0 16px !important; box-sizing: border-box !important; max-width: 100vw !important; }
+    .header-left { max-width: 60% !important; overflow: hidden !important; }
+    .header-right { max-width: 40% !important; justify-content: flex-end !important; }
+    .user-meta, .btn-signout { display: none !important; } /* Hides name, keeps only Avatar */
+    
+    /* 2. Ultra-Compact KPI Cards */
     .kpi-grid, .kpi-5 { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
     .kpi-card { padding: 10px 12px !important; gap: 8px !important; border-radius: 12px !important; flex-direction: row !important; align-items: center !important; justify-content: flex-start !important; text-align: left !important; }
     .kpi-card > div:not(.kpi-icon) { display: flex !important; flex-direction: column !important; align-items: flex-start !important; width: auto !important; }
@@ -276,7 +282,7 @@
     .left-col, .right-col { height: auto !important; overflow: visible !important; width: 100% !important; padding-right: 0 !important; }
     .kpi-5 + button { width: 100% !important; margin-top: 4px !important; padding: 12px !important; justify-content: center !important; }
     
-    /* 3. Dense Mobile Data Cards (Fixes Card Heights & Top-Right Actions) */
+    /* 3. Dense Mobile Data Cards */
     .data-table-container { overflow: visible !important; border: none !important; background: transparent !important; padding: 0 !important; width: 100% !important; border-radius: 0 !important; }
     .data-table, .data-table tbody { display: flex !important; flex-direction: column !important; width: 100% !important; gap: 12px !important; }
     .data-table thead { display: none !important; } 
@@ -285,18 +291,23 @@
     
     /* Card Title Row & Pinned Actions */
     .data-table tr:not(.drilldown-row) td:first-child { flex: 1 1 100% !important; padding-bottom: 8px !important; border-bottom: 1px solid var(--color-surface-soft) !important; margin-bottom: 4px !important; padding-right: 90px !important; }
-    .data-table tr:not(.drilldown-row) td:last-child { position: absolute !important; top: 12px !important; right: 12px !important; border: none !important; padding: 0 !important; margin: 0 !important; width: auto !important; background: var(--color-bg); }
+    .data-table tr:not(.drilldown-row) td:last-child { position: absolute !important; top: 12px !important; right: 12px !important; border: none !important; padding: 0 !important; margin: 0 !important; width: auto !important; background: transparent !important; }
     .data-table tr:not(.drilldown-row) td:last-child > div { gap: 2px !important; }
     .data-table tr:not(.drilldown-row) td:last-child button { padding: 6px !important; transform: scale(0.9); border: none !important; background: transparent !important; }
     
-    /* 4. Fix Drilldown Row Scrolling */
-    .data-table tr.drilldown-row { display: block !important; position: static !important; padding: 0 !important; border: none !important; box-shadow: none !important; background: transparent !important; margin-top: -8px !important; margin-bottom: 12px !important; }
+    /* Guest Card Specific Cleanups (Hide Date/Time, Move Status) */
+    #guestListTableBody td:nth-child(8) { display: none !important; }
+    #guestListTableBody tr:not(.drilldown-row) td:nth-child(4) { position: absolute !important; top: 16px !important; right: 100px !important; width: auto !important; padding: 0 !important; margin: 0 !important; }
+
+    /* 4. Fix Drilldown Row Expand/Collapse */
+    .data-table tr.drilldown-row { position: static !important; padding: 0 !important; border: none !important; box-shadow: none !important; background: transparent !important; margin-top: -8px !important; margin-bottom: 12px !important; }
+    .data-table tr.drilldown-row[style*="display: table-row"] { display: block !important; }
     .data-table tr.drilldown-row td { display: block !important; width: 100% !important; }
     .data-table tr.drilldown-row > td > div { background: var(--color-surface-soft) !important; border-radius: 8px !important; padding: 8px !important; }
 
     /* 5. Fix Swiping & Guest Category Buttons */
-    #dashboardDateFilters, #guestTierFilters, #gateSpecificFilters, #guestListEventPills, #gateEventPillsContainer { display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 10px !important; width: 100% !important; -webkit-overflow-scrolling: touch; }
-    .btn-filter-nav, #guestListEventPills > div, #gateEventPillsContainer > div { flex-shrink: 0 !important; }
+    #dashboardDateFilters, #guestTierFilters, #gateSpecificFilters, #guestListEventPills, #gateEventPillsContainer { display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 10px !important; width: 100% !important; max-width: calc(100vw - 32px) !important; -webkit-overflow-scrolling: touch !important; }
+    .btn-filter-nav, #guestListEventPills > div, #gateEventPillsContainer > div { flex: 0 0 auto !important; flex-shrink: 0 !important; }
     
     #guestTierFilters { gap: 8px !important; align-items: center !important; border-bottom: none !important; }
     #guestTierFilters > div { padding: 6px 14px !important; border: 1px solid var(--color-border) !important; border-radius: 99px !important; background: var(--color-bg) !important; font-size: 11px !important; flex-shrink: 0 !important; white-space: nowrap !important; }
