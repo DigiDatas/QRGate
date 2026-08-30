@@ -302,6 +302,70 @@
     
     /* 6. Ensure the main top row doesn't break */
     .page-head-row { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+/* --- BATCH 3: FORMS, GATES HEADER & BUTTONS (Fixes 8, 9, 12, 14, 15, 16) --- */
+
+    /* 1. Stack all form grids into a single scrolling column (Fixes 16) */
+    div[style*="grid-template-columns: 1fr 1fr"], 
+    div[style*="grid-template-columns: 1fr 1fr 1fr"],
+    div[style*="grid-template-columns: 1fr 1fr 1fr 2fr"] {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+    
+    /* 2. Fix the Event Time inputs overlap in Create Event (Fixes 14) */
+    #createEventView div[style*="align-items: center; gap: 12px;"] {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+    }
+
+    /* 3. Fix Gate Management Header Overlap (Fixes 12) */
+    #gateManagementView > div > div:first-child {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 16px !important;
+    }
+    #gateManagementView > div > div:first-child > div:last-child {
+        width: 100% !important;
+    }
+    #gateManagementView > div > div:first-child button {
+        flex: 1 !important;
+        justify-content: center !important;
+    }
+
+    /* 4. Guest Type Buttons (Bulk/Auto) and Panel Fixes (Fixes 9 & 15) */
+    #addGuestView .card > div[style*="justify-content: space-between; align-items: center; margin-bottom: 20px;"] {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+    }
+    #addGuestView .card > div[style*="justify-content: space-between"] > div[style*="display: flex; gap: 8px;"] {
+        width: 100% !important;
+    }
+    #addGuestView .btn-filter-nav {
+        flex: 1 !important;
+        justify-content: center !important;
+        padding: 10px !important;
+        border: 1px solid var(--color-primary) !important;
+        background: var(--color-primary-soft) !important;
+        color: var(--color-primary) !important;
+        font-weight: 700 !important;
+        border-radius: var(--radius-sm) !important;
+    }
+    #autoGenerateZone > div[style*="align-items: flex-end;"] {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+    }
+
+    /* 5. Fix Event Pills Scroll (Fixes 8) */
+    #guestListEventPills, #gateEventPillsContainer {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        padding-bottom: 8px !important;
+        width: 100% !important;
+    }
     
     /* --- PHASE 3: MOBILE TEMPLATE EDITOR --- */
     #builderLayoutGrid { display: flex !important; flex-direction: column !important; min-height: auto !important; height: auto !important; gap: 24px !important; }
