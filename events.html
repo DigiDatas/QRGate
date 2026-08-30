@@ -220,19 +220,25 @@
   .mobile-brand { display: none; }
 
   @media (max-width: 768px) {
-    /* Hide Desktop Elements */
-    .sidebar { display: none !important; }
+    /* Hide Desktop Elements & Transform Sidebar */
+    .sidebar { position: fixed !important; top: 0; left: 0; height: 100vh !important; transform: translateX(-100%); z-index: 1000 !important; display: flex !important; box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
+    .sidebar.mobile-open { transform: translateX(0); }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 999; backdrop-filter: blur(2px); }
+    .sidebar-overlay.mobile-open { display: block; }
+    
     .portal-title, .page-subtitle, #dynamicSearchContainer { display: none !important; }
     .user-meta, .btn-signout { display: none !important; }
     
     /* Adjust Main Shell */
     .main-content { padding: var(--space-4) 16px var(--space-7); height: calc(100vh - var(--header-height) - 70px); }
     .top-header { padding: 0 16px; justify-content: space-between; }
-    .header-left, .header-right { gap: 12px; }
+    .header-left { gap: 12px; flex: 1; }
+    .header-right { gap: 12px; flex-shrink: 0; }
 
     /* Show Mobile Header Elements */
-    .mobile-menu-btn { display: flex; align-items: center; justify-content: center; background: none; border: none; color: var(--color-text); }
-    .mobile-brand { display: flex; align-items: center; gap: 8px; position: absolute; left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 18px; color: var(--color-text); }
+    .mobile-menu-btn { display: flex; align-items: center; justify-content: center; background: none; border: none; color: var(--color-text); cursor: pointer; flex-shrink: 0; }
+    /* Fix Issue 2: Keep Logo next to menu, not absolute */
+    .mobile-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; color: var(--color-text); }
     .mobile-brand .brand-mark { width: 28px; height: 28px; border-radius: var(--radius-sm); background: var(--color-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; }
 
     /* Show Bottom Navigation */
@@ -269,13 +275,26 @@
     .layout-grid, section[style*="flex:1; display:flex; gap:16px; min-height:0;"] { display: flex !important; flex-direction: column !important; height: auto !important; overflow: visible !important; gap: 16px !important; }
     .left-col, .right-col { height: auto !important; overflow: visible !important; width: 100% !important; padding-right: 0 !important; }
     
-    /* 4. Convert Data Tables into Vertical Cards (No Horizontal Scrolling) */
+    /* 4. Convert Data Tables into Beautiful Mobile Cards (Fixes Issues 6, 10, 13) */
     .data-table-container { overflow: visible !important; border: none !important; background: transparent !important; padding: 0 !important; width: 100% !important; border-radius: 0 !important; }
     .data-table, .data-table tbody { display: flex !important; flex-direction: column !important; width: 100% !important; gap: 12px !important; }
-    .data-table thead { display: none !important; } /* Hide the traditional headers */
-    .data-table tr { display: flex !important; flex-direction: column !important; background: var(--color-bg) !important; border: 1px solid var(--color-border) !important; border-radius: 12px !important; padding: 16px !important; box-shadow: 0 4px 10px rgba(0,0,0,0.03) !important; gap: 10px !important; }
-    .data-table td { display: flex !important; width: 100% !important; padding: 0 !important; border: none !important; align-items: center !important; }
-    .data-table td:last-child { padding-top: 12px !important; border-top: 1px solid var(--color-border) !important; margin-top: 4px !important; justify-content: space-around !important; }
+    .data-table thead { display: none !important; } 
+    .data-table tr { display: flex !important; flex-direction: row !important; flex-wrap: wrap !important; background: var(--color-bg) !important; border: 1px solid var(--color-border) !important; border-radius: 12px !important; padding: 16px !important; box-shadow: 0 4px 10px rgba(0,0,0,0.03) !important; gap: 12px !important; align-items: center !important; justify-content: space-between !important; }
+    
+    /* Make table cells sit side-by-side naturally instead of stacking */
+    .data-table td { display: flex !important; width: auto !important; flex: 1 1 40% !important; padding: 0 !important; border: none !important; align-items: center !important; justify-content: flex-start !important; }
+    
+    /* Force Row 1 (Name/Title) and Last Row (Actions) to take full width of the card */
+    .data-table td:first-child { flex: 1 1 100% !important; padding-bottom: 12px !important; border-bottom: 1px dashed var(--color-border) !important; margin-bottom: 4px !important; }
+    .data-table td:last-child { flex: 1 1 100% !important; padding-top: 12px !important; border-top: 1px dashed var(--color-border) !important; margin-top: 4px !important; justify-content: flex-end !important; }
+    
+    /* Fix Issue 4: Dashboard Donut Chart Overlap */
+    .analytics-panel { height: auto !important; }
+    .analytics-panel > div:nth-child(2) { flex-direction: column !important; gap: 24px !important; }
+    
+    /* Fix Issue 5: Pinned Create Event Button & KPI Heights */
+    .kpi-5 + button { width: 100% !important; margin-top: 8px !important; padding: 14px !important; justify-content: center !important; }
+    .kpi-card { padding: 10px !important; }
     
     /* 5. Make date/filter pills scrollable horizontally without wrapping */
     #dashboardDateFilters, #guestTierFilters, #gateSpecificFilters { flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 8px !important; -webkit-overflow-scrolling: touch; width: 100%; }
@@ -298,7 +317,8 @@
 <div class="app-shell">
 
   <!-- ============ SIDEBAR ============ -->
-  <aside class="sidebar">
+  <div id="mobileSidebarOverlay" class="sidebar-overlay" onclick="toggleMobileMenu()"></div>
+  <aside class="sidebar" id="mainSidebar">
     <div class="brand">
       <div class="brand-mark">QR</div>
       <div class="brand-name">QRGate<span class="dot">.</span></div>
@@ -365,11 +385,15 @@
       </div>
     </nav>
 
-    <!-- Pinned My Profile (Replaces Need Help box) -->
-    <div style="padding: 16px; border-top: 1px solid var(--color-border); background: var(--color-bg); flex-shrink: 0;">
+    <!-- Pinned My Profile & Logout -->
+    <div style="padding: 16px; border-top: 1px solid var(--color-border); background: var(--color-bg); flex-shrink: 0; display: flex; flex-direction: column; gap: 4px;">
         <button class="nav-item w-full" onclick="switchView('profileView', this)" style="margin: 0; justify-content: flex-start; color: var(--color-text-secondary);">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
           My Profile
+        </button>
+        <button class="nav-item w-full" onclick="handleSignOut()" style="margin: 0; justify-content: flex-start; color: var(--color-danger);">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+          Logout
         </button>
     </div>
   </aside>
@@ -382,7 +406,7 @@
       <div class="header-left" style="display:flex; align-items:center; gap:40px;">
         
         <!-- Mobile Hamburger (Hidden on Desktop) -->
-        <button class="mobile-menu-btn">
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
 
@@ -1307,7 +1331,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
         Guests
       </button>
-      <button class="nav-bottom-item" onclick="switchView('gateManagementView', this)">
+      <button class="nav-bottom-item" onclick="toggleMobileMenu()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
         More
       </button>
@@ -1489,11 +1513,26 @@ let currentGuestTierFilter = 'All';
   let currentGuestViewMode = 'list';
 let allFetchedLogs = []; // Stores global scan logs for drill-downs
 
+  // --- MOBILE SIDEBAR TOGGLE ---
+  function toggleMobileMenu() {
+      const sidebar = document.getElementById('mainSidebar');
+      const overlay = document.getElementById('mobileSidebarOverlay');
+      if (sidebar && overlay) {
+          sidebar.classList.toggle('mobile-open');
+          overlay.classList.toggle('mobile-open');
+      }
+  }
+
   // --- TAB NAVIGATION & HEADER ROUTING ---
   function switchView(viewId, navElement) {
+    // Close mobile menu automatically when a link is clicked
+    const sidebar = document.getElementById('mainSidebar');
+    if (sidebar && sidebar.classList.contains('mobile-open')) toggleMobileMenu();
+
     // 1. Hide all views and remove active state from buttons
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-bottom-item').forEach(el => el.classList.remove('active')); // Clears bottom nav active states
     
     // 2. Show the requested view
     const targetView = document.getElementById(viewId);
@@ -1547,7 +1586,13 @@ let allFetchedLogs = []; // Stores global scan logs for drill-downs
        titleEl.innerText = 'Design Templates'; subEl.innerText = 'Choose a template and customize your gate pass';
        searchBox.style.display = 'none';
     }
-  }
+
+    // Highlight matching bottom nav item (Fix for Issue 7)
+    const allBottomNavs = Array.from(document.querySelectorAll('.mobile-bottom-nav button'));
+    const matchingBottomNav = allBottomNavs.find(b => b.getAttribute('onclick')?.includes(viewId));
+    if (matchingBottomNav) matchingBottomNav.classList.add('active');
+
+  } // <--- THIS IS THE MISSING BRACKET!
 
   // --- DATA FETCHING ---
   async function fetchEvents() {
