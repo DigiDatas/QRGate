@@ -247,30 +247,42 @@
     }
     .nav-bottom-item.active { color: var(--color-primary); }
     .nav-bottom-item svg { width: 22px; height: 22px; stroke-width: 2; }
-/* --- PHASE 2: MOBILE GRIDS & CARDS --- */
+/* --- PHASE 2: MOBILE UI FIXES (SCROLLING, SIZING & TABLES) --- */
     
-    /* 1. Stack the main page layout vertically */
-    .layout-grid { display: flex !important; flex-direction: column !important; height: auto !important; overflow: visible !important; }
-    .left-col, .right-col { height: auto !important; overflow: visible !important; }
+    /* 1. Unlock Scrolling: Break the desktop 'overflow: hidden' trap */
+    body, .app-shell, .content-shell { height: auto !important; min-height: 100vh; overflow-y: visible !important; }
+    .main-content { height: auto !important; overflow-y: visible !important; padding: 16px 16px 100px 16px !important; }
+    .view-section { height: auto !important; overflow: visible !important; padding-bottom: 20px !important; gap: 16px !important; }
     
-    /* 2. Format KPI Cards to a clean 2x2 grid (Matches Mockup) */
-    .kpi-grid, .kpi-5 { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
-    .kpi-card { padding: 12px !important; flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 8px !important; }
-    .kpi-icon { width: 40px !important; height: 40px !important; margin: 0 !important; }
+    /* 2. Resize KPI & Quick Action Cards to be smaller and tighter */
+    .kpi-grid, .kpi-5 { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+    .kpi-card { padding: 12px !important; gap: 4px !important; border-radius: 12px !important; justify-content: center !important; }
+    .kpi-icon { width: 32px !important; height: 32px !important; margin-bottom: 4px !important; }
+    .kpi-icon svg { width: 16px !important; height: 16px !important; }
+    .kpi-value { font-size: 18px !important; }
+    .kpi-label { font-size: 11px !important; }
+    div[style*="grid-template-columns: repeat(4, 1fr)"] { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+    .action-card { padding: 12px !important; gap: 8px !important; border-radius: 12px !important; }
+    .action-icon { width: 32px !important; height: 32px !important; }
+
+    /* 3. Stack grid columns perfectly */
+    .layout-grid, section[style*="flex:1; display:flex; gap:16px; min-height:0;"] { display: flex !important; flex-direction: column !important; height: auto !important; overflow: visible !important; gap: 16px !important; }
+    .left-col, .right-col { height: auto !important; overflow: visible !important; width: 100% !important; padding-right: 0 !important; }
     
-    /* 3. Format Quick Actions to a 2x2 grid */
-    div[style*="grid-template-columns: repeat(4, 1fr)"] { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
-    .action-card { padding: 16px 12px !important; align-items: center !important; justify-content: center !important; flex-direction: column !important; text-align: center !important; }
+    /* 4. Convert Data Tables into Vertical Cards (No Horizontal Scrolling) */
+    .data-table-container { overflow: visible !important; border: none !important; background: transparent !important; padding: 0 !important; width: 100% !important; border-radius: 0 !important; }
+    .data-table, .data-table tbody { display: flex !important; flex-direction: column !important; width: 100% !important; gap: 12px !important; }
+    .data-table thead { display: none !important; } /* Hide the traditional headers */
+    .data-table tr { display: flex !important; flex-direction: column !important; background: var(--color-bg) !important; border: 1px solid var(--color-border) !important; border-radius: 12px !important; padding: 16px !important; box-shadow: 0 4px 10px rgba(0,0,0,0.03) !important; gap: 10px !important; }
+    .data-table td { display: flex !important; width: 100% !important; padding: 0 !important; border: none !important; align-items: center !important; }
+    .data-table td:last-child { padding-top: 12px !important; border-top: 1px solid var(--color-border) !important; margin-top: 4px !important; justify-content: space-around !important; }
     
-    /* 4. Dashboard Two-Column Lists (Stack vertically) */
-    section[style*="flex:1; display:flex; gap:16px; min-height:0;"] { flex-direction: column !important; height: auto !important; overflow: visible !important; }
+    /* 5. Make date/filter pills scrollable horizontally without wrapping */
+    #dashboardDateFilters, #guestTierFilters, #gateSpecificFilters { flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 8px !important; -webkit-overflow-scrolling: touch; width: 100%; }
+    .btn-filter-nav { flex-shrink: 0 !important; }
     
-    /* 5. Make Data Tables scrollable horizontally with your finger */
-    .data-table-container { overflow-x: auto !important; width: calc(100vw - 32px) !important; }
-    .data-table { min-width: 800px !important; } /* Forces table to stay wide so user can swipe */
-    
-    /* 6. Ensure bottom padding so content isn't hidden behind the new mobile nav bar */
-    .view-section { padding-bottom: 100px !important; height: auto !important; overflow-y: auto !important; }
+    /* 6. Ensure the main top row doesn't break */
+    .page-head-row { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
     
     /* --- PHASE 3: MOBILE TEMPLATE EDITOR --- */
     #builderLayoutGrid { display: flex !important; flex-direction: column !important; min-height: auto !important; height: auto !important; gap: 24px !important; }
