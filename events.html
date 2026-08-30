@@ -219,7 +219,7 @@
   .mobile-menu-btn { display: none; }
   .mobile-brand { display: none; }
 
-  @media (max-width: 1024px) {
+  @media (max-width: 768px) {
     /* Hide Desktop Elements & Transform Sidebar */
     .sidebar { position: fixed !important; top: 0; left: 0; height: 100vh !important; transform: translateX(-100%); z-index: 1000 !important; display: flex !important; box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
     .sidebar.mobile-open { transform: translateX(0); }
@@ -229,17 +229,15 @@
     .portal-title, .page-subtitle, #dynamicSearchContainer { display: none !important; }
     .user-meta, .btn-signout { display: none !important; }
     
-    /* Adjust Main Shell */
+    /* Adjust Main Shell & Fix Header Overlap */
     .main-content { padding: var(--space-4) 16px var(--space-7); height: calc(100vh - var(--header-height) - 70px); }
-    .top-header { padding: 0 16px; justify-content: space-between; }
-    .header-left { gap: 12px; flex: 1; }
-    .header-right { gap: 12px; flex-shrink: 0; }
+    .top-header { padding: 0 16px !important; justify-content: space-between !important; width: 100% !important; box-sizing: border-box !important; overflow: hidden !important; }
+    .header-left { gap: 20px !important; display: flex !important; align-items: center !important; flex: 1 !important; }
+    .header-right { gap: 12px !important; display: flex !important; align-items: center !important; flex-shrink: 0 !important; margin-right: 0 !important; }
 
     /* Show Mobile Header Elements */
-    .mobile-menu-btn { display: flex; align-items: center; justify-content: center; background: none; border: none; color: var(--color-text); cursor: pointer; flex-shrink: 0; }
-    
-    /* Fix Issue 2: Added a clean gap from the hamburger menu */
-    .mobile-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; color: var(--color-text); margin-left: 12px; }
+    .mobile-menu-btn { display: flex; align-items: center; justify-content: center; background: none; border: none; color: var(--color-text); cursor: pointer; flex-shrink: 0; padding: 0 !important; margin: 0 !important; }
+    .mobile-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; color: var(--color-text); white-space: nowrap; }
     .mobile-brand .brand-mark { width: 28px; height: 28px; border-radius: var(--radius-sm); background: var(--color-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; }
 
     /* Show Bottom Navigation */
@@ -254,128 +252,74 @@
     }
     .nav-bottom-item.active { color: var(--color-primary); }
     .nav-bottom-item svg { width: 22px; height: 22px; stroke-width: 2; }
-/* --- PHASE 2: MOBILE UI FIXES (SCROLLING, SIZING & TABLES) --- */
+/* --- PHASE 2 & BATCH 3: ADVANCED MOBILE POLISH --- */
     
-    /* 1. Unlock Scrolling: Break the desktop 'overflow: hidden' trap */
+    /* 1. Unlock Scrolling */
     body, .app-shell, .content-shell { height: auto !important; min-height: 100vh; overflow-y: visible !important; }
     .main-content { height: auto !important; overflow-y: visible !important; padding: 16px 16px 100px 16px !important; }
     .view-section { height: auto !important; overflow: visible !important; padding-bottom: 20px !important; gap: 16px !important; }
     
-    /* 2. Resize KPI & Quick Action Cards to be smaller and tighter */
-    .kpi-grid, .kpi-5 { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
-    .kpi-card { padding: 12px !important; gap: 4px !important; border-radius: 12px !important; justify-content: center !important; }
-    .kpi-icon { width: 32px !important; height: 32px !important; margin-bottom: 4px !important; }
+    /* 2. Ultra-Compact KPI Cards (Fixes left gap & reduces height) */
+    .kpi-grid, .kpi-5 { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+    .kpi-card { padding: 10px 12px !important; gap: 8px !important; border-radius: 12px !important; flex-direction: row !important; align-items: center !important; justify-content: flex-start !important; text-align: left !important; }
+    .kpi-card > div:not(.kpi-icon) { display: flex !important; flex-direction: column !important; align-items: flex-start !important; width: auto !important; }
+    .kpi-icon { width: 32px !important; height: 32px !important; margin: 0 !important; flex-shrink: 0 !important; }
     .kpi-icon svg { width: 16px !important; height: 16px !important; }
-    .kpi-value { font-size: 18px !important; }
-    .kpi-label { font-size: 11px !important; }
+    .kpi-value { font-size: 18px !important; line-height: 1 !important; margin-bottom: 2px !important; }
+    .kpi-label { font-size: 10px !important; white-space: normal !important; line-height: 1.2 !important; text-align: left !important; color: var(--color-text-secondary) !important; }
+    
+    /* Quick Actions & Grids */
     div[style*="grid-template-columns: repeat(4, 1fr)"] { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
     .action-card { padding: 12px !important; gap: 8px !important; border-radius: 12px !important; }
     .action-icon { width: 32px !important; height: 32px !important; }
-
-    /* 3. Stack grid columns perfectly */
     .layout-grid, section[style*="flex:1; display:flex; gap:16px; min-height:0;"] { display: flex !important; flex-direction: column !important; height: auto !important; overflow: visible !important; gap: 16px !important; }
     .left-col, .right-col { height: auto !important; overflow: visible !important; width: 100% !important; padding-right: 0 !important; }
+    .kpi-5 + button { width: 100% !important; margin-top: 4px !important; padding: 12px !important; justify-content: center !important; }
     
-    /* 4. Convert Data Tables into Beautiful Mobile Cards (Fixes Issues 6, 10, 13) */
+    /* 3. Dense Mobile Data Cards (Fixes Card Heights & Top-Right Actions) */
     .data-table-container { overflow: visible !important; border: none !important; background: transparent !important; padding: 0 !important; width: 100% !important; border-radius: 0 !important; }
     .data-table, .data-table tbody { display: flex !important; flex-direction: column !important; width: 100% !important; gap: 12px !important; }
     .data-table thead { display: none !important; } 
-    .data-table tr { display: flex !important; flex-direction: row !important; flex-wrap: wrap !important; background: var(--color-bg) !important; border: 1px solid var(--color-border) !important; border-radius: 12px !important; padding: 16px !important; box-shadow: 0 4px 10px rgba(0,0,0,0.03) !important; gap: 12px !important; align-items: center !important; justify-content: space-between !important; }
+    .data-table tr:not(.drilldown-row) { position: relative !important; display: flex !important; flex-direction: row !important; flex-wrap: wrap !important; background: var(--color-bg) !important; border: 1px solid var(--color-border) !important; border-radius: 12px !important; padding: 12px !important; box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important; gap: 8px !important; align-items: center !important; justify-content: flex-start !important; }
+    .data-table td { display: flex !important; width: auto !important; flex: 0 1 auto !important; padding: 0 !important; border: none !important; align-items: center !important; font-size: 11px !important; }
     
-    /* Make table cells sit side-by-side naturally instead of stacking */
-    .data-table td { display: flex !important; width: auto !important; flex: 1 1 40% !important; padding: 0 !important; border: none !important; align-items: center !important; justify-content: flex-start !important; }
+    /* Card Title Row & Pinned Actions */
+    .data-table tr:not(.drilldown-row) td:first-child { flex: 1 1 100% !important; padding-bottom: 8px !important; border-bottom: 1px solid var(--color-surface-soft) !important; margin-bottom: 4px !important; padding-right: 90px !important; }
+    .data-table tr:not(.drilldown-row) td:last-child { position: absolute !important; top: 12px !important; right: 12px !important; border: none !important; padding: 0 !important; margin: 0 !important; width: auto !important; background: var(--color-bg); }
+    .data-table tr:not(.drilldown-row) td:last-child > div { gap: 2px !important; }
+    .data-table tr:not(.drilldown-row) td:last-child button { padding: 6px !important; transform: scale(0.9); border: none !important; background: transparent !important; }
     
-    /* Force Row 1 (Name/Title) and Last Row (Actions) to take full width of the card */
-    .data-table td:first-child { flex: 1 1 100% !important; padding-bottom: 12px !important; border-bottom: 1px dashed var(--color-border) !important; margin-bottom: 4px !important; }
-    .data-table td:last-child { flex: 1 1 100% !important; padding-top: 12px !important; border-top: 1px dashed var(--color-border) !important; margin-top: 4px !important; justify-content: flex-end !important; }
-    
-    /* Fix Issue 4: Dashboard Donut Chart Overlap */
-    .analytics-panel { height: auto !important; }
-    .analytics-panel > div:nth-child(2) { flex-direction: column !important; gap: 24px !important; }
-    
-    /* Fix Issue 5: Pinned Create Event Button & KPI Heights */
-    .kpi-5 + button { width: 100% !important; margin-top: 8px !important; padding: 14px !important; justify-content: center !important; }
-    .kpi-card { padding: 10px !important; }
-    
-    /* 5. Make date/filter pills scrollable horizontally without wrapping */
-    #dashboardDateFilters, #guestTierFilters, #gateSpecificFilters { flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 8px !important; -webkit-overflow-scrolling: touch; width: 100%; }
-    .btn-filter-nav { flex-shrink: 0 !important; }
-    
-    /* 6. Ensure the main top row doesn't break */
-    .page-head-row { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
-/* --- BATCH 3: FORMS, GATES HEADER & BUTTONS (Fixes 8, 9, 12, 14, 15, 16) --- */
+    /* 4. Fix Drilldown Row Scrolling */
+    .data-table tr.drilldown-row { display: block !important; position: static !important; padding: 0 !important; border: none !important; box-shadow: none !important; background: transparent !important; margin-top: -8px !important; margin-bottom: 12px !important; }
+    .data-table tr.drilldown-row td { display: block !important; width: 100% !important; }
+    .data-table tr.drilldown-row > td > div { background: var(--color-surface-soft) !important; border-radius: 8px !important; padding: 8px !important; }
 
-    /* 1. Stack all form grids into a single scrolling column (Fixes 16) */
-    div[style*="grid-template-columns: 1fr 1fr"], 
-    div[style*="grid-template-columns: 1fr 1fr 1fr"],
-    div[style*="grid-template-columns: 1fr 1fr 1fr 2fr"] {
-        grid-template-columns: 1fr !important;
-        gap: 12px !important;
-    }
+    /* 5. Fix Swiping & Guest Category Buttons */
+    #dashboardDateFilters, #guestTierFilters, #gateSpecificFilters, #guestListEventPills, #gateEventPillsContainer { display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 10px !important; width: 100% !important; -webkit-overflow-scrolling: touch; }
+    .btn-filter-nav, #guestListEventPills > div, #gateEventPillsContainer > div { flex-shrink: 0 !important; }
     
-    /* 2. Fix the Event Time inputs overlap in Create Event (Fixes 14) */
-    #createEventView div[style*="align-items: center; gap: 12px;"] {
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 8px !important;
-    }
+    #guestTierFilters { gap: 8px !important; align-items: center !important; border-bottom: none !important; }
+    #guestTierFilters > div { padding: 6px 14px !important; border: 1px solid var(--color-border) !important; border-radius: 99px !important; background: var(--color-bg) !important; font-size: 11px !important; flex-shrink: 0 !important; white-space: nowrap !important; }
+    #guestTierFilters > div[style*="var(--color-primary)"] { background: var(--color-primary) !important; color: #fff !important; border-color: var(--color-primary) !important; }
 
-    /* 3. Fix Gate Management Header Overlap (Fixes 12) */
-    #gateManagementView > div > div:first-child {
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 16px !important;
-    }
-    #gateManagementView > div > div:first-child > div:last-child {
-        width: 100% !important;
-    }
-    #gateManagementView > div > div:first-child button {
-        flex: 1 !important;
-        justify-content: center !important;
-    }
-
-    /* 4. Guest Type Buttons (Bulk/Auto) and Panel Fixes (Fixes 9 & 15) */
-    #addGuestView .card > div[style*="justify-content: space-between; align-items: center; margin-bottom: 20px;"] {
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 12px !important;
-    }
-    #addGuestView .card > div[style*="justify-content: space-between"] > div[style*="display: flex; gap: 8px;"] {
-        width: 100% !important;
-    }
-    #addGuestView .btn-filter-nav {
-        flex: 1 !important;
-        justify-content: center !important;
-        padding: 10px !important;
-        border: 1px solid var(--color-primary) !important;
-        background: var(--color-primary-soft) !important;
-        color: var(--color-primary) !important;
-        font-weight: 700 !important;
-        border-radius: var(--radius-sm) !important;
-    }
-    #autoGenerateZone > div[style*="align-items: flex-end;"] {
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 12px !important;
-    }
-
-    /* 5. Fix Event Pills Scroll (Fixes 8) */
-    #guestListEventPills, #gateEventPillsContainer {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-        padding-bottom: 8px !important;
-        width: 100% !important;
-    }
+    /* 6. Form Grids & Misc Layout Fixes */
+    div[style*="grid-template-columns: 1fr 1fr"], div[style*="grid-template-columns: 1fr 1fr 1fr"], div[style*="grid-template-columns: 1fr 1fr 1fr 2fr"] { grid-template-columns: 1fr !important; gap: 12px !important; }
+    #createEventView div[style*="align-items: center; gap: 12px;"] { flex-direction: column !important; align-items: stretch !important; gap: 8px !important; }
+    #gateManagementView > div > div:first-child { flex-direction: column !important; align-items: stretch !important; gap: 16px !important; }
+    #gateManagementView > div > div:first-child > div:last-child { width: 100% !important; }
+    #gateManagementView > div > div:first-child button { flex: 1 !important; justify-content: center !important; }
+    #addGuestView .card > div[style*="justify-content: space-between; align-items: center; margin-bottom: 20px;"] { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; }
+    #addGuestView .card > div[style*="justify-content: space-between"] > div[style*="display: flex; gap: 8px;"] { width: 100% !important; }
+    #addGuestView .btn-filter-nav { flex: 1 !important; justify-content: center !important; padding: 10px !important; border: 1px solid var(--color-primary) !important; background: var(--color-primary-soft) !important; color: var(--color-primary) !important; font-weight: 700 !important; border-radius: var(--radius-sm) !important; }
+    #autoGenerateZone > div[style*="align-items: flex-end;"] { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; }
     
-    /* --- PHASE 3: MOBILE TEMPLATE EDITOR --- */
+    /* 7. Editor Layout */
     #builderLayoutGrid { display: flex !important; flex-direction: column !important; min-height: auto !important; height: auto !important; gap: 24px !important; }
     #builderLayoutGrid > div { width: 100% !important; max-height: none !important; }
     #builderLayoutGrid > .panel:not(.no-scrollbar) { height: 480px !important; min-height: 480px !important; flex: none !important; }
     #fontExplorerPanel { height: 350px !important; min-height: 350px !important; }
     #templateGallery { flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 12px !important; }
   }
-
 </style>
 </head>
 <body>
