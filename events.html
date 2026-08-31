@@ -8,6 +8,10 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 <!-- Tailwind is included just for the QR modal positioning utility -->
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
@@ -1767,12 +1771,15 @@
     </div>
     <div class="flex flex-col gap-2 w-[340px] mt-4">
       <div class="flex gap-2">
-        <button onclick="alert('Gate Pass sent via WhatsApp!\nStatus updated to Pending.')" class="bg-[#25D366] text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> WhatsApp</button>
-        <button onclick="alert('Gate Pass sent via Email!\nStatus updated to Pending.')" class="bg-blue-600 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Email</button>
+        <button onclick="shareToWhatsApp('${id}', '${guest ? guest.phone : ''}', '${guestName}', '${eventName}', ${guest ? guest.ticket_number : 0})" class="bg-[#25D366] text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> WhatsApp</button>
+        <button onclick="shareToEmail('${id}', '${guest ? guest.email : ''}', '${guestName}', '${eventName}', ${guest ? guest.ticket_number : 0})" class="bg-blue-600 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Email</button>
       </div>
       <div class="flex gap-2">
-        <button id="downloadQrBtn" class="bg-pink-600 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer text-sm">Download</button>
-        <button onclick="closeModal()" class="bg-slate-800 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer text-sm">Close</button>
+        <div class="flex flex-1 gap-1">
+          <button onclick="downloadTicketFile('${guestName}', '${eventName}', 'png')" class="bg-pink-600 text-white px-2 py-3 rounded-l-xl flex-1 font-bold border-none cursor-pointer text-sm transition text-center" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">PNG</button>
+          <button onclick="downloadTicketFile('${guestName}', '${eventName}', 'pdf')" class="bg-pink-700 text-white px-2 py-3 rounded-r-xl flex-1 font-bold border-none cursor-pointer text-sm transition text-center" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">PDF</button>
+        </div>
+        <button onclick="closeModal()" class="bg-slate-800 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Close</button>
       </div>
     </div>
 </div>
@@ -5135,6 +5142,100 @@ updateRecentGatesWidget();
           });
       }
   }
+
+// ==========================================
+  // --- TICKET SHARING & DOWNLOADING LOGIC ---
+  // ==========================================
+
+  // 1. Download as Image or PDF
+  async function downloadTicketFile(guestName, eventName, format) {
+      const container = document.getElementById('ticketContainer');
+      
+      // Temporarily fix scaling issues for a crisp capture
+      const originalTransform = container.style.transform;
+      container.style.transform = "none";
+      
+      try {
+          const canvas = await html2canvas(container, {
+              scale: 2, // High resolution
+              useCORS: true, 
+              backgroundColor: null 
+          });
+
+          if (format === 'png') {
+              const link = document.createElement('a');
+              link.download = `${guestName} - ${eventName} Pass.png`;
+              link.href = canvas.toDataURL('image/png');
+              link.click();
+          } 
+          else if (format === 'pdf') {
+              // Convert Canvas to PDF
+              const { jsPDF } = window.jspdf;
+              const imgData = canvas.toDataURL('image/png');
+              
+              // Calculate PDF dimensions to match the ticket perfectly
+              const pdf = new jsPDF({
+                  orientation: 'portrait',
+                  unit: 'px',
+                  format: [canvas.width / 2, canvas.height / 2] // Divide by 2 because of scale: 2
+              });
+              
+              pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
+              pdf.save(`${guestName} - ${eventName} Pass.pdf`);
+          }
+      } catch (err) {
+          console.error("Error generating file:", err);
+          alert("Failed to generate file. Please try again.");
+      } finally {
+          container.style.transform = originalTransform; // Restore original scale
+      }
+  }
+
+  // 2. Share via WhatsApp
+  async function shareToWhatsApp(guestId, phone, guestName, eventName, ticketNumber) {
+      if (!phone || phone.trim() === '' || phone === 'No phone provided') {
+          return alert("This guest does not have a valid phone number saved.");
+      }
+
+      // Clean the phone number (remove everything except numbers and +)
+      const cleanPhone = phone.replace(/[^\d+]/g, '');
+      const qrId = 'QR-' + String(ticketNumber).padStart(3, '0');
+      
+      // SaaS Placeholder: Public URL for the ticket
+      const publicTicketLink = `https://yourdomain.com/view-pass.html?id=${guestId}`;
+      
+      const message = `Hello ${guestName},%0A%0AHere is your official Gate Pass for *${eventName}*.%0A%0AYour Ticket ID is: *${qrId}*%0A%0AView your digital pass here:%0A${publicTicketLink}`;
+      const waUrl = `https://wa.me/${cleanPhone}?text=${message}`;
+
+      // Notify the user about the app redirect
+      alert("Redirecting to WhatsApp... \n\nIf the app doesn't open automatically on your mobile device, please check your browser settings or pop-up blocker.");
+
+      // Open WhatsApp
+      window.open(waUrl, '_blank');
+
+      // Update Database Status silently
+      await supabaseClient.from('guests').update({ invitation_status: 'Sent' }).eq('id', guestId);
+      
+      fetchEvents(); 
+  }
+
+  // 3. Share via Email (Kept as is)
+  async function shareToEmail(guestId, email, guestName, eventName, ticketNumber) {
+      if (!email || email.trim() === '' || email === 'No email provided') {
+          return alert("This guest does not have a valid email address saved.");
+      }
+
+      const qrId = 'QR-' + String(ticketNumber).padStart(3, '0');
+      const publicTicketLink = `https://yourdomain.com/view-pass.html?id=${guestId}`;
+      
+      const subject = encodeURIComponent(`Your Gate Pass for ${eventName}`);
+      const body = encodeURIComponent(`Hello ${guestName},\n\nHere is your official Gate Pass for ${eventName}.\n\nYour Ticket ID is: ${qrId}\n\nView your digital pass here:\n${publicTicketLink}\n\nPlease present this at the gate.\n\nBest regards,\nEvent Management`);
+      
+      window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+      await supabaseClient.from('guests').update({ invitation_status: 'Sent' }).eq('id', guestId);
+      fetchEvents();
+  }
+
 
   // Ensure this remains last
   init();
