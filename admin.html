@@ -427,7 +427,14 @@
 
     // --- FETCH TENANTS LOGIC ---
     async function loadTenants() {
-      const { data, error } = await supabaseClient.from('tenants').select('*').order('created_at', { ascending: false });
+      // FIXED: Removed the .order('created_at') so it doesn't crash on the missing column
+      const { data, error } = await supabaseClient.from('tenants').select('*');
+      
+      if (error) {
+          console.error("Database Error:", error.message);
+          return;
+      }
+
       if (data) {
         allTenantsData = data;
         renderTenants(data);
