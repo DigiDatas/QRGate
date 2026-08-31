@@ -131,6 +131,7 @@
               <tr class="border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase bg-slate-900/50">
                 <th class="p-4">Company / Name</th>
                 <th class="p-4">Email</th>
+                <th class="p-4">Joined Date</th> <!-- NEW COLUMN -->
                 <th class="p-4">Phone</th>
                 <th class="p-4">Account Status</th>
                 <th class="p-4">Plan Tier</th>
@@ -448,7 +449,7 @@
       const tbody = document.getElementById('tenantTableBody');
       tbody.innerHTML = '';
       if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500">No tenants registered yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-500">No tenants registered yet.</td></tr>`;
         return;
       }
 
@@ -459,13 +460,23 @@
         
         // Clean up the plan status
         let plan = t.subscription_status ? t.subscription_status.trim() : 'Basic';
-        if (plan.toLowerCase() === 'active') plan = 'Basic'; // Catch old 'active' data
+        if (plan.toLowerCase() === 'active') plan = 'Basic'; 
+
+        // Format the creation date nicely
+        const joinedDate = t.created_at ? new Date(t.created_at).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric', 
+            hour: '2-digit', minute: '2-digit'
+        }) : 'Unknown';
 
         const row = document.createElement('tr');
         row.className = 'hover:bg-slate-800/40 transition';
         row.innerHTML = `
           <td class="p-4 font-semibold text-slate-200">${t.company_name || 'N/A'}</td>
           <td class="p-4 text-slate-400">${t.email || 'N/A'}</td>
+          
+          <!-- NEW: Formatted Date Column -->
+          <td class="p-4 text-xs text-slate-400 whitespace-nowrap">${joinedDate}</td>
+          
           <td class="p-4 text-slate-400">${t.phone || 'N/A'}</td>
           
           <td class="p-4">
@@ -474,7 +485,6 @@
             </span>
           </td>
           
-          <!-- NEW: Plan Dropdown directly in the table! -->
           <td class="p-4">
             <select onchange="updateTenantPlan('${t.id}', this.value)" class="bg-slate-950 border border-slate-700 text-slate-200 text-xs font-bold rounded-lg px-2 py-1.5 outline-none focus:border-pink-500 cursor-pointer">
                 <option value="Basic" ${plan === 'Basic' ? 'selected' : ''}>Basic</option>
@@ -490,7 +500,6 @@
           </td>
           
           <td class="p-4 text-center flex justify-center gap-2">
-            <!-- Safe Boolean Parameters (No Quotes Needed!) -->
             <button onclick="toggleTenantApproval('${t.id}', ${isApproved})" class="${isApproved ? 'bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-500/30' : 'bg-green-600/20 text-green-400 hover:bg-green-600/30 border border-green-500/30'} px-3 py-1.5 rounded-xl text-xs font-semibold transition">
               ${isApproved ? 'Suspend' : 'Approve'}
             </button>

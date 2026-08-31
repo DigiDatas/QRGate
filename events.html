@@ -1639,6 +1639,42 @@
       </button>
     </nav>
 
+<!-- SAAS UPGRADE MODAL -->
+  <div id="upgradeModal" class="hidden fixed inset-0 flex items-center justify-center p-4 z-[9999]" style="background: rgba(15,23,42,0.85); backdrop-filter: blur(4px);">
+    <div class="bg-slate-900 border border-pink-500/30 rounded-3xl w-full max-w-md p-8 relative shadow-[0_0_50px_-12px_rgba(236,72,153,0.3)] text-center overflow-hidden">
+      
+      <!-- Decorative background glow -->
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-32 bg-gradient-to-b from-pink-500/20 to-transparent pointer-events-none"></div>
+
+      <button onclick="document.getElementById('upgradeModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+
+      <div class="w-16 h-16 bg-gradient-to-tr from-pink-500 to-indigo-600 rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-lg shadow-pink-500/20">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16L12 22L22 16M2 12L12 18L22 12M12 2L2 8L12 14L22 8L12 2Z"/></svg>
+      </div>
+
+      <h2 class="text-2xl font-extrabold text-white mb-2 tracking-tight">Unlock <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-indigo-400">Pro Features</span></h2>
+      <p class="text-slate-400 text-sm mb-6 leading-relaxed">
+        The feature <strong class="text-slate-200">"<span id="upgradeFeatureName">Premium Tool</span>"</strong> is locked on the Basic plan. Upgrade today to unlock limits and unleash your full event potential!
+      </p>
+
+      <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 mb-6 text-left">
+        <ul class="space-y-3 text-sm text-slate-300 font-medium">
+          <li class="flex items-center gap-3"><svg class="text-pink-500 w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Increase Event & Guest Limits</li>
+          <li class="flex items-center gap-3"><svg class="text-pink-500 w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Custom Brand Fonts & AI Tools</li>
+          <li class="flex items-center gap-3"><svg class="text-pink-500 w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Bulk Excel Guest Uploads</li>
+        </ul>
+      </div>
+
+      <button onclick="requestUpgrade()" class="w-full bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-pink-600/25 flex items-center justify-center gap-2">
+        Request Upgrade
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </button>
+      
+      <p class="text-xs text-slate-500 mt-4">Upgrades are processed manually via WhatsApp.</p>
+    </div>
+  </div>
 <!-- PREVIEW FULLSCREEN MODAL -->
 <div id="previewModal" onclick="if(event.target === this) this.classList.add('hidden')" class="hidden fixed inset-0 flex items-center justify-center p-4" style="background: rgba(15,23,42,0.95); z-index: 10000; flex-direction: column;">
   <div style="display: flex; justify-content: flex-end; width: 100%; max-width: 800px; margin-bottom: 16px;">
@@ -2231,15 +2267,15 @@ generateNotifications();
     await checkTenantProfile(session);
   }
 
-  // Global variable to track the tenant's approval status
+  // Global variables to track status
   window.currentAccountStatus = 'Pending';
+  window.currentPlanTier = 'Basic'; // <-- NEW!
 
   // --- PROFILE FETCH AND SAVE LOGIC ---
   async function checkTenantProfile(session) {
     const userId = session.user.id;
     let { data: tenant, error } = await supabaseClient.from('tenants').select('*').eq('owner_id', userId).maybeSingle();
 
-    // AUTO-CREATE TENANT IF MISSING (Google Auth Fix)
     if (!tenant) {
         const { data: newTenant } = await supabaseClient.from('tenants').insert([{
             owner_id: userId,
@@ -2248,7 +2284,6 @@ generateNotifications();
             payment_status: 'Unpaid',
             subscription_status: 'Basic'
         }]).select().single();
-        
         tenant = newTenant;
     }
 
@@ -2257,8 +2292,10 @@ generateNotifications();
     if (tenant) {
       currentTenantId = tenant.id;
       
-      // Save status globally and apply locks!
+      // Save status and tier globally, then apply locks!
       window.currentAccountStatus = tenant.account_status || 'Pending';
+      window.currentPlanTier = tenant.subscription_status || 'Basic'; // <-- NEW!
+      
       applyAccountLocks();
       
       document.getElementById('dashboardWelcomeTitle').innerText = 'Welcome back, ' + (tenant.full_name || 'Admin') + '! 👋';
@@ -2292,42 +2329,75 @@ generateNotifications();
   // --- SAAS UI LOCK LOGIC ---
   function applyAccountLocks() {
       const isApproved = window.currentAccountStatus === 'Approved';
+      const isBasic = window.currentPlanTier.toLowerCase() === 'basic';
       
-      // Target all the buttons that create or modify things
-      const lockElements = [
+      // 1. ACCOUNT APPROVAL LOCKS (Blocks Creation for Pending Accounts)
+      const approvalLockElements = [
           document.getElementById('submitDedicatedEventBtn'),
           document.getElementById('submitAddGuestBtn'),
           document.querySelector('button[onclick*="openAddGateModal"]'),
           document.querySelector('button[onclick*="openAddGatemanModal"]'),
           document.querySelector('button[onclick*="saveGatePassTemplate(false)"]'),
           document.querySelector('button[onclick*="saveGatePassTemplate(true)"]'),
-          document.querySelector('button[onclick*="executeAutoGenerate()"]'),
-          ...document.querySelectorAll('.action-card:not([onclick*="reportsView"])'), // Dashboard Quick Actions
-          ...document.querySelectorAll('button[onclick*="createEventView"]'), // Pinned Create Event buttons
+          ...document.querySelectorAll('.action-card:not([onclick*="reportsView"])'), 
+          ...document.querySelectorAll('button[onclick*="createEventView"]') 
       ];
       
-      // Handle Global Banner
       let banner = document.getElementById('saasLockBanner');
       if (!banner) {
           banner = document.createElement('div');
           banner.id = 'saasLockBanner';
           banner.className = 'locked-banner';
           banner.innerHTML = '🔒 Your account is pending admin approval. You are currently in View-Only mode.';
-          
-          // Insert right below the top header
           const mainContent = document.querySelector('.main-content');
-          if (mainContent && mainContent.parentNode) {
-              mainContent.parentNode.insertBefore(banner, mainContent);
-          }
+          if (mainContent && mainContent.parentNode) mainContent.parentNode.insertBefore(banner, mainContent);
       }
 
       if (!isApproved) {
           banner.style.display = 'block';
-          lockElements.forEach(el => { if(el) el.classList.add('locked-feature'); });
+          approvalLockElements.forEach(el => { if(el) el.classList.add('locked-feature'); });
       } else {
           banner.style.display = 'none';
-          lockElements.forEach(el => { if(el) el.classList.remove('locked-feature'); });
+          approvalLockElements.forEach(el => { if(el) el.classList.remove('locked-feature'); });
       }
+
+      // 2. PLAN TIER LOCKS (The Paywall for Basic Users)
+      // Elements that are restricted on the Basic plan
+      const premiumElements = [
+          { el: document.querySelector('button[onclick*="executeAutoGenerate()"]'), label: "Generate AI Passes" },
+          { el: document.querySelector('button[onclick*="toggleFontExplorer()"]'), label: "Custom Brand Fonts" }
+      ];
+
+      premiumElements.forEach(item => {
+          if (!item.el) return;
+          
+          if (isBasic) {
+              item.el.classList.add('locked-feature');
+              item.el.style.position = 'relative';
+              // Swap the onclick to trigger the upgrade modal instead!
+              item.el.onclick = (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  openUpgradeModal(item.label);
+              };
+          } else {
+              item.el.classList.remove('locked-feature');
+          }
+      });
+  }
+
+  // --- UPGRADE MODAL LOGIC ---
+  function openUpgradeModal(featureName) {
+      document.getElementById('upgradeFeatureName').innerText = featureName;
+      document.getElementById('upgradeModal').classList.remove('hidden');
+  }
+
+  function requestUpgrade() {
+      // Directs to your Admin WhatsApp (using KSA country code)
+      const adminPhone = "966500000000"; // <-- Put your real number here
+      const msg = `Hello, I am currently on the Basic plan and would like to upgrade my QRGate account to access premium features.`;
+      window.open(`https://wa.me/${adminPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+      document.getElementById('upgradeModal').classList.add('hidden');
   }
 // --- GUEST LIST TOGGLES ---
   function filterGuestsByTier(tier) {
