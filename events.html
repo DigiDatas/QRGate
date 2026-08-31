@@ -2329,7 +2329,8 @@ generateNotifications();
   // --- SAAS UI LOCK LOGIC ---
   function applyAccountLocks() {
       const isApproved = window.currentAccountStatus === 'Approved';
-      const isBasic = window.currentPlanTier.toLowerCase() === 'basic';
+      // Ensure we lock it if it's Basic OR if it's missing (null)
+      const isBasic = !window.currentPlanTier || window.currentPlanTier.toLowerCase() === 'basic';
       
       // 1. ACCOUNT APPROVAL LOCKS (Blocks Creation for Pending Accounts)
       const approvalLockElements = [
@@ -2362,19 +2363,20 @@ generateNotifications();
       }
 
       // 2. PLAN TIER LOCKS (The Paywall for Basic Users)
-      // Elements that are restricted on the Basic plan
+      // We now use exact IDs so it never misses a button!
       const premiumElements = [
-          { el: document.querySelector('button[onclick*="executeAutoGenerate()"]'), label: "Generate AI Passes" },
-          { el: document.querySelector('button[onclick*="toggleFontExplorer()"]'), label: "Custom Brand Fonts" }
+          { el: document.getElementById('btnAutoGenerate'), label: "Generate AI Passes" },
+          { el: document.getElementById('btnFontLibrary'), label: "Custom Brand Fonts" },
+          { el: document.getElementById('btnBulkUpload'), label: "Bulk Excel Upload" }
       ];
 
       premiumElements.forEach(item => {
-          if (!item.el) return;
+          if (!item.el) return; // If the button doesn't exist on this screen, skip it safely
           
           if (isBasic) {
               item.el.classList.add('locked-feature');
               item.el.style.position = 'relative';
-              // Swap the onclick to trigger the upgrade modal instead!
+              // Swap the normal button click to trigger the Upgrade Modal instead!
               item.el.onclick = (e) => {
                   e.preventDefault();
                   e.stopPropagation();
