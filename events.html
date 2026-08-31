@@ -507,6 +507,25 @@
     #templateGallery > .card:last-child { min-width: 100px !important; width: 100px !important; }
   }
 
+/* --- BATCH 14: SAAS UI LOCKS --- */
+  .locked-feature {
+      opacity: 0.5 !important;
+      pointer-events: none !important;
+      filter: grayscale(100%) !important;
+      cursor: not-allowed !important;
+  }
+  .locked-banner {
+      background: var(--color-danger-soft);
+      color: var(--color-danger);
+      padding: 12px 20px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--color-danger);
+      display: none;
+      z-index: 20;
+  }
+
 </style>
 </head>
 <body>
@@ -1771,13 +1790,13 @@
     </div>
     <div class="flex flex-col gap-2 w-[340px] mt-4">
       <div class="flex gap-2">
-        <button onclick="shareToWhatsApp('${id}', '${guest ? guest.phone : ''}', '${guestName}', '${eventName}', ${guest ? guest.ticket_number : 0})" class="bg-[#25D366] text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> WhatsApp</button>
-        <button onclick="shareToEmail('${id}', '${guest ? guest.email : ''}', '${guestName}', '${eventName}', ${guest ? guest.ticket_number : 0})" class="bg-blue-600 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Email</button>
+        <button onclick="shareToWhatsApp('${id}', '${guest ? escapeHTML(guest.phone) : ''}', '${escapeHTML(guestName)}', '${escapeHTML(eventName)}', ${guest ? guest.ticket_number : 0})" class="bg-[#25D366] text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> WhatsApp</button>
+        <button onclick="shareToEmail('${id}', '${guest ? escapeHTML(guest.email) : ''}', '${escapeHTML(guestName)}', '${escapeHTML(eventName)}', ${guest ? guest.ticket_number : 0})" class="bg-blue-600 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Email</button>
       </div>
       <div class="flex gap-2">
         <div class="flex flex-1 gap-1">
-          <button onclick="downloadTicketFile('${guestName}', '${eventName}', 'png')" class="bg-pink-600 text-white px-2 py-3 rounded-l-xl flex-1 font-bold border-none cursor-pointer text-sm transition text-center" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">PNG</button>
-          <button onclick="downloadTicketFile('${guestName}', '${eventName}', 'pdf')" class="bg-pink-700 text-white px-2 py-3 rounded-r-xl flex-1 font-bold border-none cursor-pointer text-sm transition text-center" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">PDF</button>
+          <button onclick="downloadTicketFile('${escapeHTML(guestName)}', '${escapeHTML(eventName)}', 'png')" class="bg-pink-600 text-white px-2 py-3 rounded-l-xl flex-1 font-bold border-none cursor-pointer text-sm transition text-center" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">PNG</button>
+          <button onclick="downloadTicketFile('${escapeHTML(guestName)}', '${escapeHTML(eventName)}', 'pdf')" class="bg-pink-700 text-white px-2 py-3 rounded-r-xl flex-1 font-bold border-none cursor-pointer text-sm transition text-center" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">PDF</button>
         </div>
         <button onclick="closeModal()" class="bg-slate-800 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Close</button>
       </div>
@@ -2034,8 +2053,18 @@ let allFetchedLogs = []; // Stores global scan logs for drill-downs
       if(agSelect) {
         const optAG = document.createElement('option');
         optAG.value = e.id;
-        optAG.textContent = e.event_name + (isHidden ? ' (Hidden - Cannot add guests)' : '');
-        if (isHidden) optAG.disabled = true;
+        
+        // Block if Hidden OR if Event is Not Approved
+        if (isHidden) {
+            optAG.textContent = e.event_name + ' (Hidden - Cannot add guests)';
+            optAG.disabled = true;
+        } else if (!e.is_approved) {
+            optAG.textContent = e.event_name + ' 🔒 (Pending Admin Approval)';
+            optAG.disabled = true;
+        } else {
+            optAG.textContent = e.event_name;
+        }
+        
         agSelect.appendChild(optAG);
       }
 
@@ -2202,46 +2231,103 @@ generateNotifications();
     await checkTenantProfile(session);
   }
 
+  // Global variable to track the tenant's approval status
+  window.currentAccountStatus = 'Pending';
+
   // --- PROFILE FETCH AND SAVE LOGIC ---
   async function checkTenantProfile(session) {
     const userId = session.user.id;
-    let { data: tenant } = await supabaseClient.from('tenants').select('*').eq('owner_id', userId).maybeSingle();
+    let { data: tenant, error } = await supabaseClient.from('tenants').select('*').eq('owner_id', userId).maybeSingle();
+
+    // AUTO-CREATE TENANT IF MISSING (Google Auth Fix)
+    if (!tenant) {
+        const { data: newTenant } = await supabaseClient.from('tenants').insert([{
+            owner_id: userId,
+            email: session.user.email,
+            account_status: 'Pending',
+            payment_status: 'Unpaid',
+            subscription_status: 'Basic'
+        }]).select().single();
+        
+        tenant = newTenant;
+    }
 
     const profileBanner = document.getElementById('tenantProfileCard');
     
     if (tenant) {
       currentTenantId = tenant.id;
       
-      // Update Welcome Title
+      // Save status globally and apply locks!
+      window.currentAccountStatus = tenant.account_status || 'Pending';
+      applyAccountLocks();
+      
       document.getElementById('dashboardWelcomeTitle').innerText = 'Welcome back, ' + (tenant.full_name || 'Admin') + '! 👋';
 
-      // 1. Update Top Right Header
-      document.getElementById('userNameDisplay').innerText = tenant.full_name || 'Admin User';
-      document.getElementById('userAvatar').innerText = (tenant.full_name || 'A').charAt(0).toUpperCase();
+      document.getElementById('userNameDisplay').innerText = tenant.full_name || 'New Organizer';
+      document.getElementById('userAvatar').innerText = (tenant.full_name || 'N').charAt(0).toUpperCase();
       
-      // 2. Update 'My Profile' Tab
-      document.getElementById('profileNameDisplay').innerText = tenant.full_name || 'Admin User';
-      document.getElementById('profileEmailDisplay').innerText = session.user.email; // Pulled securely from Auth
-      document.getElementById('profileAvatarLarge').innerText = (tenant.full_name || 'A').charAt(0).toUpperCase();
+      document.getElementById('profileNameDisplay').innerText = tenant.full_name || 'New Organizer';
+      document.getElementById('profileEmailDisplay').innerText = session.user.email; 
+      document.getElementById('profileAvatarLarge').innerText = (tenant.full_name || 'N').charAt(0).toUpperCase();
       
       document.getElementById('settingName').value = tenant.full_name || '';
       document.getElementById('settingCompany').value = tenant.company_name || '';
-      document.getElementById('settingPhone').value = tenant.phone_number || '';
+      document.getElementById('settingPhone').value = tenant.phone || '';
 
-      // 3. Handle Dashboard Banner visibility and pre-fill if data is missing
-      if (!tenant.full_name || !tenant.company_name) {
+      if (!tenant.full_name || !tenant.company_name || !tenant.phone) { 
           if(profileBanner) profileBanner.classList.remove('hidden');
           document.getElementById('profileName').value = tenant.full_name || '';
           document.getElementById('profileCompany').value = tenant.company_name || '';
-          document.getElementById('profilePhone').value = tenant.phone_number || '';
+          document.getElementById('profilePhone').value = tenant.phone || '';
       } else {
           if(profileBanner) profileBanner.classList.add('hidden');
       }
       
       await fetchEvents();
-      await fetchSavedTemplates(); // FIXED: Fetch templates ONLY after tenant ID is known
-await updateRecentGatesWidget();    
-}
+      await fetchSavedTemplates(); 
+      await updateRecentGatesWidget();    
+    }
+  }
+
+  // --- SAAS UI LOCK LOGIC ---
+  function applyAccountLocks() {
+      const isApproved = window.currentAccountStatus === 'Approved';
+      
+      // Target all the buttons that create or modify things
+      const lockElements = [
+          document.getElementById('submitDedicatedEventBtn'),
+          document.getElementById('submitAddGuestBtn'),
+          document.querySelector('button[onclick*="openAddGateModal"]'),
+          document.querySelector('button[onclick*="openAddGatemanModal"]'),
+          document.querySelector('button[onclick*="saveGatePassTemplate(false)"]'),
+          document.querySelector('button[onclick*="saveGatePassTemplate(true)"]'),
+          document.querySelector('button[onclick*="executeAutoGenerate()"]'),
+          ...document.querySelectorAll('.action-card:not([onclick*="reportsView"])'), // Dashboard Quick Actions
+          ...document.querySelectorAll('button[onclick*="createEventView"]'), // Pinned Create Event buttons
+      ];
+      
+      // Handle Global Banner
+      let banner = document.getElementById('saasLockBanner');
+      if (!banner) {
+          banner = document.createElement('div');
+          banner.id = 'saasLockBanner';
+          banner.className = 'locked-banner';
+          banner.innerHTML = '🔒 Your account is pending admin approval. You are currently in View-Only mode.';
+          
+          // Insert right below the top header
+          const mainContent = document.querySelector('.main-content');
+          if (mainContent && mainContent.parentNode) {
+              mainContent.parentNode.insertBefore(banner, mainContent);
+          }
+      }
+
+      if (!isApproved) {
+          banner.style.display = 'block';
+          lockElements.forEach(el => { if(el) el.classList.add('locked-feature'); });
+      } else {
+          banner.style.display = 'none';
+          lockElements.forEach(el => { if(el) el.classList.remove('locked-feature'); });
+      }
   }
 // --- GUEST LIST TOGGLES ---
   function filterGuestsByTier(tier) {
@@ -4157,7 +4243,6 @@ generateNotifications();
 
   // Combined save function for BOTH the Profile Tab and the Dashboard Banner
   async function updateUserProfile(isFromBanner = false) {
-      // Read from either Banner inputs OR Profile Tab inputs based on which button was clicked
       const name = isFromBanner ? document.getElementById('profileName').value.trim() : document.getElementById('settingName').value.trim();
       const comp = isFromBanner ? document.getElementById('profileCompany').value.trim() : document.getElementById('settingCompany').value.trim();
       const ph = isFromBanner ? document.getElementById('profilePhone').value.trim() : document.getElementById('settingPhone').value.trim();
@@ -4165,16 +4250,15 @@ generateNotifications();
       if (!name) return alert("Full Name is required!");
 
       const { data: { session } } = await supabaseClient.auth.getSession();
-      const { error } = await supabaseClient.from('tenants').update({ full_name: name, company_name: comp, phone_number: ph }).eq('owner_id', session.user.id);
+      // FIXED: using 'phone' instead of 'phone_number'
+      const { error } = await supabaseClient.from('tenants').update({ full_name: name, company_name: comp, phone: ph }).eq('owner_id', session.user.id);
       
       if(error) {
           alert("Error updating profile: " + error.message);
       } else {
           alert("Profile updated successfully!");
-          // Hide banner instantly if it was open
           const profileBanner = document.getElementById('tenantProfileCard');
           if(profileBanner) profileBanner.classList.add('hidden');
-          // Re-sync all UI elements without reloading the page
           checkTenantProfile(session); 
       }
   }
@@ -5147,19 +5231,31 @@ updateRecentGatesWidget();
   // --- TICKET SHARING & DOWNLOADING LOGIC ---
   // ==========================================
 
-  // 1. Download as Image or PDF
+  // Helper to safely escape quotes for inline HTML
+  function escapeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  }
+
+  // 1. Download as Image or PDF (Fixed Cropping!)
   async function downloadTicketFile(guestName, eventName, format) {
       const container = document.getElementById('ticketContainer');
       
-      // Temporarily fix scaling issues for a crisp capture
+      // Temporarily remove transforms and overflow clipping for a perfect capture
       const originalTransform = container.style.transform;
+      const originalOverflow = container.style.overflow;
+      const originalRadius = container.style.borderRadius;
+      
       container.style.transform = "none";
+      container.style.overflow = "visible";
+      container.style.borderRadius = "0px"; // Prevents html2canvas from cropping the top
       
       try {
           const canvas = await html2canvas(container, {
-              scale: 2, // High resolution
+              scale: 2, 
               useCORS: true, 
-              backgroundColor: null 
+              backgroundColor: '#ffffff', // Force white background for standard passes
+              logging: false
           });
 
           if (format === 'png') {
@@ -5169,17 +5265,9 @@ updateRecentGatesWidget();
               link.click();
           } 
           else if (format === 'pdf') {
-              // Convert Canvas to PDF
               const { jsPDF } = window.jspdf;
               const imgData = canvas.toDataURL('image/png');
-              
-              // Calculate PDF dimensions to match the ticket perfectly
-              const pdf = new jsPDF({
-                  orientation: 'portrait',
-                  unit: 'px',
-                  format: [canvas.width / 2, canvas.height / 2] // Divide by 2 because of scale: 2
-              });
-              
+              const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [canvas.width / 2, canvas.height / 2] });
               pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
               pdf.save(`${guestName} - ${eventName} Pass.pdf`);
           }
@@ -5187,47 +5275,32 @@ updateRecentGatesWidget();
           console.error("Error generating file:", err);
           alert("Failed to generate file. Please try again.");
       } finally {
-          container.style.transform = originalTransform; // Restore original scale
+          // Restore exact original styling
+          container.style.transform = originalTransform; 
+          container.style.overflow = originalOverflow;
+          container.style.borderRadius = originalRadius;
       }
   }
 
   // 2. Share via WhatsApp
   async function shareToWhatsApp(guestId, phone, guestName, eventName, ticketNumber) {
-      if (!phone || phone.trim() === '' || phone === 'No phone provided') {
-          return alert("This guest does not have a valid phone number saved.");
-      }
-
-      // Clean the phone number (remove everything except numbers and +)
+      if (!phone || phone.trim() === '' || phone === 'No phone provided') return alert("This guest does not have a valid phone number saved.");
       const cleanPhone = phone.replace(/[^\d+]/g, '');
       const qrId = 'QR-' + String(ticketNumber).padStart(3, '0');
-      
-      // SaaS Placeholder: Public URL for the ticket
       const publicTicketLink = `https://yourdomain.com/view-pass.html?id=${guestId}`;
-      
       const message = `Hello ${guestName},%0A%0AHere is your official Gate Pass for *${eventName}*.%0A%0AYour Ticket ID is: *${qrId}*%0A%0AView your digital pass here:%0A${publicTicketLink}`;
-      const waUrl = `https://wa.me/${cleanPhone}?text=${message}`;
-
-      // Notify the user about the app redirect
-      alert("Redirecting to WhatsApp... \n\nIf the app doesn't open automatically on your mobile device, please check your browser settings or pop-up blocker.");
-
-      // Open WhatsApp
-      window.open(waUrl, '_blank');
-
-      // Update Database Status silently
-      await supabaseClient.from('guests').update({ invitation_status: 'Sent' }).eq('id', guestId);
       
+      alert("Redirecting to WhatsApp... \n\nIf the app doesn't open automatically on your mobile device, please check your browser settings or pop-up blocker.");
+      window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');
+      await supabaseClient.from('guests').update({ invitation_status: 'Sent' }).eq('id', guestId);
       fetchEvents(); 
   }
 
-  // 3. Share via Email (Kept as is)
+  // 3. Share via Email
   async function shareToEmail(guestId, email, guestName, eventName, ticketNumber) {
-      if (!email || email.trim() === '' || email === 'No email provided') {
-          return alert("This guest does not have a valid email address saved.");
-      }
-
+      if (!email || email.trim() === '' || email === 'No email provided') return alert("This guest does not have a valid email address saved.");
       const qrId = 'QR-' + String(ticketNumber).padStart(3, '0');
       const publicTicketLink = `https://yourdomain.com/view-pass.html?id=${guestId}`;
-      
       const subject = encodeURIComponent(`Your Gate Pass for ${eventName}`);
       const body = encodeURIComponent(`Hello ${guestName},\n\nHere is your official Gate Pass for ${eventName}.\n\nYour Ticket ID is: ${qrId}\n\nView your digital pass here:\n${publicTicketLink}\n\nPlease present this at the gate.\n\nBest regards,\nEvent Management`);
       
