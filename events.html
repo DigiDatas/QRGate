@@ -463,7 +463,13 @@
     #allTemplatesGrid .saved-tpl-card > div:first-child { flex-direction: column !important; gap: 8px !important; align-items: center !important; }
     #allTemplatesGrid .saved-tpl-card > div:first-child > div:first-child { width: 100% !important; height: 120px !important; background-size: cover !important; }
     #allTemplatesGrid .saved-tpl-card > div:last-child { flex-direction: row !important; justify-content: center !important; gap: 12px !important; margin-top: 8px !important; border-top: 1px solid var(--color-border) !important; padding-top: 8px !important; }
+/* --- BATCH 13: MOBILE DROPDOWN & AI BUTTON FIX --- */
+    #notificationDropdown { right: -16px !important; width: 300px !important; }
+    #templateGallery > div[onclick*="AI Generation"] { min-width: 95px !important; width: 95px !important; padding: 0 4px !important; }
+    #templateGallery > div[onclick*="AI Generation"] span { font-size: 11px !important; text-align: center !important; white-space: normal !important; line-height: 1.2 !important; margin-top: 4px !important; }
+    #templateGallery > div[onclick*="AI Generation"] div { display: none !important; }
 
+  
   } /* <-- CLOSES THE MOBILE @MEDIA QUERY */
 
   /* --- DESKTOP SPECIFIC FIXES --- */
@@ -606,10 +612,27 @@
         </div>
       </div>
       <div class="header-right" style="display: flex; align-items: center; gap: 16px;">
-        <button style="position: relative; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--color-border); background: var(--color-bg); display: flex; align-items: center; justify-content: center; color: var(--color-text-secondary);">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          <span style="position: absolute; top: -2px; right: -2px; background: var(--color-danger); color: white; font-size: 10px; font-weight: 700; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white;">3</span>
-        </button>
+        <div style="position: relative;">
+          <!-- Clickable Bell Icon -->
+          <button id="notificationBellBtn" onclick="toggleNotifications()" style="position: relative; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--color-border); background: var(--color-bg); display: flex; align-items: center; justify-content: center; color: var(--color-text-secondary); cursor: pointer; transition: 0.2s;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span id="notificationBadge" style="position: absolute; top: -2px; right: -2px; background: var(--color-danger); color: white; font-size: 10px; font-weight: 700; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid white; display: none;">0</span>
+          </button>
+          
+          <!-- Hidden Dropdown Panel -->
+          <div id="notificationDropdown" class="hidden" style="position: absolute; top: 46px; right: -60px; width: 320px; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1000; display: flex; flex-direction: column; overflow: hidden; max-width: calc(100vw - 32px);">
+            <div style="padding: 12px 16px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; background: var(--color-surface-soft);">
+              <h3 style="margin: 0; font-size: 13px; font-weight: 700;">Notifications</h3>
+              <span id="notificationCountText" style="font-size: 11px; color: var(--color-text-secondary); font-weight: 600;">0 New</span>
+            </div>
+            <div id="notificationList" style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column;" class="no-scrollbar">
+              <!-- Injected by JS Smart Engine -->
+            </div>
+            <div style="padding: 12px; text-align: center; border-top: 1px solid var(--color-border); background: var(--color-surface-soft); font-size: 11px; color: var(--color-primary); font-weight: 700; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='var(--color-bg)'" onmouseout="this.style.background='var(--color-surface-soft)'" onclick="document.getElementById('notificationBadge').style.display='none'; toggleNotifications();">
+              Mark all as read
+            </div>
+          </div>
+        </div>
         <div style="width: 1px; height: 24px; background: var(--color-border);"></div>
         <div class="user-menu" onclick="switchView('profileView', this)">
           <div class="avatar" id="userAvatar" style="background:#8b5cf6;">A</div>
@@ -1589,7 +1612,7 @@
 <!-- PREVIEW FULLSCREEN MODAL -->
 <div id="previewModal" onclick="if(event.target === this) this.classList.add('hidden')" class="hidden fixed inset-0 flex items-center justify-center p-4" style="background: rgba(15,23,42,0.95); z-index: 10000; flex-direction: column;">
   <div style="display: flex; justify-content: flex-end; width: 100%; max-width: 800px; margin-bottom: 16px;">
-    <button onclick="document.getElementById('previewModal').classList.add('hidden')" class="btn-primary" style="background: white; color: black; font-size: 13px; padding: 8px 16px;">Close Preview</button>
+    <button onclick="document.getElementById('previewModal').classList.add('hidden')" class="btn-primary" style="background: white; color: black; font-size: 13px; padding: 8px 16px;">X</button>
   </div>
   <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
       <div id="previewContainer" style="width: 1080px; height: 1440px; transform: scale(0.55); transform-origin: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-radius: 20px; overflow: hidden; flex-shrink: 0; background: white;">
@@ -2154,6 +2177,7 @@ let allFetchedLogs = []; // Stores global scan logs for drill-downs
     }
     
     fetchAllGuestsForKPIs();
+generateNotifications();
   }
 
   // --- INIT & AUTH ---
@@ -3932,6 +3956,7 @@ function deleteSelectedElement() {
     } else {
         moreBtn.style.display = 'none';
     }
+generateNotifications();
   }
 
   // Helper function to handle the modal popup for either Global or Personal templates
@@ -4961,6 +4986,125 @@ updateRecentGatesWidget();
           if(qrPanel) qrPanel.classList.add('mobile-hidden');
       }
   });
+
+
+// ==========================================
+  // --- SMART NOTIFICATION ENGINE ---
+  // ==========================================
+
+  function toggleNotifications() {
+      const dropdown = document.getElementById('notificationDropdown');
+      if (dropdown) dropdown.classList.toggle('hidden');
+  }
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('notificationDropdown');
+      const bell = document.getElementById('notificationBellBtn');
+      if (dropdown && !dropdown.classList.contains('hidden') && !dropdown.contains(e.target) && !bell.contains(e.target)) {
+          dropdown.classList.add('hidden');
+      }
+  });
+
+  function generateNotifications() {
+      const list = document.getElementById('notificationList');
+      const badge = document.getElementById('notificationBadge');
+      const countText = document.getElementById('notificationCountText');
+      if (!list || !badge) return;
+
+      let notifications = [];
+      const now = new Date();
+      
+      // 1. Scan Events (Approvals, Creations, and "Tomorrow" warnings)
+      if (typeof allFetchedEvents !== 'undefined') {
+          allFetchedEvents.forEach(e => {
+              const createdDate = new Date(e.created_at);
+              const daysSinceCreation = (now - createdDate) / (1000 * 60 * 60 * 24);
+              
+              // Event Tomorrow Check
+              if (e._parsedDate) {
+                  const daysUntil = (e._parsedDate - now) / (1000 * 60 * 60 * 24);
+                  if (daysUntil > 0 && daysUntil <= 1.5) { // Happens tomorrow
+                      notifications.push({
+                          title: 'Event Tomorrow!', desc: `"${e.event_name}" is happening tomorrow. Ensure your gates are ready.`,
+                          time: now, icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+                          color: '#B4790C', bg: '#FEF6E2'
+                      });
+                  }
+              }
+              
+              // Approved Recently (within last 5 days)
+              if (e.is_approved && daysSinceCreation <= 5) {
+                  notifications.push({
+                      title: 'Event Approved', desc: `Super Admin approved "${e.event_name}".`,
+                      time: createdDate, icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+                      color: 'var(--color-success)', bg: 'var(--color-success-soft)'
+                  });
+              } else if (!e.is_approved && daysSinceCreation <= 3) {
+                  // Created Recently but still pending
+                  notifications.push({
+                      title: 'New Event Pending', desc: `You added "${e.event_name}". Awaiting admin approval.`,
+                      time: createdDate, icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>',
+                      color: 'var(--color-info)', bg: 'var(--color-info-soft)'
+                  });
+              }
+          });
+      }
+      
+      // 2. Scan Global Templates
+      if (typeof windowSavedTemplates !== 'undefined') {
+          windowSavedTemplates.forEach(t => {
+              if (t.is_global) {
+                  const createdDate = new Date(t.created_at);
+                  const daysSinceCreation = (now - createdDate) / (1000 * 60 * 60 * 24);
+                  if (daysSinceCreation <= 14) { // Admin added in the last 14 days
+                      notifications.push({
+                          title: 'New Global Template', desc: `Admin added "${t.name}". Check Design Templates!`,
+                          time: createdDate, icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>',
+                          color: 'var(--color-primary)', bg: 'var(--color-primary-soft)'
+                      });
+                  }
+              }
+          });
+      }
+
+      // Sort by newest first
+      notifications.sort((a,b) => b.time - a.time);
+      
+      // Render to DOM
+      list.innerHTML = '';
+      if (notifications.length === 0) {
+          list.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--color-text-secondary); font-size: 12px;">You are all caught up!</div>';
+          badge.style.display = 'none';
+          countText.innerText = '0 New';
+      } else {
+          badge.style.display = 'flex';
+          badge.innerText = notifications.length > 9 ? '9+' : notifications.length;
+          countText.innerText = `${notifications.length} New`;
+          
+          notifications.slice(0, 8).forEach(n => {
+              let timeStr = "Recently";
+              const diffMins = Math.round((now - n.time) / 60000);
+              if (diffMins < 60) timeStr = diffMins + 'm ago';
+              else if (diffMins < 1440) timeStr = Math.floor(diffMins/60) + 'h ago';
+              else timeStr = Math.floor(diffMins/1440) + 'd ago';
+              if (n.title === 'Event Tomorrow!') timeStr = 'Just now'; // Force bump to top visual
+
+              list.innerHTML += `
+                <div style="display: flex; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--color-border); transition: background 0.2s; cursor: pointer;" onmouseover="this.style.background='var(--color-surface-soft)'" onmouseout="this.style.background='transparent'">
+                   <div style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: ${n.bg}; color: ${n.color}; flex-shrink: 0; margin-top: 2px;">${n.icon}</div>
+                   <div style="flex: 1;">
+                     <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                       <span style="font-size: 12px; font-weight: 700; color: var(--color-text);">${n.title}</span>
+                       <span style="font-size: 9px; font-weight: 600; color: var(--color-text-secondary);">${timeStr}</span>
+                     </div>
+                     <p style="font-size: 11px; color: var(--color-text-secondary); margin: 0; line-height: 1.4;">${n.desc}</p>
+                   </div>
+                </div>
+              `;
+          });
+      }
+  }
 
   // Ensure this remains last
   init();
