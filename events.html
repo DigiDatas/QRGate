@@ -427,11 +427,11 @@
     /* 3. Fix Drilldown Horizontal Scroll */
     .data-table tr.drilldown-row td > div { display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important; max-width: calc(100vw - 32px) !important; -webkit-overflow-scrolling: touch !important; padding-bottom: 8px !important; }
     .data-table tr.drilldown-row td > div > div { flex-shrink: 0 !important; }
-/* --- BATCH 8: FINAL EDITOR LAYOUT & DESKTOP FIXES --- */
+/* --- BATCH 9: ULTIMATE PREVIEW & DESKTOP FIXES --- */
     
-    /* 1. Perfect Full-Screen Preview (Transparent Background!) */
+    /* 1. Perfect Full-Screen Preview (Dynamically scales to fit phone width, completely transparent background) */
     #previewModal { padding: 0 !important; align-items: center !important; justify-content: center !important; }
-    #previewContainer { position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) scale(0.3) !important; transform-origin: center center !important; margin: 0 !important; width: 1080px !important; height: 1440px !important; background: transparent !important; box-shadow: none !important; }
+    #previewContainer { position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) scale(calc((100vw - 32px) / 1080)) !important; transform-origin: center center !important; margin: 0 !important; width: 1080px !important; height: 1440px !important; background: transparent !important; box-shadow: none !important; }
     #previewModal > div:first-child { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 100 !important; }
     
     /* 2. Bigger, Scrollable Canvas Area */
@@ -444,11 +444,8 @@
     .btn-text { display: none !important; } 
     
     /* 4. Collapsible Panels & Layout */
+    .hide-on-mobile { display: none !important; }
     .mobile-hidden { display: none !important; }
-    .mobile-only-flex { display: flex !important; }
-    .text-format-mobile-row { display: flex !important; flex-direction: column !important; gap: 6px !important; overflow: visible !important; }
-    .text-format-mobile-row > .t-row-1 { display: flex !important; gap: 6px !important; flex-shrink: 0 !important; width: 100% !important; overflow-x: auto !important; padding-bottom: 4px !important; -webkit-overflow-scrolling: touch; }
-    .text-format-mobile-row > .t-row-2 { width: 100% !important; }
     .qr-mobile-row { display: grid !important; grid-template-columns: 1fr 1fr !important; overflow: visible !important; flex-wrap: wrap !important; }
     .qr-mobile-row > div { width: 100% !important; }
     
@@ -464,12 +461,16 @@
 
   /* --- DESKTOP SPECIFIC FIXES --- */
   @media (min-width: 769px) {
-    /* Hide mobile shortcut buttons on desktop */
-    .mobile-only-flex { display: none !important; }
+    /* Completely hide the mobile-only buttons (Preview, Reset, Aa, QR, Mobile Delete) */
+    .hide-on-desktop { display: none !important; }
     
     /* Ensure Desktop panels are ALWAYS expanded, ignoring the mobile-hidden class */
-    .text-expanded-panel { display: flex !important; flex-direction: column; gap: 8px; margin-top: 8px; }
-    .qr-expanded-panel { display: flex !important; flex-direction: column; gap: 6px; }
+    .mobile-hidden { display: flex !important; }
+    .text-expanded-panel { display: flex !important; flex-direction: column !important; gap: 12px !important; margin-top: 8px !important; }
+    .qr-expanded-panel { display: flex !important; flex-direction: column !important; gap: 6px !important; }
+    
+    /* Desktop Sliders logic (no flex-wrap overlap) */
+    .size-wrapper { min-width: 100px !important; }
   }
 
 </style>
@@ -1323,8 +1324,9 @@
                           <span class="btn-text" style="margin-left: 14px;">Image Library</span>
                       </button>
 
-                      <button class="nav-item tool-btn mobile-only-flex" onclick="resetTemplate()" style="justify-content: center; height: 34px; font-size:12px; margin:0;" title="Reset"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/></svg></button>
-                      <button class="nav-item tool-btn mobile-only-flex" onclick="previewTemplate()" style="justify-content: center; height: 34px; font-size:12px; margin:0; background: var(--color-primary-soft); color: var(--color-primary);" title="Preview"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                      <!-- THESE ONLY SHOW ON MOBILE -->
+                      <button class="nav-item tool-btn hide-on-desktop" onclick="resetTemplate()" style="justify-content: center; height: 34px; font-size:12px; margin:0;" title="Reset"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/></svg></button>
+                      <button class="nav-item tool-btn hide-on-desktop" onclick="previewTemplate()" style="justify-content: center; height: 34px; font-size:12px; margin:0; background: var(--color-primary-soft); color: var(--color-primary);" title="Preview"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
                   </div>
                   
                   <div class="mobile-hide-tags" style="height: 1px; background: var(--color-border); margin: 10px 0;"></div>
@@ -1339,55 +1341,76 @@
                   <div class="mobile-hide-tags" style="height: 1px; background: var(--color-border); margin: 10px 0;"></div>
                   <div class="mobile-hide-tags" style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;">Text Formatting</div>
                   
-                  <div class="text-format-mobile-row" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px;">
-                      <div class="t-row-1" style="display: flex; gap: 6px; align-items: center; justify-content: space-between;">
-                          <input type="color" id="elementColor" value="#ffffff" style="width: 28px; height: 28px; padding: 0; border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer; flex-shrink: 0;" title="Text Color">
-                          
-                          <div class="size-wrapper" style="display: flex; align-items: center; gap: 4px; flex: 1;">
-                              <input type="range" id="elementFontSizeSlider" min="12" max="120" value="40" style="flex: 1; min-width: 40px; height: 4px;" oninput="document.getElementById('elementFontSize').value = this.value; document.getElementById('elementFontSize').dispatchEvent(new Event('input'));">
-                              <input type="number" id="elementFontSize" class="input-field size-input-desktop" style="margin: 0; padding: 2px 4px; font-size: 11px; height: 28px; width: 44px; flex-shrink: 0; text-align: center;" placeholder="Size" title="Font Size" oninput="document.getElementById('elementFontSizeSlider').value = this.value">
-                          </div>
+                  <!-- MOBILE MAIN TOOLBAR: Aa, Alignments, QR (Hidden on Desktop) -->
+                  <div class="hide-on-desktop" style="display: flex; gap: 8px; margin-bottom: 12px; align-items: center;">
+                      <button type="button" id="btnToggleAa" onclick="document.querySelector('.text-expanded-panel').classList.toggle('mobile-hidden'); document.querySelector('.qr-expanded-panel').classList.add('mobile-hidden');" style="height: 32px; flex: 1; font-weight: 700; font-family: serif; background: var(--color-surface-soft); border: 1px solid var(--color-border); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">Aa</button>
 
-                          <button type="button" id="btnToggleAa" class="mobile-only-flex" onclick="document.querySelector('.text-expanded-panel').classList.toggle('mobile-hidden')" style="width: 28px; height: 28px; font-weight: 700; font-family: serif; background: var(--color-surface-soft); border: 1px solid var(--color-border); border-radius: 4px; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0;">Aa</button>
-
-                          <div class="t-align-group" style="display: flex; gap: 2px; flex-shrink: 0;">
-                            <button type="button" class="btn-align-toggle btn-filter-nav" data-align="left" style="padding:2px; justify-content:center; height:28px; min-width: 28px;" title="Align Left">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
-                            </button>
-                            <button type="button" class="btn-align-toggle btn-filter-nav active" data-align="center" style="padding:2px; justify-content:center; height:28px; min-width: 28px;" title="Align Center">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="10" x2="6" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="18" y1="14" x2="6" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
-                            </button>
-                            <button type="button" class="btn-align-toggle btn-filter-nav" data-align="right" style="padding:2px; justify-content:center; height:28px; min-width: 28px;" title="Align Right">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="7" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
-                            </button>
-                          </div>
-
-                          <button type="button" id="btnToggleQR" class="mobile-only-flex" onclick="document.querySelector('.qr-expanded-panel').classList.toggle('mobile-hidden')" style="width: 28px; height: 28px; background: var(--color-surface-soft); border: 1px solid var(--color-border); border-radius: 4px; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></button>
+                      <div class="t-align-group" style="display: flex; gap: 2px; flex-shrink: 0; background: var(--color-surface-soft); padding: 2px; border-radius: 6px; border: 1px solid var(--color-border);">
+                        <button type="button" class="btn-align-toggle btn-filter-nav" data-align="left" style="padding:4px; justify-content:center; height:26px; min-width: 28px; border:none; background:transparent;" title="Align Left">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+                        </button>
+                        <button type="button" class="btn-align-toggle btn-filter-nav active" data-align="center" style="padding:4px; justify-content:center; height:26px; min-width: 28px; border:none; background:white; box-shadow: 0 1px 3px rgba(0,0,0,0.1);" title="Align Center">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="10" x2="6" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="18" y1="14" x2="6" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+                        </button>
+                        <button type="button" class="btn-align-toggle btn-filter-nav" data-align="right" style="padding:4px; justify-content:center; height:26px; min-width: 28px; border:none; background:transparent;" title="Align Right">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="7" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+                        </button>
                       </div>
 
-                      <div class="t-row-2 text-expanded-panel mobile-hidden" style="display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 6px;">
-                          <div style="display: flex; gap: 4px; align-items: center; width: 100%;">
-                              <select id="elementFontFamily" class="input-field" style="margin: 0; padding: 4px 8px; font-size: 12px; height: 32px; flex: 1;">
-                                  <option value="var(--font-family)">Default Font</option>
-                                  <option value="Arial, sans-serif">Arial</option>
-                                  <option value="'Courier New', monospace">Courier New</option>
-                                  <option value="'Times New Roman', serif">Times New Roman</option>
-                                  <option value="'Georgia', serif">Georgia</option>
-                              </select>
-                              <button onclick="toggleFontExplorer()" type="button" style="height: 32px; width: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-border); border-radius: 4px; background: var(--color-surface-soft); cursor: pointer;" title="Preview All Fonts">
-                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-                              </button>
+                      <button type="button" id="btnToggleQR" onclick="document.querySelector('.qr-expanded-panel').classList.toggle('mobile-hidden'); document.querySelector('.text-expanded-panel').classList.add('mobile-hidden');" style="height: 32px; flex: 1; background: var(--color-surface-soft); border: 1px solid var(--color-border); border-radius: 4px; display: flex; align-items: center; justify-content: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></button>
+                  </div>
+
+                  <!-- TEXT EXPANDED PANEL (Hidden by default on mobile, always visible on desktop) -->
+                  <div class="text-expanded-panel mobile-hidden" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px;">
+                      
+                      <!-- Color & Size Slider -->
+                      <div style="display: flex; gap: 8px; align-items: center; width: 100%;">
+                          <input type="color" id="elementColor" value="#ffffff" style="width: 32px; height: 32px; padding: 0; border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer; flex-shrink: 0;" title="Text Color">
+                          <div class="size-wrapper" style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                              <input type="range" id="elementFontSizeSlider" min="12" max="120" value="40" style="flex: 1; height: 4px; min-width: 50px;" oninput="document.getElementById('elementFontSize').value = this.value; document.getElementById('elementFontSize').dispatchEvent(new Event('input'));">
+                              <input type="number" id="elementFontSize" class="input-field size-input-desktop" style="margin: 0; padding: 2px 4px; font-size: 12px; height: 32px; width: 46px; flex-shrink: 0; text-align: center;" placeholder="Size" title="Font Size" oninput="document.getElementById('elementFontSizeSlider').value = this.value">
                           </div>
-                          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; background: var(--color-surface-soft); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--color-border);">
-                              <span style="font-weight: 600;">Line Space:</span>
-                              <input type="range" id="elementLineHeight" min="0.8" max="3" step="0.1" value="1.2" style="width: 100%; max-width: 130px; height: 4px;" oninput="if(currentlySelectedElement) currentlySelectedElement.style.lineHeight = this.value;">
-                          </div>
+                      </div>
+
+                      <!-- Desktop Only: Alignments moved BELOW color & size -->
+                      <div class="hide-on-mobile t-align-group" style="display: flex; gap: 4px; width: 100%;">
+                        <button type="button" class="btn-align-toggle btn-filter-nav" data-align="left" style="flex:1; padding:4px; justify-content:center; height:32px;" title="Align Left">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+                        </button>
+                        <button type="button" class="btn-align-toggle btn-filter-nav active" data-align="center" style="flex:1; padding:4px; justify-content:center; height:32px;" title="Align Center">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="10" x2="6" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="18" y1="14" x2="6" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+                        </button>
+                        <button type="button" class="btn-align-toggle btn-filter-nav" data-align="right" style="flex:1; padding:4px; justify-content:center; height:32px;" title="Align Right">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="7" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+                        </button>
+                      </div>
+
+                      <!-- Font Dropdown -->
+                      <div style="display: flex; gap: 4px; align-items: center; width: 100%;">
+                          <select id="elementFontFamily" class="input-field" style="margin: 0; padding: 4px 8px; font-size: 12px; height: 32px; flex: 1;">
+                              <option value="var(--font-family)">Default Font</option>
+                              <option value="Arial, sans-serif">Arial</option>
+                              <option value="'Courier New', monospace">Courier New</option>
+                              <option value="'Times New Roman', serif">Times New Roman</option>
+                              <option value="'Georgia', serif">Georgia</option>
+                          </select>
+                          <button onclick="toggleFontExplorer()" type="button" style="height: 32px; width: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-border); border-radius: 4px; background: var(--color-surface-soft); cursor: pointer;" title="Preview All Fonts">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                          </button>
+                      </div>
+                      
+                      <!-- Line Space Slider -->
+                      <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; background: var(--color-surface-soft); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--color-border); gap: 12px;">
+                          <span style="font-weight: 600; white-space: nowrap;">Line Space:</span>
+                          <input type="range" id="elementLineHeight" min="0.8" max="3" step="0.1" value="1.2" style="flex: 1; height: 4px; min-width: 50px;" oninput="if(currentlySelectedElement) currentlySelectedElement.style.lineHeight = this.value;">
                       </div>
                   </div>
 
-                  <div class="mobile-hide-tags" style="height: 1px; background: var(--color-border); margin: 10px 0;"></div>
-                  <div class="mobile-hide-tags" style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;">QR Properties</div>
-                  <div class="qr-expanded-panel mobile-hidden qr-mobile-row" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px;">
+                  <div class="mobile-hide-tags hide-on-desktop" style="height: 1px; background: var(--color-border); margin: 10px 0;"></div>
+                  <div class="mobile-hide-tags hide-on-desktop" style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;">QR Properties</div>
+                  
+                  <!-- QR EXPANDED PANEL -->
+                  <div class="qr-expanded-panel mobile-hidden qr-mobile-row" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px;">
                       <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px;">
                         <span>QR Size:</span>
                         <input type="number" id="qrCustomSize" value="310" min="150" max="600" class="input-field" style="width: 70px; margin: 0; padding: 2px 6px; height: 26px; font-size: 11px;">
@@ -1412,7 +1435,7 @@
                       </div>
                   </div>
 
-                  <button onclick="deleteSelectedElement()" class="btn-primary delete-element-btn" style="background: var(--color-danger-soft); color: var(--color-danger); font-size: 11px; padding: 6px;">Delete Selected</button>
+                  <button onclick="deleteSelectedElement()" class="btn-primary delete-element-btn hide-on-desktop" style="background: var(--color-danger-soft); color: var(--color-danger); font-size: 11px; padding: 8px;">Delete Selected</button>
                </div>
             </div>
 <!-- NEW: FONT EXPLORER SLIDING PANEL -->
