@@ -464,9 +464,16 @@
     #allTemplatesGrid .saved-tpl-card > div:first-child > div:first-child { width: 100% !important; height: 120px !important; background-size: cover !important; }
     #allTemplatesGrid .saved-tpl-card > div:last-child { flex-direction: row !important; justify-content: center !important; gap: 12px !important; margin-top: 8px !important; border-top: 1px solid var(--color-border) !important; padding-top: 8px !important; }
 /* --- BATCH 13: MOBILE DROPDOWN & AI BUTTON FIX --- */
-    #notificationDropdown { right: -16px !important; width: 300px !important; }
+    
+    /* 1. Fix Header clipping and Dropdown Alignment */
+    .top-header { overflow: visible !important; }
+    #notificationDropdown { right: -16px !important; width: 300px !important; z-index: 9999 !important; }
+    
+    /* 2. Force the AI Button to be wider so the text is readable */
     #templateGallery > div[onclick*="AI Generation"] { min-width: 95px !important; width: 95px !important; padding: 0 4px !important; }
     #templateGallery > div[onclick*="AI Generation"] span { font-size: 11px !important; text-align: center !important; white-space: normal !important; line-height: 1.2 !important; margin-top: 4px !important; }
+    
+    /* Hide the "Coming Soon" pill on mobile inside the AI button to save vertical space */
     #templateGallery > div[onclick*="AI Generation"] div { display: none !important; }
 
   
