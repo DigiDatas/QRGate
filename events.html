@@ -429,10 +429,10 @@
     .data-table tr.drilldown-row td > div > div { flex-shrink: 0 !important; }
 
 
-/* --- BATCH 11: FINAL UX PERFECTION --- */
+/* --- BATCH 12: PREVIEW BUG & DESKTOP OVERFLOW FIX --- */
     
-    /* 1. Perfect Mobile Preview (Locks to center, matches device width flawlessly) */
-    #previewModal { padding: 0 !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; background: rgba(15,23,42,0.95) !important; overflow: hidden !important; }
+    /* 1. Perfect Mobile Preview (ONLY shows when not hidden by JS) */
+    #previewModal:not(.hidden) { padding: 0 !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; background: rgba(15,23,42,0.95) !important; overflow: hidden !important; }
     #previewContainer { position: relative !important; left: auto !important; top: auto !important; transform: scale(calc(95vw / 1080)) !important; transform-origin: center center !important; margin: 0 auto !important; width: 1080px !important; height: 1440px !important; background: transparent !important; box-shadow: none !important; }
     #previewModal > div:first-child { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 100 !important; width: auto !important; }
     
@@ -471,8 +471,14 @@
     /* Hide mobile-only buttons completely */
     .hide-on-desktop { display: none !important; }
     
-    /* 1. Desktop Sliders Fix */
+    /* 1. Desktop Sliders Fix (Prevents sliders from pushing inputs off the card!) */
+    #builderLayoutGrid > div:nth-child(1) { overflow-x: hidden !important; }
     .size-wrapper { min-width: 100px !important; }
+    
+    /* Shrink the QR sliders on desktop so the input boxes fit inside */
+    .qr-expanded-panel > div { display: flex !important; flex-wrap: nowrap !important; align-items: center !important; justify-content: space-between !important; width: 100% !important; gap: 8px !important; }
+    .qr-expanded-panel input[type="range"] { flex: 1 1 auto !important; min-width: 40px !important; max-width: 75px !important; }
+    .qr-expanded-panel input[type="number"], .qr-expanded-panel input[type="color"] { flex: 0 0 auto !important; }
     
     /* 2. Fix Desktop Layout Flow */
     .text-expanded-panel { display: flex !important; flex-direction: column !important; gap: 12px !important; margin-top: 8px !important; overflow: visible !important; }
