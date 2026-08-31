@@ -486,6 +486,8 @@
     
     /* Force panels to ALWAYS display on Desktop */
     .mobile-hidden { display: flex !important; }
+/* 7. Wider AI Button on Mobile */
+    #templateGallery > .card:last-child { min-width: 100px !important; width: 100px !important; }
   }
 
 </style>
@@ -527,7 +529,7 @@
 
       <div class="nav-group">
         <p class="nav-label">Management</p>
-        <button class="nav-item w-full" onclick="switchView('createManageView', this)" style="justify-content: space-between;">
+        <button class="nav-item w-full" onclick="if(window.innerWidth <= 768) return false; switchView('createManageView', this)" style="justify-content: space-between;">
           <div style="display: flex; align-items: center; gap: var(--space-3);">
             <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg></span>
             Create & Manage
@@ -700,7 +702,12 @@
             <button class="card action-card" onclick="switchView('createEventView')" style="flex-direction: row; padding: 12px 16px; align-items: center; gap: 12px;"><div class="action-icon" style="background:var(--color-primary-soft); color:var(--color-primary); width:36px; height:36px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="action-label" style="font-size: 13px;">Create Event</div></button>
             <button class="card action-card" onclick="switchView('addGuestView')" style="flex-direction: row; padding: 12px 16px; align-items: center; gap: 12px;"><div class="action-icon" style="background:var(--color-success-soft); color:var(--color-success); width:36px; height:36px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg></div><div class="action-label" style="font-size: 13px;">Add Guests</div></button>
             <button class="card action-card" onclick="window.location.href='scanner.html'" style="flex-direction: row; padding: 12px 16px; align-items: center; gap: 12px;"><div class="action-icon" style="background:var(--color-danger-soft); color:var(--color-danger); width:36px; height:36px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div class="action-label" style="font-size: 13px;">Scan QR</div></button>
-            <button class="card action-card" onclick="switchView('reportsView')" style="flex-direction: row; padding: 12px 16px; align-items: center; gap: 12px;"><div class="action-icon" style="background:var(--color-primary-soft); color:var(--color-primary); width:36px; height:36px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><div class="action-label" style="font-size: 13px;">Reports</div></button>
+            <button class="card action-card" onclick="return false;" style="flex-direction: row; padding: 12px 16px; align-items: center; gap: 12px; opacity: 0.5; cursor: not-allowed;" title="Coming Soon">
+              <div class="action-icon" style="background:var(--color-text-muted); color:white; width:36px; height:36px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              </div>
+              <div class="action-label" style="font-size: 13px; color: var(--color-text-muted);">Reports</div>
+            </button>
           </div>
         </section>
 
@@ -3896,7 +3903,7 @@ function deleteSelectedElement() {
     if (!bottomGallery) return;
 
     bottomGallery.innerHTML = `
-      <div onclick="resetTemplate()" class="card" style="min-width: 180px; height: 90px; border: 1px dashed var(--color-primary); background: var(--color-primary-soft); color: var(--color-primary); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;">
+      <div onclick="resetTemplate()" class="card hide-on-mobile" style="min-width: 180px; height: 90px; border: 1px dashed var(--color-primary); background: var(--color-primary-soft); color: var(--color-primary); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;">
          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
          <div style="font-size: 11px; font-weight: 600; margin-top: 8px;">New Template</div>
       </div>
@@ -4938,7 +4945,22 @@ updateRecentGatesWidget();
           });
       }
   });
-
+// --- COLLAPSE TOOLS ON OUTSIDE CLICK (MOBILE) ---
+  document.addEventListener('click', (e) => {
+      if (window.innerWidth > 768) return; // Only apply this behavior on mobile screens
+      
+      // Check if the click happened inside the text tools or QR tools
+      const isAaClick = e.target.closest('#btnToggleAa') || e.target.closest('.text-expanded-panel') || e.target.closest('.text-format-mobile-row');
+      const isQrClick = e.target.closest('#btnToggleQR') || e.target.closest('.qr-expanded-panel') || e.target.closest('.qr-mobile-row');
+      
+      // If clicking completely outside both tool groups (like on the canvas or background), collapse them!
+      if (!isAaClick && !isQrClick) {
+          const txtPanel = document.querySelector('.text-expanded-panel');
+          const qrPanel = document.querySelector('.qr-expanded-panel');
+          if(txtPanel) txtPanel.classList.add('mobile-hidden');
+          if(qrPanel) qrPanel.classList.add('mobile-hidden');
+      }
+  });
 
   // Ensure this remains last
   init();
