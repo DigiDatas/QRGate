@@ -133,6 +133,7 @@
                 <th class="p-4">Email</th>
                 <th class="p-4">Phone</th>
                 <th class="p-4">Account Status</th>
+                <th class="p-4">Plan Tier</th>
                 <th class="p-4">Payment Status</th>
                 <th class="p-4 text-center">Actions</th>
               </tr>
@@ -424,28 +425,23 @@
       }
     }
 
-    async function loadTenants() {
-      const { data, error } = await supabaseClient.from('tenants').select('*');
-      if (data) {
-        allTenantsData = data;
-        renderTenants(data);
-        document.getElementById('statTotalTenants').innerText = data.length;
-        document.getElementById('statPaidTenants').innerText = data.filter(t => t.payment_status === 'Paid').length;
-      }
-    }
-
     function renderTenants(data) {
       const tbody = document.getElementById('tenantTableBody');
       tbody.innerHTML = '';
       if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-500">No tenants registered yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500">No tenants registered yet.</td></tr>`;
         return;
       }
 
       data.forEach(t => {
-        const isPaid = t.payment_status === 'Paid';
-        const isApproved = t.account_status === 'Approved';
+        // Safe booleans prevent string syntax errors!
+        const isPaid = (t.payment_status && t.payment_status.trim() === 'Paid');
+        const isApproved = (t.account_status && t.account_status.trim() === 'Approved');
         
+        // Clean up the plan status
+        let plan = t.subscription_status ? t.subscription_status.trim() : 'Basic';
+        if (plan.toLowerCase() === 'active') plan = 'Basic'; // Catch old 'active' data
+
         const row = document.createElement('tr');
         row.className = 'hover:bg-slate-800/40 transition';
         row.innerHTML = `
@@ -453,25 +449,33 @@
           <td class="p-4 text-slate-400">${t.email || 'N/A'}</td>
           <td class="p-4 text-slate-400">${t.phone || 'N/A'}</td>
           
-          <!-- NEW: Account Status Badge -->
           <td class="p-4">
             <span class="${isApproved ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'} px-3 py-1 rounded-full text-xs font-bold">
-              ${t.account_status || 'Pending'}
+              ${isApproved ? 'Approved' : 'Pending'}
             </span>
           </td>
           
+          <!-- NEW: Plan Dropdown directly in the table! -->
+          <td class="p-4">
+            <select onchange="updateTenantPlan('${t.id}', this.value)" class="bg-slate-950 border border-slate-700 text-slate-200 text-xs font-bold rounded-lg px-2 py-1.5 outline-none focus:border-pink-500 cursor-pointer">
+                <option value="Basic" ${plan === 'Basic' ? 'selected' : ''}>Basic</option>
+                <option value="Pro" ${plan === 'Pro' ? 'selected' : ''}>Pro</option>
+                <option value="Premium" ${plan === 'Premium' ? 'selected' : ''}>Premium</option>
+            </select>
+          </td>
+
           <td class="p-4">
             <span class="${isPaid ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'} px-3 py-1 rounded-full text-xs font-bold">
-              ${t.payment_status || 'Pending'}
+              ${isPaid ? 'Paid' : 'Unpaid'}
             </span>
           </td>
           
-          <!-- NEW: Split Action Buttons -->
           <td class="p-4 text-center flex justify-center gap-2">
-            <button onclick="toggleTenantApproval('${t.id}', '${t.account_status}')" class="${isApproved ? 'bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-500/30' : 'bg-green-600/20 text-green-400 hover:bg-green-600/30 border border-green-500/30'} px-3 py-1.5 rounded-xl text-xs font-semibold transition">
+            <!-- Safe Boolean Parameters (No Quotes Needed!) -->
+            <button onclick="toggleTenantApproval('${t.id}', ${isApproved})" class="${isApproved ? 'bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-500/30' : 'bg-green-600/20 text-green-400 hover:bg-green-600/30 border border-green-500/30'} px-3 py-1.5 rounded-xl text-xs font-semibold transition">
               ${isApproved ? 'Suspend' : 'Approve'}
             </button>
-            <button onclick="togglePayment('${t.id}', '${t.payment_status}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold transition border border-slate-700">
+            <button onclick="togglePayment('${t.id}', ${isPaid})" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold transition border border-slate-700">
               ${isPaid ? 'Mark Unpaid' : 'Mark Paid'}
             </button>
           </td>
@@ -480,19 +484,34 @@
       });
     }
 
-    async function togglePayment(tenantId, currentStatus) {
-      const newStatus = currentStatus === 'Paid' ? 'Pending' : 'Paid';
+    // --- ADMIN ACTION FUNCTIONS ---
+
+    // Toggle Paid/Unpaid
+    async function togglePayment(tenantId, isCurrentlyPaid) {
+      const newStatus = isCurrentlyPaid ? 'Unpaid' : 'Paid';
       const { error } = await supabaseClient.from('tenants').update({ payment_status: newStatus }).eq('id', tenantId);
       if (error) alert('Error: ' + error.message);
       else loadTenants();
     }
 
-    // NEW: Account Approval Logic
-    async function toggleTenantApproval(tenantId, currentStatus) {
-      const newStatus = currentStatus === 'Approved' ? 'Pending' : 'Approved';
+    // Toggle Approved/Pending
+    async function toggleTenantApproval(tenantId, isCurrentlyApproved) {
+      const newStatus = isCurrentlyApproved ? 'Pending' : 'Approved';
       const { error } = await supabaseClient.from('tenants').update({ account_status: newStatus }).eq('id', tenantId);
       if (error) alert('Error: ' + error.message);
-      else loadTenants(); // Instantly refreshes the admin table!
+      else loadTenants(); 
+    }
+
+    // Change Subscription Plan
+    async function updateTenantPlan(tenantId, newPlan) {
+      const { error } = await supabaseClient.from('tenants').update({ subscription_status: newPlan }).eq('id', tenantId);
+      if (error) {
+          alert('Error updating plan: ' + error.message);
+          loadTenants(); // Revert dropdown if error occurs
+      } else {
+          // Optional: You can trigger a small notification here if you want
+          console.log('Plan successfully updated to ' + newPlan);
+      }
     }
 
     async function loadEvents() {
