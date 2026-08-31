@@ -402,7 +402,30 @@
     #builderLayoutGrid > div:nth-child(4) > label { margin-bottom: 0 !important; margin-top: 4px !important; }
     #builderLayoutGrid > div:nth-child(4) > input, #builderLayoutGrid > div:nth-child(4) > select { margin-bottom: 8px !important; }
 
-  }
+/* --- BATCH 6: GATE MANAGEMENT UX POLISH --- */
+    
+    /* 1. Gate Card Compression & Structure */
+    #gateManagementTableBody tr:not(.drilldown-row) { padding: 12px !important; gap: 4px !important; min-height: auto !important; align-items: center !important; }
+    
+    /* 2. Move Active/Inactive Status to Top Right (Left of Actions) */
+    #gateManagementTableBody tr:not(.drilldown-row) td:nth-child(4) { position: absolute !important; top: 15px !important; right: 110px !important; width: auto !important; padding: 0 !important; margin: 0 !important; }
+    #gateManagementTableBody tr:not(.drilldown-row) td:nth-child(4) span { padding: 2px 8px !important; font-size: 10px !important; }
+    
+    /* 3. Staff Row - Make it side-by-side and compact */
+    #gateManagementTableBody tr:not(.drilldown-row) td:nth-child(3) { flex: 1 1 100% !important; flex-direction: row !important; flex-wrap: wrap !important; gap: 8px !important; padding-bottom: 8px !important; border-bottom: 1px dashed var(--color-border) !important; margin-bottom: 4px !important; }
+    #gateManagementTableBody tr:not(.drilldown-row) td:nth-child(3) > div { margin-bottom: 0 !important; background: var(--color-surface-soft) !important; padding: 4px 8px !important; border-radius: 6px !important; }
+    
+    /* 4. Metrics Row (Type, Entries, Exits, Inside) - All on one line at the bottom! */
+    #gateManagementTableBody tr:not(.drilldown-row) td:nth-child(2) { flex: 0 0 auto !important; font-weight: 700 !important; }
+    #gateManagementTableBody tr:not(.drilldown-row) td:nth-child(5) { flex: 0 0 auto !important; margin-left: auto !important; flex-direction: row !important; align-items: center !important; gap: 4px !important; }
+    #gateManagementTableBody tr:not(.drilldown-row) td:nth-child(6),
+    #gateManagementTableBody tr:not(.drilldown-row) td:nth-child(7) { flex: 0 0 auto !important; flex-direction: row !important; align-items: center !important; margin-left: 12px !important; gap: 4px !important; }
+    
+    /* 5. Fix Drilldown Horizontal Scroll for BOTH Guests and Gates */
+    .data-table tr.drilldown-row td > div { display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important; max-width: calc(100vw - 32px) !important; -webkit-overflow-scrolling: touch !important; padding-bottom: 8px !important; }
+    .data-table tr.drilldown-row td > div > div { flex-shrink: 0 !important; }  
+
+}
 </style>
 </head>
 <body>
