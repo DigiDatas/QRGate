@@ -429,12 +429,12 @@
     .data-table tr.drilldown-row td > div > div { flex-shrink: 0 !important; }
 
 
-/* --- BATCH 10: FLAWLESS DESKTOP & MOBILE UX --- */
+/* --- BATCH 11: FINAL UX PERFECTION --- */
     
-    /* 1. Perfect Mobile Preview (Scales to exactly 90% of phone width!) */
-    #previewModal { padding: 0 !important; align-items: center !important; justify-content: center !important; background: rgba(15,23,42,0.95) !important; }
-    #previewContainer { position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) scale(calc(90vw / 1080)) !important; transform-origin: center center !important; margin: 0 !important; width: 1080px !important; height: 1440px !important; background: transparent !important; box-shadow: none !important; }
-    #previewModal > div:first-child { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 100 !important; }
+    /* 1. Perfect Mobile Preview (Locks to center, matches device width flawlessly) */
+    #previewModal { padding: 0 !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; background: rgba(15,23,42,0.95) !important; overflow: hidden !important; }
+    #previewContainer { position: relative !important; left: auto !important; top: auto !important; transform: scale(calc(95vw / 1080)) !important; transform-origin: center center !important; margin: 0 auto !important; width: 1080px !important; height: 1440px !important; background: transparent !important; box-shadow: none !important; }
+    #previewModal > div:first-child { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 100 !important; width: auto !important; }
     
     /* 2. Bigger Canvas Area */
     #builderLayoutGrid > div:nth-child(3) { height: 480px !important; min-height: 480px !important; overflow: auto !important; touch-action: pan-x pan-y !important; }
@@ -445,16 +445,16 @@
     .mobile-tool-row > button { flex: 1 !important; justify-content: center !important; height: 44px !important; margin: 0 !important; border-radius: 8px !important; border: 1px solid var(--color-border) !important; background: var(--color-bg) !important; min-width: 0 !important; }
     .btn-text { display: none !important; } 
     
-    /* 4. Fix White Alignment Icons */
+    /* 4. Fix Alignment Icons Colors (Preventing white-out!) */
+    .btn-align-toggle { color: var(--color-text-secondary) !important; background: transparent !important; border: 1px solid transparent !important; }
+    .btn-align-toggle.active { background: var(--color-primary-soft) !important; color: var(--color-primary) !important; border: 1px solid var(--color-primary) !important; box-shadow: none !important; }
     .btn-align-toggle.active svg { stroke: var(--color-primary) !important; }
     
-    /* 5. Mobile Toggle Logic (Hides QR and Aa panels by default!) */
+    /* 5. Mobile Toggle Logic */
     .hide-on-mobile { display: none !important; }
     .mobile-hidden { display: none !important; }
     .text-expanded-panel:not(.mobile-hidden) { display: flex !important; flex-direction: column !important; gap: 6px !important; }
-    .qr-expanded-panel:not(.mobile-hidden) { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
-    
-    .qr-mobile-row > div { width: 100% !important; }
+    .qr-expanded-panel:not(.mobile-hidden) { display: flex !important; flex-direction: column !important; gap: 12px !important; }
     
     /* 6. Saved Templates Grid */
     #allTemplatesModal .card.panel { padding: 16px !important; width: calc(100% - 32px) !important; margin: 16px !important; }
@@ -471,17 +471,17 @@
     /* Hide mobile-only buttons completely */
     .hide-on-desktop { display: none !important; }
     
-    /* 1. Desktop Sliders Fix (Disables panel swiping so sliders can be dragged!) */
-    .size-wrapper { min-width: 100px !important; touch-action: none !important; pointer-events: auto !important; }
-    input[type="range"] { touch-action: none !important; pointer-events: auto !important; z-index: 100; position: relative; }
+    /* 1. Desktop Sliders Fix */
+    .size-wrapper { min-width: 100px !important; }
     
     /* 2. Fix Desktop Layout Flow */
     .text-expanded-panel { display: flex !important; flex-direction: column !important; gap: 12px !important; margin-top: 8px !important; overflow: visible !important; }
-    .qr-expanded-panel { display: flex !important; flex-direction: column !important; gap: 6px !important; }
+    .qr-expanded-panel { display: flex !important; flex-direction: column !important; gap: 10px !important; margin-top: 12px !important; }
     
-    /* Force panels to ALWAYS display on Desktop, ignoring 'mobile-hidden' */
+    /* Force panels to ALWAYS display on Desktop */
     .mobile-hidden { display: flex !important; }
   }
+
 </style>
 </head>
 <body>
@@ -1419,34 +1419,42 @@
                   <div class="mobile-hide-tags hide-on-desktop" style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;">QR Properties</div>
                   
                   <!-- QR EXPANDED PANEL -->
-                  <div class="qr-expanded-panel mobile-hidden qr-mobile-row" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px;">
-                      <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px;">
-                        <span>QR Size:</span>
-                        <input type="number" id="qrCustomSize" value="310" min="150" max="600" class="input-field" style="width: 70px; margin: 0; padding: 2px 6px; height: 26px; font-size: 11px;">
+                  <div class="qr-expanded-panel mobile-hidden" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 8px;">
+                      
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11px;">
+                        <span style="white-space:nowrap; font-weight:600;">QR Size:</span>
+                        <input type="range" id="qrCustomSizeSlider" min="150" max="600" value="310" style="flex:1; height:4px;" oninput="document.getElementById('qrCustomSize').value = this.value; document.getElementById('qrCustomSize').dispatchEvent(new Event('input'));">
+                        <input type="number" id="qrCustomSize" value="310" min="150" max="600" class="input-field" style="width: 50px; margin: 0; padding: 2px 4px; height: 26px; font-size: 11px; text-align:center;" oninput="document.getElementById('qrCustomSizeSlider').value = this.value; updateQRProperties();">
                       </div>
-                      <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px;">
-                        <span>QR Color:</span>
-                        <input type="color" id="qrDarkColor" value="#000000" style="width: 28px; height: 24px; padding: 0; border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer;">
-                      </div>
-                      <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px;">
-                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
-                          <input type="checkbox" id="qrBgBoxToggle" checked> BG Box
+
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11px;">
+                        <span style="white-space:nowrap; font-weight:600;">QR Color:</span>
+                        <input type="color" id="qrDarkColor" value="#000000" style="width: 28px; height: 24px; padding: 0; border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer;" oninput="updateQRProperties()">
+                        
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; margin-left: auto; font-weight:600;">
+                          <input type="checkbox" id="qrBgBoxToggle" checked onchange="updateQRProperties()"> BG Box
                         </label>
-                        <input type="color" id="qrBgColor" value="#ffffff" style="width: 28px; height: 24px; padding: 0; border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer;">
+                        <input type="color" id="qrBgColor" value="#ffffff" style="width: 28px; height: 24px; padding: 0; border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer;" oninput="updateQRProperties()">
                       </div>
-                      <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px;">
-                        <span>Box Radius:</span>
-                        <input type="number" id="qrBoxRadius" value="20" min="0" max="100" class="input-field" style="width: 70px; margin: 0; padding: 2px 6px; height: 26px; font-size: 11px;">
+
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11px;">
+                        <span style="white-space:nowrap; font-weight:600;">Box Radius:</span>
+                        <input type="range" id="qrBoxRadiusSlider" min="0" max="100" value="20" style="flex:1; height:4px;" oninput="document.getElementById('qrBoxRadius').value = this.value; document.getElementById('qrBoxRadius').dispatchEvent(new Event('input'));">
+                        <input type="number" id="qrBoxRadius" value="20" min="0" max="100" class="input-field" style="width: 50px; margin: 0; padding: 2px 4px; height: 26px; font-size: 11px; text-align:center;" oninput="document.getElementById('qrBoxRadiusSlider').value = this.value; updateQRProperties();">
                       </div>
-                      <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px;">
-                        <span>Box Padding:</span>
-                        <input type="number" id="qrBoxPadding" value="10" min="0" max="60" class="input-field" style="width: 70px; margin: 0; padding: 2px 6px; height: 26px; font-size: 11px;">
+
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11px;">
+                        <span style="white-space:nowrap; font-weight:600;">Box Padding:</span>
+                        <input type="range" id="qrBoxPaddingSlider" min="0" max="60" value="10" style="flex:1; height:4px;" oninput="document.getElementById('qrBoxPadding').value = this.value; document.getElementById('qrBoxPadding').dispatchEvent(new Event('input'));">
+                        <input type="number" id="qrBoxPadding" value="10" min="0" max="60" class="input-field" style="width: 50px; margin: 0; padding: 2px 4px; height: 26px; font-size: 11px; text-align:center;" oninput="document.getElementById('qrBoxPaddingSlider').value = this.value; updateQRProperties();">
                       </div>
                   </div>
 
-                  <button onclick="deleteSelectedElement()" class="btn-primary delete-element-btn hide-on-desktop" style="background: var(--color-danger-soft); color: var(--color-danger); font-size: 11px; padding: 8px;">Delete Selected</button>
+                  <button onclick="deleteSelectedElement()" class="btn-primary delete-element-btn hide-on-desktop" style="background: var(--color-danger-soft); color: var(--color-danger); font-size: 11px; padding: 8px; margin-top: 8px;">Delete Selected</button>
                </div>
             </div>
+
+
 <!-- NEW: FONT EXPLORER SLIDING PANEL -->
 <div id="fontExplorerPanel" class="card panel no-scrollbar" style="display: none; padding: 16px; flex-direction: column; overflow-y: auto;">
    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-shrink: 0;">
@@ -4840,6 +4848,9 @@ updateRecentGatesWidget();
           let scrollLeft;
           
           ele.addEventListener('mousedown', (e) => {
+              // FIX: Allow sliders to be clicked and dragged without moving the container!
+              if (e.target.tagName.toLowerCase() === 'input') return; 
+              
               isDown = true;
               startX = e.pageX - ele.offsetLeft;
               scrollLeft = ele.scrollLeft;
