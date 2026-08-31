@@ -425,6 +425,18 @@
       }
     }
 
+    // --- FETCH TENANTS LOGIC ---
+    async function loadTenants() {
+      const { data, error } = await supabaseClient.from('tenants').select('*').order('created_at', { ascending: false });
+      if (data) {
+        allTenantsData = data;
+        renderTenants(data);
+        document.getElementById('statTotalTenants').innerText = data.length;
+        document.getElementById('statPaidTenants').innerText = data.filter(t => t.payment_status === 'Paid').length;
+      }
+    }
+
+    // --- RENDER TENANTS TABLE ---
     function renderTenants(data) {
       const tbody = document.getElementById('tenantTableBody');
       tbody.innerHTML = '';
@@ -509,7 +521,6 @@
           alert('Error updating plan: ' + error.message);
           loadTenants(); // Revert dropdown if error occurs
       } else {
-          // Optional: You can trigger a small notification here if you want
           console.log('Plan successfully updated to ' + newPlan);
       }
     }
