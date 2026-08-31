@@ -427,29 +427,36 @@
     /* 3. Fix Drilldown Horizontal Scroll */
     .data-table tr.drilldown-row td > div { display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important; max-width: calc(100vw - 32px) !important; -webkit-overflow-scrolling: touch !important; padding-bottom: 8px !important; }
     .data-table tr.drilldown-row td > div > div { flex-shrink: 0 !important; }
-/* --- BATCH 9: ULTIMATE PREVIEW & DESKTOP FIXES --- */
+
+
+/* --- BATCH 10: FLAWLESS DESKTOP & MOBILE UX --- */
     
-    /* 1. Perfect Full-Screen Preview (Dynamically scales to fit phone width, completely transparent background) */
-    #previewModal { padding: 0 !important; align-items: center !important; justify-content: center !important; }
-    #previewContainer { position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) scale(calc((100vw - 32px) / 1080)) !important; transform-origin: center center !important; margin: 0 !important; width: 1080px !important; height: 1440px !important; background: transparent !important; box-shadow: none !important; }
+    /* 1. Perfect Mobile Preview (Scales to exactly 90% of phone width!) */
+    #previewModal { padding: 0 !important; align-items: center !important; justify-content: center !important; background: rgba(15,23,42,0.95) !important; }
+    #previewContainer { position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) scale(calc(90vw / 1080)) !important; transform-origin: center center !important; margin: 0 !important; width: 1080px !important; height: 1440px !important; background: transparent !important; box-shadow: none !important; }
     #previewModal > div:first-child { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 100 !important; }
     
-    /* 2. Bigger, Scrollable Canvas Area */
+    /* 2. Bigger Canvas Area */
     #builderLayoutGrid > div:nth-child(3) { height: 480px !important; min-height: 480px !important; overflow: auto !important; touch-action: pan-x pan-y !important; }
     #editorCanvas { transform: translate(-50%, -50%) scale(0.32) !important; }
     
-    /* 3. Toolbar Icon Redesign (4 Icons, 1 Line) */
+    /* 3. Toolbar Icons */
     .mobile-tool-row { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; gap: 8px !important; width: 100% !important; margin-bottom: 8px !important; }
     .mobile-tool-row > button { flex: 1 !important; justify-content: center !important; height: 44px !important; margin: 0 !important; border-radius: 8px !important; border: 1px solid var(--color-border) !important; background: var(--color-bg) !important; min-width: 0 !important; }
     .btn-text { display: none !important; } 
     
-    /* 4. Collapsible Panels & Layout */
+    /* 4. Fix White Alignment Icons */
+    .btn-align-toggle.active svg { stroke: var(--color-primary) !important; }
+    
+    /* 5. Mobile Toggle Logic (Hides QR and Aa panels by default!) */
     .hide-on-mobile { display: none !important; }
     .mobile-hidden { display: none !important; }
-    .qr-mobile-row { display: grid !important; grid-template-columns: 1fr 1fr !important; overflow: visible !important; flex-wrap: wrap !important; }
+    .text-expanded-panel:not(.mobile-hidden) { display: flex !important; flex-direction: column !important; gap: 6px !important; }
+    .qr-expanded-panel:not(.mobile-hidden) { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+    
     .qr-mobile-row > div { width: 100% !important; }
     
-    /* 5. Saved Templates Grid (Strictly 2 Columns) */
+    /* 6. Saved Templates Grid */
     #allTemplatesModal .card.panel { padding: 16px !important; width: calc(100% - 32px) !important; margin: 16px !important; }
     #allTemplatesGrid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; padding-right: 0 !important; display: grid !important; }
     #allTemplatesGrid .saved-tpl-card { min-width: 0 !important; width: 100% !important; height: auto !important; flex-direction: column !important; align-items: stretch !important; padding: 10px !important; text-align: center !important; }
@@ -461,18 +468,20 @@
 
   /* --- DESKTOP SPECIFIC FIXES --- */
   @media (min-width: 769px) {
-    /* Completely hide the mobile-only buttons (Preview, Reset, Aa, QR, Mobile Delete) */
+    /* Hide mobile-only buttons completely */
     .hide-on-desktop { display: none !important; }
     
-    /* Ensure Desktop panels are ALWAYS expanded, ignoring the mobile-hidden class */
-    .mobile-hidden { display: flex !important; }
-    .text-expanded-panel { display: flex !important; flex-direction: column !important; gap: 12px !important; margin-top: 8px !important; }
+    /* 1. Desktop Sliders Fix (Disables panel swiping so sliders can be dragged!) */
+    .size-wrapper { min-width: 100px !important; touch-action: none !important; pointer-events: auto !important; }
+    input[type="range"] { touch-action: none !important; pointer-events: auto !important; z-index: 100; position: relative; }
+    
+    /* 2. Fix Desktop Layout Flow */
+    .text-expanded-panel { display: flex !important; flex-direction: column !important; gap: 12px !important; margin-top: 8px !important; overflow: visible !important; }
     .qr-expanded-panel { display: flex !important; flex-direction: column !important; gap: 6px !important; }
     
-    /* Desktop Sliders logic (no flex-wrap overlap) */
-    .size-wrapper { min-width: 100px !important; }
+    /* Force panels to ALWAYS display on Desktop, ignoring 'mobile-hidden' */
+    .mobile-hidden { display: flex !important; }
   }
-
 </style>
 </head>
 <body>
