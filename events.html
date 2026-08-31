@@ -1790,13 +1790,13 @@
     </div>
     <div class="flex flex-col gap-2 w-[340px] mt-4">
       <div class="flex gap-2">
-        <button onclick="shareToWhatsApp('${id}', '${guest ? escapeHTML(guest.phone) : ''}', '${escapeHTML(guestName)}', '${escapeHTML(eventName)}', ${guest ? guest.ticket_number : 0})" class="bg-[#25D366] text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> WhatsApp</button>
-        <button onclick="shareToEmail('${id}', '${guest ? escapeHTML(guest.email) : ''}', '${escapeHTML(guestName)}', '${escapeHTML(eventName)}', ${guest ? guest.ticket_number : 0})" class="bg-blue-600 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Email</button>
+        <button onclick="shareToWhatsApp('${id}', '${guest && guest.phone ? encodeURIComponent(guest.phone) : ''}', '${encodeURIComponent(guestName)}', '${encodeURIComponent(eventName)}', ${guest ? guest.ticket_number : 0})" class="bg-[#25D366] text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> WhatsApp</button>
+        <button onclick="shareToEmail('${id}', '${guest && guest.email ? encodeURIComponent(guest.email) : ''}', '${encodeURIComponent(guestName)}', '${encodeURIComponent(eventName)}', ${guest ? guest.ticket_number : 0})" class="bg-blue-600 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Email</button>
       </div>
       <div class="flex gap-2">
         <div class="flex flex-1 gap-1">
-          <button onclick="downloadTicketFile('${escapeHTML(guestName)}', '${escapeHTML(eventName)}', 'png')" class="bg-pink-600 text-white px-2 py-3 rounded-l-xl flex-1 font-bold border-none cursor-pointer text-sm transition text-center" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">PNG</button>
-          <button onclick="downloadTicketFile('${escapeHTML(guestName)}', '${escapeHTML(eventName)}', 'pdf')" class="bg-pink-700 text-white px-2 py-3 rounded-r-xl flex-1 font-bold border-none cursor-pointer text-sm transition text-center" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">PDF</button>
+          <button onclick="downloadTicketFile('${encodeURIComponent(guestName)}', '${encodeURIComponent(eventName)}', 'png')" class="bg-pink-600 text-white px-2 py-3 rounded-l-xl flex-1 font-bold border-none cursor-pointer text-sm transition text-center" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">PNG</button>
+          <button onclick="downloadTicketFile('${encodeURIComponent(guestName)}', '${encodeURIComponent(eventName)}', 'pdf')" class="bg-pink-700 text-white px-2 py-3 rounded-r-xl flex-1 font-bold border-none cursor-pointer text-sm transition text-center" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">PDF</button>
         </div>
         <button onclick="closeModal()" class="bg-slate-800 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Close</button>
       </div>
@@ -5231,30 +5231,34 @@ updateRecentGatesWidget();
   // --- TICKET SHARING & DOWNLOADING LOGIC ---
   // ==========================================
 
-  // Helper to safely escape quotes for inline HTML
+  // Helper to safely escape quotes for inline HTML (Kept for your other UI elements!)
   function escapeHTML(str) {
       if (!str) return '';
       return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
   }
 
-  // 1. Download as Image or PDF (Fixed Cropping!)
-  async function downloadTicketFile(guestName, eventName, format) {
+  // 1. Download as Image or PDF (Fixed Cropping & Syntax Errors!)
+  async function downloadTicketFile(encodedGuestName, encodedEventName, format) {
+      // Decode the names safely back into normal text
+      const guestName = decodeURIComponent(encodedGuestName);
+      const eventName = decodeURIComponent(encodedEventName);
+      
       const container = document.getElementById('ticketContainer');
       
-      // Temporarily remove transforms and overflow clipping for a perfect capture
+      // Temporarily remove transforms, overflow, and radius for a perfect capture
       const originalTransform = container.style.transform;
       const originalOverflow = container.style.overflow;
       const originalRadius = container.style.borderRadius;
       
       container.style.transform = "none";
       container.style.overflow = "visible";
-      container.style.borderRadius = "0px"; // Prevents html2canvas from cropping the top
+      container.style.borderRadius = "0px"; 
       
       try {
           const canvas = await html2canvas(container, {
               scale: 2, 
               useCORS: true, 
-              backgroundColor: '#ffffff', // Force white background for standard passes
+              backgroundColor: '#ffffff', // Force white background
               logging: false
           });
 
@@ -5283,8 +5287,13 @@ updateRecentGatesWidget();
   }
 
   // 2. Share via WhatsApp
-  async function shareToWhatsApp(guestId, phone, guestName, eventName, ticketNumber) {
+  async function shareToWhatsApp(guestId, encodedPhone, encodedGuestName, encodedEventName, ticketNumber) {
+      const phone = decodeURIComponent(encodedPhone);
+      const guestName = decodeURIComponent(encodedGuestName);
+      const eventName = decodeURIComponent(encodedEventName);
+
       if (!phone || phone.trim() === '' || phone === 'No phone provided') return alert("This guest does not have a valid phone number saved.");
+      
       const cleanPhone = phone.replace(/[^\d+]/g, '');
       const qrId = 'QR-' + String(ticketNumber).padStart(3, '0');
       const publicTicketLink = `https://yourdomain.com/view-pass.html?id=${guestId}`;
@@ -5292,19 +5301,26 @@ updateRecentGatesWidget();
       
       alert("Redirecting to WhatsApp... \n\nIf the app doesn't open automatically on your mobile device, please check your browser settings or pop-up blocker.");
       window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');
+      
       await supabaseClient.from('guests').update({ invitation_status: 'Sent' }).eq('id', guestId);
       fetchEvents(); 
   }
 
   // 3. Share via Email
-  async function shareToEmail(guestId, email, guestName, eventName, ticketNumber) {
+  async function shareToEmail(guestId, encodedEmail, encodedGuestName, encodedEventName, ticketNumber) {
+      const email = decodeURIComponent(encodedEmail);
+      const guestName = decodeURIComponent(encodedGuestName);
+      const eventName = decodeURIComponent(encodedEventName);
+
       if (!email || email.trim() === '' || email === 'No email provided') return alert("This guest does not have a valid email address saved.");
+      
       const qrId = 'QR-' + String(ticketNumber).padStart(3, '0');
       const publicTicketLink = `https://yourdomain.com/view-pass.html?id=${guestId}`;
       const subject = encodeURIComponent(`Your Gate Pass for ${eventName}`);
       const body = encodeURIComponent(`Hello ${guestName},\n\nHere is your official Gate Pass for ${eventName}.\n\nYour Ticket ID is: ${qrId}\n\nView your digital pass here:\n${publicTicketLink}\n\nPlease present this at the gate.\n\nBest regards,\nEvent Management`);
       
       window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+      
       await supabaseClient.from('guests').update({ invitation_status: 'Sent' }).eq('id', guestId);
       fetchEvents();
   }
