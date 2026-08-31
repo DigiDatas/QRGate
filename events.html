@@ -4200,7 +4200,8 @@ function deleteSelectedElement() {
       const qrRadiusInput = document.getElementById('qrBoxRadius');
       const qrPaddingInput = document.getElementById('qrBoxPadding');
 
-      function updateQRProperties() {
+      // EXPOSED TO WINDOW: Fixes the 'Uncaught ReferenceError' in the console!
+      window.updateQRProperties = function() {
           const qrSpot = document.getElementById('canvasQRSpot');
           if (!qrSpot) return;
           if (qrSizeInput) qrSpot.dataset.qrSize = qrSizeInput.value;
@@ -4215,12 +4216,12 @@ function deleteSelectedElement() {
           renderCanvasQR(currentText);
       }
 
-      if (qrSizeInput) qrSizeInput.addEventListener('input', updateQRProperties);
-      if (qrDarkInput) qrDarkInput.addEventListener('input', updateQRProperties);
-      if (qrBgBoxToggle) qrBgBoxToggle.addEventListener('change', updateQRProperties);
-      if (qrBgInput) qrBgInput.addEventListener('input', updateQRProperties);
-      if (qrRadiusInput) qrRadiusInput.addEventListener('input', updateQRProperties);
-      if (qrPaddingInput) qrPaddingInput.addEventListener('input', updateQRProperties);
+      if (qrSizeInput) qrSizeInput.addEventListener('input', window.updateQRProperties);
+      if (qrDarkInput) qrDarkInput.addEventListener('input', window.updateQRProperties);
+      if (qrBgBoxToggle) qrBgBoxToggle.addEventListener('change', window.updateQRProperties);
+      if (qrBgInput) qrBgInput.addEventListener('input', window.updateQRProperties);
+      if (qrRadiusInput) qrRadiusInput.addEventListener('input', window.updateQRProperties);
+      if (qrPaddingInput) qrPaddingInput.addEventListener('input', window.updateQRProperties);
 
       // 2. Dropdown Sync (Event Selection -> Auto-links to Guest and Saved Templates)
       const eventDropdown = document.getElementById('tplEventSelect');
