@@ -682,7 +682,14 @@
         <h2 class="section-title" style="color: #B4790C;">Complete Your Organizer Profile</h2>
         <input type="text" id="profileCompany" placeholder="Company Name" class="input-field" style="background:#fff">
         <input type="text" id="profileName" placeholder="Your Full Name" class="input-field" style="background:#fff">
-        <input type="text" id="profilePhone" placeholder="Mobile Number" class="input-field" style="background:#fff">
+        <div style="display:flex; gap:8px;">
+          <select id="profilePhoneCode" class="input-field" style="width: 100px; background:#fff; margin-bottom: 16px;">
+             <option value="+966">🇸🇦 +966</option>
+             <option value="+971">🇦🇪 +971</option>
+             <option value="+91">🇮🇳 +91</option>
+          </select>
+          <input type="text" id="profilePhone" placeholder="e.g. 535531913" class="input-field" style="background:#fff; flex:1;" oninput="this.value = this.value.replace(/^0+/, '')">
+        </div>
        <button id="saveProfileBtn" onclick="updateUserProfile(true)" class="btn-primary" style="background: var(--color-warning); color: #000;">Save Profile</button>
       </div>
 <!-- ============================================== -->
@@ -707,7 +714,14 @@
             <input type="text" id="settingCompany" class="input-field">
             
             <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Mobile Number</label>
-            <input type="text" id="settingPhone" class="input-field">
+            <div style="display:flex; gap:8px; margin-bottom: 8px;">
+              <select id="settingPhoneCode" class="input-field" style="width: 100px; margin-bottom: 0;">
+                 <option value="+966">🇸🇦 +966</option>
+                 <option value="+971">🇦🇪 +971</option>
+                 <option value="+91">🇮🇳 +91</option>
+              </select>
+              <input type="text" id="settingPhone" placeholder="e.g. 535531913" class="input-field" style="margin-bottom: 0;" oninput="this.value = this.value.replace(/^0+/, '')">
+            </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
               <button onclick="switchView('dashboardView', this)" class="btn-filter-nav" style="padding: 10px 20px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--color-surface-soft); font-weight: 600;">Cancel</button>
@@ -1335,7 +1349,18 @@
           
           <!-- 1. Choose a Template -->
           <div style="flex-shrink: 0; margin-bottom: 12px;">
-            <h3 class="section-title" style="margin-bottom: 8px; font-size: 14px;">1. Choose a Template</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+               <h3 class="section-title" style="margin: 0; font-size: 14px;">1. Choose a Template</h3>
+               
+               <!-- NEW: Category Filter Buttons -->
+               <div id="templateCategoryFilters" style="display: flex; gap: 6px; overflow-x: auto;" class="no-scrollbar">
+                  <button onclick="filterTemplates('All', this)" class="btn-filter-nav active" style="font-size: 10px; padding: 4px 10px;">All</button>
+                  <button onclick="filterTemplates('General', this)" class="btn-filter-nav" style="font-size: 10px; padding: 4px 10px;">General</button>
+                  <button onclick="filterTemplates('Marriage', this)" class="btn-filter-nav" style="font-size: 10px; padding: 4px 10px;">Marriage</button>
+                  <button onclick="filterTemplates('Corporate', this)" class="btn-filter-nav" style="font-size: 10px; padding: 4px 10px;">Corporate</button>
+                  <button onclick="filterTemplates('VIP', this)" class="btn-filter-nav" style="font-size: 10px; padding: 4px 10px;">VIP</button>
+               </div>
+            </div>
             <div id="templateGallery" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px;" class="no-scrollbar">
               
               <!-- TALL PORTRAIT THUMBNAILS -->
@@ -1828,13 +1853,13 @@
     </div>
     <div class="flex flex-col gap-2 w-[340px] mt-4">
       <div class="flex gap-2">
-        <button onclick="shareToWhatsApp('${id}', '${guest && guest.phone ? encodeURIComponent(guest.phone) : ''}', '${encodeURIComponent(guestName)}', '${encodeURIComponent(eventName)}', ${guest ? guest.ticket_number : 0})" class="bg-[#25D366] text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> WhatsApp</button>
-        <button onclick="shareToEmail('${id}', '${guest && guest.email ? encodeURIComponent(guest.email) : ''}', '${encodeURIComponent(guestName)}', '${encodeURIComponent(eventName)}', ${guest ? guest.ticket_number : 0})" class="bg-blue-600 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Email</button>
+        <button id="modalBtnWA" class="bg-[#25D366] text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> WhatsApp</button>
+        <button id="modalBtnEmail" class="bg-blue-600 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer flex items-center justify-center gap-2 text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Email</button>
       </div>
       <div class="flex gap-2">
         <div class="flex flex-1 gap-1">
-          <button onclick="downloadTicketFile('${encodeURIComponent(guestName)}', '${encodeURIComponent(eventName)}', 'png')" class="bg-pink-600 text-white px-2 py-3 rounded-l-xl flex-1 font-bold border-none cursor-pointer text-sm transition text-center" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">PNG</button>
-          <button onclick="downloadTicketFile('${encodeURIComponent(guestName)}', '${encodeURIComponent(eventName)}', 'pdf')" class="bg-pink-700 text-white px-2 py-3 rounded-r-xl flex-1 font-bold border-none cursor-pointer text-sm transition text-center" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">PDF</button>
+          <button id="modalBtnPNG" class="bg-pink-600 text-white px-2 py-3 rounded-l-xl flex-1 font-bold border-none cursor-pointer text-sm transition text-center" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">PNG</button>
+          <button id="modalBtnPDF" class="bg-pink-700 text-white px-2 py-3 rounded-r-xl flex-1 font-bold border-none cursor-pointer text-sm transition text-center" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">PDF</button>
         </div>
         <button onclick="closeModal()" class="bg-slate-800 text-white px-4 py-3 rounded-xl flex-1 font-bold border-none cursor-pointer text-sm transition" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Close</button>
       </div>
@@ -2304,16 +2329,38 @@ generateNotifications();
       
       document.getElementById('dashboardWelcomeTitle').innerText = 'Welcome back, ' + (tenant.full_name || 'Admin') + '! 👋';
 
-      document.getElementById('userNameDisplay').innerText = tenant.full_name || 'New Organizer';
-      document.getElementById('userAvatar').innerText = (tenant.full_name || 'N').charAt(0).toUpperCase();
+      // Configure badge colors based on plan
+      let planColor = window.currentPlanTier.toLowerCase() === 'premium' ? 'text-pink-500 bg-pink-500/10 border-pink-500/20' : 
+                      window.currentPlanTier.toLowerCase() === 'pro' ? 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' : 
+                      'text-slate-400 bg-slate-800 border-slate-700';
+
+      const badgeHtml = `<span class="ml-2 px-2 py-0.5 rounded text-[9px] font-extrabold uppercase border ${planColor}">${window.currentPlanTier}</span>`;
+
+      // Inject into Sidebar
+      document.getElementById('userNameDisplay').innerHTML = (tenant.full_name || 'New Organizer') + badgeHtml;
       
-      document.getElementById('profileNameDisplay').innerText = tenant.full_name || 'New Organizer';
+      // Inject into Profile Page (This line replaces BOTH old lines safely)
+      document.getElementById('profileNameDisplay').innerHTML = (tenant.full_name || 'New Organizer') + badgeHtml;
+      
+      document.getElementById('userAvatar').innerText = (tenant.full_name || 'N').charAt(0).toUpperCase();
       document.getElementById('profileEmailDisplay').innerText = session.user.email; 
       document.getElementById('profileAvatarLarge').innerText = (tenant.full_name || 'N').charAt(0).toUpperCase();
       
       document.getElementById('settingName').value = tenant.full_name || '';
       document.getElementById('settingCompany').value = tenant.company_name || '';
-      document.getElementById('settingPhone').value = tenant.phone || '';
+      
+      // Smartly split the saved country code and number
+      let savedPhone = tenant.phone || '';
+      let codeMatch = savedPhone.match(/^(\+\d{2,3})(.*)$/);
+      if (codeMatch) {
+          document.getElementById('settingPhoneCode').value = codeMatch[1];
+          document.getElementById('settingPhone').value = codeMatch[2];
+          document.getElementById('profilePhoneCode').value = codeMatch[1];
+          document.getElementById('profilePhone').value = codeMatch[2];
+      } else {
+          document.getElementById('settingPhone').value = savedPhone;
+          document.getElementById('profilePhone').value = savedPhone;
+      }
 
       if (!tenant.full_name || !tenant.company_name || !tenant.phone) { 
           if(profileBanner) profileBanner.classList.remove('hidden');
@@ -3062,7 +3109,16 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
           new QRCode(qrContainer, { text: id, width: 120, height: 120, colorDark : "#000", colorLight : "#fff", correctLevel : QRCode.CorrectLevel.H });
       }
 
-      document.getElementById('qrModal').classList.remove('hidden');
+// DYNAMICALLY WIRE THE SHARE BUTTONS
+      const safePhone = guest && guest.phone ? encodeURIComponent(guest.phone) : '';
+      const safeEmail = guest && guest.email ? encodeURIComponent(guest.email) : '';
+      const tNum = guest ? guest.ticket_number : 0;
+      
+      document.getElementById('modalBtnWA').onclick = () => shareToWhatsApp(id, safePhone, encodedName, encodedEventName, tNum);
+      document.getElementById('modalBtnEmail').onclick = () => shareToEmail(id, safeEmail, encodedName, encodedEventName, tNum);
+      document.getElementById('modalBtnPNG').onclick = () => downloadTicketFile(encodedName, encodedEventName, 'png');
+      document.getElementById('modalBtnPDF').onclick = () => downloadTicketFile(encodedName, encodedEventName, 'pdf');      
+document.getElementById('qrModal').classList.remove('hidden');
   }
 
   function editGuest(id) {
@@ -3148,6 +3204,16 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
             const startTime = document.getElementById('dedicatedStartTime').value;
             const endTime = document.getElementById('dedicatedEndTime').value;
             const capacity = parseInt(document.getElementById('dedicatedEventCapacity').value) || 100;
+// --- PLAN LIMIT: MAX EVENTS ---
+            const eventLimits = { 'basic': 2, 'pro': 10, 'premium': 999999 };
+            const currentPlan = window.currentPlanTier ? window.currentPlanTier.toLowerCase() : 'basic';
+            const allowedEvents = eventLimits[currentPlan] || 2;
+            
+            // Only check limits if they are creating a NEW event, not editing
+            if (!currentEditEventId && allFetchedEvents.length >= allowedEvents) {
+                openUpgradeModal(`Event Limit Reached (${allowedEvents} Max)`);
+                return; // Stops the saving process immediately!
+            }
             
             // New UI Columns safely captured via querySelectors (using placeholders)
             const address = document.querySelector('#createEventView input[placeholder="Enter full address"]').value.trim();
@@ -3204,6 +3270,18 @@ function showTicket(id, encodedName, tier, capacity, encodedEventName, eventId) 
               const notes = document.querySelector('#addGuestView textarea').value.trim();
               const entryGateId = document.getElementById('agEntryGateSelect').value || null;
               const exitGateId = document.getElementById('agExitGateSelect').value || null;
+// --- PLAN LIMIT: MAX GUESTS PER EVENT ---
+              const guestLimits = { 'basic': 50, 'pro': 500, 'premium': 999999 };
+              const currentPlan = window.currentPlanTier ? window.currentPlanTier.toLowerCase() : 'basic';
+              const allowedGuests = guestLimits[currentPlan] || 50;
+              
+              const currentEventGuests = allFetchedGuests.filter(g => g.event_id === eventId).length;
+              
+              // Only check limits if creating NEW guests
+              if (!currentEditGuestId && (currentEventGuests + capacity) > allowedGuests) {
+                  openUpgradeModal(`Guest Limit Reached (${allowedGuests} Max per Event)`);
+                  return; // Stops the saving process!
+              }
 
               if (!eventId || !name || !phone) return alert('Please select an event, and enter Guest Name and Phone Number.');
 
@@ -3856,7 +3934,25 @@ function deleteSelectedElement() {
       if (document.getElementById('qrBoxPadding')) document.getElementById('qrBoxPadding').value = "10";
   }
 
+// --- TEMPLATE CATEGORY FILTER LOGIC ---
+  function filterTemplates(category, btnElement) {
+      // 1. Highlight the active button
+      if (btnElement && btnElement.parentElement) {
+          btnElement.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+          btnElement.classList.add('active');
+      }
 
+      // 2. Show/Hide templates based on the hidden data-category attribute
+      document.querySelectorAll('#templateGallery .tpl-card').forEach(card => {
+          const cardCat = card.getAttribute('data-category') || 'General';
+          
+          if (category === 'All' || cardCat === category || cardCat.includes(category)) {
+              card.style.display = 'flex';
+          } else {
+              card.style.display = 'none';
+          }
+      });
+  }
   // --- SMART BACKGROUND SWAP OR LOAD ---
   function handleTopGalleryClick(id) {
       const tpl = windowSavedTemplates.find(x => x.id === id);
@@ -4091,7 +4187,7 @@ function deleteSelectedElement() {
                 : `handleTopGalleryClick('${t.id}')`;
 
             topGallery.innerHTML += `
-              <div onclick="${clickAction}" class="card tpl-card ${isLocked ? 'locked-feature' : ''}" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
+              <div onclick="${clickAction}" data-category="${cat}" class="card tpl-card ${isLocked ? 'locked-feature' : ''}" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
                  ${lockIcon}
                  <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center; z-index:10;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
                  <div style="width: 100%; height: 95px; background: ${t.thumbnail_url} center/cover no-repeat; background-color: var(--color-surface-soft);"></div>
@@ -4337,17 +4433,20 @@ generateNotifications();
       await fetchAllGuestsForKPIs();
   }
 
-  // Combined save function for BOTH the Profile Tab and the Dashboard Banner
+ // Combined save function for BOTH the Profile Tab and the Dashboard Banner
   async function updateUserProfile(isFromBanner = false) {
       const name = isFromBanner ? document.getElementById('profileName').value.trim() : document.getElementById('settingName').value.trim();
       const comp = isFromBanner ? document.getElementById('profileCompany').value.trim() : document.getElementById('settingCompany').value.trim();
-      const ph = isFromBanner ? document.getElementById('profilePhone').value.trim() : document.getElementById('settingPhone').value.trim();
+      
+      // Combine Country Code and Number
+      const phoneCode = isFromBanner ? document.getElementById('profilePhoneCode').value : document.getElementById('settingPhoneCode').value;
+      const rawPhone = isFromBanner ? document.getElementById('profilePhone').value.trim() : document.getElementById('settingPhone').value.trim();
+      const finalPhone = rawPhone ? (phoneCode + rawPhone.replace(/^0+/, '')) : '';
       
       if (!name) return alert("Full Name is required!");
 
       const { data: { session } } = await supabaseClient.auth.getSession();
-      // FIXED: using 'phone' instead of 'phone_number'
-      const { error } = await supabaseClient.from('tenants').update({ full_name: name, company_name: comp, phone: ph }).eq('owner_id', session.user.id);
+      const { error } = await supabaseClient.from('tenants').update({ full_name: name, company_name: comp, phone: finalPhone }).eq('owner_id', session.user.id);
       
       if(error) {
           alert("Error updating profile: " + error.message);
