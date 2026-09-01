@@ -295,8 +295,24 @@
                <h3 class="text-sm font-bold text-slate-200 mb-6">Template Settings</h3>
                
                <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Global Template Name</label>
-               <input type="text" id="adminTplName" placeholder="e.g. Official VIP Pass" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:border-pink-500 text-slate-200 outline-none mb-6">
+               <input type="text" id="adminTplName" placeholder="e.g. Official VIP Pass" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:border-pink-500 text-slate-200 outline-none mb-4">
                
+               <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Template Category</label>
+               <select id="adminTplCategory" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:border-pink-500 text-slate-200 outline-none mb-4">
+                  <option value="General">General / Other</option>
+                  <option value="Marriage">Marriage</option>
+                  <option value="Birthday">Birthday</option>
+                  <option value="Corporate">Corporate</option>
+                  <option value="VIP">VIP / Exclusive</option>
+               </select>
+
+               <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Required Plan Tier</label>
+               <select id="adminTplPlan" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:border-pink-500 text-slate-200 outline-none mb-6">
+                  <option value="Basic">Basic (Free for all)</option>
+                  <option value="Pro">Pro</option>
+                  <option value="Premium">Premium</option>
+               </select>
+
                <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Or Paste URL</label>
                <input type="text" id="adminBgUrl" placeholder="https://..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:border-pink-500 text-slate-200 outline-none mb-2">
                <button onclick="applyAdminBgUrl()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-2 rounded-xl text-xs font-semibold transition border border-slate-700 mb-6">Apply URL Image</button>
@@ -820,6 +836,8 @@ async function openAssetLibrary() {
         
         currentEditingTemplateId = id;
         document.getElementById('adminTplName').value = tpl.name || '';
+        document.getElementById('adminTplCategory').value = tpl.category || 'General';
+        document.getElementById('adminTplPlan').value = tpl.required_plan || 'Basic';
         currentActiveBgString = tpl.thumbnail_url;
         
         const canvas = document.getElementById('editorCanvas');
@@ -878,7 +896,9 @@ async function openAssetLibrary() {
 
         const payload = {
             name: tplName, event_type: 'Global System', html_layout: canvasClone.outerHTML,
-            thumbnail_url: currentActiveBgString, is_global: true, tenant_id: null
+            thumbnail_url: currentActiveBgString, is_global: true, tenant_id: null,
+            category: document.getElementById('adminTplCategory').value,
+            required_plan: document.getElementById('adminTplPlan').value
         };
 
         // If editing an existing template and we do NOT want to save as new

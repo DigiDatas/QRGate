@@ -1037,21 +1037,23 @@
                 <div style="width: 56px; height: 56px; border-radius: 12px; background: var(--color-primary-soft); color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="12" y1="13" x2="12" y2="19"/><line x1="9" y1="16" x2="15" y2="16"/></svg></div>
                 <div><h3 style="font-size: 16px; font-weight: 700; margin: 0 0 6px;">Create New Event</h3><p style="font-size: 12px; color: var(--color-text-secondary); margin: 0;">Create a new event and configure details.</p></div>
               </div>
-              <button onclick="document.querySelector('button[onclick*=\'createEventView\']').click()" class="btn-primary" style="width: max-content; padding: 10px 20px; border-radius: 8px;">Create Event &rarr;</button>
+              <button onclick="switchView('createEventView')" class="btn-primary" style="width: max-content; padding: 10px 20px; border-radius: 8px;">Create Event &rarr;</button>
             </div>
+            
             <div class="card panel" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
               <div style="display: flex; gap: 16px; margin-bottom: 24px;">
                 <div style="width: 56px; height: 56px; border-radius: 12px; background: var(--color-success-soft); color: var(--color-success); display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg></div>
                 <div><h3 style="font-size: 16px; font-weight: 700; margin: 0 0 6px;">Add Guest</h3><p style="font-size: 12px; color: var(--color-text-secondary); margin: 0;">Add individual guest details manually.</p></div>
               </div>
-              <button onclick="document.querySelector('button[onclick*=\'addGuestView\']').click()" class="btn-primary" style="background: var(--color-success); width: max-content; padding: 10px 20px; border-radius: 8px;">Add Guest &rarr;</button>
+              <button onclick="switchView('addGuestView')" class="btn-primary" style="background: var(--color-success); width: max-content; padding: 10px 20px; border-radius: 8px;">Add Guest &rarr;</button>
             </div>
+            
             <div class="card panel" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
               <div style="display: flex; gap: 16px; margin-bottom: 24px;">
                 <div style="width: 56px; height: 56px; border-radius: 12px; background: var(--color-info-soft); color: var(--color-info); display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
                 <div><h3 style="font-size: 16px; font-weight: 700; margin: 0 0 6px;">Import Data</h3><p style="font-size: 12px; color: var(--color-text-secondary); margin: 0;">Import events or guest data in bulk.</p></div>
               </div>
-              <button onclick="document.querySelector('button[onclick*=\'importDataView\']').click()" class="btn-primary" style="background: var(--color-info); width: max-content; padding: 10px 20px; border-radius: 8px;">Import Data &rarr;</button>
+              <button onclick="switchView('addGuestView')" class="btn-primary" style="background: var(--color-info); width: max-content; padding: 10px 20px; border-radius: 8px;">Import Data &rarr;</button>
             </div>
           </div>
           <div class="card panel" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 24px;">
@@ -2269,7 +2271,8 @@ generateNotifications();
 
   // Global variables to track status
   window.currentAccountStatus = 'Pending';
-  window.currentPlanTier = 'Basic'; // <-- NEW!
+  window.currentPlanTier = 'Basic'; 
+  window.currentTenantPhone = ''; // <-- ADDED THIS
 
   // --- PROFILE FETCH AND SAVE LOGIC ---
   async function checkTenantProfile(session) {
@@ -2292,9 +2295,10 @@ generateNotifications();
     if (tenant) {
       currentTenantId = tenant.id;
       
-      // Save status and tier globally, then apply locks!
+      // Save status, tier, and phone globally, then apply locks!
       window.currentAccountStatus = tenant.account_status || 'Pending';
-      window.currentPlanTier = tenant.subscription_status || 'Basic'; // <-- NEW!
+      window.currentPlanTier = tenant.subscription_status || 'Basic';
+      window.currentTenantPhone = tenant.phone || ''; // <-- ADDED THIS
       
       applyAccountLocks();
       
@@ -2327,21 +2331,19 @@ generateNotifications();
   }
 
   // --- SAAS UI LOCK LOGIC ---
+  // --- SAAS UI LOCK LOGIC ---
   function applyAccountLocks() {
       const isApproved = window.currentAccountStatus === 'Approved';
-      // Ensure we lock it if it's Basic OR if it's missing (null)
       const isBasic = !window.currentPlanTier || window.currentPlanTier.toLowerCase() === 'basic';
       
-      // 1. ACCOUNT APPROVAL LOCKS (Blocks Creation for Pending Accounts)
+      // 1. ACCOUNT APPROVAL LOCKS
       const approvalLockElements = [
           document.getElementById('submitDedicatedEventBtn'),
           document.getElementById('submitAddGuestBtn'),
           document.querySelector('button[onclick*="openAddGateModal"]'),
           document.querySelector('button[onclick*="openAddGatemanModal"]'),
           document.querySelector('button[onclick*="saveGatePassTemplate(false)"]'),
-          document.querySelector('button[onclick*="saveGatePassTemplate(true)"]'),
-          ...document.querySelectorAll('.action-card:not([onclick*="reportsView"])'), 
-          ...document.querySelectorAll('button[onclick*="createEventView"]') 
+          document.querySelector('button[onclick*="saveGatePassTemplate(true)"]')
       ];
       
       let banner = document.getElementById('saasLockBanner');
@@ -2362,24 +2364,22 @@ generateNotifications();
           approvalLockElements.forEach(el => { if(el) el.classList.remove('locked-feature'); });
       }
 
-      // 2. PLAN TIER LOCKS (The Paywall for Basic Users)
-      // We now use exact IDs so it never misses a button!
+      // 2. PLAN TIER LOCKS (The Paywall)
       const premiumElements = [
-          { el: document.getElementById('btnAutoGenerate'), label: "Generate AI Passes" },
-          { el: document.getElementById('btnFontLibrary'), label: "Custom Brand Fonts" },
-          { el: document.getElementById('btnBulkUpload'), label: "Bulk Excel Upload" }
+          { el: document.querySelector('div[onclick*="AI Generation"]'), label: "Generate AI Passes" },
+          { el: document.querySelector('button[onclick*="toggleFontExplorer()"]'), label: "Custom Brand Fonts" },
+          { el: document.querySelector('button[onclick*="bulk"]'), label: "Bulk Excel Upload" }
       ];
 
       premiumElements.forEach(item => {
-          if (!item.el) return; // If the button doesn't exist on this screen, skip it safely
-          
+          if (!item.el) return;
           if (isBasic) {
               item.el.classList.add('locked-feature');
               item.el.style.position = 'relative';
-              // Swap the normal button click to trigger the Upgrade Modal instead!
+              // Forcefully overwrite the click behavior to open the paywall
+              item.el.removeAttribute('onclick'); 
               item.el.onclick = (e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
+                  e.preventDefault(); e.stopPropagation();
                   openUpgradeModal(item.label);
               };
           } else {
@@ -2395,10 +2395,15 @@ generateNotifications();
   }
 
   function requestUpgrade() {
-      // Directs to your Admin WhatsApp (using KSA country code)
-      const adminPhone = "966500000000"; // <-- Put your real number here
-      const msg = `Hello, I am currently on the Basic plan and would like to upgrade my QRGate account to access premium features.`;
-      window.open(`https://wa.me/${adminPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+      // Pulls the tenant's dynamic phone from the DB. 
+      // It strips out +, dashes, or spaces so the URL doesn't break.
+      // If their profile phone is empty, it falls back to your main number.
+      let destPhone = window.currentTenantPhone ? window.currentTenantPhone.replace(/[^\d]/g, '') : "966535531913";
+      
+      // Also pulls their exact current plan to make the message smarter!
+      const msg = `Hello, I am currently on the ${window.currentPlanTier} plan and would like to upgrade my QRGate account to access premium features.`;
+      
+      window.open(`https://wa.me/${destPhone}?text=${encodeURIComponent(msg)}`, '_blank');
       document.getElementById('upgradeModal').classList.add('hidden');
   }
 // --- GUEST LIST TOGGLES ---
@@ -4066,13 +4071,32 @@ function deleteSelectedElement() {
     if (topGallery) {
         topGallery.innerHTML = '';
         
-        // A. Render fully saved Global Templates from the Database (up to 10)
+        // A. Render fully saved Global Templates from the Database
         globalTemplates.slice(0, 10).forEach(t => {
+            const reqPlan = t.required_plan || 'Basic';
+            const cat = t.category || 'General';
+            
+            // Check if the user's plan is high enough
+            const isBasicUser = window.currentPlanTier.toLowerCase() === 'basic';
+            const isProUser = window.currentPlanTier.toLowerCase() === 'pro';
+            
+            let isLocked = false;
+            if (reqPlan === 'Premium' && (isBasicUser || isProUser)) isLocked = true;
+            if (reqPlan === 'Pro' && isBasicUser) isLocked = true;
+            
+            const lockIcon = isLocked ? `<div style="position:absolute; top:4px; left:4px; background:rgba(0,0,0,0.7); color:white; border-radius:4px; padding:2px 6px; font-size:10px; z-index:10;">🔒 ${reqPlan}</div>` : '';
+            
+            const clickAction = isLocked 
+                ? `openUpgradeModal('${reqPlan} Templates')` 
+                : `handleTopGalleryClick('${t.id}')`;
+
             topGallery.innerHTML += `
-              <div onclick="handleTopGalleryClick('${t.id}')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;" title="Apply this design to your template">
-                 <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                 <div style="width: 100%; height: 100px; background: ${t.thumbnail_url} center/cover no-repeat; background-color: var(--color-surface-soft);"></div>
-                 <div style="padding: 4px 2px; text-align: center; font-size: 9px; font-weight: 600; line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${t.name}</div>
+              <div onclick="${clickAction}" class="card tpl-card ${isLocked ? 'locked-feature' : ''}" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
+                 ${lockIcon}
+                 <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center; z-index:10;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                 <div style="width: 100%; height: 95px; background: ${t.thumbnail_url} center/cover no-repeat; background-color: var(--color-surface-soft);"></div>
+                 <div style="padding: 4px 2px 0 2px; text-align: center; font-size: 9px; font-weight: 700; line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${t.name}</div>
+                 <div style="padding: 2px 2px 4px 2px; text-align: center; font-size: 8px; color: var(--color-text-secondary); line-height: 1; text-transform: uppercase;">${cat}</div>
               </div>`;
         });
 
