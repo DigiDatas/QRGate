@@ -2585,7 +2585,12 @@ generateNotifications();
       if (tplGuest) tplGuest.innerHTML = '<option value="">First Select Event...</option>';
 
       // Render OTHER tabs (Dashboard Lists, Gate Passes Tab, QR Codes Tab)
-      const safeEvName = g.events ? g.events.event_name : 'Event';
+      guests.forEach((g, index) => {
+        const isApproved = document.querySelector(`option[value="${g.event_id}"]`)?.dataset.approved === 'true';
+        const shortId = g.id.substring(0, 8).toUpperCase();
+        
+        const safeEvName = g.events ? g.events.event_name : 'Event';
+        
         const btnHtml = isApproved 
           ? `<button onclick="showTicket('${g.id}', '${encodeURIComponent(g.guest_name)}', '${encodeURIComponent(g.ticket_tier || 'General')}', ${g.allowed_capacity || 1}, '${encodeURIComponent(safeEvName)}', '${g.event_id}')" class="btn-qr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><line x1="17.5" y1="14" x2="17.5" y2="21"/><line x1="14" y1="17.5" x2="21" y2="17.5"/></svg> View Pass</button>`
           : `<button disabled class="btn-qr" style="opacity: 0.5;">Pending</button>`;
@@ -2595,19 +2600,18 @@ generateNotifications();
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 4px; border-bottom: 1px solid var(--color-border);">
               <div>
                 <div style="font-size: 12px; font-weight: 600; color: var(--color-text);">${g.guest_name}</div>
-                <div style="font-size: 10px; color: var(--color-text-secondary);">${g.events.event_name}</div>
+                <div style="font-size: 10px; color: var(--color-text-secondary);">${safeEvName}</div>
               </div>
               <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="font-size: 11px; color: var(--color-text-secondary);">${g.ticket_tier}</div>
+                <div style="font-size: 11px; color: var(--color-text-secondary);">${g.ticket_tier || 'General'}</div>
                 ${btnHtml}
               </div>
             </div>
           `;
         }
+      });
 
-       });
-
-      } 
+    } 
 
     const activeFilterBtn = document.querySelector('#dashboardDateFilters .btn-filter-nav.active');
     applyDashboardFilter('All Time', activeFilterBtn);
