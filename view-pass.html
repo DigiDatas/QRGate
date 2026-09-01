@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Your Gate Pass</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    body { background: #0f172a; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: Inter, sans-serif; padding: 16px; box-sizing: border-box; }
+    #ticketContainer { width: 100%; max-width: 360px; position: relative; margin: 0 auto; }
+    .loading-text { color: #94a3b8; text-align: center; font-size: 14px; font-weight: 600; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  </style>
+</head>
+<body>
+
+  <div id="ticketContainer">
+      <div class="loading-text" id="statusMessage">Retrieving your secure pass...</div>
+  </div>
+
+  <script>
+    // --- DATABASE SETUP ---
+    const SUPABASE_URL = 'https://wpqpqlwjprtwoblhvenw.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_89l1fu6nVSWxGVOH-g1dQw_i99aUXt9'; 
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function loadTicket() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const guestId = urlParams.get('id');
+        const container = document.getElementById('ticketContainer');
+
+        if (!guestId) {
+            document.getElementById('statusMessage').innerText = "Invalid Ticket Link.";
+            return;
+        }
+
+        try {
+            // 1. Fetch Guest Data & Joined Event Data
+            const { data: guest, error: guestErr } = await supabaseClient
+                .from('guests')
+                .select('*, events(event_name, venue, event_date, start_time)')
+                .eq('id', guestId)
+                .single();
+
+            if (guestErr || !guest) throw new Error("Ticket not found or has been deleted.");
+
+            // 2. Fetch Template Data if a custom template is assigned
+            let customTpl = null;
+            if (guest.template_id) {
+                const { data: tpl } = await supabaseClient.from('templates').select('*').eq('id', guest.template_id).single();
+                customTpl = tpl;
+            }
+
+            const guestName = guest.guest_name || 'Guest';
+            const eventName = guest.events ? guest.events.event_name : 'Event';
+            const capacity = guest.allowed_capacity || 1;
+            const tier = guest.ticket_tier || 'General';
+            const formattedQrId = 'QR-' + String(guest.ticket_number || 0).padStart(3, '0');
+
+            if (customTpl) {
+                // --- RENDER CUSTOM DESIGN ---
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = customTpl.html_layout;
+                
+                const cEvent = tempDiv.querySelector('#canvasEventName');
+                const cGuest = tempDiv.querySelector('#canvasGuestName');
+                const cVenue = tempDiv.querySelector('#canvasVenue');
+                const cDateTime = tempDiv.querySelector('#canvasDateTime');
+                const cQrLabel = tempDiv.querySelector('#canvasQrLabel');
+                const cQrSpot = tempDiv.querySelector('#canvasQRSpot');
+                
+                if(cEvent) cEvent.innerText = eventName;
+                if(cGuest) cGuest.innerText = guestName;
+                if(cQrLabel) cQrLabel.innerText = formattedQrId;
+
+                if (guest.events) {
+                    if (cVenue) cVenue.innerText = guest.events.venue || 'Venue TBD';
+                    if (cDateTime) {
+                        const dStr = guest.events.event_date ? guest.events.event_date.split('T')[0] : '';
+                        const tStr = guest.events.start_time ? ` · ${guest.events.start_time}` : '';
+                        cDateTime.innerText = dStr + tStr;
+                    }
+                }
+                
+                // Render the dynamic QR Code into the custom spot
+                if (cQrSpot) {
+                    const size = parseInt(cQrSpot.dataset.qrSize) || 310;
+                    const darkColor = cQrSpot.dataset.qrDark || "#000000";
+                    const bgColor = cQrSpot.dataset.qrBg || "#ffffff";
+                    const hasBox = cQrSpot.dataset.qrHasBox !== 'false';
+                    const radius = parseInt(cQrSpot.dataset.qrRadius) || 20;
+                    const boxPadding = parseInt(cQrSpot.dataset.qrPadding) || 10;
+
+                    const totalBoxSize = hasBox ? (size + (boxPadding * 2)) : size;
+
+                    cQrSpot.style.display = 'flex';
+                    cQrSpot.style.flexDirection = 'column';
+                    cQrSpot.style.alignItems = 'center';
+                    cQrSpot.style.justifyContent = 'center';
+                    cQrSpot.style.width = totalBoxSize + 'px';
+                    cQrSpot.style.height = totalBoxSize + 'px';
+                    cQrSpot.style.background = hasBox ? bgColor : 'transparent';
+                    cQrSpot.style.borderRadius = hasBox ? (radius + 'px') : '0px';
+
+                    let innerContainer = document.createElement('div');
+                    cQrSpot.prepend(innerContainer);
+
+                    new QRCode(innerContainer, { 
+                        text: guestId, width: size, height: size, 
+                        colorDark: darkColor, colorLight: hasBox ? bgColor : 'rgba(0,0,0,0)', 
+                        correctLevel: QRCode.CorrectLevel.H 
+                    });
+                }
+                
+                const customCanvas = tempDiv.firstElementChild;
+                
+                // Scale math to fit the 1080x1440 canvas perfectly into a 360px wide mobile screen
+                customCanvas.style.position = 'relative';
+                customCanvas.style.transform = 'scale(0.333)'; 
+                customCanvas.style.transformOrigin = 'top left';
+                
+                container.innerHTML = '';
+                container.style.height = '480px'; 
+                container.style.background = 'transparent';
+                container.style.overflow = 'hidden';
+                container.style.borderRadius = '16px';
+                container.appendChild(customCanvas);
+
+            } else {
+                // --- RENDER DEFAULT FALLBACK ---
+                container.style.background = 'white';
+                container.style.borderRadius = '16px';
+                container.style.overflow = 'hidden';
+                container.innerHTML = `
+                  <div class="bg-gradient-to-br from-indigo-900 to-indigo-700 text-white p-6 relative">
+                    <p class="text-[10px] text-indigo-300 uppercase tracking-widest mb-1 font-bold">Event Pass</p>
+                    <h2 class="text-2xl font-bold tracking-tight leading-tight pb-1 truncate">${eventName}</h2>
+                  </div>
+                  <div class="bg-white px-6 pt-6 pb-2 text-slate-800">
+                    <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Guest Name</p>
+                    <p class="text-lg font-bold text-slate-900 leading-tight mb-4">${guestName}</p>
+                    <div class="flex justify-between">
+                       <div><p class="text-[10px] text-slate-400 uppercase font-bold">Tier</p><p class="text-sm font-bold text-pink-600">${tier}</p></div>
+                       <div><p class="text-[10px] text-slate-400 uppercase font-bold">Admit</p><p class="text-sm font-bold text-slate-800">${capacity > 1 ? capacity + ' Persons' : '1 Person'}</p></div>
+                    </div>
+                  </div>
+                  <div class="relative h-8 bg-white flex items-center justify-center">
+                    <div class="absolute left-[-12px] w-6 h-6 bg-slate-900 rounded-full"></div>
+                    <div class="absolute right-[-12px] w-6 h-6 bg-slate-900 rounded-full"></div>
+                    <div class="w-full border-t-2 border-dashed border-slate-200 mx-4"></div>
+                  </div>
+                  <div class="bg-white px-6 pb-6 flex flex-col items-center">
+                    <div id="qrcode" class="p-2 bg-white border-2 border-slate-100 rounded-xl shadow-sm mb-2"></div>
+                    <p class="text-[10px] font-mono text-slate-400">${formattedQrId}</p>
+                  </div>
+                `;
+                
+                const qrContainer = container.querySelector('#qrcode');
+                new QRCode(qrContainer, { text: guestId, width: 150, height: 150, colorDark : "#000", colorLight : "#fff", correctLevel : QRCode.CorrectLevel.H });
+            }
+
+            // Add a helpful footer for the guest
+            const footer = document.createElement('div');
+            footer.innerHTML = `<p class="text-center text-slate-500 text-[11px] mt-6">Present this secure digital pass at the entry gate.</p>`;
+            container.parentElement.appendChild(footer);
+
+        } catch (err) {
+            document.getElementById('statusMessage').innerText = err.message;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadTicket);
+  </script>
+</body>
+</html>
