@@ -723,13 +723,46 @@
               <input type="text" id="settingPhone" placeholder="e.g. 53000000" class="input-field" style="margin-bottom: 0;" oninput="this.value = this.value.replace(/^0+/, '')">
             </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+            div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
               <button onclick="switchView('dashboardView', this)" class="btn-filter-nav" style="padding: 10px 20px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--color-surface-soft); font-weight: 600;">Cancel</button>
               <button onclick="updateUserProfile(false)" class="btn-primary">Save Changes</button>
             </div>
+          </div> <!-- Closes the top profile form -->
+
+          <!-- Plan Limits & Benefits Card -->
+          <div class="card panel" style="padding: 32px; margin-top: 24px; border-color: var(--color-primary-soft); background: var(--color-surface-soft);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+               <h3 style="font-size: 16px; font-weight: 700; margin: 0;">Plan & Limits</h3>
+               <span id="profilePlanBadgeLarge" style="padding: 4px 12px; border-radius: 99px; font-size: 11px; font-weight: 800; text-transform: uppercase; background: var(--color-primary); color: white;">BASIC</span>
+            </div>
+            <p style="font-size: 13px; color: var(--color-text-secondary); margin: 0 0 24px 0;">Here is an overview of your current subscription benefits.</p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+               <div style="background: var(--color-bg); padding: 16px; border-radius: 12px; border: 1px solid var(--color-border);">
+                  <div style="font-size: 11px; color: var(--color-text-secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Max Events</div>
+                  <div style="font-size: 24px; font-weight: 800; color: var(--color-text);" id="profileLimitEvents">2</div>
+               </div>
+               <div style="background: var(--color-bg); padding: 16px; border-radius: 12px; border: 1px solid var(--color-border);">
+                  <div style="font-size: 11px; color: var(--color-text-secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Max Guests / Event</div>
+                  <div style="font-size: 24px; font-weight: 800; color: var(--color-text);" id="profileLimitGuests">50</div>
+               </div>
+            </div>
+
+            <div style="margin-top: 24px; border-top: 1px solid var(--color-border); padding-top: 16px;">
+               <h4 style="font-size: 12px; font-weight: 700; margin-bottom: 12px;">Active Features</h4>
+               <ul id="profileFeatureList" style="list-style: none; padding: 0; margin: 0; font-size: 13px; color: var(--color-text-secondary); display: flex; flex-direction: column; gap: 8px;">
+                  <!-- Features injected by JS -->
+               </ul>
+            </div>
+
+            <button onclick="requestUpgrade()" class="btn-primary" style="width: 100%; margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Request Upgrade
+            </button>
           </div>
-        </div>
-      </div>
+          <!-- End Plan Limits Card -->
+
+        </div> <!-- Closes the max-width wrapper -->
+      </div> <!-- Closes the profileView tab -->
 
       <!-- ============================================== -->
       <!-- VIEW 1: DASHBOARD -->
@@ -2354,6 +2387,28 @@ generateNotifications();
       
       // Inject into Profile Page (This line replaces BOTH old lines safely)
       document.getElementById('profileNameDisplay').innerHTML = (tenant.full_name || 'New Organizer') + badgeHtml;
+// Populate Profile Plan Limits Card dynamically
+      const saasLimits = {
+          'basic': { ev: '2', gu: '50', feats: ['Standard Gate Passes', 'WhatsApp & Email Sharing'] },
+          'pro': { ev: '10', gu: '500', feats: ['Standard Gate Passes', 'WhatsApp & Email Sharing', 'Bulk Excel Upload', 'Custom Brand Fonts'] },
+          'premium': { ev: 'Unlimited', gu: 'Unlimited', feats: ['Standard Gate Passes', 'WhatsApp & Email Sharing', 'Bulk Excel Upload', 'Custom Brand Fonts', 'AI Pass Generation'] }
+      };
+      
+      const activeLimit = saasLimits[window.currentPlanTier.toLowerCase()] || saasLimits['basic'];
+
+      const badgeLg = document.getElementById('profilePlanBadgeLarge');
+      if (badgeLg) {
+          badgeLg.innerText = window.currentPlanTier;
+          badgeLg.className = `ml-2 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase border ${planColor}`;
+      }
+      
+      if (document.getElementById('profileLimitEvents')) document.getElementById('profileLimitEvents').innerText = activeLimit.ev;
+      if (document.getElementById('profileLimitGuests')) document.getElementById('profileLimitGuests').innerText = activeLimit.gu;
+
+      const featList = document.getElementById('profileFeatureList');
+      if (featList) {
+          featList.innerHTML = activeLimit.feats.map(f => `<li style="display:flex; align-items:center; gap:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> ${f}</li>`).join('');
+      }
       
       document.getElementById('userAvatar').innerText = (tenant.full_name || 'N').charAt(0).toUpperCase();
       document.getElementById('profileEmailDisplay').innerText = session.user.email; 
@@ -4183,7 +4238,35 @@ function deleteSelectedElement() {
     // 1. Inject Global Templates (Top Gallery)
     const topGallery = document.getElementById('templateGallery');
     if (topGallery) {
-        topGallery.innerHTML = '';
+        // Inject Defaults FIRST so they are never lost!
+        topGallery.innerHTML = `
+          <div onclick="applyTemplateBg(this, 'url(./templates/gatepass01.jpg)', '#ffffff', '#e2e8f0')" data-category="General" class="card tpl-card" style="min-width: 90px; height: 130px; border: 2px solid var(--color-primary); border-radius: var(--radius-md); display: flex; flex-direction: column; overflow: hidden; cursor: pointer; position: relative;">
+             <div class="active-check" style="position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; z-index:10;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+             <div style="width: 100%; height: 85px; background: url('./templates/gatepass01.jpg') center/cover no-repeat; background-color: var(--color-surface-soft); flex-shrink: 0;"></div>
+             <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4px 2px; background: var(--color-bg);">
+                 <div style="font-size: 9px; font-weight: 700; line-height: 1.2;">Custom Gatepass</div>
+                 <div style="font-size: 8px; color: var(--color-text-secondary); line-height: 1; text-transform: uppercase; margin-top: 2px;">General</div>
+             </div>
+          </div>
+
+          <div onclick="applyTemplateBg(this, 'linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)', '#111827', '#64748b')" data-category="Corporate" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); display: flex; flex-direction: column; overflow: hidden; cursor: pointer; position: relative;">
+             <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center; z-index:10;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+             <div style="width: 100%; height: 85px; background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); flex-shrink: 0;"></div>
+             <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4px 2px; background: var(--color-bg);">
+                 <div style="font-size: 9px; font-weight: 700; line-height: 1.2;">Corporate Clean</div>
+                 <div style="font-size: 8px; color: var(--color-text-secondary); line-height: 1; text-transform: uppercase; margin-top: 2px;">Corporate</div>
+             </div>
+          </div>
+
+          <div onclick="applyTemplateBg(this, 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)', '#831843', '#be185d')" data-category="Marriage" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); display: flex; flex-direction: column; overflow: hidden; cursor: pointer; position: relative;">
+             <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center; z-index:10;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+             <div style="width: 100%; height: 85px; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); flex-shrink: 0;"></div>
+             <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4px 2px; background: var(--color-bg);">
+                 <div style="font-size: 9px; font-weight: 700; line-height: 1.2;">Wedding Theme</div>
+                 <div style="font-size: 8px; color: var(--color-text-secondary); line-height: 1; text-transform: uppercase; margin-top: 2px;">Marriage</div>
+             </div>
+          </div>
+        `;
         
         // A. Render fully saved Global Templates from the Database
         globalTemplates.slice(0, 10).forEach(t => {
