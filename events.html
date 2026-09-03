@@ -1325,7 +1325,8 @@
                 </div> <!-- FIX: THIS RESTORES THE GRID AND FREES YOUR TABS! -->
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Company / Organization</label><input type="text" id="agGuestDesignation" placeholder="Enter designation" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Company / Organization</label><input type="text" id="agGuestCompany" placeholder="Enter company name" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Designation / Title</label><input type="text" id="agGuestDesignation" placeholder="Enter designation" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
                   <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Nationality</label>
                     <input list="nationalityList" placeholder="Type or select nationality..." class="input-field" style="margin: 0; padding: 10px 14px;">
                     <datalist id="nationalityList">
@@ -3301,7 +3302,7 @@ document.getElementById('qrModal').classList.remove('hidden');
       document.getElementById('addGuestEventSelect').value = g.event_id || '';
       document.getElementById('agGuestName').value = g.guest_name || '';
       document.getElementById('agGuestEmail').value = g.email || '';
-      document.querySelector('#addGuestView input[placeholder="Enter phone number"]').value = g.phone || ''; 
+      document.getElementById('agGuestPhone').value = g.phone ? g.phone.replace(/^\+\d+/, '') : ''; 
       document.getElementById('agGuestCompany').value = g.company || '';
       document.getElementById('agGuestDesignation').value = g.designation || '';
       document.getElementById('agGuestIdNumber').value = g.id_number || '';
