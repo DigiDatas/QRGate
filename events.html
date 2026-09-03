@@ -2375,7 +2375,19 @@ generateNotifications();
     const userId = session.user.id;
     let { data: tenant, error } = await supabaseClient.from('tenants').select('*').eq('owner_id', userId).maybeSingle();
 
-    // NEW: The Auto-Expire Gatekeeper!
+    // 1. Restore the missing code to create a new tenant if they don't exist yet!
+    if (!tenant) {
+        const { data: newTenant } = await supabaseClient.from('tenants').insert([{
+            owner_id: userId,
+            email: session.user.email,
+            account_status: 'Pending',
+            payment_status: 'Unpaid',
+            subscription_status: 'Basic'
+        }]).select().single();
+        tenant = newTenant;
+    }
+
+    // 2. The Auto-Expire Gatekeeper!
     if (tenant && tenant.subscription_status !== 'Basic' && tenant.plan_expires_at) {
         const expiresAt = new Date(tenant.plan_expires_at);
         if (new Date() > expiresAt) {
@@ -2391,7 +2403,8 @@ generateNotifications();
         }
     }
 
-    if (!tenant) {
+    // 3. Set the global ID and load the dashboard!
+    if (tenant) {
       currentTenantId = tenant.id;
       
       // Save status, tier, and phone globally, then apply locks!
