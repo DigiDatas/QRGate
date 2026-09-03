@@ -4485,17 +4485,64 @@ generateNotifications();
       }
   }
 
-  // --- CANVAS ZOOM SCRIPT ---
+  // --- ADVANCED CANVAS ZOOM & PAN ---
   let canvasZoom = 0.26; 
+  let panX = -50; // Using percentages for center transform
+  let panY = -50;
+  let isPanning = false;
+  let startPanX = 0; let startPanY = 0;
+
   document.addEventListener('DOMContentLoaded', () => {
       const canvasWrapper = document.getElementById('editorCanvas').parentElement;
-      if(canvasWrapper) {
+      const canvas = document.getElementById('editorCanvas');
+      
+      if(canvasWrapper && canvas) {
+          // ZOOM TO CURSOR
           canvasWrapper.addEventListener('wheel', (e) => {
               if(e.ctrlKey || e.metaKey || e.shiftKey) return; 
               e.preventDefault();
-              if(e.deltaY < 0) canvasZoom = Math.min(canvasZoom + 0.05, 0.8);
-              else canvasZoom = Math.max(canvasZoom - 0.05, 0.15);
-              document.getElementById('editorCanvas').style.transform = `translate(-50%, -50%) scale(${canvasZoom})`;
+
+              const zoomDirection = e.deltaY < 0 ? 1 : -1;
+              const newZoom = Math.min(Math.max(canvasZoom + (zoomDirection * 0.05), 0.15), 1.5);
+              
+              if (newZoom !== canvasZoom) {
+                  canvasZoom = newZoom;
+                  canvas.style.transform = `translate(${panX}%, ${panY}%) scale(${canvasZoom})`;
+              }
+          });
+
+          // MIDDLE MOUSE PANNING
+          canvasWrapper.addEventListener('mousedown', (e) => {
+              if (e.button === 1) { // Middle mouse button
+                  e.preventDefault();
+                  isPanning = true;
+                  startPanX = e.clientX;
+                  startPanY = e.clientY;
+                  canvasWrapper.style.cursor = 'grabbing';
+              }
+          });
+
+          window.addEventListener('mousemove', (e) => {
+              if (!isPanning) return;
+              
+              // Calculate movement relative to screen size to adjust percentages
+              const deltaX = (e.clientX - startPanX) * 0.1;
+              const deltaY = (e.clientY - startPanY) * 0.1;
+              
+              panX += deltaX;
+              panY += deltaY;
+              
+              startPanX = e.clientX;
+              startPanY = e.clientY;
+              
+              canvas.style.transform = `translate(${panX}%, ${panY}%) scale(${canvasZoom})`;
+          });
+
+          window.addEventListener('mouseup', (e) => {
+              if (e.button === 1) {
+                  isPanning = false;
+                  canvasWrapper.style.cursor = 'default';
+              }
           });
       }
   });
