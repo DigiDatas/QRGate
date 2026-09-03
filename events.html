@@ -2653,6 +2653,9 @@ generateNotifications();
   }
   
   async function fetchAllGuestsForKPIs() {
+    // NEW FIX: Safety Guard to prevent 400 Bad Request Crash!
+    if (!currentTenantId) return; 
+
     const { data: events } = await supabaseClient.from('events').select('id, event_name').eq('tenant_id', currentTenantId);
     
     const dashboardGuestList = document.getElementById('recentGuestsList');
@@ -5276,6 +5279,9 @@ updateRecentGatesWidget();
 
   // --- FETCH & RENDER DATA ---
   async function loadGateManagementData() {
+      // NEW FIX: Safety Guard to prevent 400 Bad Request Crash!
+      if (!currentTenantId) return; 
+      
       const eventId = window.currentGateEventFilterId;
       const tbody = document.getElementById('gateManagementTableBody');
       const filterCont = document.getElementById('gateSpecificFilters');
