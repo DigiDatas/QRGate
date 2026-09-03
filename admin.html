@@ -467,6 +467,7 @@
       }
 
     // --- RENDER TENANTS TABLE ---
+    // --- RENDER TENANTS TABLE ---
     function renderTenants(data) {
       const tbody = document.getElementById('tenantTableBody');
       tbody.innerHTML = '';
@@ -495,18 +496,13 @@
         row.innerHTML = `
           <td class="p-4 font-semibold text-slate-200">${t.company_name || 'N/A'}</td>
           <td class="p-4 text-slate-400">${t.email || 'N/A'}</td>
-          
-          <!-- NEW: Formatted Date Column -->
           <td class="p-4 text-xs text-slate-400 whitespace-nowrap">${joinedDate}</td>
-          
           <td class="p-4 text-slate-400">${t.phone || 'N/A'}</td>
-          
           <td class="p-4">
             <span class="${isApproved ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'} px-3 py-1 rounded-full text-xs font-bold">
               ${isApproved ? 'Approved' : 'Pending'}
             </span>
           </td>
-          
           <td class="p-4">
             <select onchange="updateTenantPlan('${t.id}', this.value)" class="bg-slate-950 border border-slate-700 text-slate-200 text-xs font-bold rounded-lg px-2 py-1.5 outline-none focus:border-pink-500 cursor-pointer">
                 <option value="Basic" ${plan === 'Basic' ? 'selected' : ''}>Basic</option>
@@ -514,13 +510,11 @@
                 <option value="Premium" ${plan === 'Premium' ? 'selected' : ''}>Premium</option>
             </select>
           </td>
-
           <td class="p-4">
             <span class="${isPaid ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'} px-3 py-1 rounded-full text-xs font-bold">
               ${isPaid ? 'Paid' : 'Unpaid'}
             </span>
           </td>
-          
           <td class="p-4 text-center flex justify-center gap-2 flex-wrap">
             ${(t.upgrade_request && t.upgrade_request !== 'None') ? `<button onclick="approveUpgrade('${t.id}', '${t.upgrade_request.replace('Pending ', '')}')" class="bg-pink-600 hover:bg-pink-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-lg shadow-pink-600/20 transition animate-pulse">Approve ${t.upgrade_request.replace('Pending ', '')}</button>` : ''}
             <button onclick="toggleTenantApproval('${t.id}', ${isApproved})" class="${isApproved ? 'bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-500/30' : 'bg-green-600/20 text-green-400 hover:bg-green-600/30 border border-green-500/30'} px-3 py-1.5 rounded-xl text-xs font-semibold transition">

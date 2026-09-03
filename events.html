@@ -1398,12 +1398,14 @@
         <div style="display: flex; flex-direction: column; height: 100%; min-height: 0; overflow-y: auto; padding-right: 8px;" class="no-scrollbar">
           
           <!-- 1. Choose a Template -->
-          <div style="flex-shrink: 0; margin-bottom: 12px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <div style="flex-shrink: 0; margin-bottom: 16px;">
+            
+            <!-- CHANGED: flex-direction: column moves the buttons directly below the title! -->
+            <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
                <h3 class="section-title" style="margin: 0; font-size: 14px;">1. Choose a Template</h3>
                
                <!-- NEW: Category Filter Buttons -->
-               <div id="templateCategoryFilters" style="display: flex; gap: 6px; overflow-x: auto;" class="no-scrollbar">
+               <div id="templateCategoryFilters" style="display: flex; gap: 6px; overflow-x: auto; width: 100%; padding-bottom: 4px;" class="no-scrollbar">
                   <button onclick="filterTemplates('All', this)" class="btn-filter-nav active" style="font-size: 10px; padding: 4px 10px;">All</button>
                   <button onclick="filterTemplates('General', this)" class="btn-filter-nav" style="font-size: 10px; padding: 4px 10px;">General</button>
                   <button onclick="filterTemplates('Marriage', this)" class="btn-filter-nav" style="font-size: 10px; padding: 4px 10px;">Marriage</button>
@@ -1411,6 +1413,7 @@
                   <button onclick="filterTemplates('VIP', this)" class="btn-filter-nav" style="font-size: 10px; padding: 4px 10px;">VIP</button>
                </div>
             </div>
+            
             <div id="templateGallery" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px;" class="no-scrollbar">
               
               <!-- TALL PORTRAIT THUMBNAILS -->
