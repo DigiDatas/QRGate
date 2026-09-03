@@ -138,8 +138,14 @@
             <p class="text-3xl font-extrabold text-green-400" id="statPaidTenants">0</p>
           </div>
         </div>
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center flex-wrap gap-4">
           <h2 class="text-xl font-bold tracking-tight text-slate-100">Registered Tenants & Payment Status</h2>
+          <div class="flex gap-2 bg-slate-900 p-1 rounded-xl border border-slate-800" id="adminTenantDateFilters">
+            <button onclick="filterAdminTenants('All', this)" class="px-3 py-1 rounded-lg bg-pink-600 text-white text-xs font-bold transition">All Time</button>
+            <button onclick="filterAdminTenants('Today', this)" class="px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200 text-xs font-bold transition">Today</button>
+            <button onclick="filterAdminTenants('This Week', this)" class="px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200 text-xs font-bold transition">This Week</button>
+            <button onclick="filterAdminTenants('This Month', this)" class="px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200 text-xs font-bold transition">This Month</button>
+          </div>
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
           <table class="w-full text-left border-collapse">
@@ -164,8 +170,19 @@
 
       <!-- EVENTS APPROVAL SECTION TAB (Hidden by default) -->
       <div id="eventsSection" class="space-y-4 hidden">
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center flex-wrap gap-4">
           <h2 class="text-xl font-bold tracking-tight text-slate-100">Event Approval & Expiration Control</h2>
+          <div class="flex gap-4 items-center flex-wrap">
+            <select id="adminEventTenantFilter" onchange="filterAdminEvents()" class="bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-pink-500">
+              <option value="All">All Tenants</option>
+            </select>
+            <div class="flex gap-2 bg-slate-900 p-1 rounded-xl border border-slate-800" id="adminEventDateFilters">
+               <button onclick="filterAdminEventsDate('All', this)" class="px-3 py-1 rounded-lg bg-pink-600 text-white text-xs font-bold transition">All Time</button>
+               <button onclick="filterAdminEventsDate('Today', this)" class="px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200 text-xs font-bold transition">Today</button>
+               <button onclick="filterAdminEventsDate('This Week', this)" class="px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200 text-xs font-bold transition">This Week</button>
+               <button onclick="filterAdminEventsDate('This Month', this)" class="px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200 text-xs font-bold transition">This Month</button>
+            </div>
+          </div>
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
           <table class="w-full text-left border-collapse">
@@ -401,6 +418,70 @@
 
     let allTenantsData = [];
     let allEventsData = [];
+let currentTenantDateFilter = 'All';
+    let currentEventDateFilter = 'All';
+
+    // Helper: Check if date falls in period
+    function isDateInPeriod(dateString, period) {
+        if (period === 'All') return true;
+        const targetDate = dateString ? new Date(dateString) : new Date();
+        const now = new Date();
+        
+        if (period === 'Today') {
+            return targetDate.toDateString() === now.toDateString();
+        } else if (period === 'This Week') {
+            const weekAgo = new Date(); weekAgo.setDate(now.getDate() - 7);
+            return targetDate >= weekAgo;
+        } else if (period === 'This Month') {
+            return targetDate.getMonth() === now.getMonth() && targetDate.getFullYear() === now.getFullYear();
+        }
+        return true;
+    }
+
+    // UI Click Handlers
+    function filterAdminTenants(period, btn) {
+        currentTenantDateFilter = period;
+        if (btn) {
+            btn.parentElement.querySelectorAll('button').forEach(b => b.className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200 text-xs font-bold transition');
+            btn.className = 'px-3 py-1 rounded-lg bg-pink-600 text-white text-xs font-bold transition';
+        }
+        applyAdminFilters();
+    }
+
+    function filterAdminEventsDate(period, btn) {
+        currentEventDateFilter = period;
+        if (btn) {
+            btn.parentElement.querySelectorAll('button').forEach(b => b.className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200 text-xs font-bold transition');
+            btn.className = 'px-3 py-1 rounded-lg bg-pink-600 text-white text-xs font-bold transition';
+        }
+        applyAdminFilters();
+    }
+
+    function filterAdminEvents() {
+        applyAdminFilters();
+    }
+
+    // Master Filter Applier
+    function applyAdminFilters() {
+        // Filter Tenants
+        let filteredTenants = allTenantsData.filter(t => isDateInPeriod(t.created_at, currentTenantDateFilter));
+        
+        // Handle Global Search (if active)
+        const term = document.getElementById('globalSearch').value.toLowerCase();
+        if (term) {
+            filteredTenants = filteredTenants.filter(t => (t.company_name && t.company_name.toLowerCase().includes(term)) || (t.email && t.email.toLowerCase().includes(term)));
+        }
+        renderTenants(filteredTenants);
+
+        // Filter Events
+        const selectedTenantId = document.getElementById('adminEventTenantFilter').value;
+        let filteredEvents = allEventsData.filter(e => isDateInPeriod(e.created_at, currentEventDateFilter));
+        
+        if (selectedTenantId !== 'All') {
+            filteredEvents = filteredEvents.filter(e => e.tenant_id === selectedTenantId);
+        }
+        renderEvents(filteredEvents);
+    }
 
     async function initAdmin() {
       const { data: { session } } = await supabaseClient.auth.getSession();
@@ -468,8 +549,23 @@
       }
 
       if (data) {
+        if (data) {
         allTenantsData = data;
-        renderTenants(data);
+        
+        // Populate the tenant filter dropdown in the Events Tab dynamically
+        const tenantSelect = document.getElementById('adminEventTenantFilter');
+        if (tenantSelect) {
+            const currentVal = tenantSelect.value;
+            tenantSelect.innerHTML = '<option value="All">All Tenants</option>';
+            data.forEach(t => {
+                tenantSelect.innerHTML += `<option value="${t.id}">${t.company_name || t.full_name || t.email}</option>`;
+            });
+            tenantSelect.value = currentVal || 'All';
+        }
+        
+        // Render table with filters applied!
+        applyAdminFilters();
+        
         document.getElementById('statTotalTenants').innerText = data.length;
         document.getElementById('statPaidTenants').innerText = data.filter(t => t.payment_status === 'Paid').length;
         
@@ -593,7 +689,7 @@
       const { data, error } = await supabaseClient.from('events').select('*').order('event_name');
       if (data) {
         allEventsData = data;
-        renderEvents(data);
+        applyAdminFilters(); // Renders table with filters applied!
         document.getElementById('statPendingEvents').innerText = data.filter(e => !e.is_approved).length;
       }
     }

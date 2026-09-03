@@ -1311,7 +1311,7 @@
               <div id="singleGuestZone">
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                   <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Full Name <span style="color: var(--color-danger);">*</span></label><input type="text" id="agGuestName" placeholder="Enter full name" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Email Address</label><input type="email" placeholder="Enter email address" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Email Address</label><input type="email" id="agGuestEmail" placeholder="Enter email address" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
                   <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Phone / WhatsApp <span style="color: var(--color-danger);">*</span></label>
                     <div style="display:flex; gap:8px;">
                       <select id="agGuestPhoneCode" class="input-field" style="width: 80px; margin: 0; padding: 10px 4px;">
@@ -1325,7 +1325,7 @@
                 </div> <!-- FIX: THIS RESTORES THE GRID AND FREES YOUR TABS! -->
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Company / Organization</label><input type="text" placeholder="Enter company name" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Company / Organization</label><input type="text" id="agGuestDesignation" placeholder="Enter designation" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
                   <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Nationality</label>
                     <input list="nationalityList" placeholder="Type or select nationality..." class="input-field" style="margin: 0; padding: 10px 14px;">
                     <datalist id="nationalityList">
@@ -1337,7 +1337,7 @@
                   <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">ID Type</label>
                     <select class="input-field" style="margin: 0; padding: 10px 14px;"><option value="National ID">National ID</option><option value="Iqama">Iqama</option><option value="Passport">Passport</option></select>
                   </div>
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">ID Number</label><input type="text" placeholder="Enter ID number" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">ID Number</label><input type="text" id="agGuestIdNumber" placeholder="Enter ID number" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
                   <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Ticket / Type</label><select id="agTierInput" class="input-field" style="margin: 0; padding: 10px 14px;"><option value="General">General</option><option value="VIP">VIP</option><option value="Speaker">Speaker</option></select></div>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 2fr; gap: 20px;">
@@ -1354,7 +1354,7 @@
                       <option value="">Any Gate Allowed</option>
                     </select>
                   </div>
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Notes (Optional)</label><textarea placeholder="Add any additional notes about this guest" class="input-field" style="margin: 0; padding: 10px 14px; height: 42px; resize: none;"></textarea></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Notes (Optional)</label><textarea id="agGuestNotes" placeholder="Add any additional notes about this guest" class="input-field" style="margin: 0; padding: 10px 14px; height: 42px; resize: none;"></textarea></div>
                 </div>
               </div>
             </div>
@@ -3267,16 +3267,16 @@ document.getElementById('qrModal').classList.remove('hidden');
       // 2. Populate form fields
       document.getElementById('addGuestEventSelect').value = g.event_id || '';
       document.getElementById('agGuestName').value = g.guest_name || '';
-      document.querySelector('#addGuestView input[type="email"]').value = g.email || '';
-      document.querySelector('#addGuestView input[placeholder="Enter phone number"]').value = g.phone || '';
-      document.querySelector('#addGuestView input[placeholder="Enter company name"]').value = g.company || '';
-      document.querySelector('#addGuestView input[placeholder="Enter designation"]').value = g.designation || '';
-      document.querySelector('#addGuestView input[placeholder="Enter ID number"]').value = g.id_number || '';
+      document.getElementById('agGuestEmail').value = g.email || '';
+      document.querySelector('#addGuestView input[placeholder="Enter phone number"]').value = g.phone || ''; 
+      document.getElementById('agGuestCompany').value = g.company || '';
+      document.getElementById('agGuestDesignation').value = g.designation || '';
+      document.getElementById('agGuestIdNumber').value = g.id_number || '';
       document.getElementById('agTierInput').value = g.ticket_tier || 'General';
       document.getElementById('agCapacityInput').value = g.allowed_capacity || 1;
-      document.getElementById('agEntryGateSelect').value = g.assigned_entry_gate_id || ''; // NEW
-      document.getElementById('agExitGateSelect').value = g.assigned_exit_gate_id || '';   // NEW
-      document.querySelector('#addGuestView textarea').value = g.notes || '';
+      document.getElementById('agEntryGateSelect').value = g.assigned_entry_gate_id || ''; 
+      document.getElementById('agExitGateSelect').value = g.assigned_exit_gate_id || '';   
+      document.getElementById('agGuestNotes').value = g.notes || '';
 
       // 3. Update Titles for Edit Mode
       document.getElementById('dynamicPageTitle').innerText = 'Edit Guest';
@@ -3395,17 +3395,17 @@ document.getElementById('qrModal').classList.remove('hidden');
           submitAddGuestBtn.addEventListener('click', async () => {
               const eventId = document.getElementById('addGuestEventSelect').value;
               const name = document.getElementById('agGuestName').value.trim();
-              const email = document.querySelector('#addGuestView input[type="email"]').value.trim();
-              // Combine Country Code and Phone Number
+              const email = document.getElementById('agGuestEmail').value.trim();
               const phoneCode = document.getElementById('agGuestPhoneCode').value;
               const rawPhone = document.getElementById('agGuestPhone').value.trim();
               const phone = rawPhone ? (phoneCode + rawPhone.replace(/^0+/, '')) : '';
-              const company = document.querySelector('#addGuestView input[placeholder="Enter company name"]').value.trim();
-              const designation = document.querySelector('#addGuestView input[placeholder="Enter designation"]').value.trim();
-              const idNumber = document.querySelector('#addGuestView input[placeholder="Enter ID number"]').value.trim();
+              const company = document.getElementById('agGuestCompany').value.trim();
+              const designation = document.getElementById('agGuestDesignation').value.trim();
+              const idNumber = document.getElementById('agGuestIdNumber').value.trim();
+              const notes = document.getElementById('agGuestNotes').value.trim();
               const tier = document.getElementById('agTierInput').value;
               const capacity = parseInt(document.getElementById('agCapacityInput').value) || 1;
-              const notes = document.querySelector('#addGuestView textarea').value.trim();
+              
               const entryGateId = document.getElementById('agEntryGateSelect').value || null;
               const exitGateId = document.getElementById('agExitGateSelect').value || null;
 // --- PLAN LIMIT: MAX GUESTS PER EVENT ---
