@@ -625,12 +625,19 @@ let currentTenantDateFilter = 'All';
             <td class="p-4 text-slate-400">${t.phone || 'N/A'}</td>
             <td class="p-4"><span class="${isApproved ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'} px-3 py-1 rounded-full text-xs font-bold">${isApproved ? 'Approved' : 'Pending'}</span></td>
             <td class="p-4">
-              <select onchange="updateTenantPlan('${t.id}', this.value)" class="bg-slate-950 border border-slate-700 text-slate-200 text-xs font-bold rounded-lg px-2 py-1.5 outline-none focus:border-pink-500 cursor-pointer">
+            <div style="min-width: 110px;">
+              <select onchange="updateTenantPlan('${t.id}', this.value)" class="bg-slate-950 border border-slate-700 text-slate-200 text-xs font-bold rounded-lg px-2 py-1.5 outline-none focus:border-pink-500 cursor-pointer w-full mb-1">
                   <option value="Basic" ${plan === 'Basic' ? 'selected' : ''}>Basic</option>
                   <option value="Pro" ${plan === 'Pro' ? 'selected' : ''}>Pro</option>
                   <option value="Premium" ${plan === 'Premium' ? 'selected' : ''}>Premium</option>
               </select>
-            </td>
+              ${plan !== 'Basic' ? `
+              <div class="text-[9px] text-slate-500 font-mono leading-tight bg-slate-900 border border-slate-800 rounded p-1">
+                <div><span class="text-slate-400">Start:</span> ${t.plan_start_date ? new Date(t.plan_start_date).toLocaleDateString() : '--'}</div>
+                <div><span class="text-slate-400">Ends:</span> <span class="${t.plan_expires_at && new Date(t.plan_expires_at) < new Date() ? 'text-red-500 font-bold animate-pulse' : 'text-slate-300'}">${t.plan_expires_at ? new Date(t.plan_expires_at).toLocaleDateString() : '--'}</span></div>
+              </div>` : '<div class="text-[9px] text-slate-600 text-center mt-1">Free Forever</div>'}
+            </div>
+          </td>
             <td class="p-4"><span class="${isPaid ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'} px-3 py-1 rounded-full text-xs font-bold">${isPaid ? 'Paid' : 'Unpaid'}</span></td>
             <td class="p-4 text-center flex justify-center gap-2 flex-wrap">
               ${(t.upgrade_request && t.upgrade_request !== 'None') ? `<button onclick="approveUpgrade('${t.id}', '${t.upgrade_request.replace('Pending ', '')}')" class="bg-pink-600 hover:bg-pink-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-lg shadow-pink-600/20 transition animate-pulse">Approve ${t.upgrade_request.replace('Pending ', '')}</button>` : ''}
@@ -675,14 +682,31 @@ let currentTenantDateFilter = 'All';
       else loadTenants(); 
     }
 
+    // Helper to generate the 30-day payload
+    function getPlanTimePayload(targetPlan) {
+        if (targetPlan === 'Basic') {
+            return { subscription_status: 'Basic', plan_start_date: null, plan_expires_at: null };
+        }
+        const now = new Date();
+        const expires = new Date();
+        expires.setDate(now.getDate() + 30); // Add 30 Days
+        
+        return { 
+            subscription_status: targetPlan, 
+            plan_start_date: now.toISOString(), 
+            plan_expires_at: expires.toISOString() 
+        };
+    }
+
     // Change Subscription Plan
     async function updateTenantPlan(tenantId, newPlan) {
-      const { error } = await supabaseClient.from('tenants').update({ subscription_status: newPlan }).eq('id', tenantId);
+      const payload = getPlanTimePayload(newPlan);
+      const { error } = await supabaseClient.from('tenants').update(payload).eq('id', tenantId);
       if (error) {
           alert('Error updating plan: ' + error.message);
-          loadTenants(); // Revert dropdown if error occurs
+          loadTenants(); 
       } else {
-          console.log('Plan successfully updated to ' + newPlan);
+          console.log('Plan updated to ' + newPlan);
       }
     }
 
@@ -690,16 +714,14 @@ let currentTenantDateFilter = 'All';
     async function approveUpgrade(tenantId, targetPlan) {
       if (!confirm(`Are you sure you want to upgrade this tenant to the ${targetPlan} plan?`)) return;
       
-      const { error } = await supabaseClient.from('tenants').update({ 
-          subscription_status: targetPlan,
-          upgrade_request: 'None' // Clear the request flag
-      }).eq('id', tenantId);
+      const payload = getPlanTimePayload(targetPlan);
+      payload.upgrade_request = 'None'; // Clear the request flag
       
-      if (error) {
-          alert('Error approving upgrade: ' + error.message);
-      } else {
-          alert(`Success! Tenant is now on the ${targetPlan} plan.`);
-          loadTenants(); // Refresh the table
+      const { error } = await supabaseClient.from('tenants').update(payload).eq('id', tenantId);
+      if (error) alert('Error approving upgrade: ' + error.message);
+      else {
+          alert(`Success! Tenant is now on the ${targetPlan} plan for 30 days.`);
+          loadTenants(); 
       }
     }
 

@@ -1768,7 +1768,7 @@
         </button>
       </div>
       
-      <p class="text-xs text-slate-500 mt-4">Upgrades are processed manually via WhatsApp.</p>
+      <p class="text-xs text-slate-500 mt-4">Downgrade will not appear teh higher plan features</p>
     </div>
   </div>
 <!-- PREVIEW FULLSCREEN MODAL -->
@@ -2375,20 +2375,23 @@ generateNotifications();
     const userId = session.user.id;
     let { data: tenant, error } = await supabaseClient.from('tenants').select('*').eq('owner_id', userId).maybeSingle();
 
-    if (!tenant) {
-        const { data: newTenant } = await supabaseClient.from('tenants').insert([{
-            owner_id: userId,
-            email: session.user.email,
-            account_status: 'Pending',
-            payment_status: 'Unpaid',
-            subscription_status: 'Basic'
-        }]).select().single();
-        tenant = newTenant;
+    // NEW: The Auto-Expire Gatekeeper!
+    if (tenant && tenant.subscription_status !== 'Basic' && tenant.plan_expires_at) {
+        const expiresAt = new Date(tenant.plan_expires_at);
+        if (new Date() > expiresAt) {
+            // Plan has expired! Auto-downgrade to Basic.
+            await supabaseClient.from('tenants').update({
+                subscription_status: 'Basic',
+                plan_start_date: null,
+                plan_expires_at: null
+            }).eq('id', tenant.id);
+            
+            tenant.subscription_status = 'Basic';
+            alert("Your premium plan has expired. Your account has been reverted to the Basic plan.");
+        }
     }
 
-    const profileBanner = document.getElementById('tenantProfileCard');
-    
-    if (tenant) {
+    if (!tenant) {
       currentTenantId = tenant.id;
       
       // Save status, tier, and phone globally, then apply locks!
