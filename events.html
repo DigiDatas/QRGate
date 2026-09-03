@@ -1756,11 +1756,14 @@
         </ul>
       </div>
 
-      <div class="flex gap-3 mt-2">
-        <button id="btnReqPro" onclick="requestUpgrade('Pro', this)" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 text-sm">
+      <div id="upgradeModalButtons" class="flex gap-3 mt-2">
+        <button id="btnReqBasic" onclick="requestUpgrade('Basic', this)" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3.5 rounded-xl transition shadow-lg flex items-center justify-center gap-2 text-sm" style="display: none;">
+          Downgrade to Basic
+        </button>
+        <button id="btnReqPro" onclick="requestUpgrade('Pro', this)" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 text-sm" style="display: none;">
           Request Pro
         </button>
-        <button id="btnReqPremium" onclick="requestUpgrade('Premium', this)" class="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-pink-500/25 flex items-center justify-center gap-2 text-sm">
+        <button id="btnReqPremium" onclick="requestUpgrade('Premium', this)" class="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-pink-500/25 flex items-center justify-center gap-2 text-sm" style="display: none;">
           Request Premium
         </button>
       </div>
@@ -2538,38 +2541,39 @@ generateNotifications();
   function openUpgradeModal(featureName) {
       const currentPlan = (window.currentPlanTier || 'Basic').toLowerCase();
       
+      const btnBasic = document.getElementById('btnReqBasic');
       const btnPro = document.getElementById('btnReqPro');
       const btnPremium = document.getElementById('btnReqPremium');
       const modalTitle = document.querySelector('#upgradeModal h2');
       const modalDesc = document.querySelector('#upgradeModal p');
 
-      // Update Text based on Upgrade vs Downgrade
-      if (currentPlan === 'premium') {
-          if (modalTitle) modalTitle.innerHTML = `Change <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-blue-400">Subscription</span>`;
-          if (modalDesc) modalDesc.innerHTML = `You are currently on the Premium plan. You can request a downgrade to the Pro plan below.`;
+      // 1. Dynamic Title and Description
+      if (modalTitle) modalTitle.innerHTML = `Change <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-indigo-400">Subscription Plan</span>`;
+
+      if (featureName === 'Plan Upgrade') {
+          if (modalDesc) modalDesc.innerHTML = `You are currently on the <strong class="text-slate-200 uppercase">${window.currentPlanTier || 'Basic'}</strong> plan. Select a new plan below to request a change.`;
       } else {
-          if (modalTitle) modalTitle.innerHTML = `Unlock <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-indigo-400">Pro Features</span>`;
-          if (modalDesc) modalDesc.innerHTML = `The feature <strong class="text-slate-200">"${featureName}"</strong> is locked on your current plan. Upgrade today to unlock limits and unleash your full event potential!`;
+          if (modalDesc) modalDesc.innerHTML = `The feature <strong class="text-slate-200">"${featureName}"</strong> requires a different plan. Select an option below to request an account update.`;
       }
 
-      // Hide & Show the Correct Buttons
-      if (btnPro && btnPremium) {
-          if (currentPlan === 'basic') {
-              btnPro.style.display = 'flex';
-              btnPro.innerHTML = 'Request Pro';
-              btnPremium.style.display = 'flex';
-              btnPremium.innerHTML = 'Request Premium';
-          } else if (currentPlan === 'pro') {
-              btnPro.style.display = 'none'; // Pro cannot downgrade to Basic
-              btnPremium.style.display = 'flex';
-              btnPremium.innerHTML = 'Upgrade to Premium';
-          } else if (currentPlan === 'premium') {
-              btnPro.style.display = 'flex';
-              btnPro.innerHTML = 'Downgrade to Pro'; // Premium can downgrade to Pro
-              btnPremium.style.display = 'none'; // Premium is already at max
-          }
+      // 2. Reset all buttons to hidden first
+      if (btnBasic) btnBasic.style.display = 'none';
+      if (btnPro) btnPro.style.display = 'none';
+      if (btnPremium) btnPremium.style.display = 'none';
+
+      // 3. Show the EXACT two buttons the user doesn't have
+      if (currentPlan === 'basic') {
+          if (btnPro) { btnPro.style.display = 'flex'; btnPro.innerHTML = 'Upgrade to Pro'; }
+          if (btnPremium) { btnPremium.style.display = 'flex'; btnPremium.innerHTML = 'Upgrade to Premium'; }
+      } else if (currentPlan === 'pro') {
+          if (btnBasic) { btnBasic.style.display = 'flex'; btnBasic.innerHTML = 'Downgrade to Basic'; }
+          if (btnPremium) { btnPremium.style.display = 'flex'; btnPremium.innerHTML = 'Upgrade to Premium'; }
+      } else if (currentPlan === 'premium') {
+          if (btnBasic) { btnBasic.style.display = 'flex'; btnBasic.innerHTML = 'Downgrade to Basic'; }
+          if (btnPro) { btnPro.style.display = 'flex'; btnPro.innerHTML = 'Downgrade to Pro'; }
       }
 
+      // 4. Reveal the Modal
       document.getElementById('upgradeModal').classList.remove('hidden');
   }
 
