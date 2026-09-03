@@ -696,9 +696,13 @@
       <!-- TAB: MY PROFILE VIEW -->
       <!-- ============================================== -->
       <div id="profileView" class="view-section">
-        <div style="max-width: 600px; margin: 0 auto; width: 100%;">
-          <h1 class="page-title" style="margin-bottom: 24px;">My Profile</h1>
-          <div class="card panel" style="padding: 32px;">
+        <h1 class="page-title mb-6">My Profile</h1>
+        
+        <!-- NEW: Responsive Grid Wrapper -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-6xl mx-auto">
+          
+          <!-- LEFT COLUMN: Profile Form -->
+          <div class="card panel h-max" style="padding: 32px;">
             <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 32px;">
               <div id="profileAvatarLarge" style="width: 80px; height: 80px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700;">A</div>
               <div>
@@ -720,18 +724,18 @@
                  <option value="+971">🇦🇪 +971</option>
                  <option value="+91">🇮🇳 +91</option>
               </select>
-              <input type="text" id="settingPhone" placeholder="e.g. 53000000" class="input-field" style="margin-bottom: 0;" oninput="this.value = this.value.replace(/^0+/, '')">
+              <input type="text" id="settingPhone" placeholder="e.g. 501234567" class="input-field" style="margin-bottom: 0;" oninput="this.value = this.value.replace(/^0+/, '')">
             </div>
 
-            <!-- FIX: The missing < bracket is restored here! -->
             <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
               <button onclick="switchView('dashboardView', this)" class="btn-filter-nav" style="padding: 10px 20px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--color-surface-soft); font-weight: 600;">Cancel</button>
               <button onclick="updateUserProfile(false)" class="btn-primary">Save Changes</button>
             </div>
-          </div> <!-- Closes the top profile form card -->
+          </div> 
+          <!-- End Left Column -->
 
-          <!-- Plan Limits & Benefits Card -->
-          <div class="card panel" style="padding: 32px; margin-top: 24px; border-color: var(--color-primary-soft); background: var(--color-surface-soft);">
+          <!-- RIGHT COLUMN: Plan Limits & Benefits Card -->
+          <div class="card panel h-max" style="padding: 32px; border-color: var(--color-primary-soft); background: var(--color-surface-soft);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                <h3 style="font-size: 16px; font-weight: 700; margin: 0;">Plan & Limits</h3>
                <span id="profilePlanBadgeLarge" style="padding: 4px 12px; border-radius: 99px; font-size: 11px; font-weight: 800; text-transform: uppercase; background: var(--color-primary); color: white;">BASIC</span>
@@ -756,15 +760,15 @@
                </ul>
             </div>
 
-            <button onclick="requestUpgrade()" class="btn-primary" style="width: 100%; margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <!-- NEW: Upgrade button hooked to the new JS function -->
+            <button onclick="requestUpgrade(this)" class="btn-primary" style="width: 100%; margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 8px;">
                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Request Upgrade
             </button>
           </div>
-          <!-- End Plan Limits Card -->
+          <!-- End Right Column -->
 
-        </div> <!-- Closes the max-width wrapper -->
-      </div> <!-- Closes the profileView tab -->
-
+        </div> <!-- Closes Grid Wrapper -->
+      </div>
       <!-- ============================================== -->
       <!-- VIEW 1: DASHBOARD -->
       <!-- ============================================== -->
@@ -1217,6 +1221,9 @@
                 <div style="display: flex; gap: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><p style="font-size: 12px; color: #111827; margin: 0; line-height: 1.5; font-weight: 500;">Add a clear event name to help you identify it easily.</p></div>
                 <div style="display: flex; gap: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><p style="font-size: 12px; color: #111827; margin: 0; line-height: 1.5; font-weight: 500;">Set the correct date and time for smooth guest management.</p></div>
                 <div style="display: flex; gap: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><p style="font-size: 12px; color: #111827; margin: 0; line-height: 1.5; font-weight: 500;">You can update these details later if needed.</p></div>
+                <!-- NEW LIMIT TIPS ADDED HERE -->
+                <div style="display: flex; gap: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg><p style="font-size: 12px; color: #111827; margin: 0; line-height: 1.5; font-weight: 500;"><b>Event Limit:</b> You can create up to <span id="tipEventLimit" class="text-pink-600 font-bold">...</span> events.</p></div>
+                <div style="display: flex; gap: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><p style="font-size: 12px; color: #111827; margin: 0; line-height: 1.5; font-weight: 500;"><b>Guest Limit:</b> Up to <span id="tipGuestLimit" class="text-pink-600 font-bold">...</span> guests per event.</p></div>
               </div>
             </div>
           </div>
@@ -1374,7 +1381,7 @@
             <div class="card panel" style="padding: 24px;">
               <h3 style="font-size: 14px; font-weight: 700; margin: 0 0 16px; display: flex; align-items: center; gap: 8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Guests in this Event</h3>
               <div style="display: flex; flex-direction: column; gap: 16px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; font-size: 12px;"><span style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary);">Total Capacity</span><span style="font-weight: 700;" id="agStatTotal">0</span></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; font-size: 12px;"><span style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary);">Event Capacity</span><span style="font-weight: 700;"><span id="agStatTotal">0</span> / <span id="agLimitGuest" class="text-pink-600">...</span> Limit</span></div>
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; font-size: 12px;"><span style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary);">Guests Added</span><span style="font-weight: 700; color: var(--color-success);" id="agStatAdded">0</span></div>
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; font-size: 12px;"><span style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary);">Remaining Slots</span><span style="font-weight: 700; color: var(--color-danger);" id="agStatRemain">0</span></div>
               </div>
@@ -2406,6 +2413,11 @@ generateNotifications();
       
       if (document.getElementById('profileLimitEvents')) document.getElementById('profileLimitEvents').innerText = activeLimit.ev;
       if (document.getElementById('profileLimitGuests')) document.getElementById('profileLimitGuests').innerText = activeLimit.gu;
+      
+      // NEW: Inject limits into the sidebar tips!
+      if (document.getElementById('tipEventLimit')) document.getElementById('tipEventLimit').innerText = activeLimit.ev;
+      if (document.getElementById('tipGuestLimit')) document.getElementById('tipGuestLimit').innerText = activeLimit.gu;
+      if (document.getElementById('agLimitGuest')) document.getElementById('agLimitGuest').innerText = activeLimit.gu;
 
       const featList = document.getElementById('profileFeatureList');
       if (featList) {
@@ -2485,7 +2497,8 @@ generateNotifications();
       const premiumElements = [
           { el: document.querySelector('div[onclick*="AI Generation"]'), label: "Generate AI Passes" },
           { el: document.querySelector('button[onclick*="toggleFontExplorer()"]'), label: "Custom Brand Fonts" },
-          { el: document.querySelector('button[onclick*="bulk"]'), label: "Bulk Excel Upload" }
+          { el: document.querySelector('button[onclick*="bulk"]'), label: "Bulk Excel Upload" },
+          { el: document.querySelector('button[onclick*="auto"]'), label: "Auto-Generate Passes" } // <-- ADDED
       ];
 
       premiumElements.forEach(item => {
@@ -2511,15 +2524,46 @@ generateNotifications();
       document.getElementById('upgradeModal').classList.remove('hidden');
   }
 
-  function requestUpgrade() {
-      // Replaced your personal number with a safe placeholder.
-      // When you launch, replace '966550000000' with your official business support number.
-      const supportPhone = "966550000000"; 
+  async function requestUpgrade(btnElement = null) {
+      if (!currentTenantId) return alert("Account not found.");
       
-      const msg = `Hello, I am currently on the ${window.currentPlanTier || 'Basic'} plan and would like to upgrade my QRGate account to access premium features.`;
+      // Select either the modal button or the profile button depending on where they clicked
+      const targetBtn = btnElement || document.querySelector('#upgradeModal button.bg-gradient-to-r');
+      const originalText = targetBtn ? targetBtn.innerHTML : 'Request Upgrade';
       
-      window.open(`https://wa.me/${supportPhone}?text=${encodeURIComponent(msg)}`, '_blank');
-      document.getElementById('upgradeModal').classList.add('hidden');
+      if (targetBtn) {
+          targetBtn.innerHTML = 'Sending Request...';
+          targetBtn.disabled = true;
+          targetBtn.style.opacity = '0.7';
+      }
+
+      // Automatically request the next tier up
+      const targetTier = (window.currentPlanTier || 'Basic').toLowerCase() === 'basic' ? 'Pro' : 'Premium';
+      
+      // Send the request to your new Supabase column!
+      const { error } = await supabaseClient
+          .from('tenants')
+          .update({ upgrade_request: `Pending ${targetTier}` })
+          .eq('id', currentTenantId);
+
+      if (error) {
+          alert('Failed to send request: ' + error.message);
+          if (targetBtn) {
+              targetBtn.innerHTML = originalText;
+              targetBtn.disabled = false;
+              targetBtn.style.opacity = '1';
+          }
+      } else {
+          // Success! Give UI feedback
+          if (targetBtn) {
+              targetBtn.innerHTML = 'Request Sent ✓';
+              targetBtn.classList.replace('from-pink-600', 'from-green-600');
+              targetBtn.classList.replace('to-indigo-600', 'to-emerald-600');
+          }
+          setTimeout(() => {
+              document.getElementById('upgradeModal').classList.add('hidden');
+          }, 1500);
+      }
   }
 // --- GUEST LIST TOGGLES ---
   function filterGuestsByTier(tier) {

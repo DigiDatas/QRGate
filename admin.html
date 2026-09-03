@@ -452,13 +452,19 @@
           return;
       }
 
-      if (data) {
+     if (data) {
         allTenantsData = data;
         renderTenants(data);
         document.getElementById('statTotalTenants').innerText = data.length;
         document.getElementById('statPaidTenants').innerText = data.filter(t => t.payment_status === 'Paid').length;
+        
+        // NEW: Check for upgrade requests and light up the bell
+        const pendingUpgrades = data.filter(t => t.upgrade_request && t.upgrade_request !== 'None').length;
+        const bellDot = document.querySelector('header .bg-pink-500');
+        if (bellDot) {
+            bellDot.style.display = pendingUpgrades > 0 ? 'block' : 'none';
+        }
       }
-    }
 
     // --- RENDER TENANTS TABLE ---
     function renderTenants(data) {
@@ -515,7 +521,8 @@
             </span>
           </td>
           
-          <td class="p-4 text-center flex justify-center gap-2">
+          <td class="p-4 text-center flex justify-center gap-2 flex-wrap">
+            ${(t.upgrade_request && t.upgrade_request !== 'None') ? `<button onclick="approveUpgrade('${t.id}', '${t.upgrade_request.replace('Pending ', '')}')" class="bg-pink-600 hover:bg-pink-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-lg shadow-pink-600/20 transition animate-pulse">Approve ${t.upgrade_request.replace('Pending ', '')}</button>` : ''}
             <button onclick="toggleTenantApproval('${t.id}', ${isApproved})" class="${isApproved ? 'bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-500/30' : 'bg-green-600/20 text-green-400 hover:bg-green-600/30 border border-green-500/30'} px-3 py-1.5 rounded-xl text-xs font-semibold transition">
               ${isApproved ? 'Suspend' : 'Approve'}
             </button>
@@ -554,6 +561,23 @@
           loadTenants(); // Revert dropdown if error occurs
       } else {
           console.log('Plan successfully updated to ' + newPlan);
+      }
+    }
+
+    // Approve Upgrade Request
+    async function approveUpgrade(tenantId, targetPlan) {
+      if (!confirm(`Are you sure you want to upgrade this tenant to the ${targetPlan} plan?`)) return;
+      
+      const { error } = await supabaseClient.from('tenants').update({ 
+          subscription_status: targetPlan,
+          upgrade_request: 'None' // Clear the request flag
+      }).eq('id', tenantId);
+      
+      if (error) {
+          alert('Error approving upgrade: ' + error.message);
+      } else {
+          alert(`Success! Tenant is now on the ${targetPlan} plan.`);
+          loadTenants(); // Refresh the table
       }
     }
 
