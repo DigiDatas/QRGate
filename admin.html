@@ -210,10 +210,29 @@
         </div>
 
        <!-- NEW: SAVED GLOBAL TEMPLATES GALLERY (TOP) -->
-        <div class="shrink-0 mb-2">
-           <h3 class="text-sm font-bold text-slate-200 mb-3">Your Saved Global Templates</h3>
+        <div class="shrink-0 mb-4">
+           <div class="flex justify-between items-end mb-3 flex-wrap gap-4">
+               <h3 class="text-sm font-bold text-slate-200">Your Saved Global Templates</h3>
+               <div class="flex flex-col sm:flex-row items-end sm:items-center gap-2">
+                   <!-- Plan Filter -->
+                   <div class="flex gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800" id="adminTplPlanFilters">
+                       <button onclick="filterAdminTplPlan('All', this)" class="px-2 py-1 rounded-lg bg-pink-600 text-white text-[10px] font-bold transition">All Plans</button>
+                       <button onclick="filterAdminTplPlan('Basic', this)" class="px-2 py-1 rounded-lg text-slate-400 hover:text-slate-200 text-[10px] font-bold transition">Basic</button>
+                       <button onclick="filterAdminTplPlan('Pro', this)" class="px-2 py-1 rounded-lg text-slate-400 hover:text-slate-200 text-[10px] font-bold transition">Pro</button>
+                       <button onclick="filterAdminTplPlan('Premium', this)" class="px-2 py-1 rounded-lg text-slate-400 hover:text-slate-200 text-[10px] font-bold transition">Premium</button>
+                   </div>
+                   <!-- Category Filter -->
+                   <div class="flex gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800" id="adminTplCatFilters">
+                       <button onclick="filterAdminTplCat('All', this)" class="px-2 py-1 rounded-lg bg-pink-600 text-white text-[10px] font-bold transition">All Cats</button>
+                       <button onclick="filterAdminTplCat('General', this)" class="px-2 py-1 rounded-lg text-slate-400 hover:text-slate-200 text-[10px] font-bold transition">General</button>
+                       <button onclick="filterAdminTplCat('Marriage', this)" class="px-2 py-1 rounded-lg text-slate-400 hover:text-slate-200 text-[10px] font-bold transition">Marriage</button>
+                       <button onclick="filterAdminTplCat('Corporate', this)" class="px-2 py-1 rounded-lg text-slate-400 hover:text-slate-200 text-[10px] font-bold transition">Corporate</button>
+                       <button onclick="filterAdminTplCat('VIP', this)" class="px-2 py-1 rounded-lg text-slate-400 hover:text-slate-200 text-[10px] font-bold transition">VIP</button>
+                   </div>
+               </div>
+           </div>
+           
            <div style="display: flex; gap: 12px; align-items: stretch; width: 100%;">
-             
              <!-- Scrolling Gallery -->
              <div id="adminTemplatesGallery" class="flex gap-4 overflow-x-auto pb-2 no-scrollbar" style="flex: 1; min-width: 0;">
                 <div class="text-xs text-slate-500">Loading templates...</div>
@@ -898,15 +917,43 @@ async function openAssetLibrary() {
         document.getElementById('previewModal').classList.remove('hidden');
     }
 
+    let currentAdminTplPlan = 'All';
+    let currentAdminTplCat = 'All';
+
+    function filterAdminTplPlan(plan, btn) {
+        currentAdminTplPlan = plan;
+        if (btn) {
+            btn.parentElement.querySelectorAll('button').forEach(b => b.className = 'px-2 py-1 rounded-lg text-slate-400 hover:text-slate-200 text-[10px] font-bold transition');
+            btn.className = 'px-2 py-1 rounded-lg bg-pink-600 text-white text-[10px] font-bold transition';
+        }
+        renderAdminTemplatesGallery();
+    }
+
+    function filterAdminTplCat(cat, btn) {
+        currentAdminTplCat = cat;
+        if (btn) {
+            btn.parentElement.querySelectorAll('button').forEach(b => b.className = 'px-2 py-1 rounded-lg text-slate-400 hover:text-slate-200 text-[10px] font-bold transition');
+            btn.className = 'px-2 py-1 rounded-lg bg-pink-600 text-white text-[10px] font-bold transition';
+        }
+        renderAdminTemplatesGallery();
+    }
+
     async function fetchAdminTemplates() {
         const { data, error } = await supabaseClient.from('templates').select('*').eq('is_global', true).order('created_at', { ascending: false });
         if (error) return;
         windowAdminTemplates = data || [];
-        
+        renderAdminTemplatesGallery();
+    }
+
+    function renderAdminTemplatesGallery() {
         const gallery = document.getElementById('adminTemplatesGallery');
         const moreBtnCont = document.getElementById('adminMoreTemplatesBtnContainer');
         const moreCountText = document.getElementById('adminMoreTemplatesCount');
         if (!gallery) return;
+
+        let filteredTemplates = windowAdminTemplates;
+        if (currentAdminTplPlan !== 'All') filteredTemplates = filteredTemplates.filter(t => (t.required_plan || 'Basic') === currentAdminTplPlan);
+        if (currentAdminTplCat !== 'All') filteredTemplates = filteredTemplates.filter(t => (t.category || 'General') === currentAdminTplCat);
 
         gallery.innerHTML = `
           <div onclick="resetTemplate()" class="bg-slate-900 border border-dashed border-slate-700 hover:border-pink-500 rounded-xl flex flex-col items-center justify-center cursor-pointer transition shrink-0" style="min-width: 140px; height: 90px;">
@@ -916,8 +963,7 @@ async function openAssetLibrary() {
         `;
 
         const displayLimit = 6;
-
-        windowAdminTemplates.slice(0, displayLimit).forEach(t => {
+        filteredTemplates.slice(0, displayLimit).forEach(t => {
             const dateStr = new Date(t.created_at).toLocaleDateString();
             gallery.innerHTML += `
               <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex gap-3 items-center shrink-0" style="min-width: 250px; height: 90px;">
@@ -936,10 +982,9 @@ async function openAssetLibrary() {
             `;
         });
 
-        // Activate the fixed right-side button if needed
-        if (windowAdminTemplates.length > displayLimit) {
+        if (filteredTemplates.length > displayLimit) {
             if (moreBtnCont) moreBtnCont.style.display = 'block';
-            if (moreCountText) moreCountText.innerText = '+' + (windowAdminTemplates.length - displayLimit);
+            if (moreCountText) moreCountText.innerText = '+' + (filteredTemplates.length - displayLimit);
         } else {
             if (moreBtnCont) moreBtnCont.style.display = 'none';
         }
@@ -1464,6 +1509,15 @@ let currentFontCategoryFilter = 'All';
         const dropdown = document.getElementById('adminNotificationDropdown');
         dropdown.classList.toggle('hidden');
     }
+
+    // NEW: Auto-close notification dropdown if clicking outside
+    document.addEventListener('click', (e) => {
+        const dropdown = document.getElementById('adminNotificationDropdown');
+        const bell = document.getElementById('adminNotificationBell');
+        if (dropdown && !dropdown.classList.contains('hidden') && !dropdown.contains(e.target) && !bell.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
 
     // Live Notification Builder
     function generateAdminAlerts() {

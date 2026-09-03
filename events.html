@@ -663,7 +663,7 @@
             <div id="notificationList" style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column;" class="no-scrollbar">
               <!-- Injected by JS Smart Engine -->
             </div>
-            <div style="padding: 12px; text-align: center; border-top: 1px solid var(--color-border); background: var(--color-surface-soft); font-size: 11px; color: var(--color-primary); font-weight: 700; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='var(--color-bg)'" onmouseout="this.style.background='var(--color-surface-soft)'" onclick="document.getElementById('notificationBadge').style.display='none'; toggleNotifications();">
+            <div style="padding: 12px; text-align: center; border-top: 1px solid var(--color-border); background: var(--color-surface-soft); font-size: 11px; color: var(--color-primary); font-weight: 700; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='var(--color-bg)'" onmouseout="this.style.background='var(--color-surface-soft)'" onclick="clearAllNotifications();">
               Mark all as read
             </div>
           </div>
@@ -1756,10 +1756,10 @@
       </div>
 
       <div class="flex gap-3 mt-2">
-        <button onclick="requestUpgrade('Pro', this)" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 text-sm">
+        <button id="btnReqPro" onclick="requestUpgrade('Pro', this)" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 text-sm">
           Request Pro
         </button>
-        <button onclick="requestUpgrade('Premium', this)" class="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-pink-500/25 flex items-center justify-center gap-2 text-sm">
+        <button id="btnReqPremium" onclick="requestUpgrade('Premium', this)" class="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-pink-500/25 flex items-center justify-center gap-2 text-sm">
           Request Premium
         </button>
       </div>
@@ -2535,7 +2535,40 @@ generateNotifications();
 
   // --- UPGRADE MODAL LOGIC ---
   function openUpgradeModal(featureName) {
-      document.getElementById('upgradeFeatureName').innerText = featureName;
+      const currentPlan = (window.currentPlanTier || 'Basic').toLowerCase();
+      
+      const btnPro = document.getElementById('btnReqPro');
+      const btnPremium = document.getElementById('btnReqPremium');
+      const modalTitle = document.querySelector('#upgradeModal h2');
+      const modalDesc = document.querySelector('#upgradeModal p');
+
+      // Update Text based on Upgrade vs Downgrade
+      if (currentPlan === 'premium') {
+          if (modalTitle) modalTitle.innerHTML = `Change <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-blue-400">Subscription</span>`;
+          if (modalDesc) modalDesc.innerHTML = `You are currently on the Premium plan. You can request a downgrade to the Pro plan below.`;
+      } else {
+          if (modalTitle) modalTitle.innerHTML = `Unlock <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-indigo-400">Pro Features</span>`;
+          if (modalDesc) modalDesc.innerHTML = `The feature <strong class="text-slate-200">"${featureName}"</strong> is locked on your current plan. Upgrade today to unlock limits and unleash your full event potential!`;
+      }
+
+      // Hide & Show the Correct Buttons
+      if (btnPro && btnPremium) {
+          if (currentPlan === 'basic') {
+              btnPro.style.display = 'flex';
+              btnPro.innerHTML = 'Request Pro';
+              btnPremium.style.display = 'flex';
+              btnPremium.innerHTML = 'Request Premium';
+          } else if (currentPlan === 'pro') {
+              btnPro.style.display = 'none'; // Pro cannot downgrade to Basic
+              btnPremium.style.display = 'flex';
+              btnPremium.innerHTML = 'Upgrade to Premium';
+          } else if (currentPlan === 'premium') {
+              btnPro.style.display = 'flex';
+              btnPro.innerHTML = 'Downgrade to Pro'; // Premium can downgrade to Pro
+              btnPremium.style.display = 'none'; // Premium is already at max
+          }
+      }
+
       document.getElementById('upgradeModal').classList.remove('hidden');
   }
 
@@ -5532,7 +5565,25 @@ updateRecentGatesWidget();
       }
   });
 
-  function generateNotifications() {
+// Persistent Notification Memory System
+  function addPersistentNotification(title, desc, icon, color, bg) {
+      if (!currentTenantId) return;
+      let history = JSON.parse(localStorage.getItem('qrg_notifs_' + currentTenantId) || '[]');
+      history.unshift({ title, desc, icon, color, bg, time: new Date().getTime(), id: Date.now() });
+      if (history.length > 20) history = history.slice(0, 20); // Keep last 20 so memory doesn't bloat
+      localStorage.setItem('qrg_notifs_' + currentTenantId, JSON.stringify(history));
+      generateNotifications();
+  }
+
+  function clearAllNotifications() {
+      if (currentTenantId) localStorage.removeItem('qrg_notifs_' + currentTenantId);
+      document.getElementById('notificationBadge').style.display = 'none';
+      document.getElementById('notificationDropdown').style.display = 'none';
+      generateNotifications();
+  } 
+
+
+ function generateNotifications() {
       const list = document.getElementById('notificationList');
       const badge = document.getElementById('notificationBadge');
       const countText = document.getElementById('notificationCountText');
@@ -5596,6 +5647,19 @@ updateRecentGatesWidget();
                       });
                   }
               }
+          });
+      }
+
+      // --- NEW: Add Persistent Memory History (Approvals & Plan Changes) ---
+      if (currentTenantId) {
+          let history = JSON.parse(localStorage.getItem('qrg_notifs_' + currentTenantId) || '[]');
+          history.forEach(h => {
+              notifications.push({
+                  title: h.title, desc: h.desc,
+                  time: new Date(h.time), icon: h.icon,
+                  color: h.color, bg: h.bg,
+                  action: `document.getElementById('notificationDropdown').style.display='none';`
+              });
           });
       }
 
@@ -5766,11 +5830,21 @@ updateRecentGatesWidget();
               const newPlan = payload.new.subscription_status;
               const isApproved = payload.new.account_status === 'Approved';
               
-              // If Admin Approved their account or Upgraded their plan, refresh the profile to unlock features!
-              if (newPlan !== window.currentPlanTier || isApproved !== (window.currentAccountStatus === 'Approved')) {
+              let planChanged = newPlan !== window.currentPlanTier;
+              let approvalChanged = isApproved !== (window.currentAccountStatus === 'Approved');
+
+              if (planChanged || approvalChanged) {
                   const { data: { session } } = await supabaseClient.auth.getSession();
                   await checkTenantProfile(session); // Instantly updates UI Locks & Limits Cards
-                  showLiveToast('Account Updated!', `Admin has updated your account. You are now on the ${newPlan} plan!`);
+                  
+                  if (planChanged) {
+                      showLiveToast('Plan Updated!', `Your account is now on the ${newPlan} plan!`);
+                      addPersistentNotification('Plan Updated', `Your account is now on the ${newPlan} plan.`, '⭐', 'var(--color-primary)', 'var(--color-primary-soft)');
+                  }
+                  if (approvalChanged && isApproved) {
+                      showLiveToast('Account Approved!', `Your organizer account has been approved!`);
+                      addPersistentNotification('Account Approved', `Your organizer account has been officially approved.`, '✅', 'var(--color-success)', 'var(--color-success-soft)');
+                  }
               }
           })
           // 2. LISTEN FOR EVENT APPROVALS
@@ -5778,14 +5852,13 @@ updateRecentGatesWidget();
               if (payload.new.is_approved && payload.old && !payload.old.is_approved) {
                   fetchEvents(); // Instantly turns tags green and unlocks QR passes
                   showLiveToast('Event Approved!', `Your event "${payload.new.event_name}" is now live!`);
+                  addPersistentNotification('Event Approved', `Your event "${payload.new.event_name}" is now live!`, '📅', 'var(--color-success)', 'var(--color-success-soft)');
               }
           })
           // 3. LISTEN FOR LIVE GATE SCANS
           .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'scan_logs' }, (payload) => {
-              // Only trigger if the scan belongs to one of this tenant's events
               if (allFetchedEvents.some(e => e.id === payload.new.event_id)) {
                   console.log("Live Scan Detected at Gate!");
-                  // Silently refresh the KPIs and Gate Management Data without reloading the page
                   fetchAllGuestsForKPIs();
                   loadGateManagementData();
               }
