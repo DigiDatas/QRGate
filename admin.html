@@ -549,7 +549,6 @@ let currentTenantDateFilter = 'All';
       }
 
       if (data) {
-        if (data) {
         allTenantsData = data;
         
         // Populate the tenant filter dropdown in the Events Tab dynamically
@@ -576,7 +575,7 @@ let currentTenantDateFilter = 'All';
             bellDot.style.display = pendingUpgrades > 0 ? 'block' : 'none';
         }
       }
-    } // <--- THIS IS THE MISSING BRACKET THAT CAUSED THE CRASH!
+    }
 
     // --- RENDER TENANTS TABLE ---
     function renderTenants(data) {
