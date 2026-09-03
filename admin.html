@@ -444,7 +444,6 @@
 
     // --- FETCH TENANTS LOGIC ---
     async function loadTenants() {
-      // FIXED: Removed the .order('created_at') so it doesn't crash on the missing column
       const { data, error } = await supabaseClient.from('tenants').select('*');
       
       if (error) {
@@ -452,7 +451,7 @@
           return;
       }
 
-     if (data) {
+      if (data) {
         allTenantsData = data;
         renderTenants(data);
         document.getElementById('statTotalTenants').innerText = data.length;
@@ -465,8 +464,8 @@
             bellDot.style.display = pendingUpgrades > 0 ? 'block' : 'none';
         }
       }
+    } // <--- THIS IS THE MISSING BRACKET THAT CAUSED THE CRASH!
 
-    // --- RENDER TENANTS TABLE ---
     // --- RENDER TENANTS TABLE ---
     function renderTenants(data) {
       const tbody = document.getElementById('tenantTableBody');

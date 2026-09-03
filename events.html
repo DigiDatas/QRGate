@@ -508,11 +508,16 @@
   }
 
 /* --- BATCH 14: SAAS UI LOCKS --- */
-  .locked-feature {
+  .approval-locked {
       opacity: 0.5 !important;
       pointer-events: none !important;
       filter: grayscale(100%) !important;
       cursor: not-allowed !important;
+  }
+  .premium-locked {
+      opacity: 0.5 !important;
+      filter: grayscale(100%) !important;
+      cursor: pointer !important;
   }
   .locked-banner {
       background: var(--color-danger-soft);
@@ -2463,7 +2468,6 @@ generateNotifications();
   }
 
   // --- SAAS UI LOCK LOGIC ---
-  // --- SAAS UI LOCK LOGIC ---
   function applyAccountLocks() {
       const isApproved = window.currentAccountStatus === 'Approved';
       const isBasic = !window.currentPlanTier || window.currentPlanTier.toLowerCase() === 'basic';
@@ -2490,10 +2494,10 @@ generateNotifications();
 
       if (!isApproved) {
           banner.style.display = 'block';
-          approvalLockElements.forEach(el => { if(el) el.classList.add('locked-feature'); });
+          approvalLockElements.forEach(el => { if(el) el.classList.add('approval-locked'); });
       } else {
           banner.style.display = 'none';
-          approvalLockElements.forEach(el => { if(el) el.classList.remove('locked-feature'); });
+          approvalLockElements.forEach(el => { if(el) el.classList.remove('approval-locked'); });
       }
 
       // 2. PLAN TIER LOCKS (The Paywall)
@@ -2501,14 +2505,13 @@ generateNotifications();
           { el: document.querySelector('div[onclick*="AI Generation"]'), label: "Generate AI Passes" },
           { el: document.querySelector('button[onclick*="toggleFontExplorer()"]'), label: "Custom Brand Fonts" },
           { el: document.querySelector('button[onclick*="bulk"]'), label: "Bulk Excel Upload" },
-          { el: document.querySelector('button[onclick*="auto"]'), label: "Auto-Generate Passes" } // <-- ADDED
+          { el: document.querySelector('button[onclick*="auto"]'), label: "Auto-Generate Passes" }
       ];
 
       premiumElements.forEach(item => {
           if (!item.el) return;
           if (isBasic) {
-              item.el.classList.add('locked-feature');
-              item.el.style.position = 'relative';
+              item.el.classList.add('premium-locked');
               // Forcefully overwrite the click behavior to open the paywall
               item.el.removeAttribute('onclick'); 
               item.el.onclick = (e) => {
@@ -2516,7 +2519,12 @@ generateNotifications();
                   openUpgradeModal(item.label);
               };
           } else {
-              item.el.classList.remove('locked-feature');
+              item.el.classList.remove('premium-locked');
+              // Restore default onclick functionality if plan is upgraded!
+              if (item.label === 'Bulk Excel Upload') item.el.onclick = () => toggleGuestInputMode('bulk');
+              if (item.label === 'Auto-Generate Passes') item.el.onclick = () => toggleGuestInputMode('auto');
+              if (item.label === 'Custom Brand Fonts') item.el.onclick = () => toggleFontExplorer();
+              if (item.label === 'Generate AI Passes') item.el.onclick = () => alert('AI Generation feature is coming in V2!');
           }
       });
   }
@@ -4337,7 +4345,7 @@ function deleteSelectedElement() {
                 : `handleTopGalleryClick('${t.id}')`;
 
             topGallery.innerHTML += `
-              <div onclick="${clickAction}" data-category="${cat}" class="card tpl-card ${isLocked ? 'locked-feature' : ''}" style="min-width: 90px; height: 130px; border: 2px solid transparent; box-shadow: 0 0 0 1px var(--color-border); border-radius: var(--radius-md); display: flex; flex-direction: column; overflow: hidden; cursor: pointer; position: relative; transition: border 0.2s;">
+              <div onclick="${clickAction}" data-category="${cat}" class="card tpl-card ${isLocked ? 'premium-locked' : ''}" style="min-width: 90px; height: 130px; border: 2px solid transparent; box-shadow: 0 0 0 1px var(--color-border); border-radius: var(--radius-md); display: flex; flex-direction: column; overflow: hidden; cursor: pointer; position: relative; transition: border 0.2s;">
                  ${lockIcon}
                  <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center; z-index:10;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
                  <div style="width: 100%; height: 85px; background: ${t.thumbnail_url} center/cover no-repeat; background-color: var(--color-surface-soft); flex-shrink: 0;"></div>
