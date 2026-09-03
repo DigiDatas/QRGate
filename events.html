@@ -766,8 +766,8 @@
             </div>
 
             <!-- NEW: Upgrade button hooked to the new JS function -->
-            <button onclick="requestUpgrade(this)" class="btn-primary" style="width: 100%; margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Request Upgrade
+            <button onclick="openUpgradeModal('Plan Upgrade')" class="btn-primary" style="width: 100%; margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> View Upgrade Options
             </button>
           </div>
           <!-- End Right Column -->
@@ -1755,10 +1755,14 @@
         </ul>
       </div>
 
-      <button onclick="requestUpgrade()" class="w-full bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-pink-600/25 flex items-center justify-center gap-2">
-        Request Upgrade
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-      </button>
+      <div class="flex gap-3 mt-2">
+        <button onclick="requestUpgrade('Pro', this)" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 text-sm">
+          Request Pro
+        </button>
+        <button onclick="requestUpgrade('Premium', this)" class="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-pink-500/25 flex items-center justify-center gap-2 text-sm">
+          Request Premium
+        </button>
+      </div>
       
       <p class="text-xs text-slate-500 mt-4">Upgrades are processed manually via WhatsApp.</p>
     </div>
@@ -2535,23 +2539,20 @@ generateNotifications();
       document.getElementById('upgradeModal').classList.remove('hidden');
   }
 
-  async function requestUpgrade(btnElement = null) {
+  async function requestUpgrade(targetTier, btnElement = null) {
       if (!currentTenantId) return alert("Account not found.");
       
-      // Select either the modal button or the profile button depending on where they clicked
-      const targetBtn = btnElement || document.querySelector('#upgradeModal button.bg-gradient-to-r');
+      const targetBtn = btnElement;
       const originalText = targetBtn ? targetBtn.innerHTML : 'Request Upgrade';
       
       if (targetBtn) {
-          targetBtn.innerHTML = 'Sending Request...';
+          targetBtn.innerHTML = 'Sending...';
           targetBtn.disabled = true;
-          targetBtn.style.opacity = '0.7';
+          targetBtn.style.opacity = '0.5';
+          targetBtn.style.cursor = 'not-allowed';
       }
-
-      // Automatically request the next tier up
-      const targetTier = (window.currentPlanTier || 'Basic').toLowerCase() === 'basic' ? 'Pro' : 'Premium';
       
-      // Send the request to your new Supabase column!
+      // Send the specific tier request to Supabase
       const { error } = await supabaseClient
           .from('tenants')
           .update({ upgrade_request: `Pending ${targetTier}` })
@@ -2563,16 +2564,23 @@ generateNotifications();
               targetBtn.innerHTML = originalText;
               targetBtn.disabled = false;
               targetBtn.style.opacity = '1';
+              targetBtn.style.cursor = 'pointer';
           }
       } else {
-          // Success! Give UI feedback
+          // Success Feedback
           if (targetBtn) {
-              targetBtn.innerHTML = 'Request Sent ✓';
-              targetBtn.classList.replace('from-pink-600', 'from-green-600');
-              targetBtn.classList.replace('to-indigo-600', 'to-emerald-600');
+              targetBtn.innerHTML = 'Sent ✓';
           }
           setTimeout(() => {
-              document.getElementById('upgradeModal').classList.add('hidden');
+              const upgradeModal = document.getElementById('upgradeModal');
+              if (upgradeModal) upgradeModal.classList.add('hidden');
+              // Reset the button so it's fresh for next time
+              if (targetBtn) {
+                  targetBtn.innerHTML = originalText;
+                  targetBtn.disabled = false;
+                  targetBtn.style.opacity = '1';
+                  targetBtn.style.cursor = 'pointer';
+              }
           }, 1500);
       }
   }
@@ -5725,6 +5733,68 @@ updateRecentGatesWidget();
       
       supabaseClient.from('guests').update({ invitation_status: 'Sent' }).eq('id', guestId).then(() => fetchEvents());
   }
+
+
+// ==========================================
+  // --- LIVE REALTIME TENANT ENGINE ---
+  // ==========================================
+  
+  // Custom Live Toast Alert (Pops up in the bottom right)
+  function showLiveToast(title, message) {
+      const toast = document.createElement('div');
+      toast.style.cssText = `position: fixed; bottom: -100px; right: 24px; background: #111827; border: 1px solid var(--color-primary); color: white; padding: 16px 24px; border-radius: var(--radius-md); box-shadow: 0 10px 25px rgba(124, 58, 237, 0.3); z-index: 10000; transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; gap: 4px;`;
+      toast.innerHTML = `<div style="font-weight: 800; font-size: 14px; color: var(--color-primary-soft);">${title}</div><div style="font-size: 12px; color: var(--color-text-muted);">${message}</div>`;
+      
+      document.body.appendChild(toast);
+      
+      // Slide in
+      setTimeout(() => { toast.style.bottom = '24px'; }, 100);
+      
+      // Slide out and destroy after 5 seconds
+      setTimeout(() => {
+          toast.style.bottom = '-100px';
+          setTimeout(() => toast.remove(), 400);
+      }, 5000);
+  }
+
+  function startTenantRealtimeEngine() {
+      if (!currentTenantId) return;
+
+      supabaseClient.channel('tenant-dashboard-sync')
+          // 1. LISTEN FOR ADMIN UPGRADES
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tenants', filter: `id=eq.${currentTenantId}` }, async (payload) => {
+              const newPlan = payload.new.subscription_status;
+              const isApproved = payload.new.account_status === 'Approved';
+              
+              // If Admin Approved their account or Upgraded their plan, refresh the profile to unlock features!
+              if (newPlan !== window.currentPlanTier || isApproved !== (window.currentAccountStatus === 'Approved')) {
+                  const { data: { session } } = await supabaseClient.auth.getSession();
+                  await checkTenantProfile(session); // Instantly updates UI Locks & Limits Cards
+                  showLiveToast('Account Updated!', `Admin has updated your account. You are now on the ${newPlan} plan!`);
+              }
+          })
+          // 2. LISTEN FOR EVENT APPROVALS
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'events', filter: `tenant_id=eq.${currentTenantId}` }, (payload) => {
+              if (payload.new.is_approved && payload.old && !payload.old.is_approved) {
+                  fetchEvents(); // Instantly turns tags green and unlocks QR passes
+                  showLiveToast('Event Approved!', `Your event "${payload.new.event_name}" is now live!`);
+              }
+          })
+          // 3. LISTEN FOR LIVE GATE SCANS
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'scan_logs' }, (payload) => {
+              // Only trigger if the scan belongs to one of this tenant's events
+              if (allFetchedEvents.some(e => e.id === payload.new.event_id)) {
+                  console.log("Live Scan Detected at Gate!");
+                  // Silently refresh the KPIs and Gate Management Data without reloading the page
+                  fetchAllGuestsForKPIs();
+                  loadGateManagementData();
+              }
+          })
+          .subscribe();
+  }
+
+  // Start the Live Engine 2 seconds after the page loads
+  setTimeout(startTenantRealtimeEngine, 2000);
 
 
   // Ensure this remains last
