@@ -2476,6 +2476,8 @@ generateNotifications();
           document.getElementById('profilePhone').value = savedPhone;
       }
 
+      const profileBanner = document.getElementById('tenantProfileCard');
+
       if (!tenant.full_name || !tenant.company_name || !tenant.phone) { 
           if(profileBanner) profileBanner.classList.remove('hidden');
           document.getElementById('profileName').value = tenant.full_name || '';
