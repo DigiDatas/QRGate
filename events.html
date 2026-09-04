@@ -2428,14 +2428,24 @@ generateNotifications();
       
       // Inject into Profile Page (This line replaces BOTH old lines safely)
       document.getElementById('profileNameDisplay').innerHTML = (tenant.full_name || 'New Organizer') + badgeHtml;
-// Populate Profile Plan Limits Card dynamically
-      const saasLimits = {
-          'basic': { ev: '2', gu: '50', feats: ['Standard Gate Passes', 'WhatsApp & Email Sharing'] },
-          'pro': { ev: '10', gu: '500', feats: ['Standard Gate Passes', 'WhatsApp & Email Sharing', 'Bulk Excel Upload', 'Custom Brand Fonts'] },
-          'premium': { ev: 'Unlimited', gu: 'Unlimited', feats: ['Standard Gate Passes', 'WhatsApp & Email Sharing', 'Bulk Excel Upload', 'Custom Brand Fonts', 'AI Pass Generation'] }
-      };
+// NEW: Dynamic Limits Engine (Fetched from Database)
+      const { data: dbLimits } = await supabaseClient.from('plan_limits').select('*');
+      const currentPlanData = dbLimits ? dbLimits.find(p => p.plan_name.toLowerCase() === window.currentPlanTier.toLowerCase()) : null;
       
-      const activeLimit = saasLimits[window.currentPlanTier.toLowerCase()] || saasLimits['basic'];
+      // Save limits globally for the UI forms to use
+      window.activeMaxEvents = currentPlanData ? parseInt(currentPlanData.max_events) : 2;
+      window.activeMaxGuests = currentPlanData ? parseInt(currentPlanData.max_guests) : 50;
+
+      // Rebuild the features array manually since limits are now dynamic
+      let feats = ['Standard Gate Passes', 'WhatsApp & Email Sharing'];
+      if (window.currentPlanTier.toLowerCase() !== 'basic') feats.push('Bulk Excel Upload', 'Custom Brand Fonts');
+      if (window.currentPlanTier.toLowerCase() === 'premium') feats.push('AI Pass Generation');
+
+      const activeLimit = { 
+          ev: window.activeMaxEvents >= 999999 ? 'Unlimited' : window.activeMaxEvents, 
+          gu: window.activeMaxGuests >= 999999 ? 'Unlimited' : window.activeMaxGuests, 
+          feats: feats 
+      };
 
       const badgeLg = document.getElementById('profilePlanBadgeLarge');
       if (badgeLg) {
@@ -3398,15 +3408,11 @@ document.getElementById('qrModal').classList.remove('hidden');
             const startTime = document.getElementById('dedicatedStartTime').value;
             const endTime = document.getElementById('dedicatedEndTime').value;
             const capacity = parseInt(document.getElementById('dedicatedEventCapacity').value) || 100;
-// --- PLAN LIMIT: MAX EVENTS ---
-            const eventLimits = { 'basic': 2, 'pro': 10, 'premium': 999999 };
-            const currentPlan = window.currentPlanTier ? window.currentPlanTier.toLowerCase() : 'basic';
-            const allowedEvents = eventLimits[currentPlan] || 2;
             
-            // Only check limits if they are creating a NEW event, not editing
-            if (!currentEditEventId && allFetchedEvents.length >= allowedEvents) {
-                openUpgradeModal(`Event Limit Reached (${allowedEvents} Max)`);
-                return; // Stops the saving process immediately!
+            // --- PLAN LIMIT: MAX EVENTS ---
+            if (!currentEditEventId && allFetchedEvents.length >= window.activeMaxEvents) {
+                openUpgradeModal(`Event Limit Reached (${window.activeMaxEvents} Max)`);
+                return; // Stops the saving process!
             }
             
             // New UI Columns safely captured via querySelectors (using placeholders)
@@ -3468,15 +3474,9 @@ document.getElementById('qrModal').classList.remove('hidden');
               const entryGateId = document.getElementById('agEntryGateSelect').value || null;
               const exitGateId = document.getElementById('agExitGateSelect').value || null;
 // --- PLAN LIMIT: MAX GUESTS PER EVENT ---
-              const guestLimits = { 'basic': 50, 'pro': 500, 'premium': 999999 };
-              const currentPlan = window.currentPlanTier ? window.currentPlanTier.toLowerCase() : 'basic';
-              const allowedGuests = guestLimits[currentPlan] || 50;
-              
               const currentEventGuests = allFetchedGuests.filter(g => g.event_id === eventId).length;
-              
-              // Only check limits if creating NEW guests
-              if (!currentEditGuestId && (currentEventGuests + capacity) > allowedGuests) {
-                  openUpgradeModal(`Guest Limit Reached (${allowedGuests} Max per Event)`);
+              if (!currentEditGuestId && (currentEventGuests + capacity) > window.activeMaxGuests) {
+                  openUpgradeModal(`Guest Limit Reached (${window.activeMaxGuests} Max per Event)`);
                   return; // Stops the saving process!
               }
 
@@ -4980,6 +4980,13 @@ function toggleGuestInputMode(mode) {
                   document.getElementById('excelFileInput').value = '';
                   return;
               }
+	// NEW: Bulk Limit Check
+              const currentEventGuests = allFetchedGuests.filter(g => g.event_id === eventId).length;
+              if ((currentEventGuests + jsonRows.length) > window.activeMaxGuests) {
+                  openUpgradeModal(`Bulk Upload blocked. Your plan limit is ${window.activeMaxGuests} guests per event. You currently have ${currentEventGuests} guests, and your Excel file has ${jsonRows.length} rows.`);
+                  document.getElementById('excelFileInput').value = '';
+                  return; // Stop upload
+              }
 
               let batchInserts = [];
               let currentMaxTicket = getNextTicketNumber(eventId); // Get starting sequence
@@ -5030,20 +5037,25 @@ function toggleGuestInputMode(mode) {
       if (!eventId) { alert('Please select a target event.'); return; }
       if (!countInput || countInput <= 0) { alert('Please enter a valid pass count.'); return; }
 
-      // 1. Check Capacity Limit
-      const targetEvent = allFetchedEvents.find(e => e.id === eventId);
-      const eventName = targetEvent ? targetEvent.event_name : 'Event';
-      const eventCapacity = targetEvent ? parseInt(targetEvent.total_capacity) || 100 : 100;
-      
+      // 1. Check SaaS Plan Limit FIRST
       const guestsForThisEvent = allFetchedGuests.filter(g => g.event_id === eventId);
-      const remainingSpots = eventCapacity - guestsForThisEvent.length;
-
-      if (countInput > remainingSpots) {
-          alert(`Cannot generate ${countInput} passes. Only ${remainingSpots} spots remaining for this event!`);
+      if ((guestsForThisEvent.length + countInput) > window.activeMaxGuests) {
+          openUpgradeModal(`Auto-Generate blocked. Your plan limit is ${window.activeMaxGuests} guests per event. You currently have ${guestsForThisEvent.length}.`);
           return;
       }
 
-      // 2. Generate
+      // 2. Check Physical Event Venue Capacity
+      const targetEvent = allFetchedEvents.find(e => e.id === eventId);
+      const eventName = targetEvent ? targetEvent.event_name : 'Event';
+      const eventCapacity = targetEvent ? parseInt(targetEvent.total_capacity) || 100 : 100;
+      const remainingSpots = eventCapacity - guestsForThisEvent.length;
+
+      if (countInput > remainingSpots) {
+          alert(`Cannot generate ${countInput} passes. Only ${remainingSpots} spots remaining for this physical venue!`);
+          return;
+      }
+
+      // 3. Generate
       let batchInserts = [];
       let currentMaxTicket = getNextTicketNumber(eventId); // Get starting sequence
 
