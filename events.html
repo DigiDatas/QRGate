@@ -2355,6 +2355,29 @@ let allFetchedLogs = []; // Stores global scan logs for drill-downs
     
     fetchAllGuestsForKPIs();
 generateNotifications();
+  // --- NEW: EVENT LIMIT UI WARNING ---
+    const eventBtn = document.getElementById('submitDedicatedEventBtn');
+    let evBanner = document.getElementById('eventLimitWarningBanner');
+    
+    if (!evBanner) {
+        evBanner = document.createElement('div');
+        evBanner.id = 'eventLimitWarningBanner';
+        evBanner.className = 'bg-red-500/10 border border-red-500 text-red-500 p-3 rounded-lg text-xs font-bold mb-4 hidden';
+        const formContainer = document.querySelector('#createEventView .left-col .card');
+        if(formContainer) formContainer.prepend(evBanner);
+    }
+
+    if (allFetchedEvents.length >= (window.activeMaxEvents || 2) && !currentEditEventId) {
+        if(evBanner) {
+            evBanner.innerHTML = `⚠️ LIMIT REACHED: Your plan allows a maximum of ${window.activeMaxEvents} events. You must upgrade to create more.`;
+            evBanner.classList.remove('hidden');
+        }
+        if(eventBtn) { eventBtn.disabled = true; eventBtn.style.opacity = '0.5'; eventBtn.style.cursor = 'not-allowed'; }
+    } else {
+        if(evBanner) evBanner.classList.add('hidden');
+        if(eventBtn) { eventBtn.disabled = false; eventBtn.style.opacity = '1'; eventBtn.style.cursor = 'pointer'; }
+    }
+
   }
 
   // --- INIT & AUTH ---
@@ -5503,9 +5526,58 @@ updateRecentGatesWidget();
               
               if(enGate) enGate.innerHTML = '<option value="">Any Gate Allowed</option>';
               if(exGate) exGate.innerHTML = '<option value="">Any Gate Allowed</option>';
-              if(!evId) return;
 
-              // NEW: Fetching gate_type to apply smart filters
+              // --- NEW: LIVE CAPACITY UI & WARNING BANNERS ---
+              const submitBtn = document.getElementById('submitAddGuestBtn');
+              let banner = document.getElementById('guestLimitWarningBanner');
+              
+              // Create the red banner if it doesn't exist yet
+              if (!banner) {
+                  banner = document.createElement('div');
+                  banner.id = 'guestLimitWarningBanner';
+                  banner.className = 'bg-red-500/10 border border-red-500 text-red-500 p-3 rounded-lg text-xs font-bold mb-4 hidden';
+                  const singleGuestZone = document.getElementById('singleGuestZone');
+                  if (singleGuestZone && singleGuestZone.parentElement) {
+                      singleGuestZone.parentElement.prepend(banner);
+                  }
+              }
+
+              if(!evId) {
+                  // Reset Side Panel if no event is selected
+                  if(document.getElementById('agCurrentGuests')) document.getElementById('agCurrentGuests').innerText = '0';
+                  if(document.getElementById('agMaxGuests')) document.getElementById('agMaxGuests').innerText = '0';
+                  if(document.getElementById('agStatAdded')) document.getElementById('agStatAdded').innerText = '0';
+                  if(document.getElementById('agStatRemain')) document.getElementById('agStatRemain').innerText = '0';
+                  if(document.getElementById('agStatTotal')) document.getElementById('agStatTotal').innerText = '0';
+                  if(submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = '1'; submitBtn.style.cursor = 'pointer'; }
+                  if(banner) banner.classList.add('hidden');
+                  return;
+              }
+
+              // Calculate current guests for THIS specific event
+              const maxGuestsLimit = window.activeMaxGuests || 50; // Fallback to 50 if missing
+              const currentEventGuests = allFetchedGuests.filter(g => g.event_id === evId).length;
+              const remaining = Math.max(0, maxGuestsLimit - currentEventGuests);
+
+              // Update the Side Panel UI Live!
+              if(document.getElementById('agCurrentGuests')) document.getElementById('agCurrentGuests').innerText = currentEventGuests;
+              if(document.getElementById('agMaxGuests')) document.getElementById('agMaxGuests').innerText = maxGuestsLimit;
+              if(document.getElementById('agStatAdded')) document.getElementById('agStatAdded').innerText = currentEventGuests;
+              if(document.getElementById('agStatRemain')) document.getElementById('agStatRemain').innerText = remaining;
+              if(document.getElementById('agStatTotal')) document.getElementById('agStatTotal').innerText = currentEventGuests;
+              if(document.getElementById('agLimitGuest')) document.getElementById('agLimitGuest').innerText = maxGuestsLimit;
+
+              // LOCK UI IF FULL
+              if (currentEventGuests >= maxGuestsLimit && !currentEditGuestId) {
+                  banner.innerHTML = `⚠️ LIMIT REACHED: This event has hit your plan limit of ${maxGuestsLimit} guests. You cannot add more.`;
+                  banner.classList.remove('hidden');
+                  if(submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '0.5'; submitBtn.style.cursor = 'not-allowed'; }
+              } else {
+                  banner.classList.add('hidden');
+                  if(submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = '1'; submitBtn.style.cursor = 'pointer'; }
+              }
+
+              // Fetching gate_type to apply smart filters
               const { data: gates } = await supabaseClient.from('gates').select('id, gate_name, gate_type').eq('event_id', evId);
               
               if(gates) {
