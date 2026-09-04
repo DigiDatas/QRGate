@@ -115,17 +115,26 @@
                 }
                 
                 const customCanvas = tempDiv.firstElementChild;
+                container.innerHTML = '';
                 
-                // Scale math to fit the 1080x1440 canvas perfectly into a 360px wide mobile screen
-                customCanvas.style.position = 'relative';
-                customCanvas.style.transform = 'scale(0.333)'; 
+                // DYNAMIC SCALE: Automatically calculate the perfect scale for ANY phone screen size!
+                const containerWidth = container.clientWidth || Math.min(window.innerWidth - 32, 360);
+                const scale = containerWidth / 1080;
+                
+                customCanvas.style.position = 'absolute';
+                customCanvas.style.top = '0';
+                customCanvas.style.left = '0';
+                customCanvas.style.transform = `scale(${scale})`; 
                 customCanvas.style.transformOrigin = 'top left';
                 
-                container.innerHTML = '';
-                container.style.height = '480px'; 
+                container.style.position = 'relative';
+                container.style.width = '100%';
+                container.style.height = `${1440 * scale}px`; // Auto-adjusts height to match the new scale
                 container.style.background = 'transparent';
                 container.style.overflow = 'hidden';
                 container.style.borderRadius = '16px';
+                container.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.5)';
+                
                 container.appendChild(customCanvas);
 
             } else {
