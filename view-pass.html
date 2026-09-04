@@ -104,7 +104,14 @@
                     cQrSpot.style.background = hasBox ? bgColor : 'transparent';
                     cQrSpot.style.borderRadius = hasBox ? (radius + 'px') : '0px';
 
+                    // --- NEW: Find and completely remove the gray "QR SPOT" placeholder! ---
+                    const oldPlaceholder = cQrSpot.querySelector('#qrInnerCode');
+                    if (oldPlaceholder) oldPlaceholder.remove();
+
                     let innerContainer = document.createElement('div');
+                    innerContainer.style.display = 'flex';
+                    innerContainer.style.alignItems = 'center';
+                    innerContainer.style.justifyContent = 'center';
                     cQrSpot.prepend(innerContainer);
 
                     new QRCode(innerContainer, { 
