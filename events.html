@@ -548,7 +548,7 @@
       <div class="nav-group">
         <button class="nav-item active w-full" onclick="switchView('dashboardView', this)">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
-          Dashboard
+          <span data-i18n="nav_dashboard">Dashboard</span>
         </button>
       </div>
 
@@ -6013,6 +6013,36 @@ updateRecentGatesWidget();
   // --- LANGUAGE TRANSLATION ENGINE ---
   // ==========================================
   
+  // 1. The Translation Dictionary
+  const translations = {
+      en: {
+          "nav_dashboard": "Dashboard",
+          "nav_events": "Events",
+          "nav_guest_lists": "Guest Lists",
+          "nav_gate_management": "Gate Management",
+          "nav_create_manage": "Create & Manage",
+          "nav_design_templates": "Design Templates",
+          "nav_web_invites": "Web Invitations",
+          "nav_analytics": "Analytics",
+          "nav_reports": "Reports",
+          "nav_my_profile": "My Profile",
+          "nav_logout": "Logout"
+      },
+      ar: {
+          "nav_dashboard": "لوحة القيادة",
+          "nav_events": "الفعاليات",
+          "nav_guest_lists": "قوائم الضيوف",
+          "nav_gate_management": "إدارة البوابات",
+          "nav_create_manage": "إنشاء وإدارة",
+          "nav_design_templates": "قوالب التصميم",
+          "nav_web_invites": "دعوات الويب",
+          "nav_analytics": "التحليلات",
+          "nav_reports": "التقارير",
+          "nav_my_profile": "ملفي الشخصي",
+          "nav_logout": "تسجيل خروج"
+      }
+  };
+
   // Save preference in browser storage
   let currentLanguage = localStorage.getItem('qrg_lang') || 'en';
 
@@ -6025,7 +6055,7 @@ updateRecentGatesWidget();
   function applyLanguage() {
       const isArabic = currentLanguage === 'ar';
       
-      // 1. Flip the Entire HTML layout (Tailwind auto-adjusts based on this!)
+      // 1. Flip the Entire HTML layout
       document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
       document.documentElement.lang = currentLanguage;
 
@@ -6046,6 +6076,14 @@ updateRecentGatesWidget();
               sidebar.style.borderRight = '1px solid var(--color-border)';
           }
       }
+
+      // 4. Translate ALL marked text on the screen
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[currentLanguage] && translations[currentLanguage][key]) {
+              element.innerText = translations[currentLanguage][key];
+          }
+      });
   }
 
   // Trigger Language Engine when Dashboard Loads
