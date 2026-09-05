@@ -3449,21 +3449,48 @@ document.getElementById('qrModal').classList.remove('hidden');
             const endTime = document.getElementById('dedicatedEndTime').value;
             const capacity = parseInt(document.getElementById('dedicatedEventCapacity').value) || 100;
             
-            // --- PLAN LIMIT: MAX EVENTS ---
-            if (!currentEditEventId && allFetchedEvents.length >= window.activeMaxEvents) {
-                openUpgradeModal(`Event Limit Reached (${window.activeMaxEvents} Max)`);
-                return; // Stops the saving process!
-            }
-            
-            // New UI Columns safely captured via querySelectors (using placeholders)
             const address = document.querySelector('#createEventView input[placeholder="Enter full address"]').value.trim();
             const organizer = document.querySelector('#createEventView input[placeholder="Enter organizer / company name"]').value.trim();
             const contactEmail = document.querySelector('#createEventView input[type="email"]').value.trim();
             const contactPhone = document.querySelector('#createEventView input[placeholder="Enter phone number"]').value.trim();
             const description = document.querySelector('#createEventView textarea').value.trim();
             
-           if (!name || !date || !venue) return alert('Please fill in Event Name, Date, and Venue.');
-            
+            if (!name || !date || !venue) return alert('Please fill in Event Name, Date, and Venue.');
+
+            // ====================================================================
+            // 🔒 SECURITY FIX: LIVE DATABASE VALIDATION FOR EVENTS
+            // ====================================================================
+            if (!currentEditEventId) { // Only check limits if creating a NEW event
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session) return;
+                
+                // A. Get Live Plan
+                const { data: liveTenant } = await supabaseClient
+                    .from('tenants')
+                    .select('subscription_status')
+                    .eq('owner_id', session.user.id)
+                    .single();
+                    
+                const { data: dbLimits } = await supabaseClient.from('plan_limits').select('*');
+                const livePlanTier = liveTenant ? liveTenant.subscription_status : 'Basic';
+                const currentPlanData = dbLimits ? dbLimits.find(p => p.plan_name.toLowerCase() === livePlanTier.toLowerCase()) : null;
+                const trueMaxEvents = currentPlanData ? parseInt(currentPlanData.max_events) : 2;
+
+                // B. Get Live Event Count
+                const { count: liveEventCount, error: countErr } = await supabaseClient
+                    .from('events')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('tenant_id', currentTenantId);
+
+                const currentTotalEvents = countErr ? 0 : liveEventCount;
+
+                if (currentTotalEvents >= trueMaxEvents) {
+                    openUpgradeModal(`Event Limit Reached (${trueMaxEvents} Max). You already have ${currentTotalEvents} events.`);
+                    return; // Stops the saving process instantly!
+                }
+            }
+            // ====================================================================
+
             const eventPayload = { 
                 event_name: name, event_date: date, venue: venue, event_type: type, start_time: startTime, end_time: endTime, total_capacity: capacity, 
                 address: address, organizer_name: organizer, contact_email: contactEmail, contact_phone: contactPhone, description: description,
@@ -3476,8 +3503,8 @@ document.getElementById('qrModal').classList.remove('hidden');
                 alert('Event Updated! Awaiting Admin Approval.');
                 currentEditEventId = null; // Reset ID state
                 
-                // Safely reset button text only (header resets automatically on navigation)
-                document.getElementById('submitDedicatedEventBtn').innerHTML = 'Create Event (Pending Admin Approval) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+                // Safely reset button
+                document.getElementById('submitDedicatedEventBtn').innerHTML = '<span data-i18n="btn_submit_event">Create Event &rarr;</span>';
             } else {
                 // CREATE NEW
                 await supabaseClient.from('events').insert([eventPayload]);
@@ -3513,14 +3540,40 @@ document.getElementById('qrModal').classList.remove('hidden');
               
               const entryGateId = document.getElementById('agEntryGateSelect').value || null;
               const exitGateId = document.getElementById('agExitGateSelect').value || null;
-// --- PLAN LIMIT: MAX GUESTS PER EVENT ---
-              const currentEventGuests = allFetchedGuests.filter(g => g.event_id === eventId).length;
-              if (!currentEditGuestId && (currentEventGuests + capacity) > window.activeMaxGuests) {
-                  openUpgradeModal(`Guest Limit Reached (${window.activeMaxGuests} Max per Event)`);
-                  return; // Stops the saving process!
-              }
 
               if (!eventId || !name || !phone) return alert('Please select an event, and enter Guest Name and Phone Number.');
+
+              // ====================================================================
+              // 🔒 SECURITY FIX: LIVE DATABASE VALIDATION FOR SINGLE GUEST
+              // ====================================================================
+              if (!currentEditGuestId) { // Only check limits if creating a NEW guest
+                  const { data: { session } } = await supabaseClient.auth.getSession();
+                  if (!session) return;
+                  
+                  const { data: liveTenant } = await supabaseClient
+                      .from('tenants')
+                      .select('subscription_status')
+                      .eq('owner_id', session.user.id)
+                      .single();
+                      
+                  const { data: dbLimits } = await supabaseClient.from('plan_limits').select('*');
+                  const livePlanTier = liveTenant ? liveTenant.subscription_status : 'Basic';
+                  const currentPlanData = dbLimits ? dbLimits.find(p => p.plan_name.toLowerCase() === livePlanTier.toLowerCase()) : null;
+                  const trueMaxGuests = currentPlanData ? parseInt(currentPlanData.max_guests) : 50;
+
+                  const { count: liveGuestCount, error: countErr } = await supabaseClient
+                      .from('guests')
+                      .select('*', { count: 'exact', head: true })
+                      .eq('event_id', eventId);
+
+                  const currentEventGuests = countErr ? 0 : liveGuestCount;
+
+                  if ((currentEventGuests + capacity) > trueMaxGuests) {
+                      openUpgradeModal(`Guest Limit Reached (${trueMaxGuests} Max per Event).`);
+                      return; // Stops the saving process instantly!
+                  }
+              }
+              // ====================================================================
 
               let selectedMethod = 'System';
               const waBtn = document.getElementById('btnWhatsappOption');
@@ -3537,7 +3590,7 @@ document.getElementById('qrModal').classList.remove('hidden');
                   await supabaseClient.from('guests').update(guestPayload).eq('id', currentEditGuestId);
                   alert('Guest updated successfully!');
                   currentEditGuestId = null;
-                  document.getElementById('submitAddGuestBtn').innerHTML = 'Save Single Guest <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+                  document.getElementById('submitAddGuestBtn').innerHTML = '<span data-i18n="btn_save_single_guest">Save Single Guest</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
               } else {
                   guestPayload.status = 'Active';
                   guestPayload.invitation_status = 'Pending';
@@ -3887,11 +3940,32 @@ let currentFontCategoryFilter = 'All';
 
     
 
-    function toggleFontExplorer() {
+    async function toggleFontExplorer() {
         const panel = document.getElementById('fontExplorerPanel');
         const grid = document.getElementById('builderLayoutGrid');
         const isEventsPage = window.location.pathname.includes('events') || !document.body.classList.contains('bg-slate-950');
-        
+
+        // ====================================================================
+        // 🔒 SECURITY FIX: LIVE VALIDATION FOR PREMIUM FONTS
+        // ====================================================================
+        if (panel.style.display === 'none') {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                const { data: liveTenant } = await supabaseClient
+                    .from('tenants')
+                    .select('subscription_status')
+                    .eq('owner_id', session.user.id)
+                    .single();
+                
+                if (liveTenant && liveTenant.subscription_status.toLowerCase() === 'basic') {
+                    openUpgradeModal('Custom Brand Fonts');
+                    applyAccountLocks(); // Re-lock the UI buttons instantly
+                    return; // Stop the panel from opening
+                }
+            }
+        }
+        // ====================================================================
+
         if (panel.style.display === 'none') {
             panel.style.display = 'flex';
             // Slide open by adding a new column to the grid
@@ -5020,13 +5094,46 @@ function toggleGuestInputMode(mode) {
                   document.getElementById('excelFileInput').value = '';
                   return;
               }
-	// NEW: Bulk Limit Check
-              const currentEventGuests = allFetchedGuests.filter(g => g.event_id === eventId).length;
-              if ((currentEventGuests + jsonRows.length) > window.activeMaxGuests) {
-                  openUpgradeModal(`Bulk Upload blocked. Your plan limit is ${window.activeMaxGuests} guests per event. You currently have ${currentEventGuests} guests, and your Excel file has ${jsonRows.length} rows.`);
+
+              // ====================================================================
+              // 🔒 SECURITY FIX: LIVE VALIDATION FOR BULK UPLOAD
+              // ====================================================================
+              const { data: { session } } = await supabaseClient.auth.getSession();
+              if (!session) return;
+              
+              const { data: liveTenant } = await supabaseClient
+                  .from('tenants')
+                  .select('subscription_status')
+                  .eq('owner_id', session.user.id)
+                  .single();
+                  
+              const { data: dbLimits } = await supabaseClient.from('plan_limits').select('*');
+              const livePlanTier = liveTenant ? liveTenant.subscription_status : 'Basic';
+              const currentPlanData = dbLimits ? dbLimits.find(p => p.plan_name.toLowerCase() === livePlanTier.toLowerCase()) : null;
+              const trueMaxGuests = currentPlanData ? parseInt(currentPlanData.max_guests) : 50;
+
+              // 1. Check if they are still allowed to use Bulk Upload
+              if (livePlanTier.toLowerCase() === 'basic') {
+                  openUpgradeModal('Bulk Excel Upload');
+                  document.getElementById('excelFileInput').value = '';
+                  applyAccountLocks();
+                  return;
+              }
+
+              // 2. Check Live Guest Limit
+              const { count: liveGuestCount, error: countErr } = await supabaseClient
+                  .from('guests')
+                  .select('*', { count: 'exact', head: true })
+                  .eq('event_id', eventId);
+
+              const currentEventGuests = countErr ? 0 : liveGuestCount;
+
+              if ((currentEventGuests + jsonRows.length) > trueMaxGuests) {
+                  openUpgradeModal(`Bulk Upload blocked. Your live plan limit is ${trueMaxGuests} guests per event. You currently have ${currentEventGuests} guests, and your Excel file has ${jsonRows.length} rows.`);
                   document.getElementById('excelFileInput').value = '';
                   return; // Stop upload
               }
+              // ====================================================================
 
               let batchInserts = [];
               let currentMaxTicket = getNextTicketNumber(eventId); // Get starting sequence
@@ -5059,7 +5166,7 @@ function toggleGuestInputMode(mode) {
               } else {
                   alert(`Successfully imported ${batchInserts.length} guests!`);
                   document.getElementById('excelFileInput').value = '';
-                  document.getElementById('excelFileNameDisplay').innerText = 'No file chosen';
+                  document.getElementById('excelFileNameDisplay').innerText = window.t('txt_no_file', 'No file chosen');
                   document.getElementById('bulkUploadZone').style.display = 'none';
                   fetchAllGuestsForKPIs();
                   switchView('guestListsView');
@@ -5077,25 +5184,55 @@ function toggleGuestInputMode(mode) {
       if (!eventId) { alert('Please select a target event.'); return; }
       if (!countInput || countInput <= 0) { alert('Please enter a valid pass count.'); return; }
 
-      // 1. Check SaaS Plan Limit FIRST
-      const guestsForThisEvent = allFetchedGuests.filter(g => g.event_id === eventId);
-      if ((guestsForThisEvent.length + countInput) > window.activeMaxGuests) {
-          openUpgradeModal(`Auto-Generate blocked. Your plan limit is ${window.activeMaxGuests} guests per event. You currently have ${guestsForThisEvent.length}.`);
-          return;
+      // ====================================================================
+      // 🔒 SECURITY FIX: LIVE DATABASE VALIDATION
+      // Fetch the absolute latest plan tier and guest count directly from DB
+      // ====================================================================
+      
+      // A. Get the Live Tenant Plan
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) return;
+      
+      const { data: liveTenant } = await supabaseClient
+          .from('tenants')
+          .select('subscription_status')
+          .eq('owner_id', session.user.id)
+          .single();
+          
+      const { data: dbLimits } = await supabaseClient.from('plan_limits').select('*');
+      
+      const livePlanTier = liveTenant ? liveTenant.subscription_status : 'Basic';
+      const currentPlanData = dbLimits ? dbLimits.find(p => p.plan_name.toLowerCase() === livePlanTier.toLowerCase()) : null;
+      const trueMaxGuests = currentPlanData ? parseInt(currentPlanData.max_guests) : 50;
+
+      // B. Get the Live Guest Count for this event (highly efficient count query)
+      const { count: liveGuestCount, error: countErr } = await supabaseClient
+          .from('guests')
+          .select('*', { count: 'exact', head: true })
+          .eq('event_id', eventId);
+
+      const currentEventGuests = countErr ? 0 : liveGuestCount;
+
+      // 1. Check Live SaaS Plan Limit
+      if ((currentEventGuests + countInput) > trueMaxGuests) {
+          openUpgradeModal(`Auto-Generate blocked. Your current plan limit is ${trueMaxGuests} guests per event. You already have ${currentEventGuests} guests in this event.`);
+          return; // Instantly blocks the generation!
       }
 
       // 2. Check Physical Event Venue Capacity
       const targetEvent = allFetchedEvents.find(e => e.id === eventId);
       const eventName = targetEvent ? targetEvent.event_name : 'Event';
       const eventCapacity = targetEvent ? parseInt(targetEvent.total_capacity) || 100 : 100;
-      const remainingSpots = eventCapacity - guestsForThisEvent.length;
+      const remainingSpots = eventCapacity - currentEventGuests;
 
       if (countInput > remainingSpots) {
           alert(`Cannot generate ${countInput} passes. Only ${remainingSpots} spots remaining for this physical venue!`);
           return;
       }
 
-      // 3. Generate
+      // ====================================================================
+      // 3. Generate Passes (Safe to proceed)
+      // ====================================================================
       let batchInserts = [];
       let currentMaxTicket = getNextTicketNumber(eventId); // Get starting sequence
 
