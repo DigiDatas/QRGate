@@ -1755,9 +1755,9 @@
 
       <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 mb-6 text-left">
         <ul class="space-y-3 text-sm text-slate-300 font-medium">
-          <li class="flex items-center gap-3"><svg class="text-pink-500 w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Increase Event & Guest Limits</li>
-          <li class="flex items-center gap-3"><svg class="text-pink-500 w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Custom Brand Fonts & AI Tools</li>
-          <li class="flex items-center gap-3"><svg class="text-pink-500 w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Bulk Excel Guest Uploads</li>
+          <li class="flex items-center gap-3"><svg class="text-pink-500 w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> <span data-i18n="upg_feat_1">Increase Event & Guest Limits</span></li>
+          <li class="flex items-center gap-3"><svg class="text-pink-500 w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> <span data-i18n="upg_feat_2">Custom Brand Fonts & AI Tools</span></li>
+          <li class="flex items-center gap-3"><svg class="text-pink-500 w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> <span data-i18n="upg_feat_3">Bulk Excel Guest Uploads</span></li>
         </ul>
       </div>
 
@@ -1773,7 +1773,7 @@
         </button>
       </div>
       
-      <p class="text-xs text-slate-500 mt-4">Downgrade will not appear teh higher plan features</p>
+      <p class="text-xs text-slate-500 mt-4" data-i18n="upg_footer">Downgrades will not keep higher plan features.</p>
     </div>
   </div>
 <!-- PREVIEW FULLSCREEN MODAL -->
@@ -2377,7 +2377,7 @@ generateNotifications();
 
     if (allFetchedEvents.length >= (window.activeMaxEvents || 2) && !currentEditEventId) {
         if(evBanner) {
-            evBanner.innerHTML = `⚠️ LIMIT REACHED: Your plan allows a maximum of ${window.activeMaxEvents} events. You must upgrade to create more.`;
+            evBanner.innerHTML = `${window.t('warn_event_limit', '⚠️ LIMIT REACHED: Your plan allows a maximum of')} ${window.activeMaxEvents} ${window.t('warn_event_limit_2', 'events. You must upgrade to create more.')}`;
             evBanner.classList.remove('hidden');
         }
         if(eventBtn) { eventBtn.disabled = true; eventBtn.style.opacity = '0.5'; eventBtn.style.cursor = 'not-allowed'; }
@@ -2605,13 +2605,21 @@ document.getElementById('dashboardWelcomeTitle').innerText = window.t('dash_welc
       const modalTitle = document.querySelector('#upgradeModal h2');
       const modalDesc = document.querySelector('#upgradeModal p');
 
-      // 1. Dynamic Title and Description
-      if (modalTitle) modalTitle.innerHTML = `Change <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-indigo-400">Subscription Plan</span>`;
+      // 1. Dynamic Title and Description (Translated via window.t)
+      if (modalTitle) {
+          modalTitle.innerHTML = `${window.t('upg_title_change', 'Change')} <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-indigo-400">${window.t('upg_title_plan', 'Subscription Plan')}</span>`;
+      }
 
       if (featureName === 'Plan Upgrade') {
-          if (modalDesc) modalDesc.innerHTML = `You are currently on the <strong class="text-slate-200 uppercase">${window.currentPlanTier || 'Basic'}</strong> plan. Select a new plan below to request a change.`;
+          if (modalDesc) modalDesc.innerHTML = `${window.t('upg_desc_curr_plan', 'You are currently on the')} <strong class="text-slate-200 uppercase">${window.currentPlanTier || 'Basic'}</strong> ${window.t('upg_desc_curr_plan_2', 'plan. Select a new plan below to request a change.')}`;
       } else {
-          if (modalDesc) modalDesc.innerHTML = `The feature <strong class="text-slate-200">"${featureName}"</strong> requires a different plan. Select an option below to request an account update.`;
+          // Attempt to translate the feature name itself if possible, otherwise use the passed string
+          let safeFeatureName = featureName;
+          if (featureName.includes('Fonts')) safeFeatureName = window.t('upg_feat_2', featureName);
+          if (featureName.includes('Bulk')) safeFeatureName = window.t('upg_feat_3', featureName);
+          if (featureName.includes('Web Inv')) safeFeatureName = window.t('nav_web_invites', featureName);
+
+          if (modalDesc) modalDesc.innerHTML = `${window.t('upg_desc_feat_1', 'The feature')} <strong class="text-slate-200">"${safeFeatureName}"</strong> ${window.t('upg_desc_feat_2', 'requires a different plan. Select an option below to request an account update.')}`;
       }
 
       // 2. Reset all buttons to hidden first
@@ -2619,16 +2627,16 @@ document.getElementById('dashboardWelcomeTitle').innerText = window.t('dash_welc
       if (btnPro) btnPro.style.display = 'none';
       if (btnPremium) btnPremium.style.display = 'none';
 
-      // 3. Show the EXACT two buttons the user doesn't have
+      // 3. Show the EXACT two buttons the user doesn't have (Translated via window.t)
       if (currentPlan === 'basic') {
-          if (btnPro) { btnPro.style.display = 'flex'; btnPro.innerHTML = 'Upgrade to Pro'; }
-          if (btnPremium) { btnPremium.style.display = 'flex'; btnPremium.innerHTML = 'Upgrade to Premium'; }
+          if (btnPro) { btnPro.style.display = 'flex'; btnPro.innerHTML = window.t('upg_btn_up_pro', 'Upgrade to Pro'); }
+          if (btnPremium) { btnPremium.style.display = 'flex'; btnPremium.innerHTML = window.t('upg_btn_up_prem', 'Upgrade to Premium'); }
       } else if (currentPlan === 'pro') {
-          if (btnBasic) { btnBasic.style.display = 'flex'; btnBasic.innerHTML = 'Downgrade to Basic'; }
-          if (btnPremium) { btnPremium.style.display = 'flex'; btnPremium.innerHTML = 'Upgrade to Premium'; }
+          if (btnBasic) { btnBasic.style.display = 'flex'; btnBasic.innerHTML = window.t('upg_btn_down_basic', 'Downgrade to Basic'); }
+          if (btnPremium) { btnPremium.style.display = 'flex'; btnPremium.innerHTML = window.t('upg_btn_up_prem', 'Upgrade to Premium'); }
       } else if (currentPlan === 'premium') {
-          if (btnBasic) { btnBasic.style.display = 'flex'; btnBasic.innerHTML = 'Downgrade to Basic'; }
-          if (btnPro) { btnPro.style.display = 'flex'; btnPro.innerHTML = 'Downgrade to Pro'; }
+          if (btnBasic) { btnBasic.style.display = 'flex'; btnBasic.innerHTML = window.t('upg_btn_down_basic', 'Downgrade to Basic'); }
+          if (btnPro) { btnPro.style.display = 'flex'; btnPro.innerHTML = window.t('upg_btn_down_pro', 'Downgrade to Pro'); }
       }
 
       // 4. Reveal the Modal
@@ -5723,7 +5731,7 @@ updateRecentGatesWidget();
 
               // LOCK UI IF FULL
               if (currentEventGuests >= maxGuestsLimit && !currentEditGuestId) {
-                  banner.innerHTML = `⚠️ LIMIT REACHED: This event has hit your plan limit of ${maxGuestsLimit} guests. You cannot add more.`;
+                  banner.innerHTML = `${window.t('warn_guest_limit', '⚠️ LIMIT REACHED: This event has hit your plan limit of')} ${maxGuestsLimit} ${window.t('warn_guest_limit_2', 'guests. You cannot add more.')}`;
                   banner.classList.remove('hidden');
                   if(submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '0.5'; submitBtn.style.cursor = 'not-allowed'; }
               } else {
@@ -6405,7 +6413,26 @@ updateRecentGatesWidget();
           "prof_max_guests": "Max Guests / Event",
           "prof_active_feats": "Active Features",
           "btn_view_upgrade": "View Upgrade Options",
-          "btn_save_changes": "Save Changes"
+          "btn_save_changes": "Save Changes",
+// --- UPGRADE MODAL & WARNINGS ---
+          "upg_feat_1": "Increase Event & Guest Limits",
+          "upg_feat_2": "Custom Brand Fonts & AI Tools",
+          "upg_feat_3": "Bulk Excel Guest Uploads",
+          "upg_footer": "Downgrades will not keep higher plan features.",
+          "upg_btn_down_basic": "Downgrade to Basic",
+          "upg_btn_up_pro": "Upgrade to Pro",
+          "upg_btn_down_pro": "Downgrade to Pro",
+          "upg_btn_up_prem": "Upgrade to Premium",
+          "upg_title_change": "Change",
+          "upg_title_plan": "Subscription Plan",
+          "upg_desc_curr_plan": "You are currently on the",
+          "upg_desc_curr_plan_2": "plan. Select a new plan below to request a change.",
+          "upg_desc_feat_1": "The feature",
+          "upg_desc_feat_2": "requires a different plan. Select an option below to request an account update.",
+          "warn_event_limit": "⚠️ LIMIT REACHED: Your plan allows a maximum of",
+          "warn_event_limit_2": "events. You must upgrade to create more.",
+          "warn_guest_limit": "⚠️ LIMIT REACHED: This event has hit your plan limit of",
+          "warn_guest_limit_2": "guests. You cannot add more."
       },
       
 
@@ -6672,7 +6699,26 @@ ar: {
           "prof_max_guests": "الحد الأقصى للضيوف / الفعالية",
           "prof_active_feats": "الميزات النشطة",
           "btn_view_upgrade": "عرض خيارات الترقية",
-          "btn_save_changes": "حفظ التغييرات"
+          "btn_save_changes": "حفظ التغييرات",
+// --- UPGRADE MODAL & WARNINGS (ARABIC) ---
+          "upg_feat_1": "زيادة حدود الفعاليات والضيوف",
+          "upg_feat_2": "خطوط مخصصة وأدوات ذكاء اصطناعي",
+          "upg_feat_3": "رفع ملفات Excel للضيوف",
+          "upg_footer": "لن تحتفظ الباقات الأقل بميزات الباقات الأعلى.",
+          "upg_btn_down_basic": "تخفيض إلى الأساسية (Basic)",
+          "upg_btn_up_pro": "ترقية إلى المتقدمة (Pro)",
+          "upg_btn_down_pro": "تخفيض إلى المتقدمة (Pro)",
+          "upg_btn_up_prem": "ترقية إلى المميزة (Premium)",
+          "upg_title_change": "تغيير",
+          "upg_title_plan": "خطة الاشتراك",
+          "upg_desc_curr_plan": "أنت حالياً على خطة",
+          "upg_desc_curr_plan_2": ". اختر خطة جديدة أدناه لطلب التغيير.",
+          "upg_desc_feat_1": "الميزة",
+          "upg_desc_feat_2": "تتطلب خطة مختلفة. اختر خياراً أدناه لطلب تحديث الحساب.",
+          "warn_event_limit": "⚠️ تم الوصول للحد الأقصى: خطتك تسمح بحد أقصى",
+          "warn_event_limit_2": "فعاليات. يجب عليك الترقية لإنشاء المزيد.",
+          "warn_guest_limit": "⚠️ تم الوصول للحد الأقصى: وصلت هذه الفعالية إلى حد خطتك وهو",
+          "warn_guest_limit_2": "ضيوف. لا يمكنك إضافة المزيد."
       }
   };
 
