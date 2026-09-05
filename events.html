@@ -553,7 +553,7 @@
       </div>
 
       <div class="nav-group">
-        <p class="nav-label">Events</p>
+        <p class="nav-label" data-i18n="sidebar_sec_events">Events</p>
         <button class="nav-item w-full" onclick="switchView('eventsView', this)">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg></span>
           <span data-i18n="nav_events">Events</span>
@@ -569,7 +569,7 @@
   </div>
 
       <div class="nav-group">
-        <p class="nav-label">Management</p>
+        <p class="nav-label" data-i18n="sidebar_sec_management">Management</p>
         <button class="nav-item w-full" onclick="if(window.innerWidth <= 768) return false; switchView('createManageView', this)" style="justify-content: space-between;">
           <div style="display: flex; align-items: center; gap: var(--space-3);">
             <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg></span>
@@ -588,7 +588,7 @@
       </div>
 
       <div class="nav-group">
-        <p class="nav-label">Design & Templates</p>
+        <p class="nav-label" data-i18n="sidebar_sec_design">Design & Templates</p>
         <button class="nav-item w-full" onclick="switchView('designTemplatesView', this)">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></span>
           <span data-i18n="nav_design_templates">Design Templates</span>
@@ -601,7 +601,7 @@
       </div>
 
       <div class="nav-group">
-        <p class="nav-label">Reports</p>
+        <p class="nav-label" data-i18n="sidebar_sec_reports">Reports</p>
         <button class="nav-item w-full" onclick="alert('Analytics updates coming soon!'); return false;">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
           <span data-i18n="nav_analytics">Analytics</span>
@@ -687,7 +687,7 @@
             <div class="user-name" id="userNameDisplay">Admin User</div>
             <div class="user-role" id="userEmailDisplay">Super Admin</div>
           </div>
-          <button onclick="handleSignOut()" class="btn-signout ml-3 cursor-pointer">Logout</button>
+          <button onclick="handleSignOut()" class="btn-signout ml-3 cursor-pointer" data-i18n="header_logout">Logout</button>
         </div>
       </div>
     </header>
@@ -796,15 +796,15 @@
           <div>
             <!-- FIX 01: Dynamic Welcome Title -->
             <h1 class="page-title" id="dashboardWelcomeTitle">Welcome back! 👋</h1>
-            <p class="page-subtitle">Here's what's happening with your events.</p>
+            <p class="page-subtitle" data-i18n="dash_welcome_sub">Here's what's happening with your events.</p>
           </div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="dashboardDateFilters">
             <!-- Added All Time as Default so old test data shows up -->
-            <button class="btn-filter-nav active" onclick="applyDashboardFilter('All Time', this)">All Time</button>
-            <button class="btn-filter-nav" onclick="applyDashboardFilter('Today', this)">Today</button>
-            <button class="btn-filter-nav" onclick="applyDashboardFilter('This Week', this)">This Week</button>
-            <button class="btn-filter-nav" onclick="applyDashboardFilter('This Month', this)">This Month</button>
-            <button class="btn-filter-nav" onclick="applyDashboardFilter('This Year', this)">This Year</button>
+            <button class="btn-filter-nav active" onclick="applyDashboardFilter('All Time', this)" data-i18n="filter_all_time">All Time</button>
+            <button class="btn-filter-nav" onclick="applyDashboardFilter('Today', this)" data-i18n="filter_today">Today</button>
+            <button class="btn-filter-nav" onclick="applyDashboardFilter('This Week', this)" data-i18n="filter_this_week">This Week</button>
+            <button class="btn-filter-nav" onclick="applyDashboardFilter('This Month', this)" data-i18n="filter_this_month">This Month</button>
+            <button class="btn-filter-nav" onclick="applyDashboardFilter('This Year', this)" data-i18n="filter_this_year">This Year</button>
           </div>
         </div>
 
@@ -818,17 +818,17 @@
 
         <!-- QUICK ACTIONS -->
         <section style="flex-shrink:0;">
-          <h2 class="section-title" style="margin-bottom: 8px;">Quick Actions</h2>
+          <h2 class="section-title" style="margin-bottom: 8px;" data-i18n="qa_title">Quick Actions</h2>
           <!-- FIX 03: 4 Columns, specific tab routes -->
           <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
-            <button class="card action-card" onclick="switchView('createEventView')" style="flex-direction: row; padding: 12px 16px; align-items: center; gap: 12px;"><div class="action-icon" style="background:var(--color-primary-soft); color:var(--color-primary); width:36px; height:36px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="action-label" style="font-size: 13px;">Create Event</div></button>
-            <button class="card action-card" onclick="switchView('addGuestView')" style="flex-direction: row; padding: 12px 16px; align-items: center; gap: 12px;"><div class="action-icon" style="background:var(--color-success-soft); color:var(--color-success); width:36px; height:36px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg></div><div class="action-label" style="font-size: 13px;">Add Guests</div></button>
-            <button class="card action-card" onclick="window.location.href='scanner.html'" style="flex-direction: row; padding: 12px 16px; align-items: center; gap: 12px;"><div class="action-icon" style="background:var(--color-danger-soft); color:var(--color-danger); width:36px; height:36px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div class="action-label" style="font-size: 13px;">Scan QR</div></button>
+            <button class="card action-card" onclick="switchView('createEventView')" style="flex-direction: row; padding: 12px 16px; align-items: center; gap: 12px;"><div class="action-icon" style="background:var(--color-primary-soft); color:var(--color-primary); width:36px; height:36px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="action-label" style="font-size: 13px;" data-i18n="qa_create_event">Create Event</div></button>
+            <button class="card action-card" onclick="switchView('addGuestView')" style="flex-direction: row; padding: 12px 16px; align-items: center; gap: 12px;"><div class="action-icon" style="background:var(--color-success-soft); color:var(--color-success); width:36px; height:36px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg></div><div class="action-label" style="font-size: 13px;" data-i18n="qa_add_guests">Add Guests</div></button>
+            <button class="card action-card" onclick="window.location.href='scanner.html'" style="flex-direction: row; padding: 12px 16px; align-items: center; gap: 12px;"><div class="action-icon" style="background:var(--color-danger-soft); color:var(--color-danger); width:36px; height:36px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div class="action-label" style="font-size: 13px;" data-i18n="qa_scan_qr">Scan QR</div></button>
             <button class="card action-card" onclick="return false;" style="flex-direction: row; padding: 12px 16px; align-items: center; gap: 12px; opacity: 0.5; cursor: not-allowed;" title="Coming Soon">
               <div class="action-icon" style="background:var(--color-text-muted); color:white; width:36px; height:36px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
               </div>
-              <div class="action-label" style="font-size: 13px; color: var(--color-text-muted);">Reports</div>
+              <div class="action-label" style="font-size: 13px; color: var(--color-text-muted);" data-i18n="qa_reports">Reports</div>
             </button>
           </div>
         </section>
@@ -837,17 +837,17 @@
         <section style="flex:1; display:flex; gap:16px; min-height:0;">
           <div class="card panel" style="flex:1; display:flex; flex-direction:column; overflow:hidden; padding: 16px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-shrink:0;">
-              <h2 class="section-title" style="margin:0;">Recent Events</h2>
+              <h2 class="section-title" style="margin:0;" data-i18n="recent_events_title">Recent Events</h2>
               <!-- FIX 04: Hardcoded View All links -->
-              <a href="javascript:void(0)" onclick="switchView('eventsView')" style="font-size:12px; font-weight:600; color:var(--color-primary);">View All</a>
+              <a href="javascript:void(0)" onclick="switchView('eventsView')" style="font-size:12px; font-weight:600; color:var(--color-primary);" data-i18n="view_all">View All</a>
             </div>
             <div id="recentEventsList" class="no-scrollbar" style="overflow-y:auto; flex:1; padding-right:4px;"></div>
           </div>
           <div class="card panel" style="flex:1; display:flex; flex-direction:column; overflow:hidden; padding: 16px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-shrink:0;">
-              <h2 class="section-title" style="margin:0;">Recent Gate Passes</h2>
+              <h2 class="section-title" style="margin:0;" data-i18n="recent_gates_title">Recent Gate Passes</h2>
               <!-- FIX 04: Gate pass View All to QR Codes -->
-              <a href="javascript:void(0)" onclick="switchView('guestListsView')" style="font-size:12px; font-weight:600; color:var(--color-primary);">View All</a>
+              <a href="javascript:void(0)" onclick="switchView('guestListsView')" style="font-size:12px; font-weight:600; color:var(--color-primary);" data-i18n="view_all">View All</a>
             </div>
             <div id="recentGuestsList" class="no-scrollbar" style="overflow-y:auto; flex:1; padding-right:4px;"></div>
           </div>
@@ -2468,8 +2468,7 @@ generateNotifications();
       
       applyAccountLocks();
       
-      document.getElementById('dashboardWelcomeTitle').innerText = 'Welcome back, ' + (tenant.full_name || 'Admin') + '! 👋';
-
+document.getElementById('dashboardWelcomeTitle').innerText = window.t('dash_welcome_main', 'Welcome back, ') + ' ' + (tenant.full_name || 'Admin') + '! 👋';
       // Configure badge colors based on plan
       let planColor = window.currentPlanTier.toLowerCase() === 'premium' ? 'text-pink-500 bg-pink-500/10 border-pink-500/20' : 
                       window.currentPlanTier.toLowerCase() === 'pro' ? 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' : 
@@ -3112,7 +3111,17 @@ generateNotifications();
 
       // 5. Update Graph Title
       const titleEl = document.getElementById('analyticsChartTitle');
-      if (titleEl) titleEl.innerText = `Analytics Overview (${period})`;
+      if (titleEl) {
+          // Dynamically map the period to the correct dictionary key
+          let periodKey = '';
+          if (period === 'Today') periodKey = 'filter_today';
+          else if (period === 'This Week') periodKey = 'filter_this_week';
+          else if (period === 'This Month') periodKey = 'filter_this_month';
+          else if (period === 'This Year') periodKey = 'filter_this_year';
+          else if (period === 'All Time') periodKey = 'filter_all_time';
+          
+          titleEl.innerText = `${window.t('analytics_title', 'Analytics Overview')} (${window.t(periodKey, period)})`;
+      }
 
       // 6. Draw the Graph
       if (typeof Chart !== 'undefined') {
@@ -6025,19 +6034,45 @@ updateRecentGatesWidget();
           "nav_guest_lists": "Guest Lists",
           "nav_gate_management": "Gate Management",
           "nav_create_manage": "Create & Manage",
-	  "nav_sub_create_event": "Create Event",
-          "nav_sub_add_guest": "Add Guest",
           "nav_design_templates": "Design Templates",
           "nav_web_invites": "Web Invitations",
           "nav_analytics": "Analytics",
           "nav_reports": "Reports",
           "nav_my_profile": "My Profile",
           "nav_logout": "Logout",
-	"nav_sub_add_guest": "Add Guest",
+          "nav_sub_create_event": "Create Event",
+          "nav_sub_add_guest": "Add Guest",
+          
+          "sidebar_sec_events": "Events",
+          "sidebar_sec_management": "Management",
+          "sidebar_sec_design": "Design & Templates",
+          "sidebar_sec_reports": "Reports",
+          "header_logout": "Logout",
+          
+          "dash_welcome_main": "Welcome back,",
+          "dash_welcome_sub": "Here's what's happening with your events.",
+          
+          "filter_all_time": "All Time",
+          "filter_today": "Today",
+          "filter_this_week": "This Week",
+          "filter_this_month": "This Month",
+          "filter_this_year": "This Year",
+          
           "kpi_total_events": "Total Events",
           "kpi_total_guests": "Total Guests",
           "kpi_passes_issued": "Gate Passes Issued",
-          "kpi_attendance_rate": "Attendance Rate"
+          "kpi_attendance_rate": "Attendance Rate",
+          
+          "qa_title": "Quick Actions",
+          "qa_create_event": "Create Event",
+          "qa_add_guests": "Add Guests",
+          "qa_scan_qr": "Scan QR",
+          "qa_reports": "Reports",
+          
+          "recent_events_title": "Recent Events",
+          "recent_gates_title": "Recent Gate Passes",
+          "view_all": "View All",
+          "analytics_title": "Analytics Overview"
       },
       ar: {
           "nav_dashboard": "لوحة القيادة",
@@ -6045,19 +6080,45 @@ updateRecentGatesWidget();
           "nav_guest_lists": "قوائم الضيوف",
           "nav_gate_management": "إدارة البوابات",
           "nav_create_manage": "إنشاء وإدارة",
-	"nav_sub_create_event": "إنشاء فعالية",
-          "nav_sub_add_guest": "إضافة ضيف",
           "nav_design_templates": "قوالب التصميم",
           "nav_web_invites": "دعوات الويب",
           "nav_analytics": "التحليلات",
           "nav_reports": "التقارير",
           "nav_my_profile": "ملفي الشخصي",
           "nav_logout": "تسجيل خروج",
-	"nav_sub_add_guest": "إضافة ضيف",
+          "nav_sub_create_event": "إنشاء فعالية",
+          "nav_sub_add_guest": "إضافة ضيف",
+          
+          "sidebar_sec_events": "الفعاليات",
+          "sidebar_sec_management": "الإدارة",
+          "sidebar_sec_design": "التصميم والقوالب",
+          "sidebar_sec_reports": "التقارير",
+          "header_logout": "تسجيل خروج",
+          
+          "dash_welcome_main": "مرحباً بعودتك،",
+          "dash_welcome_sub": "إليك ما يحدث مع فعالياتك.",
+          
+          "filter_all_time": "كل الوقت",
+          "filter_today": "اليوم",
+          "filter_this_week": "هذا الأسبوع",
+          "filter_this_month": "هذا الشهر",
+          "filter_this_year": "هذا العام",
+          
           "kpi_total_events": "إجمالي الفعاليات",
           "kpi_total_guests": "إجمالي الضيوف",
           "kpi_passes_issued": "تصاريح الدخول المصدرة",
-          "kpi_attendance_rate": "معدل الحضور"
+          "kpi_attendance_rate": "معدل الحضور",
+          
+          "qa_title": "إجراءات سريعة",
+          "qa_create_event": "إنشاء فعالية",
+          "qa_add_guests": "إضافة ضيوف",
+          "qa_scan_qr": "مسح QR",
+          "qa_reports": "التقارير",
+          
+          "recent_events_title": "الفعاليات الأخيرة",
+          "recent_gates_title": "تصاريح الدخول الأخيرة",
+          "view_all": "عرض الكل",
+          "analytics_title": "نظرة عامة على التحليلات"
       }
   };
 
