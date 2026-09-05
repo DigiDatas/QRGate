@@ -578,8 +578,12 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--color-text-muted);"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div style="display: flex; flex-direction: column; gap: 2px; padding-left: 36px; margin-top: 4px;">
-          <button class="nav-item w-full" onclick="switchView('createEventView', this)" style="height: 36px; font-size: 13px;">Create Event</button>
-          <button class="nav-item w-full" onclick="switchView('addGuestView', this)" style="height: 36px; font-size: 13px;">Add Guest</button>
+          <button class="nav-item w-full" onclick="switchView('createEventView', this)" style="height: 36px; font-size: 13px;">
+            <span data-i18n="nav_sub_create_event">Create Event</span>
+          </button>
+          <button class="nav-item w-full" onclick="switchView('addGuestView', this)" style="height: 36px; font-size: 13px;">
+            <span data-i18n="nav_sub_add_guest">Add Guest</span>
+          </button>
         </div>
       </div>
 
@@ -2248,8 +2252,8 @@ let allFetchedLogs = []; // Stores global scan logs for drill-downs
 
       // Admin Approved or Pending status Badge
       const adminStatusBadge = e.is_approved 
-        ? '<span style="display:inline-block; padding:4px 10px; border-radius:99px; font-size:11px; font-weight:600; background:var(--color-success-soft); color:var(--color-success);">Approved</span>'
-        : '<span style="display:inline-block; padding:4px 10px; border-radius:99px; font-size:11px; font-weight:600; background:#FEF6E2; color:#B4790C;">Pending</span>';
+    ? `<span class="badge">${window.t('status_approved', 'Approved')}</span>`
+    : `<span class="badge">${window.t('status_pending', 'Pending')}</span>`;
 
       // NEW: Pulse class conditionally added
       const pulseClass = e._timeline === 'Ongoing' ? 'pulse-ongoing' : '';
@@ -6021,6 +6025,8 @@ updateRecentGatesWidget();
           "nav_guest_lists": "Guest Lists",
           "nav_gate_management": "Gate Management",
           "nav_create_manage": "Create & Manage",
+	  "nav_sub_create_event": "Create Event",
+          "nav_sub_add_guest": "Add Guest",
           "nav_design_templates": "Design Templates",
           "nav_web_invites": "Web Invitations",
           "nav_analytics": "Analytics",
@@ -6034,6 +6040,8 @@ updateRecentGatesWidget();
           "nav_guest_lists": "قوائم الضيوف",
           "nav_gate_management": "إدارة البوابات",
           "nav_create_manage": "إنشاء وإدارة",
+	"nav_sub_create_event": "إنشاء فعالية",
+          "nav_sub_add_guest": "إضافة ضيف",
           "nav_design_templates": "قوالب التصميم",
           "nav_web_invites": "دعوات الويب",
           "nav_analytics": "التحليلات",
@@ -6041,6 +6049,14 @@ updateRecentGatesWidget();
           "nav_my_profile": "ملفي الشخصي",
           "nav_logout": "تسجيل خروج"
       }
+  };
+
+// Global Translation Helper
+  window.t = function(key, fallbackText) {
+      if (translations[currentLanguage] && translations[currentLanguage][key]) {
+          return translations[currentLanguage][key];
+      }
+      return fallbackText; // Returns English if Arabic is missing
   };
 
   // Save preference in browser storage
