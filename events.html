@@ -180,7 +180,7 @@
   /* Flex growing table containers */
   .data-table-container { flex: 1; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow-y: auto; min-height: 0; }
   .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .data-table th { position: sticky; top: 0; background: var(--color-surface-soft); text-align: left; padding: 14px 20px; color: var(--color-text-muted); font-weight: 700; text-transform: uppercase; font-size: 11px; border-bottom: 1px solid var(--color-border); z-index: 10; }
+  .data-table th { position: sticky; top: 0; background: var(--color-surface-soft); text-align: start; padding: 14px 20px; color: var(--color-text-muted); font-weight: 700; text-transform: uppercase; font-size: 11px; border-bottom: 1px solid var(--color-border); z-index: 10; }
   .data-table td { padding: 14px 20px; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
   .data-table tr:hover { background: var(--color-surface-soft); }
   .data-table tr:last-child td { border-bottom: none; }
@@ -908,17 +908,17 @@
               
               <!-- KPI 5-Card Row (Flex-1 allows it to take remaining space) -->
               <div class="kpi-5" style="flex: 1; min-width: 0;">
-                <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon purple" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div><div><div class="kpi-label" style="margin:0;">Total Events</div><div class="kpi-value" id="kpiEvTotal">0</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">All Time</div></div></div>
-                <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon green" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div><div><div class="kpi-label" style="margin:0;">Upcoming</div><div class="kpi-value" id="kpiEvUpcoming">0</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Scheduled</div></div></div>
-                <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon" style="width:40px; height:40px; background:#FEF6E2; color:#B4790C;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></div><div><div class="kpi-label" style="margin:0;">Ongoing</div><div class="kpi-value" id="kpiEvOngoing">0</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Today</div></div></div>
-                <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon blue" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div><div class="kpi-label" style="margin:0;">Completed</div><div class="kpi-value" id="kpiEvCompleted">0</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Past Events</div></div></div>
-                <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon pink" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div><div><div class="kpi-label" style="margin:0;">Cancelled</div><div class="kpi-value" id="kpiEvCancelled">0</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;">Hidden</div></div></div>
+                <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon purple" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div><div><div class="kpi-label" style="margin:0;" data-i18n="kpi_total_events">Total Events</div><div style="kpi-value" id="kpiEvTotal">0</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;"data-i18n="kpi_sub_all_time">All Time</div></div></div>
+                <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon green" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div><div><div class="kpi-label" style="margin:0;" data-i18n="kpi_upcoming">Upcoming</div><div style="kpi-value" id="kpiEvUpcoming">0</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;"data-i18n="kpi_sub_scheduled">Scheduled</div></div></div>
+                <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon" style="width:40px; height:40px; background:#FEF6E2; color:#B4790C;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></div><div><div class="kpi-label" style="margin:0;" data-i18n="kpi_ongoing">Ongoing</div><div style="kpi-value" id="kpiEvOngoing">0</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;"data-i18n="kpi_sub_today">Today</div></div></div>
+                <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon blue" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div><div class="kpi-label" style="margin:0;" data-i18n="kpi_completed">Completed</div><div style="kpi-value" id="kpiEvCompleted">0</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;"data-i18n="kpi_sub_past">Past Events</div></div></div>
+                <div class="card kpi-card" style="padding: 16px; align-items: center;"><div class="kpi-icon pink" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div><div><div class="kpi-label" style="margin:0;" data-i18n="kpi_cancelled">Cancelled</div><div style="kpi-value" id="kpiEvCancelled">0</div><div style="font-size:11px; color:var(--color-text-secondary); margin-top:2px;"data-i18n="kpi_sub_hidden">Hidden</div></div></div>
               </div>
               
               <!-- Create Event Button pinned to the right to match KPI height -->
               <button onclick="switchView('createEventView')" class="btn-primary card" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 24px; flex-shrink: 0; white-space: nowrap; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Create Event
+                <span data-i18n="btn_create_event">Create Event</span>
               </button>
 
             </div>
@@ -945,12 +945,12 @@
             <!-- Event Overview Donut -->
             <div class="card panel" style="padding: 20px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                <h2 class="section-title" style="margin: 0;">Event Overview</h2>
+                <h2 class="section-title" style="margin: 0;" data-i18n="title_event_overview">Event Overview</h2>
                 <!-- Removed This Month Button -->
               </div>
               <div style="display: flex; align-items: center; justify-content: space-between;">
                 <div id="eventsDonutGraph" style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--color-surface-soft) 0% 100%); position: relative; display: flex; align-items: center; justify-content: center;">
-                  <div style="width: 70px; height: 70px; background: var(--color-bg); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;"><div id="eventsDonutTotal" style="font-size: 18px; font-weight: 700;">0</div><div style="font-size: 9px; color: var(--color-text-secondary);">Total Events</div></div>
+                  <div style="width: 70px; height: 70px; background: var(--color-bg); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;"><div id="eventsDonutTotal" style="font-size: 18px; font-weight: 700;">0</div><div style="font-size: 9px; color: var(--color-text-secondary);" data-i18n="kpi_total_events">Total Events</div></div>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
                   <div style="display: flex; align-items: center; justify-content: space-between; width: 110px; font-size: 11px;"><span style="display: flex; align-items: center; gap: 6px; color: var(--color-text); font-weight: 500;"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-success);"></span> Upcoming</span> <span style="color: var(--color-text-secondary);"><span id="evtLegUpc">0</span> <span id="evtLegUpcPct" style="font-size:9px;">(0%)</span></span></div>
@@ -964,19 +964,19 @@
             <!-- Recent Gates -->
             <div class="card panel" style="padding: 20px;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                 <h2 class="section-title" style="margin: 0; font-size: 14px;">Recent Gates</h2>
+                 <h2 class="section-title" style="margin: 0; font-size: 14px;" data-i18n="title_recent_gates">Recent Gates</h2>
               </div>
               <div style="display: flex; flex-direction: column; gap: 16px;">
                 <div id="eventsTabRecentGatesList" style="display: flex; flex-direction: column; gap: 12px;"></div>
-                <button onclick="switchView('gateManagementView')" style="width: 100%; margin-top: 4px; padding: 8px; background: white; border: 1px solid var(--color-primary); color: var(--color-primary); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; cursor: pointer;">View All Gates</button>
+                <button onclick="switchView('gateManagementView')" style="width: 100%; margin-top: 4px; padding: 8px; background: white; border: 1px solid var(--color-primary); color: var(--color-primary); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; cursor: pointer;"><span data-i18n="btn_view_all_gates">View All Gates</span></button>
               </div>
             </div>
 
             <!-- Export Block -->
             <div class="card panel" style="padding: 20px;">
-              <h2 class="section-title" style="margin: 0 0 4px; font-size: 14px;">Export Events</h2>
-              <p style="font-size: 11px; color: var(--color-text-secondary); margin-bottom: 16px;">Download your events data</p>
-              <button style="width: 100%; padding: 10px; background: white; border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg> Export to Excel</button>
+              <h2 class="section-title" style="margin: 0 0 4px; font-size: 14px;" data-i18n="title_export_events">Export Events</h2>
+              <p style="font-size: 11px; color: var(--color-text-secondary); margin-bottom: 16px;"data-i18n="desc_export_events">Download your events data</p>
+              <button style="width: 100%; padding: 10px; background: white; border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg> <span data-i18n="btn_export_excel">Export to Excel</span></button>
             </div>
           </div>
         </div>
@@ -994,7 +994,7 @@
               
               <!-- Event Selection Pills -->
               <div style="display:flex; flex-direction:column; gap:8px;">
-                <label style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase;">Select Event</label>
+                <label style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase;"data-i18n="label_select_event">Select Event</label>
                 <div id="guestListEventPills" style="display:flex; gap: 12px; overflow-x: auto; padding-bottom: 8px;" class="no-scrollbar">
                   <!-- JS will dynamically inject your recent events here -->
                 </div>
@@ -1003,7 +1003,7 @@
               <!-- Top Right Action Buttons -->
               <div style="display: flex; gap: 12px; align-items: flex-end; padding-top: 20px;">
                 <button onclick="switchView('addGuestView')" class="btn-primary" style="padding: 8px 16px; display:flex; align-items:center; gap:8px;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Guest
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> <span data-i18n="btn_add_guest">Add Guest</span>
                 </button>
               </div>
 
@@ -1072,30 +1072,30 @@
           <!-- Event Selector (Pills) & Action Buttons -->
           <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0;">
             <div style="flex: 1; overflow: hidden; padding-right: 16px;">
-              <label style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;">Manage Gates For:</label>
+              <label style="font-size: 11px; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; margin-bottom: 8px; display: block;"data-i18n="label_manage_gates_for">Manage Gates For:</label>
               <div id="gateEventPillsContainer" style="display:flex; gap: 12px; overflow-x: auto; padding-bottom: 8px;" class="no-scrollbar">
                 <!-- Javascript will inject event pills here -->
               </div>
             </div>
             <div style="display: flex; gap: 12px; flex-shrink: 0;">
-              <button onclick="openAddGatemanModal()" style="background: white; border: 1px solid var(--color-border); padding: 10px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer;">+ Assign Gateman</button>
-              <button onclick="openAddGateModal()" class="btn-primary" style="padding: 10px 16px;">+ Add Gate</button>
+              <button onclick="openAddGatemanModal()" style="background: white; border: 1px solid var(--color-border); padding: 10px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer;"><span data-i18n="btn_assign_gateman">+ Assign Gateman</span></button>
+              <button onclick="openAddGateModal()" class="btn-primary" style="padding: 10px 16px;"><span data-i18n="btn_add_gate">+ Add Gate</span></button>
             </div>
           </div>
 
           <!-- KPI Cards -->
           <div class="kpi-5">
-            <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon purple" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg></div><div><div class="kpi-label" style="margin:0;">Total Gates</div><div class="kpi-value" id="kpiTotalGates">0</div></div></div>
-            <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon green" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="kpi-label" style="margin:0;">Total Entries</div><div class="kpi-value" id="kpiTotalEntries">0</div></div></div>
-            <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon blue" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div><div><div class="kpi-label" style="margin:0;">Total Exits</div><div class="kpi-value" id="kpiTotalExits">0</div></div></div>
-            <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon" style="width:40px; height:40px; background:#FEF6E2; color:#B4790C;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="kpi-label" style="margin:0;">Currently Inside</div><div class="kpi-value" id="kpiCurrentlyInside">0</div></div></div>
-            <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon pink" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></div><div><div class="kpi-label" style="margin:0;">QR Scanned</div><div class="kpi-value" id="kpiTotalScanned">0</div></div></div>
+            <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon purple" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg></div><div><div class="kpi-label" style="margin:0;" data-i18n="kpi_total_gates">Total Gates</div><div class="kpi-value" id="kpiTotalGates">0</div></div></div>
+            <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon green" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="kpi-label" style="margin:0;" data-i18n="kpi_total_entries">Total Entries</div><div class="kpi-value" id="kpiTotalEntries">0</div></div></div>
+            <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon blue" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div><div><div class="kpi-label" style="margin:0;" data-i18n="kpi_total_exits">Total Exits</div><div class="kpi-value" id="kpiTotalExits">0</div></div></div>
+            <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon" style="width:40px; height:40px; background:#FEF6E2; color:#B4790C;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="kpi-label" style="margin:0;" data-i18n="kpi_currently_inside">Currently Inside</div><div class="kpi-value" id="kpiCurrentlyInside">0</div></div></div>
+            <div class="card kpi-card" style="padding: 16px;"><div class="kpi-icon pink" style="width:40px; height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></div><div><div class="kpi-label" style="margin:0;" data-i18n="kpi_qr_scanned">QR Scanned</div><div class="kpi-value" id="kpiTotalScanned">0</div></div></div>
           </div>
 
           <!-- Main Table with Gate Filters -->
           <div class="card panel" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 0;">
             <div style="padding: 20px 20px 0 20px; border-bottom: 1px solid var(--color-border);">
-              <h2 class="section-title" style="margin: 0 0 12px 0;">Gate Details & Staff Operations</h2>
+              <h2 class="section-title" style="margin: 0 0 12px 0;" data-i18n="title_gate_details">Gate Details & Staff Operations</h2>
               <!-- Gate Filter Pills -->
               <div id="gateSpecificFilters" style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px;" class="no-scrollbar">
                  <button class="btn-filter-nav active" style="font-size: 11px;">All Gates</button>
@@ -1103,7 +1103,7 @@
             </div>
             <div class="data-table-container no-scrollbar" style="border: none; border-radius: 0;">
               <table class="data-table">
-                <<thead><tr>
+                <thead><tr>
   <th><span data-i18n="th_gate_name">Gate Name</span></th>
   <th><span data-i18n="th_type">Type</span></th>
   <th><span data-i18n="th_assigned_staff">Assigned Staff (PIN)</span></th>
@@ -1173,7 +1173,7 @@
       <div id="createEventView" class="view-section">
         <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 24px; flex-shrink: 0;">
           <button type="button" onclick="cancelEventForm()" style="background: transparent; border: 1px solid var(--color-border); padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--color-text);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back to Create & Manage
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> <span data-i18n="btn_back_create_manage">Back to Create & Manage</span>
           </button>
         </div>
 
@@ -1185,49 +1185,49 @@
               
               <!-- Top Section: Event Info -->
               <div style="padding: 24px;">
-                <h2 class="section-title" style="margin-bottom: 20px;">Event Information</h2>
+                <h2 class="section-title" data-i18n="form_event_info">Event Information</h2>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Event Name <span style="color: var(--color-danger);">*</span></label><input type="text" id="dedicatedEventName" placeholder="Enter event name" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Event Type</label><select id="dedicatedEventType" class="input-field" style="margin: 0; padding: 10px 14px;"><option value="Event">Select event type</option><option value="Conference">Conference</option><option value="Exhibition">Exhibition</option><option value="Party">Private Party</option></select></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;"><span data-i18n="lbl_event_name">Event Name</span> <span style="color: var(--color-danger);">*</span></label><input type="text" id="dedicatedEventName" data-i18n="plc_event_name" placeholder="Enter event name" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_event_type">Event Type</label><select id="dedicatedEventType" class="input-field" style="margin: 0; padding: 10px 14px;"><option value="Event" data-i18n="plc_select_event_type">Select event type</option><option value="Conference">Conference</option><option value="Exhibition">Exhibition</option><option value="Party">Private Party</option></select></div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Event Date <span style="color: var(--color-danger);">*</span></label>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;"><span data-i18n="lbl_event_date">Event Date</span> <span style="color: var(--color-danger);">*</span></label>
                     <div style="position:relative;"><svg style="position:absolute; left:12px; top:12px; color:var(--color-text-secondary);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
                     <input type="date" id="dedicatedEventDate" class="input-field" style="margin: 0; padding: 10px 14px 10px 34px;"></div>
                   </div>
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Event Time <span style="color: var(--color-danger);">*</span></label>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;"><span data-i18n="lbl_event_time">Event Time</span> <span style="color: var(--color-danger);">*</span></label>
                     <div style="display: flex; align-items: center; gap: 12px;">
                       <div style="position:relative; flex:1;"><svg style="position:absolute; left:12px; top:12px; color:var(--color-text-secondary);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><input type="time" id="dedicatedStartTime" class="input-field" style="margin: 0; padding: 10px 14px 10px 34px;"></div>
-                      <span style="font-size: 12px; font-weight: 600; color: var(--color-text-secondary);">to</span>
+                      <span style="font-size: 12px; font-weight: 600; color: var(--color-text-secondary);" data-i18n="lbl_to">to</span>
                       <div style="position:relative; flex:1;"><svg style="position:absolute; left:12px; top:12px; color:var(--color-text-secondary);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><input type="time" id="dedicatedEndTime" class="input-field" style="margin: 0; padding: 10px 14px 10px 34px;"></div>
                     </div>
                   </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Venue <span style="color: var(--color-danger);">*</span></label>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;"><span data-i18n="lbl_venue">Venue</span> <span style="color: var(--color-danger);">*</span></label>
                     <div style="position:relative;"><svg style="position:absolute; left:12px; top:12px; color:var(--color-text-secondary);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    <input type="text" id="dedicatedVenue" placeholder="Enter venue name" class="input-field" style="margin: 0; padding: 10px 14px 10px 34px;"></div>
+                    <input type="text" id="dedicatedVenue" data-i18n="plc_venue" placeholder="Enter venue name" class="input-field" style="margin: 0; padding: 10px 14px 10px 34px;"></div>
                   </div>
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Address</label><input type="text" placeholder="Enter full address" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_address">Address</label><input type="text" data-i18n="plc_address" placeholder="Enter full address" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Organized By</label><input type="text" placeholder="Enter organizer / company name" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Contact Email</label>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_organized_by">Organized By</label><input type="text" data-i18n="plc_organized_by" placeholder="Enter organizer / company name" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_contact_email">Contact Email</label>
                     <div style="position:relative;"><svg style="position:absolute; left:12px; top:12px; color:var(--color-text-secondary);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                    <input type="email" placeholder="Enter email address" class="input-field" style="margin: 0; padding: 10px 14px 10px 34px;"></div>
+                    <input type="email" data-i18n="plc_email" placeholder="Enter email address" class="input-field" style="margin: 0; padding: 10px 14px 10px 34px;"></div>
                   </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Contact Phone</label>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_contact_phone">Contact Phone</label>
                     <div style="position:relative;"><svg style="position:absolute; left:12px; top:12px; color:var(--color-text-secondary);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                    <input type="text" placeholder="Enter phone number" class="input-field" style="margin: 0; padding: 10px 14px 10px 34px;"></div>
+                    <input type="text" data-i18n="plc_phone" placeholder="Enter phone number" class="input-field" style="margin: 0; padding: 10px 14px 10px 34px;"></div>
                   </div>
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Description (Optional)</label><textarea placeholder="Enter event description" class="input-field" style="margin: 0; padding: 10px 14px; height: 42px; resize: none;"></textarea></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_description">Description (Optional)</label><textarea data-i18n="plc_description" placeholder="Enter event description" class="input-field" style="margin: 0; padding: 10px 14px; height: 42px; resize: none;"></textarea></div>
                 </div>
               </div>
 
@@ -1236,19 +1236,19 @@
 
               <!-- Bottom Section: Capacity -->
               <div style="padding: 24px;">
-                <h2 class="section-title" style="margin-bottom: 20px;">Capacity & Settings</h2>
+                <h2 class="section-title" style="margin-bottom: 20px;" data-i18n="form_capacity">Capacity & Settings</h2>
                 <div style="width: 50%;">
-                  <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Total Guests Capacity <span style="color: var(--color-danger);">*</span></label>
+                  <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;"><span data-i18n="lbl_total_capacity">Total Guests Capacity</span> <span style="color: var(--color-danger);">*</span></label>
                   <div style="position: relative;">
                     <svg style="position: absolute; left: 12px; top: 12px; color: var(--color-text-secondary);" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    <input type="number" id="dedicatedEventCapacity" placeholder="Enter total guest capacity" class="input-field" style="margin: 0; padding: 10px 14px 10px 36px;">
+                    <input type="number" id="dedicatedEventCapacity" data-i18n="plc_capacity" placeholder="Enter total guest capacity" class="input-field" style="margin: 0; padding: 10px 14px 10px 36px;">
                   </div>
-                  <p style="font-size: 11px; color: var(--color-text-secondary); margin: 8px 0 0 0;">This is the maximum number of guests allowed for this event.</p>
+                  <p style="font-size: 11px; color: var(--color-text-secondary); margin: 8px 0 0 0;" data-i18n="desc_capacity">This is the maximum number of guests allowed for this event.</p>
                 </div>
                 
                 <div style="display: flex; gap: 16px; margin-top: 32px;">
-                  <button type="button" id="cancelCreateEventBtn" onclick="cancelEventForm()" style="background: white; border: 1px solid var(--color-border); color: var(--color-text); font-weight: 600; font-size: 13px; padding: 10px 24px; border-radius: 8px; cursor: pointer;">Cancel</button>
-                  <button id="submitDedicatedEventBtn" class="btn-primary" style="padding: 10px 24px; border-radius: 8px; display: flex; align-items: center; gap: 8px;">Create Event &rarr;</button>
+                  <button type="button" id="cancelCreateEventBtn" onclick="cancelEventForm()" style="background: white; border: 1px solid var(--color-border); color: var(--color-text); font-weight: 600; font-size: 13px; padding: 10px 24px; border-radius: 8px; cursor: pointer;" data-i18n="btn_cancel">Cancel</button>
+                  <button id="submitDedicatedEventBtn" class="btn-primary" style="padding: 10px 24px; border-radius: 8px; display: flex; align-items: center; gap: 8px;"><span data-i18n="btn_submit_event">Create Event &rarr;</span></button>
                 </div>
               </div>
 
@@ -1260,15 +1260,15 @@
             <div class="card panel" style="padding: 24px; background: var(--color-primary-soft); border: 1px solid #e9d5ff;">
               <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
                 <div style="width: 32px; height: 32px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--color-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-7 7c0 2.2 1.3 4.1 3 5.4V16a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-1.6c1.7-1.3 3-3.2 3-5.4a7 7 0 0 0-7-7z"/></svg></div>
-                <h3 style="font-size: 16px; font-weight: 700; color: #111827; margin: 0;">Tips</h3>
+                <h3 style="font-size: 16px; font-weight: 700; color: #111827; margin: 0;" data-i18n="tips_title">Tips</h3>
               </div>
               <div style="display: flex; flex-direction: column; gap: 16px;">
-                <div style="display: flex; gap: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><p style="font-size: 12px; color: #111827; margin: 0; line-height: 1.5; font-weight: 500;">Add a clear event name to help you identify it easily.</p></div>
-                <div style="display: flex; gap: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><p style="font-size: 12px; color: #111827; margin: 0; line-height: 1.5; font-weight: 500;">Set the correct date and time for smooth guest management.</p></div>
-                <div style="display: flex; gap: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><p style="font-size: 12px; color: #111827; margin: 0; line-height: 1.5; font-weight: 500;">You can update these details later if needed.</p></div>
-                <!-- NEW LIMIT TIPS ADDED HERE -->
-                <div style="display: flex; gap: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg><p style="font-size: 12px; color: #111827; margin: 0; line-height: 1.5; font-weight: 500;"><b>Event Limit:</b> You can create up to <span id="tipEventLimit" class="text-pink-600 font-bold">...</span> events.</p></div>
-                <div style="display: flex; gap: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><p style="font-size: 12px; color: #111827; margin: 0; line-height: 1.5; font-weight: 500;"><b>Guest Limit:</b> Up to <span id="tipGuestLimit" class="text-pink-600 font-bold">...</span> guests per event.</p></div>
+                <div style="display: flex; gap: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><p style="font-size: 12px; color: #111827; margin: 0; line-height: 1.5; font-weight: 500;" data-i18n="tip_1">Add a clear event name to help you identify it easily.</p></div>
+                <div style="display: flex; gap: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><p style="font-size: 12px; color: #111827; margin: 0; line-height: 1.5; font-weight: 500;" data-i18n="tip_2">Set the correct date and time for smooth guest management.</p></div>
+                <div style="display: flex; gap: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><p style="font-size: 12px; color: #111827; margin: 0; line-height: 1.5; font-weight: 500;" data-i18n="tip_3">You can update these details later if needed.</p></div>
+                
+                <div style="display: flex; gap: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg><p style="font-size: 12px; color: #111827; margin: 0; line-height: 1.5; font-weight: 500;"><b data-i18n="tip_event_limit">Event Limit:</b> <span data-i18n="msg_limit_events">You can create up to</span> <span id="tipEventLimit" class="text-pink-600 font-bold">...</span> <span data-i18n="msg_events_word">events.</span></p></div>
+                <div style="display: flex; gap: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><p style="font-size: 12px; color: #111827; margin: 0; line-height: 1.5; font-weight: 500;"><b data-i18n="tip_guest_limit">Guest Limit:</b> <span data-i18n="msg_limit_guests">Up to</span> <span id="tipGuestLimit" class="text-pink-600 font-bold">...</span> <span data-i18n="msg_guests_per_event">guests per event.</span></p></div>
               </div>
             </div>
           </div>
@@ -2050,38 +2050,50 @@ let allFetchedLogs = []; // Stores global scan logs for drill-downs
     const searchInput = document.getElementById('dynamicSearchInput');
 
     if (viewId === 'dashboardView') {
-       titleEl.innerText = 'Dashboard'; subEl.innerText = 'Overview of your activities';
+       titleEl.innerText = window.t('nav_dashboard', 'Dashboard'); 
+       subEl.innerText = window.t('dash_welcome_sub', 'Overview of your activities');
        searchBox.style.display = 'none';
     } else if (viewId === 'profileView') {
-       titleEl.innerText = 'My Profile'; subEl.innerText = 'Manage your account and organizer details';
+       titleEl.innerText = window.t('nav_my_profile', 'My Profile'); 
+       subEl.innerText = window.t('sub_create_manage', 'Manage your account and organizer details');
        searchBox.style.display = 'none';
     } else if (viewId === 'createManageView') {
-       titleEl.innerText = 'Create & Manage'; subEl.innerText = 'Dashboard > Create & Manage';
-       searchBox.style.display = 'block'; searchInput.placeholder = 'Search events, guests, gate passes...';
+       titleEl.innerText = window.t('title_create_manage', 'Create & Manage'); 
+       subEl.innerText = window.t('sub_create_manage', 'Dashboard > Create & Manage');
+       searchBox.style.display = 'block'; 
+       searchInput.placeholder = window.t('search_create_manage', 'Search events, guests, gate passes...');
     } else if (viewId === 'createEventView') {
-       titleEl.innerText = 'Create New Event'; subEl.innerText = 'Dashboard > Create & Manage > Create New Event';
+       titleEl.innerText = window.t('nav_sub_create_event', 'Create New Event'); 
+       subEl.innerText = window.t('sub_create_manage', 'Dashboard > Create & Manage > Create New Event');
        searchBox.style.display = 'none';
     } else if (viewId === 'addGuestView') { 
-       titleEl.innerText = 'Add Guest'; subEl.innerText = 'Dashboard > Create & Manage > Add guests manually or in bulk.';
+       titleEl.innerText = window.t('nav_sub_add_guest', 'Add Guest'); 
+       subEl.innerText = window.t('sub_create_manage', 'Dashboard > Create & Manage > Add guests manually or in bulk.');
        searchBox.style.display = 'none';
     } else if (viewId === 'eventsView') {
-       titleEl.innerText = 'Events'; subEl.innerText = 'Manage all your events';
-       searchBox.style.display = 'block'; searchInput.placeholder = 'Search events by name, venue...';
+       titleEl.innerText = window.t('title_events', 'Events'); 
+       subEl.innerText = window.t('sub_events', 'Manage all your events');
+       searchBox.style.display = 'block'; 
+       searchInput.placeholder = window.t('search_events', 'Search events by name, venue...');
     } else if (viewId === 'guestListsView') {
-       titleEl.innerText = 'Guest List'; subEl.innerText = 'Manage and invite guests for your events';
-       searchBox.style.display = 'block'; searchInput.placeholder = 'Search guests by name, email or phone...';
-       // NEW: Force fresh data fetch when tab is clicked
+       titleEl.innerText = window.t('title_guest_list', 'Guest List'); 
+       subEl.innerText = window.t('sub_guest_list', 'Manage and invite guests for your events');
+       searchBox.style.display = 'block'; 
+       searchInput.placeholder = window.t('search_guests', 'Search guests by name, email or phone...');
        fetchAllGuestsForKPIs(); 
     } else if (viewId === 'gateManagementView') {
-       titleEl.innerText = 'Gate Management'; subEl.innerText = 'Manage physical gates, assign staff, and monitor entry/exit logs';
-       searchBox.style.display = 'block'; searchInput.placeholder = 'Search gates or staff...';
-       // NEW: Force fresh data fetch when tab is clicked
+       titleEl.innerText = window.t('title_gate_mgmt', 'Gate Management'); 
+       subEl.innerText = window.t('sub_gate_mgmt', 'Manage physical gates, assign staff, and monitor entry/exit logs');
+       searchBox.style.display = 'block'; 
+       searchInput.placeholder = window.t('search_gates', 'Search gates or staff...');
        loadGateManagementData();
     } else if (viewId === 'designTemplatesView') {
-       titleEl.innerText = 'Design Templates'; subEl.innerText = 'Choose a template and customize your gate pass';
+       titleEl.innerText = window.t('nav_design_templates', 'Design Templates'); 
+       subEl.innerText = window.t('sub_create_manage', 'Choose a template and customize your gate pass');
        searchBox.style.display = 'none';
     } else if (viewId === 'webInvitationView') {
-       titleEl.innerText = 'Web Invitations'; subEl.innerText = 'Create stunning RSVP microsites for your events.';
+       titleEl.innerText = window.t('nav_web_invites', 'Web Invitations'); 
+       subEl.innerText = window.t('sub_create_manage', 'Create stunning RSVP microsites for your events.');
        searchBox.style.display = 'none';
     }
 
@@ -6154,9 +6166,91 @@ updateRecentGatesWidget();
           "th_inside": "Inside",
           "filter_all_events": "All Events",
           "filter_all_guests": "All Guests",
-          "filter_all_gates": "All Gates"
+          "filter_all_gates": "All Gates",
+// --- HEADER & SEARCH (DYNAMIC) ---
+          "title_events": "Events",
+          "sub_events": "Manage all your events",
+          "search_events": "Search events by name, venue...",
+          "title_guest_list": "Guest List",
+          "sub_guest_list": "Manage and invite guests for your events",
+          "search_guests": "Search guests by name, email or phone...",
+          "title_gate_mgmt": "Gate Management",
+          "sub_gate_mgmt": "Manage physical gates, assign staff, and monitor entry/exit logs",
+          "search_gates": "Search gates or staff...",
+          "title_create_manage": "Create & Manage",
+          "sub_create_manage": "Dashboard > Create & Manage",
+          "search_create_manage": "Search events, guests, gate passes...",
+          
+          // --- KPI SUB-LABELS ---
+          "kpi_sub_all_time": "All Time",
+          "kpi_sub_scheduled": "Scheduled",
+          "kpi_sub_today": "Today",
+          "kpi_sub_past": "Past Events",
+          "kpi_sub_hidden": "Hidden",
+// --- FORM LABELS & PLACEHOLDERS ---
+          "form_event_info": "Event Information",
+          "lbl_event_name": "Event Name",
+          "plc_event_name": "Enter event name",
+          "lbl_event_type": "Event Type",
+          "lbl_event_date": "Event Date",
+          "lbl_event_time": "Event Time",
+          "lbl_venue": "Venue",
+          "plc_venue": "Enter venue name",
+          "lbl_address": "Address",
+          "plc_address": "Enter full address",
+          "lbl_organized_by": "Organized By",
+          "plc_organized_by": "Enter organizer / company name",
+          "lbl_contact_email": "Contact Email",
+          "plc_email": "Enter email address",
+          "lbl_contact_phone": "Contact Phone",
+          "plc_phone": "Enter phone number",
+          "lbl_description": "Description (Optional)",
+          "plc_description": "Enter description",
+          "form_capacity": "Capacity & Settings",
+          "lbl_total_capacity": "Total Guests Capacity",
+          "plc_capacity": "Enter total guest capacity",
+          "desc_capacity": "This is the maximum number of guests allowed for this event.",
+          "btn_cancel": "Cancel",
+          "btn_submit_event": "Create Event →",
+          
+          "tips_title": "Tips",
+          "tip_1": "Add a clear event name to help you identify it easily.",
+          "tip_2": "Set the correct date and time for smooth guest management.",
+          "tip_3": "You can update these details later if needed.",
+          
+          "lbl_full_name": "Full Name",
+          "plc_full_name": "Enter full name",
+          "lbl_company": "Company / Organization",
+          "plc_company": "Enter company name",
+          "lbl_designation": "Designation / Title",
+          "plc_designation": "Enter designation",
+          "lbl_nationality": "Nationality",
+          "plc_nationality": "Type or select nationality...",
+          "lbl_id_type": "ID Type",
+          "lbl_id_number": "ID Number",
+          "plc_id_number": "Enter ID number",
+          "lbl_ticket_type": "Ticket / Type",
+          "lbl_pairs": "No. of Pairs / Capacity",
+          "lbl_entry_gate": "Entry Gate",
+          "lbl_exit_gate": "Exit Gate",
+          "lbl_notes": "Notes (Optional)",
+          "plc_notes": "Add any additional notes about this guest",
+"btn_back_create_manage": "Back to Create & Manage",
+          "lbl_event_type": "Event Type",
+          "plc_select_event_type": "Select event type",
+          "lbl_event_date": "Event Date",
+          "lbl_event_time": "Event Time",
+          "lbl_to": "to",
+          "tip_event_limit": "Event Limit:",
+          "tip_guest_limit": "Guest Limit:",
+          "msg_limit_events": "You can create up to",
+          "msg_limit_guests": "Up to",
+          "msg_guests_per_event": "guests per event.",
+          "msg_events_word": "events."
       },
-      ar: {
+      
+
+ar: {
           "nav_dashboard": "لوحة القيادة",
           "nav_events": "الفعاليات",
           "nav_guest_lists": "قوائم الضيوف",
@@ -6254,7 +6348,87 @@ updateRecentGatesWidget();
           "th_inside": "بالداخل",
           "filter_all_events": "كل الفعاليات",
           "filter_all_guests": "كل الضيوف",
-          "filter_all_gates": "كل البوابات"
+          "filter_all_gates": "كل البوابات",
+// --- HEADER & SEARCH (DYNAMIC) (ARABIC) ---
+          "title_events": "الفعاليات",
+          "sub_events": "إدارة جميع فعالياتك",
+          "search_events": "البحث عن الفعاليات بالاسم، الموقع...",
+          "title_guest_list": "قائمة الضيوف",
+          "sub_guest_list": "إدارة ودعوة الضيوف لفعالياتك",
+          "search_guests": "البحث عن الضيوف بالاسم، البريد أو الهاتف...",
+          "title_gate_mgmt": "إدارة البوابات",
+          "sub_gate_mgmt": "إدارة البوابات الفعلية، تعيين الموظفين، ومراقبة سجلات الدخول/الخروج",
+          "search_gates": "البحث عن البوابات أو الموظفين...",
+          "title_create_manage": "إنشاء وإدارة",
+          "sub_create_manage": "لوحة القيادة > إنشاء وإدارة",
+          "search_create_manage": "البحث عن الفعاليات، الضيوف، تصاريح الدخول...",
+          
+          // --- KPI SUB-LABELS (ARABIC) ---
+          "kpi_sub_all_time": "كل الوقت",
+          "kpi_sub_scheduled": "مجدولة",
+          "kpi_sub_today": "اليوم",
+          "kpi_sub_past": "فعاليات سابقة",
+          "kpi_sub_hidden": "مخفية",
+// --- FORM LABELS & PLACEHOLDERS (ARABIC) ---
+          "form_event_info": "معلومات الفعالية",
+          "lbl_event_name": "اسم الفعالية",
+          "plc_event_name": "أدخل اسم الفعالية",
+          "lbl_event_type": "نوع الفعالية",
+          "lbl_event_date": "تاريخ الفعالية",
+          "lbl_event_time": "وقت الفعالية",
+          "lbl_venue": "الموقع",
+          "plc_venue": "أدخل اسم الموقع",
+          "lbl_address": "العنوان",
+          "plc_address": "أدخل العنوان بالكامل",
+          "lbl_organized_by": "تنظيم بواسطة",
+          "plc_organized_by": "أدخل اسم المنظم / الشركة",
+          "lbl_contact_email": "البريد الإلكتروني",
+          "plc_email": "أدخل البريد الإلكتروني",
+          "lbl_contact_phone": "رقم الهاتف",
+          "plc_phone": "أدخل رقم الهاتف",
+          "lbl_description": "الوصف (اختياري)",
+          "plc_description": "أدخل الوصف",
+          "form_capacity": "السعة والإعدادات",
+          "lbl_total_capacity": "إجمالي سعة الضيوف",
+          "plc_capacity": "أدخل إجمالي سعة الضيوف",
+          "desc_capacity": "هذا هو الحد الأقصى لعدد الضيوف المسموح به لهذه الفعالية.",
+          "btn_cancel": "إلغاء",
+          "btn_submit_event": "إنشاء الفعالية ←",
+          
+          "tips_title": "نصائح",
+          "tip_1": "أضف اسمًا واضحًا للفعالية لمساعدتك في التعرف عليها بسهولة.",
+          "tip_2": "حدد التاريخ والوقت الصحيحين لإدارة الضيوف بسلاسة.",
+          "tip_3": "يمكنك تحديث هذه التفاصيل لاحقًا إذا لزم الأمر.",
+          
+          "lbl_full_name": "الاسم الكامل",
+          "plc_full_name": "أدخل الاسم الكامل",
+          "lbl_company": "الشركة / المؤسسة",
+          "plc_company": "أدخل اسم الشركة",
+          "lbl_designation": "المسمى الوظيفي",
+          "plc_designation": "أدخل المسمى الوظيفي",
+          "lbl_nationality": "الجنسية",
+          "plc_nationality": "اكتب أو اختر الجنسية...",
+          "lbl_id_type": "نوع الهوية",
+          "lbl_id_number": "رقم الهوية",
+          "plc_id_number": "أدخل رقم الهوية",
+          "lbl_ticket_type": "التذكرة / النوع",
+          "lbl_pairs": "عدد المرافقين / السعة",
+          "lbl_entry_gate": "بوابة الدخول",
+          "lbl_exit_gate": "بوابة الخروج",
+          "lbl_notes": "ملاحظات (اختياري)",
+          "plc_notes": "أضف أي ملاحظات إضافية حول هذا الضيف",
+"btn_back_create_manage": "العودة إلى الإدارة",
+          "lbl_event_type": "نوع الفعالية",
+          "plc_select_event_type": "اختر نوع الفعالية",
+          "lbl_event_date": "تاريخ الفعالية",
+          "lbl_event_time": "وقت الفعالية",
+          "lbl_to": "إلى",
+          "tip_event_limit": "حد الفعاليات:",
+          "tip_guest_limit": "حد الضيوف:",
+          "msg_limit_events": "يمكنك إنشاء حتى",
+          "msg_limit_guests": "حتى",
+          "msg_guests_per_event": "ضيف لكل فعالية.",
+          "msg_events_word": "فعاليات."
       }
   };
 
@@ -6300,11 +6474,17 @@ updateRecentGatesWidget();
           }
       }
 
-      // 4. Translate ALL marked text on the screen
+      // 4. Translate ALL marked text (Now supports Input Placeholders!)
       document.querySelectorAll('[data-i18n]').forEach(element => {
           const key = element.getAttribute('data-i18n');
           if (translations[currentLanguage] && translations[currentLanguage][key]) {
-              element.innerText = translations[currentLanguage][key];
+              // If it's an input or textarea, translate the placeholder
+              if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                  element.placeholder = translations[currentLanguage][key];
+              } else {
+                  // Otherwise, translate the normal text
+                  element.innerText = translations[currentLanguage][key];
+              }
           }
       });
   }
