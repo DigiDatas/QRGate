@@ -713,9 +713,9 @@
       <!-- TAB: MY PROFILE VIEW -->
       <!-- ============================================== -->
       <div id="profileView" class="view-section">
-        <h1 class="page-title mb-6">My Profile</h1>
+        <h1 class="page-title mb-6" data-i18n="prof_title">My Profile</h1>
         
-        <!-- NEW: Responsive Grid Wrapper -->
+        <!-- Responsive Grid Wrapper -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-6xl mx-auto">
           
           <!-- LEFT COLUMN: Profile Form -->
@@ -728,64 +728,63 @@
               </div>
             </div>
             
-            <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Full Name</label>
-            <input type="text" id="settingName" class="input-field">
+            <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_full_name">Full Name</label>
+            <input type="text" id="settingName" class="input-field" data-i18n="plc_full_name" placeholder="Enter full name">
             
-            <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Company / Organization</label>
-            <input type="text" id="settingCompany" class="input-field">
+            <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_company">Company / Organization</label>
+            <input type="text" id="settingCompany" class="input-field" data-i18n="plc_company" placeholder="Enter company name">
             
-            <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Mobile Number</label>
+            <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_contact_phone">Mobile Number</label>
             <div style="display:flex; gap:8px; margin-bottom: 8px;">
               <select id="settingPhoneCode" class="input-field" style="width: 100px; margin-bottom: 0;">
                  <option value="+966">🇸🇦 +966</option>
                  <option value="+971">🇦🇪 +971</option>
                  <option value="+91">🇮🇳 +91</option>
               </select>
-              <input type="text" id="settingPhone" placeholder="e.g. 501234567" class="input-field" style="margin-bottom: 0;" oninput="this.value = this.value.replace(/^0+/, '')">
+              <input type="text" id="settingPhone" data-i18n="plc_phone" placeholder="e.g. 501234567" class="input-field" style="margin-bottom: 0;" oninput="this.value = this.value.replace(/^0+/, '')">
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
-              <button onclick="switchView('dashboardView', this)" class="btn-filter-nav" style="padding: 10px 20px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--color-surface-soft); font-weight: 600;">Cancel</button>
-              <button onclick="updateUserProfile(false)" class="btn-primary">Save Changes</button>
+              <button onclick="switchView('dashboardView', this)" class="btn-filter-nav" style="padding: 10px 20px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--color-surface-soft); font-weight: 600;" data-i18n="btn_cancel">Cancel</button>
+              <button onclick="updateUserProfile(false)" class="btn-primary" data-i18n="btn_save_changes">Save Changes</button>
             </div>
           </div> 
-          <!-- End Left Column -->
 
           <!-- RIGHT COLUMN: Plan Limits & Benefits Card -->
           <div class="card panel h-max" style="padding: 32px; border-color: var(--color-primary-soft); background: var(--color-surface-soft);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-               <h3 style="font-size: 16px; font-weight: 700; margin: 0;">Plan & Limits</h3>
+               <h3 style="font-size: 16px; font-weight: 700; margin: 0;" data-i18n="prof_plan_limits">Plan & Limits</h3>
                <span id="profilePlanBadgeLarge" style="padding: 4px 12px; border-radius: 99px; font-size: 11px; font-weight: 800; text-transform: uppercase; background: var(--color-primary); color: white;">BASIC</span>
             </div>
-            <p style="font-size: 13px; color: var(--color-text-secondary); margin: 0 0 24px 0;">Here is an overview of your current subscription benefits.</p>
+            <p style="font-size: 13px; color: var(--color-text-secondary); margin: 0 0 24px 0;" data-i18n="prof_plan_desc">Here is an overview of your current subscription benefits.</p>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                <div style="background: var(--color-bg); padding: 16px; border-radius: 12px; border: 1px solid var(--color-border);">
-                  <div style="font-size: 11px; color: var(--color-text-secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Max Events</div>
+                  <div style="font-size: 11px; color: var(--color-text-secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 4px;" data-i18n="prof_max_events">Max Events</div>
                   <div style="font-size: 24px; font-weight: 800; color: var(--color-text);" id="profileLimitEvents">2</div>
                </div>
                <div style="background: var(--color-bg); padding: 16px; border-radius: 12px; border: 1px solid var(--color-border);">
-                  <div style="font-size: 11px; color: var(--color-text-secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Max Guests / Event</div>
+                  <div style="font-size: 11px; color: var(--color-text-secondary); font-weight: 700; text-transform: uppercase; margin-bottom: 4px;" data-i18n="prof_max_guests">Max Guests / Event</div>
                   <div style="font-size: 24px; font-weight: 800; color: var(--color-text);" id="profileLimitGuests">50</div>
                </div>
             </div>
 
             <div style="margin-top: 24px; border-top: 1px solid var(--color-border); padding-top: 16px;">
-               <h4 style="font-size: 12px; font-weight: 700; margin-bottom: 12px;">Active Features</h4>
+               <h4 style="font-size: 12px; font-weight: 700; margin-bottom: 12px;" data-i18n="prof_active_feats">Active Features</h4>
                <ul id="profileFeatureList" style="list-style: none; padding: 0; margin: 0; font-size: 13px; color: var(--color-text-secondary); display: flex; flex-direction: column; gap: 8px;">
-                  <!-- Features injected by JS -->
                </ul>
             </div>
 
-            <!-- NEW: Upgrade button hooked to the new JS function -->
             <button onclick="openUpgradeModal('Plan Upgrade')" class="btn-primary" style="width: 100%; margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> View Upgrade Options
+               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> <span data-i18n="btn_view_upgrade">View Upgrade Options</span>
             </button>
           </div>
-          <!-- End Right Column -->
 
-        </div> <!-- Closes Grid Wrapper -->
+        </div>
       </div>
+
+
+
       <!-- ============================================== -->
       <!-- VIEW 1: DASHBOARD -->
       <!-- ============================================== -->
@@ -1128,38 +1127,38 @@
       <!-- ============================================== -->
       <div id="createManageView" class="view-section">
         <div style="display: flex; flex-direction: column; height: 100%; gap: 24px; min-height: 0;">
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; flex-shrink: 0;">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; flex-shrink: 0;">
             <div class="card panel" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
               <div style="display: flex; gap: 16px; margin-bottom: 24px;">
                 <div style="width: 56px; height: 56px; border-radius: 12px; background: var(--color-primary-soft); color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="12" y1="13" x2="12" y2="19"/><line x1="9" y1="16" x2="15" y2="16"/></svg></div>
-                <div><h3 style="font-size: 16px; font-weight: 700; margin: 0 0 6px;">Create New Event</h3><p style="font-size: 12px; color: var(--color-text-secondary); margin: 0;">Create a new event and configure details.</p></div>
+                <div><h3 style="font-size: 16px; font-weight: 700; margin: 0 0 6px;" data-i18n="cm_card_create_title">Create New Event</h3><p style="font-size: 12px; color: var(--color-text-secondary); margin: 0;" data-i18n="cm_card_create_desc">Create a new event and configure details.</p></div>
               </div>
-              <button onclick="switchView('createEventView')" class="btn-primary" style="width: max-content; padding: 10px 20px; border-radius: 8px;">Create Event &rarr;</button>
+              <button onclick="switchView('createEventView')" class="btn-primary" style="width: max-content; padding: 10px 20px; border-radius: 8px;"><span data-i18n="btn_create_event">Create Event</span> &rarr;</button>
             </div>
             
             <div class="card panel" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
               <div style="display: flex; gap: 16px; margin-bottom: 24px;">
                 <div style="width: 56px; height: 56px; border-radius: 12px; background: var(--color-success-soft); color: var(--color-success); display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg></div>
-                <div><h3 style="font-size: 16px; font-weight: 700; margin: 0 0 6px;">Add Guest</h3><p style="font-size: 12px; color: var(--color-text-secondary); margin: 0;">Add individual guest details manually.</p></div>
+                <div><h3 style="font-size: 16px; font-weight: 700; margin: 0 0 6px;" data-i18n="cm_card_add_title">Add Guest</h3><p style="font-size: 12px; color: var(--color-text-secondary); margin: 0;" data-i18n="cm_card_add_desc">Add individual guest details manually.</p></div>
               </div>
-              <button onclick="switchView('addGuestView')" class="btn-primary" style="background: var(--color-success); width: max-content; padding: 10px 20px; border-radius: 8px;">Add Guest &rarr;</button>
+              <button onclick="switchView('addGuestView')" class="btn-primary" style="background: var(--color-success); width: max-content; padding: 10px 20px; border-radius: 8px;"><span data-i18n="btn_add_guest">Add Guest</span> &rarr;</button>
             </div>
             
             <div class="card panel" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
               <div style="display: flex; gap: 16px; margin-bottom: 24px;">
                 <div style="width: 56px; height: 56px; border-radius: 12px; background: var(--color-info-soft); color: var(--color-info); display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-                <div><h3 style="font-size: 16px; font-weight: 700; margin: 0 0 6px;">Import Data</h3><p style="font-size: 12px; color: var(--color-text-secondary); margin: 0;">Import events or guest data in bulk.</p></div>
+                <div><h3 style="font-size: 16px; font-weight: 700; margin: 0 0 6px;" data-i18n="cm_card_import_title">Import Data</h3><p style="font-size: 12px; color: var(--color-text-secondary); margin: 0;" data-i18n="cm_card_import_desc">Import events or guest data in bulk.</p></div>
               </div>
-              <button onclick="switchView('addGuestView')" class="btn-primary" style="background: var(--color-info); width: max-content; padding: 10px 20px; border-radius: 8px;">Import Data &rarr;</button>
+              <button onclick="switchView('addGuestView')" class="btn-primary" style="background: var(--color-info); width: max-content; padding: 10px 20px; border-radius: 8px;"><span data-i18n="btn_import_data_arrow">Import Data &rarr;</span></button>
             </div>
           </div>
           <div class="card panel" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 24px;">
             <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; flex-shrink: 0;">
-              <div><h2 class="section-title" style="margin: 0 0 6px;">Your Events</h2></div>
+              <div><h2 class="section-title" style="margin: 0 0 6px;" data-i18n="cm_your_events">Your Events</h2></div>
             </div>
             <div class="data-table-container no-scrollbar">
               <table class="data-table">
-                <thead><tr><th>Event Name</th><th>Date</th><th>Venue</th><th>Guests</th><th>Status</th><th>Actions</th></tr></thead>
+                <thead><tr><th><span data-i18n="th_event_name">Event Name</span></th><th><span data-i18n="th_date">Date</span></th><th><span data-i18n="th_venue">Venue</span></th><th><span data-i18n="th_guests">Guests</span></th><th><span data-i18n="th_status">Status</span></th><th><span data-i18n="th_actions">Actions</span></th></tr></thead>
                 <tbody id="createManageEventsTable"></tbody>
               </table>
             </div>
@@ -1276,14 +1275,13 @@
       </div>
 
       <!-- ============================================== -->
-      <!-- <!-- ============================================== -->
       <!-- TAB: ADD GUEST VIEW (Unified) -->
       <!-- ============================================== -->
       <div id="addGuestView" class="view-section">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-shrink: 0;">
-          <div><h1 class="page-title">Add Guest</h1><p class="page-subtitle" style="margin:0;">Add individual guest details manually, or use bulk tools.</p></div>
+          <div><h1 class="page-title" data-i18n="ag_title">Add Guest</h1><p class="page-subtitle" style="margin:0;" data-i18n="ag_subtitle">Add individual guest details manually, or use bulk tools.</p></div>
           <div style="display: flex; gap: 12px;">
-            <button type="button" onclick="cancelGuestForm()" style="background: transparent; border: 1px solid var(--color-border); padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--color-text);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back to Create & Manage</button>
+            <button type="button" onclick="cancelGuestForm()" style="background: transparent; border: 1px solid var(--color-border); padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--color-text);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> <span data-i18n="btn_back_create_manage">Back to Create & Manage</span></button>
           </div>
         </div>
         
@@ -1292,144 +1290,143 @@
             
             <div class="card panel" style="padding: 24px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
               <div style="width: 50%;">
-                <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Select Event <span style="color: var(--color-danger);">*</span></label>
+                <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;"><span data-i18n="label_select_event">Select Event</span> <span style="color: var(--color-danger);">*</span></label>
                 <select id="addGuestEventSelect" class="input-field" style="margin: 0; padding: 12px 14px; background: var(--color-surface-soft); font-weight: 600;">
                   <option value="">Loading events...</option>
                 </select>
               </div>
               <div style="display: flex; gap: 32px; align-items: center; padding-right: 24px;">
-                 <div style="text-align: right;"><div style="font-size: 11px; font-weight: 700; color: var(--color-text-secondary); text-transform: uppercase;">Event Capacity</div><div style="font-size: 20px; font-weight: 700; color: var(--color-primary); margin: 4px 0;"><span id="agCurrentGuests">0</span> <span style="font-size: 14px; color: var(--color-text); font-weight: 500;">/ <span id="agMaxGuests">0</span></span></div><div style="font-size: 11px; color: var(--color-text-secondary);">Guests Added</div></div>
+                 <div style="text-align: right;"><div style="font-size: 11px; font-weight: 700; color: var(--color-text-secondary); text-transform: uppercase;" data-i18n="ag_event_capacity">Event Capacity</div><div style="font-size: 20px; font-weight: 700; color: var(--color-primary); margin: 4px 0;"><span id="agCurrentGuests">0</span> <span style="font-size: 14px; color: var(--color-text); font-weight: 500;">/ <span id="agMaxGuests">0</span></span></div><div style="font-size: 11px; color: var(--color-text-secondary);" data-i18n="ag_guests_added">Guests Added</div></div>
               </div>
             </div>
 
             <div class="card panel" style="padding: 24px; margin-bottom: 24px;">
-              <!-- TOP HEADER WITH BUTTONS -->
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 class="section-title" style="margin: 0;">Guest Information</h2>
+                <h2 class="section-title" style="margin: 0;" data-i18n="ag_guest_info">Guest Information</h2>
                 <div style="display: flex; gap: 8px;">
-                  <button onclick="toggleGuestInputMode('bulk')" class="btn-filter-nav" style="font-size: 11px; padding: 6px 12px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Bulk Upload (.xlsx)</button>
-                  <button onclick="toggleGuestInputMode('auto')" class="btn-filter-nav" style="font-size: 11px; padding: 6px 12px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Auto-Generate</button>
+                  <button onclick="toggleGuestInputMode('bulk')" class="btn-filter-nav" style="font-size: 11px; padding: 6px 12px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> <span data-i18n="btn_bulk_upload">Bulk Upload (.xlsx)</span></button>
+                  <button onclick="toggleGuestInputMode('auto')" class="btn-filter-nav" style="font-size: 11px; padding: 6px 12px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span data-i18n="btn_auto_generate">Auto-Generate</span></button>
                 </div>
               </div>
 
-              <!-- HIDDEN: BULK UPLOAD ZONE -->
+              <!-- BULK UPLOAD ZONE -->
               <div id="bulkUploadZone" style="display: none; border: 1px dashed var(--color-primary); padding: 20px; border-radius: var(--radius-md); background: var(--color-primary-soft); margin-bottom: 24px;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                   <div>
-                    <h3 style="font-size: 13px; font-weight: 700; color: var(--color-primary); margin: 0 0 4px;">Upload Excel Guest List</h3>
-                    <p style="font-size: 11px; color: var(--color-text-secondary); margin: 0;">Requires columns: <b>Guest Name</b>, <b>Ticket Tier</b>, <b>Capacity</b>.</p>
+                    <h3 style="font-size: 13px; font-weight: 700; color: var(--color-primary); margin: 0 0 4px;" data-i18n="bulk_title">Upload Excel Guest List</h3>
+                    <p style="font-size: 11px; color: var(--color-text-secondary); margin: 0;" data-i18n="bulk_desc">Requires columns: Guest Name, Ticket Tier, Capacity.</p>
                   </div>
-                  <button onclick="downloadGuestTemplate()" style="background: white; border: 1px solid var(--color-primary); color: var(--color-primary); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Download Template</button>
+                  <button onclick="downloadGuestTemplate()" style="background: white; border: 1px solid var(--color-primary); color: var(--color-primary); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;" data-i18n="btn_download_template">Download Template</button>
                 </div>
                 <div style="display: flex; gap: 12px; align-items: center;">
                   <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" style="display: none;" onchange="handleExcelFileSelect(event)">
-                  <button onclick="document.getElementById('excelFileInput').click()" class="btn-primary" style="padding: 8px 16px; font-size: 12px;">Choose Excel File</button>
-                  <span id="excelFileNameDisplay" style="font-size: 11px; color: var(--color-text-secondary); font-weight: 600;">No file chosen</span>
+                  <button onclick="document.getElementById('excelFileInput').click()" class="btn-primary" style="padding: 8px 16px; font-size: 12px;" data-i18n="btn_choose_file">Choose Excel File</button>
+                  <span id="excelFileNameDisplay" style="font-size: 11px; color: var(--color-text-secondary); font-weight: 600;" data-i18n="txt_no_file">No file chosen</span>
                 </div>
               </div>
 
-              <!-- HIDDEN: AUTO-GENERATE ZONE -->
+              <!-- AUTO-GENERATE ZONE -->
               <div id="autoGenerateZone" style="display: none; border: 1px dashed #B4790C; padding: 20px; border-radius: var(--radius-md); background: #FEF6E2; margin-bottom: 24px;">
-                <h3 style="font-size: 13px; font-weight: 700; color: #B4790C; margin: 0 0 4px;">Auto-Generate Anonymous Passes</h3>
-                <p style="font-size: 11px; color: var(--color-text-secondary); margin: 0 0 16px;">Generates batch passes named sequentially (e.g. VIP Pass - 001). Leave personal fields blank.</p>
+                <h3 style="font-size: 13px; font-weight: 700; color: #B4790C; margin: 0 0 4px;" data-i18n="auto_title">Auto-Generate Anonymous Passes</h3>
+                <p style="font-size: 11px; color: var(--color-text-secondary); margin: 0 0 16px;" data-i18n="auto_desc">Generates batch passes named sequentially (e.g. VIP Pass - 001). Leave personal fields blank.</p>
                 <div style="display: flex; gap: 16px; align-items: flex-end;">
                   <div style="flex: 1;">
-                    <label style="font-size: 11px; font-weight: 700; margin-bottom: 4px; display: block;">Number of Passes *</label>
-                    <input type="number" id="autoGenCount" placeholder="e.g. 50" min="1" class="input-field" style="margin: 0; padding: 8px 12px;">
+                    <label style="font-size: 11px; font-weight: 700; margin-bottom: 4px; display: block;" data-i18n="lbl_number_passes">Number of Passes *</label>
+                    <input type="number" id="autoGenCount" data-i18n="plc_number_passes" placeholder="e.g. 50" min="1" class="input-field" style="margin: 0; padding: 8px 12px;">
                   </div>
                   <div style="flex: 1;">
-                    <label style="font-size: 11px; font-weight: 700; margin-bottom: 4px; display: block;">Ticket Tier</label>
+                    <label style="font-size: 11px; font-weight: 700; margin-bottom: 4px; display: block;" data-i18n="lbl_ticket_type">Ticket Tier</label>
                     <select id="autoGenTier" class="input-field" style="margin: 0; padding: 8px 12px;">
                       <option value="General">General</option><option value="VIP">VIP</option><option value="Speaker">Speaker</option>
                     </select>
                   </div>
-                  <button onclick="executeAutoGenerate()" class="btn-primary" style="background: #B4790C; padding: 8px 16px; font-size: 12px;">Generate Passes</button>
+                  <button onclick="executeAutoGenerate()" class="btn-primary" style="background: #B4790C; padding: 8px 16px; font-size: 12px;" data-i18n="btn_generate_passes">Generate Passes</button>
                 </div>
               </div>
 
-              <!-- DEFAULT: SINGLE GUEST FORM -->
+              <!-- SINGLE GUEST FORM -->
               <div id="singleGuestZone">
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Full Name <span style="color: var(--color-danger);">*</span></label><input type="text" id="agGuestName" placeholder="Enter full name" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Email Address</label><input type="email" id="agGuestEmail" placeholder="Enter email address" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Phone / WhatsApp <span style="color: var(--color-danger);">*</span></label>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;"><span data-i18n="lbl_full_name">Full Name</span> <span style="color: var(--color-danger);">*</span></label><input type="text" id="agGuestName" data-i18n="plc_full_name" placeholder="Enter full name" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_contact_email">Email Address</label><input type="email" id="agGuestEmail" data-i18n="plc_email" placeholder="Enter email address" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;"><span data-i18n="lbl_contact_phone">Phone / WhatsApp</span> <span style="color: var(--color-danger);">*</span></label>
                     <div style="display:flex; gap:8px;">
                       <select id="agGuestPhoneCode" class="input-field" style="width: 80px; margin: 0; padding: 10px 4px;">
                          <option value="+966">🇸🇦 +966</option>
                          <option value="+971">🇦🇪 +971</option>
                          <option value="+91">🇮🇳 +91</option>
                       </select>
-                      <input type="text" id="agGuestPhone" placeholder="Enter phone number" class="input-field" style="margin: 0; padding: 10px 14px; flex: 1;" oninput="this.value = this.value.replace(/^0+/, '')">
+                      <input type="text" id="agGuestPhone" data-i18n="plc_phone" placeholder="Enter phone number" class="input-field" style="margin: 0; padding: 10px 14px; flex: 1;" oninput="this.value = this.value.replace(/^0+/, '')">
                     </div>
                   </div>
-                </div> <!-- FIX: THIS RESTORES THE GRID AND FREES YOUR TABS! -->
+                </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Company / Organization</label><input type="text" id="agGuestCompany" placeholder="Enter company name" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Designation / Title</label><input type="text" id="agGuestDesignation" placeholder="Enter designation" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Nationality</label>
-                    <input list="nationalityList" placeholder="Type or select nationality..." class="input-field" style="margin: 0; padding: 10px 14px;">
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_company">Company / Organization</label><input type="text" id="agGuestCompany" data-i18n="plc_company" placeholder="Enter company name" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_designation">Designation / Title</label><input type="text" id="agGuestDesignation" data-i18n="plc_designation" placeholder="Enter designation" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_nationality">Nationality</label>
+                    <input list="nationalityList" data-i18n="plc_nationality" placeholder="Type or select nationality..." class="input-field" style="margin: 0; padding: 10px 14px;">
                     <datalist id="nationalityList">
                       <option value="Saudi Arabia"></option><option value="United Arab Emirates"></option><option value="United States"></option>
                     </datalist>
                   </div>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">ID Type</label>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_id_type">ID Type</label>
                     <select class="input-field" style="margin: 0; padding: 10px 14px;"><option value="National ID">National ID</option><option value="Iqama">Iqama</option><option value="Passport">Passport</option></select>
                   </div>
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">ID Number</label><input type="text" id="agGuestIdNumber" placeholder="Enter ID number" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Ticket / Type</label><select id="agTierInput" class="input-field" style="margin: 0; padding: 10px 14px;"><option value="General">General</option><option value="VIP">VIP</option><option value="Speaker">Speaker</option></select></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_id_number">ID Number</label><input type="text" id="agGuestIdNumber" data-i18n="plc_id_number" placeholder="Enter ID number" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_ticket_type">Ticket / Type</label><select id="agTierInput" class="input-field" style="margin: 0; padding: 10px 14px;"><option value="General">General</option><option value="VIP">VIP</option><option value="Speaker">Speaker</option></select></div>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 2fr; gap: 20px;">
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">No. of Pairs / Capacity</label><input type="number" id="agCapacityInput" value="1" min="1" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_pairs">No. of Pairs / Capacity</label><input type="number" id="agCapacityInput" value="1" min="1" class="input-field" style="margin: 0; padding: 10px 14px;"></div>
                   <div>
-                    <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Entry Gate</label>
+                    <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_entry_gate">Entry Gate</label>
                     <select id="agEntryGateSelect" class="input-field" style="margin: 0; padding: 10px 14px;">
                       <option value="">Any Gate Allowed</option>
                     </select>
                   </div>
                   <div>
-                    <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Exit Gate</label>
+                    <label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_exit_gate">Exit Gate</label>
                     <select id="agExitGateSelect" class="input-field" style="margin: 0; padding: 10px 14px;">
                       <option value="">Any Gate Allowed</option>
                     </select>
                   </div>
-                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;">Notes (Optional)</label><textarea id="agGuestNotes" placeholder="Add any additional notes about this guest" class="input-field" style="margin: 0; padding: 10px 14px; height: 42px; resize: none;"></textarea></div>
+                  <div><label style="font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block;" data-i18n="lbl_notes">Notes (Optional)</label><textarea id="agGuestNotes" data-i18n="plc_notes" placeholder="Add any additional notes about this guest" class="input-field" style="margin: 0; padding: 10px 14px; height: 42px; resize: none;"></textarea></div>
                 </div>
               </div>
             </div>
 
-            <!-- INVITATION OPTIONS (Applies to Single Guest) -->
+            <!-- INVITATION OPTIONS -->
             <div class="card panel" style="padding: 24px;">
-              <h2 class="section-title" style="margin-bottom: 20px;">Guest Invitation (Optional)</h2>
+              <h2 class="section-title" style="margin-bottom: 20px;" data-i18n="inv_title">Guest Invitation (Optional)</h2>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div id="btnWhatsappOption" class="card" style="padding: 16px; border-color: var(--color-success); background: var(--color-success-soft); display: flex; align-items: center; gap: 12px; cursor: pointer;">
                   <div style="width: 20px; height: 20px; border-radius: 50%; background: var(--color-success); color: white; display: flex; align-items: center; justify-content: center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
                   <div style="width: 32px; height: 32px; border-radius: 50%; background: #25D366; color: white; display: flex; align-items: center; justify-content: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
-                  <div><h4 style="margin: 0 0 4px; font-size: 13px; font-weight: 700; color: var(--color-success);">Send via WhatsApp</h4><p style="margin: 0; font-size: 11px; color: #166534;">Guest will receive invitation on WhatsApp</p></div>
+                  <div><h4 style="margin: 0 0 4px; font-size: 13px; font-weight: 700; color: var(--color-success);" data-i18n="inv_wa_title">Send via WhatsApp</h4><p style="margin: 0; font-size: 11px; color: #166534;" data-i18n="inv_wa_desc">Guest will receive invitation on WhatsApp</p></div>
                 </div>
                 <div id="btnEmailOption" class="card" style="padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; border-color: var(--color-border); background: var(--color-bg);">
                   <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--color-border); background: white;"></div>
                   <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-surface-soft); color: var(--color-text-secondary); border: 1px solid var(--color-border); display: flex; align-items: center; justify-content: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-                  <div><h4 style="margin: 0 0 4px; font-size: 13px; font-weight: 600; color: var(--color-text);">Send via Email</h4><p style="margin: 0; font-size: 11px; color: var(--color-text-secondary);">Guest will receive invitation on Email</p></div>
+                  <div><h4 style="margin: 0 0 4px; font-size: 13px; font-weight: 600; color: var(--color-text);" data-i18n="inv_email_title">Send via Email</h4><p style="margin: 0; font-size: 11px; color: var(--color-text-secondary);" data-i18n="inv_email_desc">Guest will receive invitation on Email</p></div>
                 </div>
               </div>
               <div style="display: flex; gap: 16px; margin-top: 32px;">
-                <button type="button" onclick="cancelGuestForm()" style="background: white; border: 1px solid var(--color-border); color: var(--color-text); font-weight: 600; font-size: 13px; padding: 10px 24px; border-radius: 8px; cursor: pointer;">Cancel</button>
-                <button id="submitAddGuestBtn" class="btn-primary" style="padding: 10px 24px; border-radius: 8px; display: flex; align-items: center; gap: 8px; background: var(--color-primary);">Save Single Guest <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                <button type="button" onclick="cancelGuestForm()" style="background: white; border: 1px solid var(--color-border); color: var(--color-text); font-weight: 600; font-size: 13px; padding: 10px 24px; border-radius: 8px; cursor: pointer;" data-i18n="btn_cancel">Cancel</button>
+                <button id="submitAddGuestBtn" class="btn-primary" style="padding: 10px 24px; border-radius: 8px; display: flex; align-items: center; gap: 8px; background: var(--color-primary);"><span data-i18n="btn_save_single_guest">Save Single Guest</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
               </div>
             </div>
           </div>
 
           <div class="right-col no-scrollbar">
-            <!-- Event Capacity Status Panel (Unchanged) -->
+            <!-- Event Capacity Status Panel -->
             <div class="card panel" style="padding: 24px;">
-              <h3 style="font-size: 14px; font-weight: 700; margin: 0 0 16px; display: flex; align-items: center; gap: 8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Guests in this Event</h3>
+              <h3 style="font-size: 14px; font-weight: 700; margin: 0 0 16px; display: flex; align-items: center; gap: 8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> <span data-i18n="ag_guests_in_event">Guests in this Event</span></h3>
               <div style="display: flex; flex-direction: column; gap: 16px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; font-size: 12px;"><span style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary);">Event Capacity</span><span style="font-weight: 700;"><span id="agStatTotal">0</span> / <span id="agLimitGuest" class="text-pink-600">...</span> Limit</span></div>
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; font-size: 12px;"><span style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary);">Guests Added</span><span style="font-weight: 700; color: var(--color-success);" id="agStatAdded">0</span></div>
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; font-size: 12px;"><span style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary);">Remaining Slots</span><span style="font-weight: 700; color: var(--color-danger);" id="agStatRemain">0</span></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; font-size: 12px;"><span style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary);" data-i18n="ag_event_capacity">Event Capacity</span><span style="font-weight: 700;"><span id="agStatTotal">0</span> / <span id="agLimitGuest" class="text-pink-600">...</span> Limit</span></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; font-size: 12px;"><span style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary);" data-i18n="ag_guests_added">Guests Added</span><span style="font-weight: 700; color: var(--color-success);" id="agStatAdded">0</span></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; font-size: 12px;"><span style="display: flex; align-items: center; gap: 8px; color: var(--color-text-secondary);" data-i18n="ag_remaining_slots">Remaining Slots</span><span style="font-weight: 700; color: var(--color-danger);" id="agStatRemain">0</span></div>
               </div>
             </div>
           </div>
@@ -1443,60 +1440,21 @@
       <div id="designTemplatesView" class="view-section">
         <div style="display: flex; flex-direction: column; height: 100%; min-height: 0; overflow-y: auto; padding-right: 8px;" class="no-scrollbar">
           
-          <!-- 1. Choose a Template -->
           <div style="flex-shrink: 0; margin-bottom: 16px;">
-            
-            <!-- CHANGED: flex-direction: column moves the buttons directly below the title! -->
             <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
-               <h3 class="section-title" style="margin: 0; font-size: 14px;">1. Choose a Template</h3>
+               <h3 class="section-title" style="margin: 0; font-size: 14px;" data-i18n="dt_step1">1. Choose a Template</h3>
                
-               <!-- NEW: Category Filter Buttons -->
                <div id="templateCategoryFilters" style="display: flex; gap: 6px; overflow-x: auto; width: 100%; padding-bottom: 4px;" class="no-scrollbar">
-                  <button onclick="filterTemplates('All', this)" class="btn-filter-nav active" style="font-size: 10px; padding: 4px 10px;">All</button>
-                  <button onclick="filterTemplates('General', this)" class="btn-filter-nav" style="font-size: 10px; padding: 4px 10px;">General</button>
-                  <button onclick="filterTemplates('Marriage', this)" class="btn-filter-nav" style="font-size: 10px; padding: 4px 10px;">Marriage</button>
-                  <button onclick="filterTemplates('Corporate', this)" class="btn-filter-nav" style="font-size: 10px; padding: 4px 10px;">Corporate</button>
-                  <button onclick="filterTemplates('VIP', this)" class="btn-filter-nav" style="font-size: 10px; padding: 4px 10px;">VIP</button>
+                  <button onclick="filterTemplates('All', this)" class="btn-filter-nav active" style="font-size: 10px; padding: 4px 10px;" data-i18n="dt_filter_all">All</button>
+                  <button onclick="filterTemplates('General', this)" class="btn-filter-nav" style="font-size: 10px; padding: 4px 10px;" data-i18n="dt_filter_gen">General</button>
+                  <button onclick="filterTemplates('Marriage', this)" class="btn-filter-nav" style="font-size: 10px; padding: 4px 10px;" data-i18n="dt_filter_mar">Marriage</button>
+                  <button onclick="filterTemplates('Corporate', this)" class="btn-filter-nav" style="font-size: 10px; padding: 4px 10px;" data-i18n="dt_filter_corp">Corporate</button>
+                  <button onclick="filterTemplates('VIP', this)" class="btn-filter-nav" style="font-size: 10px; padding: 4px 10px;" data-i18n="dt_filter_vip">VIP</button>
                </div>
             </div>
             
             <div id="templateGallery" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px;" class="no-scrollbar">
-              
-              <!-- TALL PORTRAIT THUMBNAILS -->
-              <div onclick="applyTemplateBg(this, 'url(./templates/gatepass01.jpg)', '#ffffff', '#e2e8f0')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 2px solid var(--color-primary); border-radius: var(--radius-md); position: relative; overflow: hidden; cursor: pointer; background: var(--color-surface-soft);">
-                <div class="active-check" style="position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                <!-- Switched to center/cover to fill the tall box -->
-                <div style="width: 100%; height: 100px; background: url('./templates/gatepass01.jpg') center/cover no-repeat;"></div>
-                <div style="padding: 4px 2px; text-align: center; font-size: 9px; font-weight: 600; line-height: 1;">Custom Gatepass</div>
-              </div>
-
-              <div onclick="applyTemplateBg(this, 'linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)', '#111827', '#64748b')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer;">
-                 <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                 <div style="width: 100%; height: 100px; background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);"></div>
-                 <div style="padding: 4px 2px; text-align: center; font-size: 9px; font-weight: 600; line-height: 1;">Corporate Clean</div>
-              </div>
-
-              <div onclick="applyTemplateBg(this, 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)', '#831843', '#be185d')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer;">
-                 <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                 <div style="width: 100%; height: 100px; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);"></div>
-                 <div style="padding: 4px 2px; text-align: center; font-size: 9px; font-weight: 600; line-height: 1;">Wedding Theme</div>
-              </div>
-
-              <div onclick="applyTemplateBg(this, 'linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%)', '#1e3a8a', '#1d4ed8')" class="card tpl-card" style="min-width: 90px; height: 130px; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer;">
-                 <div class="active-check" style="display:none; position: absolute; top: 4px; right: 4px; background: var(--color-primary); color: white; border-radius: 50%; width: 16px; height: 16px; align-items: center; justify-content: center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                 <div style="width: 100%; height: 100px; background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);"></div>
-                 <div style="padding: 4px 2px; text-align: center; font-size: 9px; font-weight: 600; line-height: 1;">Birthday Bash</div>
-              </div>
-
-              <!-- AI Button (Kept Horizontal for layout balance) -->
-              <div onclick="alert('AI Generation feature is coming in V2!')" class="card" style="min-width: 150px; height: 130px; background: linear-gradient(135deg, #ea7e8c 0%, #9865a7 50%, #4a549a 100%); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; border: none; color: white; box-shadow: 0 6px 16px rgba(152, 101, 167, 0.3); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 8px;">
-                   <path d="M9 3L10.1241 6.55181C10.4287 7.51478 11.134 8.29177 12.0628 8.65345L15 9.79723L12.0628 10.941C11.134 11.3027 10.4287 12.0797 10.1241 13.0426L9 16.5945L7.87588 13.0426C7.57127 12.0797 6.86598 11.3027 5.93718 10.941L3 9.79723L5.93718 8.65345C6.86598 8.29177 7.57127 7.51478 7.87588 6.55181L9 3Z"></path>
-                 </svg>
-                 <span style="font-size: 13px; font-weight: 700; letter-spacing: 0.02em;">Generate by AI</span>
-                 <div style="font-size: 9px; font-weight: 700; background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 12px; margin-top: 8px; letter-spacing: 0.05em; text-transform: uppercase;">Coming Soon</div>
-              </div>
-
+              <!-- Cards injected by JS -->
             </div>
           </div>
 
@@ -1505,43 +1463,34 @@
             
             <!-- Left: Tools Sidebar -->
             <div class="card panel no-scrollbar" style="padding: 12px; display: flex; flex-direction: column; overflow-y: auto;">
-               <h3 class="section-title mobile-hide-tags" style="margin-bottom: 12px; font-size: 13px;">2. Tools</h3>
+               <h3 class="section-title mobile-hide-tags" style="margin-bottom: 12px; font-size: 13px;" data-i18n="dt_step2">2. Tools</h3>
                <div style="display: flex; flex-direction: column; gap: 4px;">
                   
                   <div class="mobile-tool-row">
                       <button class="nav-item tool-btn w-full btn-add-text" onclick="addCanvasText()" style="justify-content: center; height: 34px; font-size:12px; margin:0;" title="Add Text">
-                          <div style="display:flex; align-items:center; position:relative;">
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-                              <span style="position:absolute; top:-6px; right:-10px; font-size:12px; font-weight:900;">+</span>
-                          </div>
-                          <span class="btn-text" style="margin-left: 14px;">Add Text</span>
+                          <div style="display:flex; align-items:center; position:relative;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg><span style="position:absolute; top:-6px; right:-10px; font-size:12px; font-weight:900;">+</span></div>
+                          <span class="btn-text" style="margin-left: 14px;" data-i18n="dt_add_text">Add Text</span>
                       </button>
                       
                       <button class="nav-item tool-btn w-full btn-add-img" onclick="openAssetLibrary()" style="justify-content: center; height: 34px; font-size:12px; margin:0;" title="Image Library">
-                          <div style="display:flex; align-items:center; position:relative;">
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                              <span style="position:absolute; top:-6px; right:-10px; font-size:12px; font-weight:900;">+</span>
-                          </div>
-                          <span class="btn-text" style="margin-left: 14px;">Image Library</span>
+                          <div style="display:flex; align-items:center; position:relative;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span style="position:absolute; top:-6px; right:-10px; font-size:12px; font-weight:900;">+</span></div>
+                          <span class="btn-text" style="margin-left: 14px;" data-i18n="dt_image_lib">Image Library</span>
                       </button>
-
-                      <!-- THESE ONLY SHOW ON MOBILE -->
-                      <button class="nav-item tool-btn hide-on-desktop" onclick="resetTemplate()" style="justify-content: center; height: 34px; font-size:12px; margin:0;" title="Reset"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/></svg></button>
-                      <button class="nav-item tool-btn hide-on-desktop" onclick="previewTemplate()" style="justify-content: center; height: 34px; font-size:12px; margin:0; background: var(--color-primary-soft); color: var(--color-primary);" title="Preview"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
                   </div>
                   
                   <div class="mobile-hide-tags" style="height: 1px; background: var(--color-border); margin: 10px 0;"></div>
-                  <div class="mobile-hide-tags" style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;">Insert Dynamic Tags</div>
+                  <div class="mobile-hide-tags" style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;" data-i18n="dt_dynamic_tags">Insert Dynamic Tags</div>
                   <div class="mobile-hide-tags" style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 8px;">
-                    <button type="button" class="btn-filter-nav" onclick="addDynamicField('venue')" style="font-size: 10px; padding: 4px 6px; justify-content: center;">+ Venue</button>
-                    <button type="button" class="btn-filter-nav" onclick="addDynamicField('date')" style="font-size: 10px; padding: 4px 6px; justify-content: center;">+ Date</button>
-                    <button type="button" class="btn-filter-nav" onclick="addDynamicField('time')" style="font-size: 10px; padding: 4px 6px; justify-content: center;">+ Time</button>
-                    <button type="button" class="btn-filter-nav" onclick="addDynamicField('tier')" style="font-size: 10px; padding: 4px 6px; justify-content: center;">+ Tier</button>
+                    <button type="button" class="btn-filter-nav" onclick="addDynamicField('venue')" style="font-size: 10px; padding: 4px 6px; justify-content: center;" data-i18n="dt_tag_venue">+ Venue</button>
+                    <button type="button" class="btn-filter-nav" onclick="addDynamicField('date')" style="font-size: 10px; padding: 4px 6px; justify-content: center;" data-i18n="dt_tag_date">+ Date</button>
+                    <button type="button" class="btn-filter-nav" onclick="addDynamicField('time')" style="font-size: 10px; padding: 4px 6px; justify-content: center;" data-i18n="dt_tag_time">+ Time</button>
+                    <button type="button" class="btn-filter-nav" onclick="addDynamicField('tier')" style="font-size: 10px; padding: 4px 6px; justify-content: center;" data-i18n="dt_tag_tier">+ Tier</button>
                   </div>
 
                   <div class="mobile-hide-tags" style="height: 1px; background: var(--color-border); margin: 10px 0;"></div>
-                  <div class="mobile-hide-tags" style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;">Text Formatting</div>
-                  
+                  <div class="mobile-hide-tags" style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;" data-i18n="dt_text_format">Text Formatting</div>
+
+                  <!-- Desktop Only tools -->                 
                   <!-- MOBILE MAIN TOOLBAR: Aa, Alignments, QR (Hidden on Desktop) -->
                   <div class="hide-on-desktop" style="display: flex; gap: 8px; margin-bottom: 12px; align-items: center;">
                       <button type="button" id="btnToggleAa" onclick="document.querySelector('.text-expanded-panel').classList.toggle('mobile-hidden'); document.querySelector('.qr-expanded-panel').classList.add('mobile-hidden');" style="height: 32px; flex: 1; font-weight: 700; font-family: serif; background: var(--color-surface-soft); border: 1px solid var(--color-border); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">Aa</button>
@@ -1602,47 +1551,47 @@
                       
                       <!-- Line Space Slider -->
                       <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; background: var(--color-surface-soft); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--color-border); gap: 12px;">
-                          <span style="font-weight: 600; white-space: nowrap;">Line Space:</span>
+                          <span style="font-weight: 600; white-space: nowrap;" data-i18n="dt_line_space">Line Space:</span>
                           <input type="range" id="elementLineHeight" min="0.8" max="3" step="0.1" value="1.2" style="flex: 1; height: 4px; min-width: 50px;" oninput="if(currentlySelectedElement) currentlySelectedElement.style.lineHeight = this.value;">
                       </div>
                   </div>
 
                   <div class="mobile-hide-tags hide-on-desktop" style="height: 1px; background: var(--color-border); margin: 10px 0;"></div>
-                  <div class="mobile-hide-tags hide-on-desktop" style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;">QR Properties</div>
+                  <div class="mobile-hide-tags hide-on-desktop" style="font-size: 10px; font-weight: 700; color: var(--color-text-muted); margin-bottom: 6px; text-transform: uppercase;" data-i18n="dt_qr_props">QR Properties</div>
                   
                   <!-- QR EXPANDED PANEL -->
                   <div class="qr-expanded-panel mobile-hidden" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 8px;">
                       
                       <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11px;">
-                        <span style="white-space:nowrap; font-weight:600;">QR Size:</span>
+                        <span style="white-space:nowrap; font-weight:600;" data-i18n="dt_qr_size">QR Size:</span>
                         <input type="range" id="qrCustomSizeSlider" min="150" max="600" value="310" style="flex:1; height:4px;" oninput="document.getElementById('qrCustomSize').value = this.value; document.getElementById('qrCustomSize').dispatchEvent(new Event('input'));">
                         <input type="number" id="qrCustomSize" value="310" min="150" max="600" class="input-field" style="width: 50px; margin: 0; padding: 2px 4px; height: 26px; font-size: 11px; text-align:center;" oninput="document.getElementById('qrCustomSizeSlider').value = this.value; updateQRProperties();">
                       </div>
 
                       <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11px;">
-                        <span style="white-space:nowrap; font-weight:600;">QR Color:</span>
+                        <span style="white-space:nowrap; font-weight:600;" data-i18n="dt_qr_color">QR Color:</span>
                         <input type="color" id="qrDarkColor" value="#000000" style="width: 28px; height: 24px; padding: 0; border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer;" oninput="updateQRProperties()">
                         
                         <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; margin-left: auto; font-weight:600;">
-                          <input type="checkbox" id="qrBgBoxToggle" checked onchange="updateQRProperties()"> BG Box
+                         <input type="checkbox" id="qrBgBoxToggle" checked onchange="updateQRProperties()"> <span data-i18n="dt_bg_box">BG Box</span>
                         </label>
                         <input type="color" id="qrBgColor" value="#ffffff" style="width: 28px; height: 24px; padding: 0; border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer;" oninput="updateQRProperties()">
                       </div>
 
                       <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11px;">
-                        <span style="white-space:nowrap; font-weight:600;">Box Radius:</span>
+                        <span style="white-space:nowrap; font-weight:600;" data-i18n="dt_box_radius">Box Radius:</span>
                         <input type="range" id="qrBoxRadiusSlider" min="0" max="100" value="20" style="flex:1; height:4px;" oninput="document.getElementById('qrBoxRadius').value = this.value; document.getElementById('qrBoxRadius').dispatchEvent(new Event('input'));">
                         <input type="number" id="qrBoxRadius" value="20" min="0" max="100" class="input-field" style="width: 50px; margin: 0; padding: 2px 4px; height: 26px; font-size: 11px; text-align:center;" oninput="document.getElementById('qrBoxRadiusSlider').value = this.value; updateQRProperties();">
                       </div>
 
                       <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11px;">
-                        <span style="white-space:nowrap; font-weight:600;">Box Padding:</span>
+                        <span style="white-space:nowrap; font-weight:600;" data-i18n="dt_box_padding">Box Padding:</span>
                         <input type="range" id="qrBoxPaddingSlider" min="0" max="60" value="10" style="flex:1; height:4px;" oninput="document.getElementById('qrBoxPadding').value = this.value; document.getElementById('qrBoxPadding').dispatchEvent(new Event('input'));">
                         <input type="number" id="qrBoxPadding" value="10" min="0" max="60" class="input-field" style="width: 50px; margin: 0; padding: 2px 4px; height: 26px; font-size: 11px; text-align:center;" oninput="document.getElementById('qrBoxPaddingSlider').value = this.value; updateQRProperties();">
                       </div>
                   </div>
 
-                  <button onclick="deleteSelectedElement()" class="btn-primary delete-element-btn hide-on-desktop" style="background: var(--color-danger-soft); color: var(--color-danger); font-size: 11px; padding: 8px; margin-top: 8px;">Delete Selected</button>
+                  <button onclick="deleteSelectedElement()" class="btn-primary delete-element-btn hide-on-desktop" style="background: var(--color-danger-soft); color: var(--color-danger); font-size: 11px; padding: 8px; margin-top: 8px;" data-i18n="btn_delete_selected">Delete Selected</button>
                </div>
             </div>
 
@@ -1692,26 +1641,26 @@
 
             <!-- Right: Settings Sidebar -->
             <div class="card panel no-scrollbar" style="padding: 16px; overflow-y: auto; display: flex; flex-direction: column;">
-               <h3 class="section-title" style="margin-bottom: 16px; font-size: 13px;">3. Template Settings</h3>
+               <h3 class="section-title" style="margin-bottom: 16px; font-size: 13px;" data-i18n="dt_step3">3. Template Settings</h3>
                
-               <label style="font-size: 11px; font-weight: 700; margin-bottom: 4px; display: block;">Template Name</label>
-               <input type="text" id="tplName" placeholder="New Template Name" class="input-field" style="padding: 8px 10px; font-size:12px; margin-bottom: 12px;">
+               <label style="font-size: 11px; font-weight: 700; margin-bottom: 4px; display: block;" data-i18n="dt_tpl_name">Template Name</label>
+               <input type="text" id="tplName" data-i18n="plc_tpl_name" placeholder="New Template Name" class="input-field" style="padding: 8px 10px; font-size:12px; margin-bottom: 12px;">
                
-               <label style="font-size: 11px; font-weight: 700; margin-bottom: 4px; display: block;">Assign to Event</label>
+               <label style="font-size: 11px; font-weight: 700; margin-bottom: 4px; display: block;" data-i18n="dt_assign_event">Assign to Event</label>
                <select id="tplEventSelect" class="input-field" style="padding: 8px 10px; font-size:12px; margin-bottom: 12px;"><option value="">Select Event...</option></select>
 
-               <label style="font-size: 11px; font-weight: 700; margin-bottom: 4px; display: block;">Preview with Guest</label>
+               <label style="font-size: 11px; font-weight: 700; margin-bottom: 4px; display: block;" data-i18n="dt_preview_guest">Preview with Guest</label>
                <select id="tplGuestSelect" class="input-field" style="padding: 8px 10px; font-size:12px; margin-bottom: 12px;"><option value="">Select Guest...</option></select>
                
                <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px; padding-top: 16px;">
                   <div class="desktop-only-flex" style="display: flex; gap: 8px;">
-                     <button onclick="previewTemplate()" class="btn-filter-nav" style="flex: 1; justify-content: center; font-size:11px;">Preview</button>
-                     <button onclick="resetTemplate()" class="btn-filter-nav" style="flex: 1; justify-content: center; font-size:11px;">Reset</button>
+                     <button onclick="previewTemplate()" class="btn-filter-nav" style="flex: 1; justify-content: center; font-size:11px;" data-i18n="btn_preview">Preview</button>
+                     <button onclick="resetTemplate()" class="btn-filter-nav" style="flex: 1; justify-content: center; font-size:11px;" data-i18n="btn_reset">Reset</button>
                   </div>
                   <!-- FIX 5: Save Update AND Save As New buttons -->
                   <div style="display: flex; gap: 8px;">
-                     <button onclick="saveGatePassTemplate(false)" class="btn-primary" style="flex: 1; padding: 10px; font-size:11px;">Update Pass</button>
-                     <button onclick="saveGatePassTemplate(true)" class="btn-primary" style="background: var(--color-info); flex: 1; padding: 10px; font-size:11px;">Save as New</button>
+                     <button onclick="saveGatePassTemplate(false)" class="btn-primary" style="flex: 1; padding: 10px; font-size:11px;" data-i18n="btn_update_pass">Update Pass</button>
+                     <button onclick="saveGatePassTemplate(true)" class="btn-primary" style="background: var(--color-info); flex: 1; padding: 10px; font-size:11px;" data-i18n="btn_save_new">Save as New</button>
                   </div>
                </div>
             </div>
@@ -1720,7 +1669,7 @@
 
           <!-- 4. My Saved Templates (Scrolling with Fixed +More) -->
           <div style="flex-shrink: 0; padding-bottom: 8px; display: flex; flex-direction: column;">
-            <h3 class="section-title" style="margin-bottom: 8px; font-size: 14px;">4. My Saved Templates</h3>
+            <h3 class="section-title" style="margin-bottom: 8px; font-size: 14px;" data-i18n="dt_step4">4. My Saved Templates</h3>
             <div style="display: flex; gap: 12px; align-items: stretch; width: 100%;">
                 
                 <div id="savedTemplatesGallery" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; flex: 1; min-width: 0;" class="no-scrollbar">
@@ -1749,9 +1698,9 @@
            <div style="width: 80px; height: 80px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--color-primary); box-shadow: 0 10px 25px rgba(124, 58, 237, 0.2); margin-bottom: 24px;">
                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
            </div>
-           <h2 style="font-size: 24px; font-weight: 800; color: var(--color-primary); margin: 0 0 8px;">Interactive Web Invitations</h2>
-           <p style="font-size: 14px; color: var(--color-text-secondary); max-width: 400px; line-height: 1.6; margin: 0 0 24px;">Build beautiful, scrolling RSVP websites for your events. Add music, galleries, and let guests register themselves instantly.</p>
-           <span style="background: var(--color-primary); color: white; padding: 6px 16px; border-radius: 99px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Coming Soon for Premium Tenants</span>
+           <h2 style="font-size: 24px; font-weight: 800; color: var(--color-primary); margin: 0 0 8px;" data-i18n="wi_title">Interactive Web Invitations</h2>
+           <p style="font-size: 14px; color: var(--color-text-secondary); max-width: 400px; line-height: 1.6; margin: 0 0 24px;" data-i18n="wi_desc">Build beautiful, scrolling RSVP websites for your events. Add music, galleries, and let guests register themselves instantly.</p>
+           <span style="background: var(--color-primary); color: white; padding: 6px 16px; border-radius: 99px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;" data-i18n="wi_badge">Coming Soon for Premium Tenants</span>
         </div>
       </div>
 
@@ -2043,58 +1992,46 @@ let allFetchedLogs = []; // Stores global scan logs for drill-downs
       if (matchingNav) matchingNav.classList.add('active');
     }
 
-    // 4. Update Header Titles
+    // 4. Update Header Titles (Now fully bound to Translation Engine)
     const titleEl = document.getElementById('dynamicPageTitle');
     const subEl = document.getElementById('dynamicPageSubtitle');
     const searchBox = document.getElementById('dynamicSearchContainer');
     const searchInput = document.getElementById('dynamicSearchInput');
 
+    const setHeader = (titleKey, defTitle, subKey, defSub, searchKey, defSearch) => {
+        if(titleEl) { titleEl.setAttribute('data-i18n', titleKey); titleEl.innerText = window.t(titleKey, defTitle); }
+        if(subEl) { subEl.setAttribute('data-i18n', subKey); subEl.innerText = window.t(subKey, defSub); }
+        if(searchBox && searchInput && searchKey) {
+            searchBox.style.display = 'block';
+            searchInput.setAttribute('data-i18n', searchKey);
+            searchInput.placeholder = window.t(searchKey, defSearch);
+        } else if (searchBox) {
+            searchBox.style.display = 'none';
+        }
+    };
+
     if (viewId === 'dashboardView') {
-       titleEl.innerText = window.t('nav_dashboard', 'Dashboard'); 
-       subEl.innerText = window.t('dash_welcome_sub', 'Overview of your activities');
-       searchBox.style.display = 'none';
+        setHeader('nav_dashboard', 'Dashboard', 'dash_welcome_sub', 'Overview of your activities', null, null);
     } else if (viewId === 'profileView') {
-       titleEl.innerText = window.t('nav_my_profile', 'My Profile'); 
-       subEl.innerText = window.t('sub_create_manage', 'Manage your account and organizer details');
-       searchBox.style.display = 'none';
+        setHeader('nav_my_profile', 'My Profile', 'sub_create_manage', 'Manage your account and organizer details', null, null);
     } else if (viewId === 'createManageView') {
-       titleEl.innerText = window.t('title_create_manage', 'Create & Manage'); 
-       subEl.innerText = window.t('sub_create_manage', 'Dashboard > Create & Manage');
-       searchBox.style.display = 'block'; 
-       searchInput.placeholder = window.t('search_create_manage', 'Search events, guests, gate passes...');
+        setHeader('title_create_manage', 'Create & Manage', 'sub_create_manage', 'Dashboard > Create & Manage', 'search_create_manage', 'Search events, guests, gate passes...');
     } else if (viewId === 'createEventView') {
-       titleEl.innerText = window.t('nav_sub_create_event', 'Create New Event'); 
-       subEl.innerText = window.t('sub_create_manage', 'Dashboard > Create & Manage > Create New Event');
-       searchBox.style.display = 'none';
+        setHeader('nav_sub_create_event', 'Create New Event', 'sub_create_manage', 'Dashboard > Create & Manage > Create New Event', null, null);
     } else if (viewId === 'addGuestView') { 
-       titleEl.innerText = window.t('nav_sub_add_guest', 'Add Guest'); 
-       subEl.innerText = window.t('sub_create_manage', 'Dashboard > Create & Manage > Add guests manually or in bulk.');
-       searchBox.style.display = 'none';
+        setHeader('nav_sub_add_guest', 'Add Guest', 'ag_subtitle', 'Add individual guest details manually, or use bulk tools.', null, null);
     } else if (viewId === 'eventsView') {
-       titleEl.innerText = window.t('title_events', 'Events'); 
-       subEl.innerText = window.t('sub_events', 'Manage all your events');
-       searchBox.style.display = 'block'; 
-       searchInput.placeholder = window.t('search_events', 'Search events by name, venue...');
+        setHeader('title_events', 'Events', 'sub_events', 'Manage all your events', 'search_events', 'Search events by name, venue...');
     } else if (viewId === 'guestListsView') {
-       titleEl.innerText = window.t('title_guest_list', 'Guest List'); 
-       subEl.innerText = window.t('sub_guest_list', 'Manage and invite guests for your events');
-       searchBox.style.display = 'block'; 
-       searchInput.placeholder = window.t('search_guests', 'Search guests by name, email or phone...');
-       fetchAllGuestsForKPIs(); 
+        setHeader('title_guest_list', 'Guest List', 'sub_guest_list', 'Manage and invite guests for your events', 'search_guests', 'Search guests by name, email or phone...');
+        fetchAllGuestsForKPIs(); 
     } else if (viewId === 'gateManagementView') {
-       titleEl.innerText = window.t('title_gate_mgmt', 'Gate Management'); 
-       subEl.innerText = window.t('sub_gate_mgmt', 'Manage physical gates, assign staff, and monitor entry/exit logs');
-       searchBox.style.display = 'block'; 
-       searchInput.placeholder = window.t('search_gates', 'Search gates or staff...');
-       loadGateManagementData();
+        setHeader('title_gate_mgmt', 'Gate Management', 'sub_gate_mgmt', 'Manage physical gates, assign staff, and monitor entry/exit logs', 'search_gates', 'Search gates or staff...');
+        loadGateManagementData();
     } else if (viewId === 'designTemplatesView') {
-       titleEl.innerText = window.t('nav_design_templates', 'Design Templates'); 
-       subEl.innerText = window.t('sub_create_manage', 'Choose a template and customize your gate pass');
-       searchBox.style.display = 'none';
+        setHeader('nav_design_templates', 'Design Templates', 'sub_create_manage', 'Choose a template and customize your gate pass', null, null);
     } else if (viewId === 'webInvitationView') {
-       titleEl.innerText = window.t('nav_web_invites', 'Web Invitations'); 
-       subEl.innerText = window.t('sub_create_manage', 'Create stunning RSVP microsites for your events.');
-       searchBox.style.display = 'none';
+        setHeader('nav_web_invites', 'Web Invitations', 'sub_create_manage', 'Create stunning RSVP microsites for your events.', null, null);
     }
 
     // Highlight matching bottom nav item (Fix for Issue 7)
@@ -6246,7 +6183,92 @@ updateRecentGatesWidget();
           "msg_limit_events": "You can create up to",
           "msg_limit_guests": "Up to",
           "msg_guests_per_event": "guests per event.",
-          "msg_events_word": "events."
+          "msg_events_word": "events.",
+// --- CREATE & MANAGE TAB ---
+          "cm_card_create_title": "Create New Event",
+          "cm_card_create_desc": "Create a new event and configure details.",
+          "cm_card_add_title": "Add Guest",
+          "cm_card_add_desc": "Add individual guest details manually.",
+          "cm_card_import_title": "Import Data",
+          "cm_card_import_desc": "Import events or guest data in bulk.",
+          "btn_import_data_arrow": "Import Data →",
+          "cm_your_events": "Your Events",
+          "th_guests": "Guests",
+
+          // --- ADD GUEST TAB ---
+          "ag_title": "Add Guest",
+          "ag_subtitle": "Add individual guest details manually, or use bulk tools.",
+          "ag_event_capacity": "Event Capacity",
+          "ag_guests_added": "Guests Added",
+          "ag_remaining_slots": "Remaining Slots",
+          "ag_guests_in_event": "Guests in this Event",
+          "btn_bulk_upload": "Bulk Upload (.xlsx)",
+          "btn_auto_generate": "Auto-Generate",
+          "ag_guest_info": "Guest Information",
+          "bulk_title": "Upload Excel Guest List",
+          "bulk_desc": "Requires columns: Guest Name, Ticket Tier, Capacity.",
+          "btn_download_template": "Download Template",
+          "btn_choose_file": "Choose Excel File",
+          "txt_no_file": "No file chosen",
+          "auto_title": "Auto-Generate Anonymous Passes",
+          "auto_desc": "Generates batch passes named sequentially (e.g. VIP Pass - 001). Leave personal fields blank.",
+          "lbl_number_passes": "Number of Passes *",
+          "plc_number_passes": "e.g. 50",
+          "btn_generate_passes": "Generate Passes",
+          "inv_title": "Guest Invitation (Optional)",
+          "inv_wa_title": "Send via WhatsApp",
+          "inv_wa_desc": "Guest will receive invitation on WhatsApp",
+          "inv_email_title": "Send via Email",
+          "inv_email_desc": "Guest will receive invitation on Email",
+          "btn_save_single_guest": "Save Single Guest",
+
+          // --- DESIGN & TEMPLATES TAB ---
+          "dt_step1": "1. Choose a Template",
+          "dt_filter_all": "All",
+          "dt_filter_gen": "General",
+          "dt_filter_mar": "Marriage",
+          "dt_filter_corp": "Corporate",
+          "dt_filter_vip": "VIP",
+          "dt_step2": "2. Tools",
+          "dt_add_text": "Add Text",
+          "dt_image_lib": "Image Library",
+          "dt_dynamic_tags": "Insert Dynamic Tags",
+          "dt_tag_venue": "+ Venue",
+          "dt_tag_date": "+ Date",
+          "dt_tag_time": "+ Time",
+          "dt_tag_tier": "+ Tier",
+          "dt_text_format": "Text Formatting",
+          "dt_line_space": "Line Space:",
+          "dt_qr_props": "QR Properties",
+          "dt_qr_size": "QR Size:",
+          "dt_qr_color": "QR Color:",
+          "dt_bg_box": "BG Box",
+          "dt_box_radius": "Box Radius:",
+          "dt_box_padding": "Box Padding:",
+          "btn_delete_selected": "Delete Selected",
+          "dt_step3": "3. Template Settings",
+          "dt_tpl_name": "Template Name",
+          "plc_tpl_name": "New Template Name",
+          "dt_assign_event": "Assign to Event",
+          "dt_preview_guest": "Preview with Guest",
+          "btn_preview": "Preview",
+          "btn_reset": "Reset",
+          "btn_update_pass": "Update Pass",
+          "btn_save_new": "Save as New",
+          "dt_step4": "4. My Saved Templates",
+
+          // --- WEB INVITATIONS & PROFILE ---
+          "wi_title": "Interactive Web Invitations",
+          "wi_desc": "Build beautiful, scrolling RSVP websites for your events. Add music, galleries, and let guests register themselves instantly.",
+          "wi_badge": "Coming Soon for Premium Tenants",
+          "prof_title": "My Profile",
+          "prof_plan_limits": "Plan & Limits",
+          "prof_plan_desc": "Here is an overview of your current subscription benefits.",
+          "prof_max_events": "Max Events",
+          "prof_max_guests": "Max Guests / Event",
+          "prof_active_feats": "Active Features",
+          "btn_view_upgrade": "View Upgrade Options",
+          "btn_save_changes": "Save Changes"
       },
       
 
@@ -6428,7 +6450,92 @@ ar: {
           "msg_limit_events": "يمكنك إنشاء حتى",
           "msg_limit_guests": "حتى",
           "msg_guests_per_event": "ضيف لكل فعالية.",
-          "msg_events_word": "فعاليات."
+          "msg_events_word": "فعاليات.",
+// --- CREATE & MANAGE TAB (ARABIC) ---
+          "cm_card_create_title": "إنشاء فعالية جديدة",
+          "cm_card_create_desc": "إنشاء فعالية جديدة وتكوين التفاصيل.",
+          "cm_card_add_title": "إضافة ضيف",
+          "cm_card_add_desc": "إضافة تفاصيل الضيف الفردية يدويًا.",
+          "cm_card_import_title": "استيراد البيانات",
+          "cm_card_import_desc": "استيراد الفعاليات أو بيانات الضيوف دفعة واحدة.",
+          "btn_import_data_arrow": "استيراد البيانات ←",
+          "cm_your_events": "فعالياتك",
+          "th_guests": "الضيوف",
+
+          // --- ADD GUEST TAB (ARABIC) ---
+          "ag_title": "إضافة ضيف",
+          "ag_subtitle": "أضف تفاصيل الضيف يدويًا، أو استخدم أدوات الاستيراد الشامل.",
+          "ag_event_capacity": "سعة الفعالية",
+          "ag_guests_added": "الضيوف المضافين",
+          "ag_remaining_slots": "الأماكن المتبقية",
+          "ag_guests_in_event": "الضيوف في هذه الفعالية",
+          "btn_bulk_upload": "رفع ملف (.xlsx)",
+          "btn_auto_generate": "توليد تلقائي",
+          "ag_guest_info": "معلومات الضيف",
+          "bulk_title": "رفع قائمة ضيوف Excel",
+          "bulk_desc": "يتطلب أعمدة: اسم الضيف، نوع التذكرة، السعة.",
+          "btn_download_template": "تحميل القالب",
+          "btn_choose_file": "اختيار ملف Excel",
+          "txt_no_file": "لم يتم اختيار ملف",
+          "auto_title": "توليد تصاريح مجهولة تلقائياً",
+          "auto_desc": "يولد تصاريح بأسماء متسلسلة (مثال VIP Pass - 001). اترك الحقول الشخصية فارغة.",
+          "lbl_number_passes": "عدد التصاريح *",
+          "plc_number_passes": "مثال 50",
+          "btn_generate_passes": "توليد التصاريح",
+          "inv_title": "دعوة الضيف (اختياري)",
+          "inv_wa_title": "إرسال عبر واتساب",
+          "inv_wa_desc": "سيتلقى الضيف الدعوة عبر واتساب",
+          "inv_email_title": "إرسال عبر الإيميل",
+          "inv_email_desc": "سيتلقى الضيف الدعوة عبر الإيميل",
+          "btn_save_single_guest": "حفظ ضيف واحد",
+
+          // --- DESIGN & TEMPLATES TAB (ARABIC) ---
+          "dt_step1": "1. اختر قالباً",
+          "dt_filter_all": "الكل",
+          "dt_filter_gen": "عام",
+          "dt_filter_mar": "زواج",
+          "dt_filter_corp": "شركات",
+          "dt_filter_vip": "VIP",
+          "dt_step2": "2. الأدوات",
+          "dt_add_text": "إضافة نص",
+          "dt_image_lib": "مكتبة الصور",
+          "dt_dynamic_tags": "إدراج علامات ديناميكية",
+          "dt_tag_venue": "+ الموقع",
+          "dt_tag_date": "+ التاريخ",
+          "dt_tag_time": "+ الوقت",
+          "dt_tag_tier": "+ النوع",
+          "dt_text_format": "تنسيق النص",
+          "dt_line_space": "تباعد الأسطر:",
+          "dt_qr_props": "خصائص QR",
+          "dt_qr_size": "حجم QR:",
+          "dt_qr_color": "لون QR:",
+          "dt_bg_box": "خلفية",
+          "dt_box_radius": "انحناء الزوايا:",
+          "dt_box_padding": "حجم الإطار:",
+          "btn_delete_selected": "حذف المحدد",
+          "dt_step3": "3. إعدادات القالب",
+          "dt_tpl_name": "اسم القالب",
+          "plc_tpl_name": "اسم القالب الجديد",
+          "dt_assign_event": "تعيين لفعالية",
+          "dt_preview_guest": "معاينة مع ضيف",
+          "btn_preview": "معاينة",
+          "btn_reset": "إعادة ضبط",
+          "btn_update_pass": "تحديث التصريح",
+          "btn_save_new": "حفظ كجديد",
+          "dt_step4": "4. قوالبي المحفوظة",
+
+          // --- WEB INVITATIONS & PROFILE (ARABIC) ---
+          "wi_title": "دعوات الويب التفاعلية",
+          "wi_desc": "قم ببناء مواقع RSVP بتمرير جميل لفعالياتك. أضف الموسيقى والمعارض ودع الضيوف يسجلون أنفسهم على الفور.",
+          "wi_badge": "قريباً للمشتركين المميزين",
+          "prof_title": "ملفي الشخصي",
+          "prof_plan_limits": "الخطة والحدود",
+          "prof_plan_desc": "إليك نظرة عامة على مزايا اشتراكك الحالي.",
+          "prof_max_events": "الحد الأقصى للفعاليات",
+          "prof_max_guests": "الحد الأقصى للضيوف / الفعالية",
+          "prof_active_feats": "الميزات النشطة",
+          "btn_view_upgrade": "عرض خيارات الترقية",
+          "btn_save_changes": "حفظ التغييرات"
       }
   };
 
