@@ -556,15 +556,15 @@
         <p class="nav-label">Events</p>
         <button class="nav-item w-full" onclick="switchView('eventsView', this)">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg></span>
-          Events
+          <span data-i18n="nav_events">Events</span>
         </button>
         <button class="nav-item w-full" onclick="switchView('guestListsView', this)">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
-          Guest Lists
+          <span data-i18n="nav_guest_lists">Guest Lists</span>
         </button>
 <button class="nav-item w-full" onclick="switchView('gateManagementView', this)">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg></span>
-          Gate Management
+          <span data-i18n="nav_gate_management">Gate Management</span>
         </button>
   </div>
 
@@ -573,7 +573,7 @@
         <button class="nav-item w-full" onclick="if(window.innerWidth <= 768) return false; switchView('createManageView', this)" style="justify-content: space-between;">
           <div style="display: flex; align-items: center; gap: var(--space-3);">
             <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg></span>
-            Create & Manage
+            <span data-i18n="nav_create_manage">Create & Manage</span>
           </div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--color-text-muted);"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
@@ -587,12 +587,12 @@
         <p class="nav-label">Design & Templates</p>
         <button class="nav-item w-full" onclick="switchView('designTemplatesView', this)">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></span>
-          Design Templates
+          <span data-i18n="nav_design_templates">Design Templates</span>
         </button>
         <!-- NEW: Web Invitations Tab -->
         <button id="btnNavWebInvites" class="nav-item w-full" onclick="switchView('webInvitationView', this)">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></span>
-          Web Invitations
+          <span data-i18n="nav_web_invites">Web Invitations</span>
         </button>
       </div>
 
@@ -600,11 +600,11 @@
         <p class="nav-label">Reports</p>
         <button class="nav-item w-full" onclick="alert('Analytics updates coming soon!'); return false;">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
-          Analytics
+          <span data-i18n="nav_analytics">Analytics</span>
         </button>
         <button class="nav-item w-full" onclick="alert('Reports updates coming soon!'); return false;">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span>
-          Reports
+          <span data-i18n="nav_reports">Reports</span>
         </button>
       </div>
     </nav>
@@ -613,11 +613,11 @@
     <div style="padding: 16px; border-top: 1px solid var(--color-border); background: var(--color-bg); flex-shrink: 0; display: flex; flex-direction: column; gap: 4px;">
         <button class="nav-item w-full" onclick="switchView('profileView', this)" style="margin: 0; justify-content: flex-start; color: var(--color-text-secondary);">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-          My Profile
+          <span data-i18n="nav_my_profile">My Profile</span>
         </button>
         <button class="nav-item w-full" onclick="handleSignOut()" style="margin: 0; justify-content: flex-start; color: var(--color-danger);">
           <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
-          Logout
+          <span data-i18n="nav_logout">Logout</span>
         </button>
     </div>
   </aside>
