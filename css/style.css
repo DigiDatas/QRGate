@@ -1,1 +1,518 @@
-hello css
+<style>
+  /* ============ EXACT TEMPLATE CSS ============ */
+  :root {
+    --color-primary: #7C3AED;
+    --color-primary-dark: #5B21B6;
+    --color-primary-soft: #F3EDFF;
+    --color-text: #111827;
+    --color-text-secondary: #64748B;
+    --color-text-muted: #94A3B8;
+    --color-bg: #FFFFFF;
+    --color-surface-soft: #F8FAFC;
+    --color-border: #E5EAF2;
+    --color-success: #22B35A;
+    --color-success-soft: #EAF8EE;
+    --color-info: #2563EB;
+    --color-info-soft: #EEF4FF;
+    --color-danger: #EF3F63;
+    --color-danger-soft: #FFF0F3;
+    --color-warning: #F4B72A;
+    --font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-pill: 999px;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-7: 32px;
+    --sidebar-width: 246px;
+    --header-height: 68px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; font-family: var(--font-family); color: var(--color-text); background: var(--color-bg); -webkit-font-smoothing: antialiased; }
+  a { text-decoration: none; color: inherit; }
+  button { font-family: inherit; cursor: pointer; }
+  a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: var(--radius-sm); }
+
+  .app-shell { display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar { width: var(--sidebar-width); flex-shrink: 0; background: var(--color-bg); border-right: 1px solid var(--color-border); height: 100vh; position: sticky; top: 0; display: flex; flex-direction: column; transition: transform 220ms ease-out; z-index: 40; }
+  .brand { height: var(--header-height); display: flex; align-items: center; gap: var(--space-2); padding: 0 var(--space-5); border-bottom: 1px solid var(--color-border); flex-shrink: 0; }
+  .brand-mark { width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--color-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; }
+  .brand-name { font-weight: 700; font-size: 16px; color: var(--color-text); }
+  .brand-name .dot { color: var(--color-primary); }
+  .sidebar-scroll { flex: 1; overflow-y: auto; padding: var(--space-4) var(--space-3) var(--space-4); }
+  .nav-group { margin-bottom: var(--space-5); }
+  .nav-group:first-child { margin-bottom: var(--space-4); }
+  .nav-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--color-text-muted); text-transform: uppercase; padding: 0 var(--space-3); margin: 0 0 var(--space-2); }
+  .nav-item { display: flex; align-items: center; gap: var(--space-3); height: 42px; padding: 0 var(--space-3); border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; color: var(--color-text); margin-bottom: 2px; transition: background 150ms ease-out, color 150ms ease-out; }
+  .nav-item:hover { background: var(--color-surface-soft); }
+  .nav-item.active { background: var(--color-primary-soft); color: var(--color-primary); font-weight: 600; }
+  .nav-item .icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .nav-item svg { width: 18px; height: 18px; stroke-width: 1.9; }
+
+  /* Top header */
+  .content-shell { flex: 1; min-width: 0; display: flex; flex-direction: column; background: var(--color-surface-soft); }
+  .top-header { height: var(--header-height); border-bottom: 1px solid var(--color-border); background: var(--color-bg); display: flex; align-items: center; justify-content: space-between; padding: 0 var(--space-6); position: sticky; top: 0; z-index: 30; }
+  .header-left { display: flex; align-items: center; gap: var(--space-4); }
+  .portal-title { font-size: 17px; font-weight: 700; color: var(--color-text); }
+  .header-right { display: flex; align-items: center; gap: var(--space-4); }
+  .user-menu { display: flex; align-items: center; gap: var(--space-3); padding: 4px; border-radius: var(--radius-md); transition: background 150ms ease-out; border:none; background:transparent;}
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--color-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+  .user-meta { line-height: 1.3; text-align: left; }
+  .user-name { font-size: 13px; font-weight: 600; color: var(--color-text); }
+  .user-role { font-size: 12px; color: var(--color-text-secondary); }
+  .btn-signout { font-size: 11px; font-weight: 700; color: var(--color-danger); background: var(--color-danger-soft); padding: 4px 10px; border-radius: var(--radius-pill); border: none;}
+
+  /* Main content & Exact Template Layouts */
+  .main-content { padding: var(--space-6) 28px var(--space-7); flex: 1; }
+  .page-head-row { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-5); flex-wrap: wrap; margin-bottom: var(--space-6); }
+  .page-title { font-size: 24px; line-height: 30px; font-weight: 700; color: var(--color-text); margin: 0 0 4px; }
+  .page-subtitle { font-size: 13px; color: var(--color-text-secondary); margin: 0; }
+  
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-5); margin-bottom: var(--space-6); }
+  .card { background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+  .kpi-card { padding: var(--space-5); display: flex; align-items: flex-start; gap: var(--space-4); }
+  .kpi-icon { width: 52px; height: 52px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .kpi-icon.purple { background: var(--color-primary-soft); color: var(--color-primary); }
+  .kpi-icon.green  { background: var(--color-success-soft); color: var(--color-success); }
+  .kpi-icon.blue   { background: var(--color-info-soft); color: var(--color-info); }
+  .kpi-icon.pink   { background: var(--color-danger-soft); color: var(--color-danger); }
+  .kpi-value { font-size: 24px; font-weight: 700; color: var(--color-text); }
+  .kpi-label { font-size: 13px; color: var(--color-text-secondary); margin-top: 2px; }
+
+  .quick-actions-wrap { margin-bottom: var(--space-6); }
+  .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
+  .section-title { font-size: 16px; font-weight: 700; color: var(--color-text); margin: 0; }
+  .quick-actions-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-5); }
+  .action-card { padding: var(--space-5) var(--space-4); display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-4); transition: box-shadow 150ms, border-color 150ms; border: 1px solid var(--color-border); background: var(--color-bg); cursor: pointer; border-radius: var(--radius-md);}
+  .action-card:hover { border-color: var(--color-primary); box-shadow: 0 4px 14px rgba(124, 58, 237, 0.10); }
+  .action-icon { width: 44px; height: 44px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; }
+  .action-label { font-size: 14px; font-weight: 600; color: var(--color-text); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); margin-bottom: var(--space-6); }
+  .panel { padding: var(--space-5); background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md);}
+  
+  .list-row { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-3) 4px; border-radius: var(--radius-sm); border-bottom: 1px solid var(--color-border);}
+  .list-row:last-child { border-bottom: none; }
+  .date-tile { width: 48px; flex-shrink: 0; border-radius: var(--radius-sm); border: 1px solid var(--color-border); text-align: center; overflow: hidden; }
+  .date-tile .mon { background: var(--color-primary); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 0; text-transform: uppercase;}
+  .date-tile .day { font-size: 16px; font-weight: 700; padding: 2px 0; }
+  .row-title { font-size: 14px; font-weight: 600; }
+  .row-sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+  .status-badge { display: inline-block; padding: 3px 10px; border-radius: var(--radius-pill); font-size: 11px; font-weight: 600; }
+  .status-badge.upcoming { background: var(--color-success-soft); color: var(--color-success); }
+  .status-badge.pending { background: #FEF6E2; color: #B4790C; }
+
+  .btn-qr { border: none; background: var(--color-info-soft); color: var(--color-info); font-size: 12px; font-weight: 600; height: 34px; padding: 0 var(--space-3); border-radius: var(--radius-sm); display: flex; align-items: center; gap: 6px; transition: background 150ms; }
+  .btn-qr:hover { background: #dbeafe; }
+  .btn-qr:disabled { background: var(--color-surface-soft); color: var(--color-text-muted); cursor: not-allowed; }
+
+  .analytics-panel { padding: var(--space-5) var(--space-6); }
+  .analytics-body { display: grid; grid-template-columns: 1fr 260px; gap: var(--space-6); align-items: center; margin-top: var(--space-4); }
+
+  /* Input styles for forms */
+  .input-field { width: 100%; padding: 12px 14px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 14px; margin-bottom: 16px; background: var(--color-bg); font-family: inherit; }
+  .input-field:focus { outline: 2px solid var(--color-primary); border-color: transparent;}
+  textarea.input-field { resize: vertical; min-height: 42px; } /* Fix 4 & 10: Expandable corners */
+  
+  /* Fix 5 & 9: Hide Up/Down Arrows on Number Inputs */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type="number"] { -moz-appearance: textfield; }
+
+  .btn-primary { background: var(--color-primary); color: #fff; border: none; padding: 12px 20px; border-radius: var(--radius-sm); font-weight: 600; font-size: 14px; cursor: pointer; transition: 150ms;}
+  .btn-primary:hover { background: var(--color-primary-dark); }
+  
+  .view-section { display: none; }
+  .view-section.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ============ DASHBOARD LOCK & LAYOUTS ============ */
+  body, .app-shell { height: 100vh; overflow: hidden; margin: 0; }
+  .content-shell { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  
+  /* Flex constraint for main content */
+  .main-content { 
+    flex: 1; 
+    padding: var(--space-5) 28px; 
+    display: flex; 
+    flex-direction: column; 
+    overflow: hidden; 
+    height: calc(100vh - var(--header-height)); 
+  }
+  
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* View Sections - Flex & 100% Height */
+  .view-section { height: 100%; display: none; flex-direction: column; overflow: hidden; gap: 20px; }
+  .view-section.active { display: flex; animation: fadeIn 0.3s ease-in-out; }
+
+  /* Grids */
+  .layout-grid { display: grid; grid-template-columns: 1fr 320px; gap: 24px; height: 100%; min-height: 0; overflow: hidden; }
+  .left-col { display: flex; flex-direction: column; height: 100%; overflow: hidden; min-height: 0; gap: 20px; }
+  .right-col { display: flex; flex-direction: column; height: 100%; overflow-y: auto; padding-right: 4px; padding-bottom: 20px; gap: 20px; }
+.kpi-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; flex-shrink: 0; }
+  
+  /* Flex growing table containers */
+  .data-table-container { flex: 1; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow-y: auto; min-height: 0; }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table th { position: sticky; top: 0; background: var(--color-surface-soft); text-align: start; padding: 14px 20px; color: var(--color-text-muted); font-weight: 700; text-transform: uppercase; font-size: 11px; border-bottom: 1px solid var(--color-border); z-index: 10; }
+  .data-table td { padding: 14px 20px; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
+  .data-table tr:hover { background: var(--color-surface-soft); }
+  .data-table tr:last-child td { border-bottom: none; }
+  
+  .table-avatar { width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--color-primary-soft); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; flex-shrink: 0; }
+  
+  /* Top Navigation Button Overrides */
+  .btn-filter-nav { background: var(--color-bg); color: var(--color-text-secondary); padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border); cursor: pointer; transition: 0.2s; }
+  .btn-filter-nav:hover { background: var(--color-surface-soft); }
+  .btn-filter-nav.active { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+  .badge-count { background: var(--color-surface-soft); color: var(--color-text-secondary); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid var(--color-border); }
+  .btn-filter-nav.active .badge-count { background: #fff; color: var(--color-primary); border: none; }
+.resizable-text {
+    position: relative;
+    user-select: none;
+    box-sizing: border-box;
+  }
+  .resizable-text .resize-handle {
+      position: absolute; right: -8px; bottom: -8px;
+      width: 16px; height: 16px; background: var(--color-primary, #ec4899); 
+      border: 2px solid #fff; border-radius: 50%; 
+      cursor: nwse-resize; display: none; z-index: 20;
+    }
+  .resizable-text:hover .resize-handle,
+  .resizable-text.active-element .resize-handle {
+    display: block;
+  }
+/* ONGOING EVENT PULSE ANIMATION */
+  @keyframes pulseOngoing {
+    0% { box-shadow: 0 0 0 0 rgba(180, 121, 12, 0.4); }
+    70% { box-shadow: 0 0 0 6px rgba(180, 121, 12, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(180, 121, 12, 0); }
+  }
+  .pulse-ongoing {
+    animation: pulseOngoing 2s infinite;
+  }
+
+/* ============ MOBILE RESPONSIVENESS: PHASE 1 ============ */
+  .mobile-bottom-nav { display: none; }
+  .mobile-menu-btn { display: none; }
+  .mobile-brand { display: none; }
+
+  @media (max-width: 768px) {
+    /* Hide Desktop Elements & Transform Sidebar */
+    .sidebar { position: fixed !important; top: 0; left: 0; height: 100vh !important; transform: translateX(-100%); z-index: 1000 !important; display: flex !important; box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
+    .sidebar.mobile-open { transform: translateX(0); }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 999; backdrop-filter: blur(2px); }
+    .sidebar-overlay.mobile-open { display: block; }
+    
+    .portal-title, .page-subtitle, #dynamicSearchContainer { display: none !important; }
+    .user-meta, .btn-signout { display: none !important; }
+    
+    /* Adjust Main Shell & Fix Header Overlap */
+    .main-content { padding: var(--space-4) 16px var(--space-7); height: calc(100vh - var(--header-height) - 70px); }
+    .top-header { padding: 0 16px !important; justify-content: space-between !important; width: 100% !important; box-sizing: border-box !important; overflow: hidden !important; }
+    .header-left { gap: 20px !important; display: flex !important; align-items: center !important; flex: 1 !important; }
+    .header-right { gap: 12px !important; display: flex !important; align-items: center !important; flex-shrink: 0 !important; margin-right: 0 !important; }
+
+    /* Show Mobile Header Elements */
+    .mobile-menu-btn { display: flex; align-items: center; justify-content: center; background: none; border: none; color: var(--color-text); cursor: pointer; flex-shrink: 0; padding: 0 !important; margin: 0 !important; }
+    .mobile-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; color: var(--color-text); white-space: nowrap; }
+    .mobile-brand .brand-mark { width: 28px; height: 28px; border-radius: var(--radius-sm); background: var(--color-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+
+    /* Show Bottom Navigation */
+    .mobile-bottom-nav {
+      display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 70px;
+      background: var(--color-bg); border-top: 1px solid var(--color-border); z-index: 50;
+      justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom);
+    }
+    .nav-bottom-item {
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+      color: var(--color-text-muted); font-size: 10px; font-weight: 600; flex: 1; height: 100%; background: none; border: none;
+    }
+    .nav-bottom-item.active { color: var(--color-primary); }
+    .nav-bottom-item svg { width: 22px; height: 22px; stroke-width: 2; }
+/* --- PHASE 2 & BATCH 3: ADVANCED MOBILE POLISH --- */
+    
+    /* 1. Unlock Scrolling & Header Fixes */
+    body, .app-shell, .content-shell { height: auto !important; min-height: 100vh; overflow-y: visible !important; overflow-x: hidden !important; }
+    .main-content { height: auto !important; overflow-y: visible !important; padding: 16px 16px 100px 16px !important; overflow-x: hidden !important; }
+    .view-section { height: auto !important; overflow: visible !important; padding-bottom: 20px !important; gap: 16px !important; }
+    
+    /* Fixed Top Header & Prevent Profile Icon Hiding */
+    .top-header { position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 1000 !important; padding: 0 16px !important; box-sizing: border-box !important; background: var(--color-bg) !important; border-bottom: 1px solid var(--color-border) !important; }
+    .content-shell { padding-top: 68px !important; } /* Pushes content down so it doesn't hide under the fixed header */
+    .header-left { max-width: 70% !important; overflow: hidden !important; gap: 20px !important; }
+    .mobile-brand { margin-left: 8px !important; } /* Adds the requested gap from the hamburger icon */
+    .header-right { max-width: 30% !important; justify-content: flex-end !important; gap: 16px !important; }
+    .user-meta, .btn-signout { display: none !important; }
+    .user-menu { cursor: pointer !important; padding: 0 !important; }
+    
+    /* Fix Donut Chart Overlap */
+    .analytics-body { display: flex !important; flex-direction: column !important; gap: 32px !important; padding-bottom: 16px !important; }
+    
+    /* 2. Ultra-Compact KPI Cards */
+    .kpi-grid, .kpi-5 { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+    .kpi-card { padding: 10px 12px !important; gap: 8px !important; border-radius: 12px !important; flex-direction: row !important; align-items: center !important; justify-content: flex-start !important; text-align: left !important; }
+    .kpi-card > div:not(.kpi-icon) { display: flex !important; flex-direction: column !important; align-items: flex-start !important; width: auto !important; }
+    .kpi-icon { width: 32px !important; height: 32px !important; margin: 0 !important; flex-shrink: 0 !important; }
+    .kpi-icon svg { width: 16px !important; height: 16px !important; }
+    .kpi-value { font-size: 18px !important; line-height: 1 !important; margin-bottom: 2px !important; }
+    .kpi-label { font-size: 10px !important; white-space: normal !important; line-height: 1.2 !important; text-align: left !important; color: var(--color-text-secondary) !important; }
+    
+    /* Quick Actions & Grids */
+    div[style*="grid-template-columns: repeat(4, 1fr)"] { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+    .action-card { padding: 12px !important; gap: 8px !important; border-radius: 12px !important; }
+    .action-icon { width: 32px !important; height: 32px !important; }
+    .layout-grid, section[style*="flex:1; display:flex; gap:16px; min-height:0;"] { display: flex !important; flex-direction: column !important; height: auto !important; overflow: visible !important; gap: 16px !important; }
+    .left-col, .right-col { height: auto !important; overflow: visible !important; width: 100% !important; padding-right: 0 !important; }
+    .kpi-5 + button { width: 100% !important; margin-top: 4px !important; padding: 12px !important; justify-content: center !important; }
+    
+    /* 3. Dense Mobile Data Cards */
+    .data-table-container { overflow: visible !important; border: none !important; background: transparent !important; padding: 0 !important; width: 100% !important; border-radius: 0 !important; }
+    .data-table, .data-table tbody { display: flex !important; flex-direction: column !important; width: 100% !important; gap: 12px !important; }
+    .data-table thead { display: none !important; } 
+    .data-table tr:not(.drilldown-row) { position: relative !important; display: flex !important; flex-direction: row !important; flex-wrap: wrap !important; background: var(--color-bg) !important; border: 1px solid var(--color-border) !important; border-radius: 12px !important; padding: 12px !important; box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important; gap: 8px !important; align-items: center !important; justify-content: flex-start !important; }
+    .data-table td { display: flex !important; flex-direction: column !important; align-items: flex-start !important; justify-content: center !important; gap: 4px !important; width: auto !important; flex: 1 1 40% !important; padding: 0 !important; border: none !important; font-size: 11px !important; overflow: hidden !important; }
+    
+    /* Card Title Row & Pinned Actions */
+    .data-table tr:not(.drilldown-row) td:first-child { flex: 1 1 100% !important; padding-bottom: 8px !important; border-bottom: 1px solid var(--color-surface-soft) !important; margin-bottom: 4px !important; padding-right: 90px !important; }
+    .data-table tr:not(.drilldown-row) td:last-child { position: absolute !important; top: 12px !important; right: 12px !important; border: none !important; padding: 0 !important; margin: 0 !important; width: auto !important; background: transparent !important; }
+    .data-table tr:not(.drilldown-row) td:last-child > div { gap: 2px !important; }
+    .data-table tr:not(.drilldown-row) td:last-child button { padding: 6px !important; transform: scale(0.9); border: none !important; background: transparent !important; }
+    
+    /* Guest Card Specific Cleanups (Hide Date/Time, Move Status) */
+    #guestListTableBody td:nth-child(8) { display: none !important; }
+    #guestListTableBody tr:not(.drilldown-row) td:nth-child(4) { position: absolute !important; top: 16px !important; right: 100px !important; width: auto !important; padding: 0 !important; margin: 0 !important; }
+
+    /* 4. Fix Drilldown Row Expand/Collapse */
+    .data-table tr.drilldown-row { position: static !important; padding: 0 !important; border: none !important; box-shadow: none !important; background: transparent !important; margin-top: -8px !important; margin-bottom: 12px !important; }
+    .data-table tr.drilldown-row[style*="display: table-row"] { display: block !important; }
+    .data-table tr.drilldown-row td { display: block !important; width: 100% !important; }
+    .data-table tr.drilldown-row > td > div { background: var(--color-surface-soft) !important; border-radius: 8px !important; padding: 8px !important; }
+
+    /* 5. Fix Swiping & Guest Category Buttons */
+    #dashboardDateFilters, #guestTierFilters, #gateSpecificFilters, #guestListEventPills, #gateEventPillsContainer { display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 10px !important; width: 100% !important; max-width: calc(100vw - 32px) !important; -webkit-overflow-scrolling: touch !important; }
+    .btn-filter-nav, #guestListEventPills > div, #gateEventPillsContainer > div { flex: 0 0 auto !important; flex-shrink: 0 !important; }
+    
+    #guestTierFilters { gap: 8px !important; align-items: center !important; border-bottom: none !important; }
+    #guestTierFilters > div { padding: 6px 14px !important; border: 1px solid var(--color-border) !important; border-radius: 99px !important; background: var(--color-bg) !important; font-size: 11px !important; flex-shrink: 0 !important; white-space: nowrap !important; }
+    #guestTierFilters > div[style*="var(--color-primary)"] { background: var(--color-primary) !important; color: #fff !important; border-color: var(--color-primary) !important; }
+
+    /* 6. Form Grids & Misc Layout Fixes */
+    div[style*="grid-template-columns: 1fr 1fr"], div[style*="grid-template-columns: 1fr 1fr 1fr"], div[style*="grid-template-columns: 1fr 1fr 1fr 2fr"] { grid-template-columns: 1fr !important; gap: 12px !important; }
+    #createEventView div[style*="align-items: center; gap: 12px;"] { flex-direction: column !important; align-items: stretch !important; gap: 8px !important; }
+    #gateManagementView > div > div:first-child { flex-direction: column !important; align-items: stretch !important; gap: 16px !important; }
+    #gateManagementView > div > div:first-child > div:last-child { width: 100% !important; }
+    #gateManagementView > div > div:first-child button { flex: 1 !important; justify-content: center !important; }
+    #addGuestView .card > div[style*="justify-content: space-between; align-items: center; margin-bottom: 20px;"] { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; }
+    #addGuestView .card > div[style*="justify-content: space-between"] > div[style*="display: flex; gap: 8px;"] { width: 100% !important; }
+    #addGuestView .btn-filter-nav { flex: 1 !important; justify-content: center !important; padding: 10px !important; border: 1px solid var(--color-primary) !important; background: var(--color-primary-soft) !important; color: var(--color-primary) !important; font-weight: 700 !important; border-radius: var(--radius-sm) !important; }
+    #autoGenerateZone > div[style*="align-items: flex-end;"] { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; }
+    
+/* --- BATCH 4: FINAL UI POLISH --- */
+    
+    /* 1. Fix Donut Chart Overlap */
+    .analytics-panel { height: auto !important; padding-bottom: 24px !important; }
+    .analytics-panel > div[style*="align-items:center; gap:32px;"] { flex-direction: column !important; gap: 24px !important; }
+    .analytics-panel > div[style*="align-items:center; gap:32px;"] > div:first-child { width: 100% !important; min-height: 180px !important; }
+    .analytics-panel > div[style*="align-items:center; gap:32px;"] > div:last-child { width: 100% !important; justify-content: center !important; margin-top: 8px !important; }
+
+    /* 2. Guest Card Compression & Status Alignment */
+    #guestListTableBody tr:not(.drilldown-row) { padding: 12px 12px 8px 12px !important; gap: 6px !important; min-height: auto !important; }
+    #guestListTableBody td { gap: 2px !important; }
+    
+    /* Move Active/Pending Status to the Top Right */
+    #guestListTableBody tr:not(.drilldown-row) td:nth-child(4) { position: absolute !important; top: 15px !important; right: 110px !important; width: auto !important; padding: 0 !important; margin: 0 !important; }
+    #guestListTableBody tr:not(.drilldown-row) td:nth-child(4) span { padding: 2px 8px !important; font-size: 10px !important; }
+    
+    /* Move the Exits Badge next to the QR Pass to reduce card height! */
+    #guestListTableBody tr:not(.drilldown-row) td:nth-child(5) { flex: 1 1 30% !important; margin-top: 4px !important; }
+    #guestListTableBody tr:not(.drilldown-row) td:nth-child(6) { flex: 0 0 auto !important; margin-top: 4px !important; }
+    #guestListTableBody tr:not(.drilldown-row) td:nth-child(7) { flex: 0 0 auto !important; margin-top: 4px !important; margin-left: 12px !important; }
+    
+    /* 3. Hide the "Back to Create & Manage" Buttons */
+    button[onclick="cancelEventForm()"], button[onclick="cancelGuestForm()"] { display: none !important; }    
+
+/* --- BATCH 5: DESIGN EDITOR UX POLISH (CORRECTED) --- */
+    
+    /* 1. Correct Flow: Canvas -> Tools -> Font Explorer -> Settings */
+    #builderLayoutGrid { display: flex !important; flex-direction: column !important; gap: 16px !important; padding-bottom: 20px !important; }
+    #builderLayoutGrid > div:nth-child(1) { order: 2 !important; } 
+    #fontExplorerPanel { order: 3 !important; } 
+    
+    /* 2. Fix Canvas Centering & Dimensions! */
+    #builderLayoutGrid > div:nth-child(3) { order: 1 !important; margin: 0 -16px !important; border-radius: 0 !important; border-left: none !important; border-right: none !important; position: relative !important; height: 380px !important; min-height: 380px !important; display: block !important; overflow: hidden !important; } 
+    #editorCanvas { transform: translate(-50%, -50%) scale(0.24) !important; transform-origin: center center !important; top: 50% !important; left: 50% !important; position: absolute !important; margin: 0 !important; }
+    
+    #builderLayoutGrid > div:nth-child(4) { order: 4 !important; }
+    
+    /* 3. Sticky Top Gallery (Pushed down 68px to sit safely under the main header!) */
+    #designTemplatesView { overflow: visible !important; overflow-x: hidden !important; }
+    #designTemplatesView > div:first-child { position: sticky !important; top: 68px !important; z-index: 50 !important; background: var(--color-surface-soft) !important; padding: 12px 16px 8px 16px !important; margin: -16px -16px 16px -16px !important; border-bottom: 1px solid var(--color-border); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    #designTemplatesView > div:first-child h3 { display: none !important; } 
+    #templateGallery { gap: 8px !important; padding-bottom: 4px !important; margin-top: 0 !important; }
+    #templateGallery > .card { height: 75px !important; min-width: 55px !important; width: 55px !important; }
+    #templateGallery > .card > div[style*="height: 100px"] { height: 50px !important; }
+    
+    /* 4. Show/Hide Mobile Elements */
+    .mobile-hide-tags { display: none !important; }
+    .desktop-only-flex { display: none !important; }
+    .mobile-only-flex { display: flex !important; }
+    .delete-element-btn { display: none !important; }
+    
+    /* 5. Perfect Fit Preview Modal */
+    #previewContainer { transform: scale(0.31) !important; transform-origin: top center !important; }
+    #previewModal { padding-top: 50px !important; align-items: flex-start !important; }
+    
+    /* 6. Tools Layout Restructuring (Horizontal Scrolling Rows!) */
+    .mobile-tool-row { display: flex !important; gap: 8px !important; width: 100% !important; margin-bottom: 8px !important; }
+    .mobile-tool-row > button { flex: 1 !important; }
+    
+    .text-format-mobile-row { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; gap: 6px !important; overflow-x: auto !important; padding-bottom: 6px !important; align-items: center !important; -webkit-overflow-scrolling: touch; }
+    .text-format-mobile-row > .t-row-1 { display: flex !important; gap: 6px !important; flex-shrink: 0 !important; }
+    .text-format-mobile-row > .t-row-2 { display: flex !important; gap: 6px !important; flex-shrink: 0 !important; width: auto !important; }
+    
+    .qr-mobile-row { display: flex !important; flex-direction: row !important; overflow-x: auto !important; padding-bottom: 8px !important; gap: 8px !important; flex-wrap: nowrap !important; margin-top: 8px !important; -webkit-overflow-scrolling: touch; }
+    .qr-mobile-row > div { flex-shrink: 0 !important; background: var(--color-surface-soft) !important; padding: 4px 8px !important; border-radius: 6px !important; border: 1px solid var(--color-border) !important; margin: 0 !important; display: flex !important; gap: 6px !important; align-items: center !important; }
+    
+    /* 7. Settings Layout Restructuring (1 column!) */
+    #builderLayoutGrid > div:nth-child(4) { display: flex !important; flex-direction: column !important; gap: 8px !important; padding: 16px !important; }
+    #builderLayoutGrid > div:nth-child(4) > h3 { display: none !important; }
+    #builderLayoutGrid > div:nth-child(4) > label { margin-bottom: 0 !important; margin-top: 4px !important; }
+    #builderLayoutGrid > div:nth-child(4) > input, #builderLayoutGrid > div:nth-child(4) > select { margin-bottom: 8px !important; }
+
+/* --- BATCH 6: GATE MANAGEMENT UX POLISH (UPDATED) --- */
+    
+    /* 1. Gate Card Compression & Flex Order Magic */
+    #gateManagementTableBody tr:not(.drilldown-row) { padding: 12px !important; gap: 8px !important; min-height: auto !important; align-items: center !important; }
+    
+    /* Row 1: Name & ID */
+    #gateManagementTableBody tr:not(.drilldown-row) td:nth-child(1) { order: 1 !important; flex: 1 1 100% !important; border-bottom: none !important; padding-bottom: 0 !important; margin-bottom: 0 !important; }
+    
+    /* Row 2: Gate Type (Left) & Scan Counts (Right) */
+    #gateManagementTableBody tr:not(.drilldown-row) td:nth-child(2) { order: 2 !important; flex: 0 0 auto !important; font-size: 10px !important; font-weight: 700 !important; padding: 2px 8px !important; background: var(--color-surface-soft) !important; border-radius: 4px !important; border: 1px solid var(--color-border) !important; margin-right: auto !important; }
+    #gateManagementTableBody tr:not(.drilldown-row) td:nth-child(5) { order: 3 !important; flex: 0 0 auto !important; flex-direction: row !important; font-size: 11px !important; margin-left: 0 !important; gap: 4px !important; padding: 2px 6px !important; background: var(--color-surface-soft) !important; border-radius: 4px !important; }
+    #gateManagementTableBody tr:not(.drilldown-row) td:nth-child(6) { order: 4 !important; flex: 0 0 auto !important; flex-direction: row !important; font-size: 11px !important; margin-left: 0 !important; gap: 4px !important; padding: 2px 6px !important; background: var(--color-surface-soft) !important; border-radius: 4px !important; }
+    #gateManagementTableBody tr:not(.drilldown-row) td:nth-child(7) { order: 5 !important; flex: 0 0 auto !important; font-size: 11px !important; padding: 2px 6px !important; background: #FEF6E2 !important; border-radius: 4px !important; color: #B4790C !important; font-weight: 700 !important; }
+    
+    /* Row 3: Staff List (Pushed to bottom) */
+    #gateManagementTableBody tr:not(.drilldown-row) td:nth-child(3) { order: 6 !important; flex: 1 1 100% !important; flex-direction: row !important; flex-wrap: wrap !important; gap: 6px !important; padding-top: 10px !important; padding-bottom: 0 !important; border-top: 1px dashed var(--color-border) !important; border-bottom: none !important; margin-top: 4px !important; margin-bottom: 0 !important; }
+    #gateManagementTableBody tr:not(.drilldown-row) td:nth-child(3) > div { margin-bottom: 0 !important; background: var(--color-surface-soft) !important; padding: 4px 8px !important; border-radius: 6px !important; }
+    
+    /* 2. Move Active/Inactive Status to Top Right */
+    #gateManagementTableBody tr:not(.drilldown-row) td:nth-child(4) { position: absolute !important; top: 12px !important; right: 110px !important; width: auto !important; padding: 0 !important; margin: 0 !important; }
+    #gateManagementTableBody tr:not(.drilldown-row) td:nth-child(4) span { padding: 2px 8px !important; font-size: 10px !important; }
+    
+    /* 3. Fix Drilldown Horizontal Scroll */
+    .data-table tr.drilldown-row td > div { display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important; max-width: calc(100vw - 32px) !important; -webkit-overflow-scrolling: touch !important; padding-bottom: 8px !important; }
+    .data-table tr.drilldown-row td > div > div { flex-shrink: 0 !important; }
+
+
+/* --- BATCH 12: PREVIEW BUG & DESKTOP OVERFLOW FIX --- */
+    
+    /* 1. Perfect Mobile Preview (ONLY shows when not hidden by JS) */
+    #previewModal:not(.hidden) { padding: 0 !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; background: rgba(15,23,42,0.95) !important; overflow: hidden !important; }
+    #previewContainer { position: relative !important; left: auto !important; top: auto !important; transform: scale(calc(95vw / 1080)) !important; transform-origin: center center !important; margin: 0 auto !important; width: 1080px !important; height: 1440px !important; background: transparent !important; box-shadow: none !important; }
+    #previewModal > div:first-child { position: absolute !important; top: 20px !important; right: 20px !important; z-index: 100 !important; width: auto !important; }
+    
+    /* 2. Bigger Canvas Area */
+    #builderLayoutGrid > div:nth-child(3) { height: 480px !important; min-height: 480px !important; overflow: auto !important; touch-action: pan-x pan-y !important; }
+    #editorCanvas { transform: translate(-50%, -50%) scale(0.32) !important; }
+    
+    /* 3. Toolbar Icons */
+    .mobile-tool-row { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; gap: 8px !important; width: 100% !important; margin-bottom: 8px !important; }
+    .mobile-tool-row > button { flex: 1 !important; justify-content: center !important; height: 44px !important; margin: 0 !important; border-radius: 8px !important; border: 1px solid var(--color-border) !important; background: var(--color-bg) !important; min-width: 0 !important; }
+    .btn-text { display: none !important; } 
+    
+    /* 4. Fix Alignment Icons Colors (Preventing white-out!) */
+    .btn-align-toggle { color: var(--color-text-secondary) !important; background: transparent !important; border: 1px solid transparent !important; }
+    .btn-align-toggle.active { background: var(--color-primary-soft) !important; color: var(--color-primary) !important; border: 1px solid var(--color-primary) !important; box-shadow: none !important; }
+    .btn-align-toggle.active svg { stroke: var(--color-primary) !important; }
+    
+    /* 5. Mobile Toggle Logic */
+    .hide-on-mobile { display: none !important; }
+    .mobile-hidden { display: none !important; }
+    .text-expanded-panel:not(.mobile-hidden) { display: flex !important; flex-direction: column !important; gap: 6px !important; }
+    .qr-expanded-panel:not(.mobile-hidden) { display: flex !important; flex-direction: column !important; gap: 12px !important; }
+    
+    /* 6. Saved Templates Grid */
+    #allTemplatesModal .card.panel { padding: 16px !important; width: calc(100% - 32px) !important; margin: 16px !important; }
+    #allTemplatesGrid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; padding-right: 0 !important; display: grid !important; }
+    #allTemplatesGrid .saved-tpl-card { min-width: 0 !important; width: 100% !important; height: auto !important; flex-direction: column !important; align-items: stretch !important; padding: 10px !important; text-align: center !important; }
+    #allTemplatesGrid .saved-tpl-card > div:first-child { flex-direction: column !important; gap: 8px !important; align-items: center !important; }
+    #allTemplatesGrid .saved-tpl-card > div:first-child > div:first-child { width: 100% !important; height: 120px !important; background-size: cover !important; }
+    #allTemplatesGrid .saved-tpl-card > div:last-child { flex-direction: row !important; justify-content: center !important; gap: 12px !important; margin-top: 8px !important; border-top: 1px solid var(--color-border) !important; padding-top: 8px !important; }
+/* --- BATCH 13: MOBILE DROPDOWN & AI BUTTON FIX --- */
+    
+    /* 1. Fix Header clipping and Dropdown Alignment */
+    .top-header { overflow: visible !important; }
+    #notificationDropdown { right: -16px !important; width: 300px !important; z-index: 9999 !important; }
+    
+    /* 2. Force the AI Button to be wider so the text is readable */
+    #templateGallery > div[onclick*="AI Generation"] { min-width: 95px !important; width: 95px !important; padding: 0 4px !important; }
+    #templateGallery > div[onclick*="AI Generation"] span { font-size: 11px !important; text-align: center !important; white-space: normal !important; line-height: 1.2 !important; margin-top: 4px !important; }
+    
+    /* Hide the "Coming Soon" pill on mobile inside the AI button to save vertical space */
+    #templateGallery > div[onclick*="AI Generation"] div { display: none !important; }
+
+  
+  } /* <-- CLOSES THE MOBILE @MEDIA QUERY */
+
+  /* --- DESKTOP SPECIFIC FIXES --- */
+  @media (min-width: 769px) {
+    /* Hide mobile-only buttons completely */
+    .hide-on-desktop { display: none !important; }
+    
+    /* 1. Desktop Sliders Fix (Prevents sliders from pushing inputs off the card!) */
+    #builderLayoutGrid > div:nth-child(1) { overflow-x: hidden !important; }
+    .size-wrapper { min-width: 100px !important; }
+    
+    /* Shrink the QR sliders on desktop so the input boxes fit inside */
+    .qr-expanded-panel > div { display: flex !important; flex-wrap: nowrap !important; align-items: center !important; justify-content: space-between !important; width: 100% !important; gap: 8px !important; }
+    .qr-expanded-panel input[type="range"] { flex: 1 1 auto !important; min-width: 40px !important; max-width: 75px !important; }
+    .qr-expanded-panel input[type="number"], .qr-expanded-panel input[type="color"] { flex: 0 0 auto !important; }
+    
+    /* 2. Fix Desktop Layout Flow */
+    .text-expanded-panel { display: flex !important; flex-direction: column !important; gap: 12px !important; margin-top: 8px !important; overflow: visible !important; }
+    .qr-expanded-panel { display: flex !important; flex-direction: column !important; gap: 10px !important; margin-top: 12px !important; }
+    
+    /* Force panels to ALWAYS display on Desktop */
+    .mobile-hidden { display: flex !important; }
+/* 7. Wider AI Button on Mobile */
+    #templateGallery > .card:last-child { min-width: 100px !important; width: 100px !important; }
+  }
+
+/* --- BATCH 14: SAAS UI LOCKS --- */
+  .approval-locked {
+      opacity: 0.5 !important;
+      pointer-events: none !important;
+      filter: grayscale(100%) !important;
+      cursor: not-allowed !important;
+  }
+  .premium-locked {
+      opacity: 0.5 !important;
+      filter: grayscale(100%) !important;
+      cursor: pointer !important;
+  }
+  .locked-banner {
+      background: var(--color-danger-soft);
+      color: var(--color-danger);
+      padding: 12px 20px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--color-danger);
+      display: none;
+      z-index: 20;
+  }
+
+</style>
