@@ -926,7 +926,16 @@
             <!-- MAIN TABLE -->
             <div class="data-table-container no-scrollbar">
               <table class="data-table">
-                <thead><tr><th>Event Name</th><th>Date</th><th>Start Time</th><th>Venue</th><th>Capacity</th><th>Approval</th><th>Timeline</th><th>Actions</th></tr></thead>
+                <thead><tr>
+  <th><span data-i18n="th_event_name">Event Name</span></th>
+  <th><span data-i18n="th_date">Date</span></th>
+  <th><span data-i18n="th_start_time">Start Time</span></th>
+  <th><span data-i18n="th_venue">Venue</span></th>
+  <th><span data-i18n="th_capacity">Capacity</span></th>
+  <th><span data-i18n="th_approval">Approval</span></th>
+  <th><span data-i18n="th_timeline">Timeline</span></th>
+  <th><span data-i18n="th_actions">Actions</span></th>
+</tr></thead>
                 <tbody id="eventsTableBody"></tbody>
               </table>
             </div>
@@ -1022,7 +1031,17 @@
           <!-- Main Table Container (List View) -->
           <div id="guestListContainerList" class="data-table-container no-scrollbar" style="border-bottom-left-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md); border-bottom: 1px solid var(--color-border);">
             <table class="data-table">
-              <thead><tr><th>Guest Name</th><th>Event Name</th><th>Contact</th><th>Invitation Status</th><th>Sent Via</th><th>Gate Pass</th><th>Exits</th><th>Sent On</th><th>Actions</th></tr></thead>
+              <thead><tr>
+  <th><span data-i18n="th_guest_name">Guest Name</span></th>
+  <th><span data-i18n="th_event_name">Event Name</span></th>
+  <th><span data-i18n="th_contact">Contact</span></th>
+  <th><span data-i18n="th_invitation_status">Invitation Status</span></th>
+  <th><span data-i18n="th_sent_via">Sent Via</span></th>
+  <th><span data-i18n="th_gate_pass">Gate Pass</span></th>
+  <th><span data-i18n="th_exits">Exits</span></th>
+  <th><span data-i18n="th_sent_on">Sent On</span></th>
+  <th><span data-i18n="th_actions">Actions</span></th>
+</tr></thead>
               <tbody id="guestListTableBody"></tbody>
             </table>
           </div>
@@ -1084,7 +1103,16 @@
             </div>
             <div class="data-table-container no-scrollbar" style="border: none; border-radius: 0;">
               <table class="data-table">
-                <thead><tr><th>Gate Name</th><th>Type</th><th>Assigned Staff (PIN)</th><th>Status</th><th>Entries</th><th>Exits</th><th>Inside</th><th>Actions</th></tr></thead>
+                <<thead><tr>
+  <th><span data-i18n="th_gate_name">Gate Name</span></th>
+  <th><span data-i18n="th_type">Type</span></th>
+  <th><span data-i18n="th_assigned_staff">Assigned Staff (PIN)</span></th>
+  <th><span data-i18n="th_status">Status</span></th>
+  <th><span data-i18n="th_entries">Entries</span></th>
+  <th><span data-i18n="th_exits">Exits</span></th>
+  <th><span data-i18n="th_inside">Inside</span></th>
+  <th><span data-i18n="th_actions">Actions</span></th>
+</tr></thead>
                 <tbody id="gateManagementTableBody">
                   <tr><td colspan="8" style="text-align: center; padding: 20px; color: var(--color-text-secondary);">Select an event to view gates.</td></tr>
                 </tbody>
@@ -2094,7 +2122,7 @@ let allFetchedLogs = []; // Stores global scan logs for drill-downs
         const isAllSelected = window.currentGateEventFilterId === null;
         gatePillsCont.innerHTML = `
           <div onclick="setGateEventFilter(null)" class="card" style="padding: 10px 16px; border-color: ${isAllSelected ? 'var(--color-primary)' : 'var(--color-border)'}; background: ${isAllSelected ? 'var(--color-primary-soft)' : 'var(--color-bg)'}; min-width: 150px; cursor: pointer; display:flex; align-items:center; justify-content:center; flex-shrink: 0; transition: 0.2s;">
-            <div style="font-weight:700; color:var(--color-text); font-size:13px;">All Events</div>
+            <div style="font-weight:700; color:var(--color-text); font-size:13px;">${window.t('filter_all_events', 'All Events')}</div>
           </div>
         `;
     }
@@ -2348,7 +2376,7 @@ let allFetchedLogs = []; // Stores global scan logs for drill-downs
     if (glPills) {
         let pillsHtml = `
           <div onclick="filterGuestsByEvent(null)" class="card" style="padding: 10px 16px; border-color: ${currentGuestFilterEventId === null ? 'var(--color-primary)' : 'var(--color-border)'}; background: ${currentGuestFilterEventId === null ? 'var(--color-primary-soft)' : 'var(--color-bg)'}; min-width: 120px; cursor: pointer; display:flex; gap:12px; align-items:center; justify-content:center;">
-            <div style="font-weight:700; color:var(--color-primary); font-size:13px;">All Events</div>
+            <div style="font-weight:700; color:var(--color-text); font-size:13px;">${window.t('filter_all_events', 'All Events')}</div>
           </div>
         `;
 
@@ -2897,7 +2925,7 @@ document.getElementById('dashboardWelcomeTitle').innerText = window.t('dash_welc
           const borderStr = isSelected ? `2px solid var(--color-primary)` : '2px solid transparent';
           const weightStr = isSelected ? '700' : '500';
           
-          const tabLabel = tier === 'All' ? 'All Guests' : tier;
+          const tabLabel = tier === 'All' ? window.t('filter_all_guests', 'All Guests') : tier;
           tierFiltersContainer.innerHTML += `
               <div onclick="filterGuestsByTier('${tier}')" style="padding-bottom: 12px; border-bottom: ${borderStr}; color: ${colorStr}; font-weight: ${weightStr}; font-size: 13px; cursor: pointer;">
                   ${tabLabel} (${count})
@@ -5392,7 +5420,7 @@ updateRecentGatesWidget();
       window.currentEventGates = gates || [];
 
       // Render Gate Filter Pills above table
-      let filterHtml = `<button onclick="setSpecificGateFilter(null, this)" class="btn-filter-nav ${window.currentSpecificGateFilterId === null ? 'active' : ''}" style="font-size: 11px;">All Gates</button>`;
+      let filterHtml = `<button onclick="setSpecificGateFilter(null, this)" class="btn-filter-nav ${window.currentSpecificGateFilterId === null ? 'active' : ''}" style="font-size: 11px;">${window.t('filter_all_gates', 'All Gates')}</button>`;
       gates.forEach(g => {
           const isActive = window.currentSpecificGateFilterId === g.id ? 'active' : '';
           filterHtml += `<button onclick="setSpecificGateFilter('${g.id}', this)" class="btn-filter-nav ${isActive}" style="font-size: 11px;">${g.gate_name}</button>`;
@@ -6072,7 +6100,61 @@ updateRecentGatesWidget();
           "recent_events_title": "Recent Events",
           "recent_gates_title": "Recent Gate Passes",
           "view_all": "View All",
-          "analytics_title": "Analytics Overview"
+          "analytics_title": "Analytics Overview",
+// --- EVENTS TAB ---
+          "kpi_upcoming": "Upcoming",
+          "kpi_scheduled": "Scheduled",
+          "kpi_ongoing": "Ongoing",
+          "kpi_past_events": "Past Events",
+          "kpi_completed": "Completed",
+          "kpi_cancelled": "Cancelled",
+          "kpi_hidden": "Hidden",
+          "btn_create_event": "Create Event",
+          "th_event_name": "Event Name",
+          "th_date": "Date",
+          "th_start_time": "Start Time",
+          "th_venue": "Venue",
+          "th_capacity": "Capacity",
+          "th_approval": "Approval",
+          "th_timeline": "Timeline",
+          "th_actions": "Actions",
+          "title_event_overview": "Event Overview",
+          "title_recent_gates": "Recent Gates",
+          "btn_view_all_gates": "View All Gates",
+          "title_export_events": "Export Events",
+          "desc_export_events": "Download your events data",
+          "btn_export_excel": "Export to Excel",
+
+          // --- GUEST LIST TAB ---
+          "label_select_event": "Select Event",
+          "btn_add_guest": "Add Guest",
+          "th_guest_name": "Guest Name",
+          "th_contact": "Contact",
+          "th_invitation_status": "Invitation Status",
+          "th_sent_via": "Sent Via",
+          "th_gate_pass": "Gate Pass",
+          "th_exits": "Exits",
+          "th_sent_on": "Sent On",
+
+          // --- GATE MANAGEMENT TAB ---
+          "label_manage_gates_for": "Manage Gates For:",
+          "btn_assign_gateman": "Assign Gateman",
+          "btn_add_gate": "Add Gate",
+          "kpi_total_gates": "Total Gates",
+          "kpi_total_entries": "Total Entries",
+          "kpi_total_exits": "Total Exits",
+          "kpi_currently_inside": "Currently Inside",
+          "kpi_qr_scanned": "QR Scanned",
+          "title_gate_details": "Gate Details & Staff Operations",
+          "th_gate_name": "Gate Name",
+          "th_type": "Type",
+          "th_assigned_staff": "Assigned Staff (PIN)",
+          "th_status": "Status",
+          "th_entries": "Entries",
+          "th_inside": "Inside",
+          "filter_all_events": "All Events",
+          "filter_all_guests": "All Guests",
+          "filter_all_gates": "All Gates"
       },
       ar: {
           "nav_dashboard": "لوحة القيادة",
@@ -6118,7 +6200,61 @@ updateRecentGatesWidget();
           "recent_events_title": "الفعاليات الأخيرة",
           "recent_gates_title": "تصاريح الدخول الأخيرة",
           "view_all": "عرض الكل",
-          "analytics_title": "نظرة عامة على التحليلات"
+          "analytics_title": "نظرة عامة على التحليلات",
+// --- EVENTS TAB (ARABIC) ---
+          "kpi_upcoming": "القادمة",
+          "kpi_scheduled": "مجدولة",
+          "kpi_ongoing": "جارية",
+          "kpi_past_events": "فعاليات سابقة",
+          "kpi_completed": "مكتملة",
+          "kpi_cancelled": "ملغاة",
+          "kpi_hidden": "مخفية",
+          "btn_create_event": "إنشاء فعالية",
+          "th_event_name": "اسم الفعالية",
+          "th_date": "التاريخ",
+          "th_start_time": "وقت البدء",
+          "th_venue": "الموقع",
+          "th_capacity": "السعة",
+          "th_approval": "الموافقة",
+          "th_timeline": "الجدول الزمني",
+          "th_actions": "الإجراءات",
+          "title_event_overview": "نظرة عامة على الفعالية",
+          "title_recent_gates": "البوابات الأخيرة",
+          "btn_view_all_gates": "عرض جميع البوابات",
+          "title_export_events": "تصدير الفعاليات",
+          "desc_export_events": "تحميل بيانات فعالياتك",
+          "btn_export_excel": "تصدير إلى Excel",
+
+          // --- GUEST LIST TAB (ARABIC) ---
+          "label_select_event": "اختر الفعالية",
+          "btn_add_guest": "إضافة ضيف",
+          "th_guest_name": "اسم الضيف",
+          "th_contact": "جهة الاتصال",
+          "th_invitation_status": "حالة الدعوة",
+          "th_sent_via": "أُرسلت عبر",
+          "th_gate_pass": "تصريح الدخول",
+          "th_exits": "الخروج",
+          "th_sent_on": "تاريخ الإرسال",
+
+          // --- GATE MANAGEMENT TAB (ARABIC) ---
+          "label_manage_gates_for": "إدارة بوابات:",
+          "btn_assign_gateman": "تعيين حارس",
+          "btn_add_gate": "إضافة بوابة",
+          "kpi_total_gates": "إجمالي البوابات",
+          "kpi_total_entries": "إجمالي الدخول",
+          "kpi_total_exits": "إجمالي الخروج",
+          "kpi_currently_inside": "بالداخل حالياً",
+          "kpi_qr_scanned": "مسح QR",
+          "title_gate_details": "تفاصيل البوابات والموظفين",
+          "th_gate_name": "اسم البوابة",
+          "th_type": "النوع",
+          "th_assigned_staff": "الموظف المعين (الرمز)",
+          "th_status": "الحالة",
+          "th_entries": "الدخول",
+          "th_inside": "بالداخل",
+          "filter_all_events": "كل الفعاليات",
+          "filter_all_guests": "كل الضيوف",
+          "filter_all_gates": "كل البوابات"
       }
   };
 
