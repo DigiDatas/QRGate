@@ -496,22 +496,32 @@ generateNotifications();
       
       applyAccountLocks();
       
-document.getElementById('dashboardWelcomeTitle').innerText = window.t('dash_welcome_main', 'Welcome back, ') + ' ' + (tenant.full_name || 'Admin') + '! 👋';
-      // Configure badge colors based on plan
+// 1. DEFINE THE DISPLAY NAME FIRST (This fixes the crash!)
+      const displayName = tenant?.company_name || tenant?.full_name || session.user.email || 'Admin';
+
+      // 2. Set Dashboard Welcome Header
+      const welcomeEl = document.getElementById('dashboardWelcomeTitle');
+      if (welcomeEl) {
+          welcomeEl.innerText = window.t('dash_welcome_main', 'Welcome back, ') + ' ' + displayName + '! 👋';
+      }
+
+      // 3. Configure badge colors (Fallback for profile page)
       let planColor = window.currentPlanTier.toLowerCase() === 'premium' ? 'text-pink-500 bg-pink-500/10 border-pink-500/20' : 
                       window.currentPlanTier.toLowerCase() === 'pro' ? 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' : 
                       'text-slate-400 bg-slate-800 border-slate-700';
 
-      // Create the clean HTML using your new custom CSS classes
+      // 4. Create the clean HTML using your custom CSS class
       const badgeHtml = `<span class="plan-badge ${window.currentPlanTier.toLowerCase()}">${window.currentPlanTier}</span>`;
 
-      // Inject into Sidebar / Header
-      document.getElementById('userNameDisplay').innerHTML = `${displayName} ${badgeHtml}`;
+      // 5. Safely Inject into Sidebar / Header
+      const userNameEl = document.getElementById('userNameDisplay');
+      if (userNameEl) userNameEl.innerHTML = `${displayName} ${badgeHtml}`;
       
-      // Inject into Profile Page (This line replaces BOTH old lines safely)
-      document.getElementById('profileNameDisplay').innerHTML = (tenant.full_name || 'New Organizer') + badgeHtml;
+      // 6. Safely Inject into Profile Page
+      const profileNameEl = document.getElementById('profileNameDisplay');
+      if (profileNameEl) profileNameEl.innerHTML = displayName + badgeHtml;
 
-      // NEW: Dynamic Limits Engine (Fetched from Database)
+      // 7. Dynamic Limits Engine (Fetched from Database)
       const { data: dbLimits } = await supabaseClient.from('plan_limits').select('*');
       const currentPlanData = dbLimits ? dbLimits.find(p => p.plan_name.toLowerCase() === window.currentPlanTier.toLowerCase()) : null;
       
