@@ -421,7 +421,7 @@ generateNotifications();
     if (!evBanner) {
         evBanner = document.createElement('div');
         evBanner.id = 'eventLimitWarningBanner';
-        evBanner.className = 'bg-red-500/10 border border-red-500 text-red-500 p-3 rounded-lg text-xs font-bold mb-4 hidden';
+        evBanner.className = 'limit-banner hidden';
         const formContainer = document.querySelector('#createEventView .left-col .card');
         if(formContainer) formContainer.prepend(evBanner);
     }
@@ -3348,18 +3348,17 @@ function toggleGuestInputMode(mode) {
       loadGateManagementData(); // Re-render table
   }
 
-  // Gate Type UI Selector
   function selectGateTypeUI(type) {
       document.getElementById('newGateType').value = type;
       const bBoth = document.getElementById('gtBtnBoth');
       const bEntry = document.getElementById('gtBtnEntry');
       const bExit = document.getElementById('gtBtnExit');
       
-      [bBoth, bEntry, bExit].forEach(b => b.className = 'flex-1 py-2 rounded-lg font-bold border-2 border-transparent bg-gray-100 text-gray-500 text-xs transition');
+      [bBoth, bEntry, bExit].forEach(b => b.className = 'gate-type-btn');
       
-      if (type === 'Both') bBoth.className = 'flex-1 py-2 rounded-lg font-bold border-2 border-purple-500 bg-purple-50 text-purple-700 text-xs transition';
-      if (type === 'Entry') bEntry.className = 'flex-1 py-2 rounded-lg font-bold border-2 border-green-500 bg-green-50 text-green-700 text-xs transition';
-      if (type === 'Exit') bExit.className = 'flex-1 py-2 rounded-lg font-bold border-2 border-blue-500 bg-blue-50 text-blue-700 text-xs transition';
+      if (type === 'Both') bBoth.className = 'gate-type-btn active purple';
+      if (type === 'Entry') bEntry.className = 'gate-type-btn active green';
+      if (type === 'Exit') bExit.className = 'gate-type-btn active blue';
   }
 
   function openAddGateModal() {
