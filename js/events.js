@@ -502,14 +502,16 @@ document.getElementById('dashboardWelcomeTitle').innerText = window.t('dash_welc
                       window.currentPlanTier.toLowerCase() === 'pro' ? 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' : 
                       'text-slate-400 bg-slate-800 border-slate-700';
 
-      const badgeHtml = `<span class="ml-2 px-2 py-0.5 rounded text-[9px] font-extrabold uppercase border ${planColor}">${window.currentPlanTier}</span>`;
+      // Create the clean HTML using your new custom CSS classes
+      const badgeHtml = `<span class="plan-badge ${window.currentPlanTier.toLowerCase()}">${window.currentPlanTier}</span>`;
 
-      // Inject into Sidebar
-      document.getElementById('userNameDisplay').innerHTML = (tenant.full_name || 'New Organizer') + badgeHtml;
+      // Inject into Sidebar / Header
+      document.getElementById('userNameDisplay').innerHTML = `${displayName} ${badgeHtml}`;
       
       // Inject into Profile Page (This line replaces BOTH old lines safely)
       document.getElementById('profileNameDisplay').innerHTML = (tenant.full_name || 'New Organizer') + badgeHtml;
-// NEW: Dynamic Limits Engine (Fetched from Database)
+
+      // NEW: Dynamic Limits Engine (Fetched from Database)
       const { data: dbLimits } = await supabaseClient.from('plan_limits').select('*');
       const currentPlanData = dbLimits ? dbLimits.find(p => p.plan_name.toLowerCase() === window.currentPlanTier.toLowerCase()) : null;
       
