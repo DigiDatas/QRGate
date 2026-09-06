@@ -601,3 +601,30 @@
   }
 }
 
+/* ============ USER PLAN BADGE ============ */
+.plan-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-left: 8px; /* Creates the gap! */
+    vertical-align: middle;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background-color: var(--color-surface-soft);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+}
+
+/* Color variations based on plan */
+.plan-badge.pro {
+    background-color: #eef2ff;
+    color: #4f46e5;
+    border-color: #c7d2fe;
+}
+.plan-badge.premium {
+    background-color: #fdf2f8;
+    color: #db2777;
+    border-color: #fbcfe8;
+}
