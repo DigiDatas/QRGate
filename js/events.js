@@ -1969,7 +1969,10 @@ document.getElementById('qrModal').classList.remove('hidden');
             const fontSelect = document.getElementById('elementFontFamily');
             
             fonts.forEach(font => {
-                // Generate a TRULY unique CSS name using the filename instead of the display name
+                // 🔒 SAFETY GUARD: Skip if the JSON entry is missing a fileName
+                if (!font || !font.fileName) return;
+
+                // Generate a TRULY unique CSS name using the filename
                 const baseFileName = font.fileName.split('.')[0]; 
                 const safeFamilyName = baseFileName.replace(/[^a-zA-Z0-9]/g, '');
                 font.safeFamilyName = safeFamilyName; 
@@ -1977,7 +1980,10 @@ document.getElementById('qrModal').classList.remove('hidden');
                 const safeUrl = encodeURIComponent(font.fileName);
                 
                 dynamicCSS += `@font-face { font-family: '${safeFamilyName}'; src: url('./fonts/${safeUrl}'); }\n`;
-                if(fontSelect) fontSelect.innerHTML += `<option value="'${safeFamilyName}', sans-serif">${font.displayName}</option>`;
+                
+                // Fallback to font.name if displayName is missing
+                const displayTitle = font.displayName || font.name || safeFamilyName;
+                if(fontSelect) fontSelect.innerHTML += `<option value="'${safeFamilyName}', sans-serif">${displayTitle}</option>`;
             });
             
             const styleTag = document.createElement('style');
