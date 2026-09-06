@@ -308,7 +308,22 @@ const translations = {
         "idx_footer": "© 2026 QRGate Platforms. All rights reserved.",
         "idx_btn_open_dash": "Open Dashboard →",
         "idx_btn_open_scan": "Open Gate Scanner 📱",
-        "idx_btn_open_admin": "Open Admin Panel 🛠️"
+        "idx_btn_open_admin": "Open Admin Panel 🛠️",
+// --- SCANNER PAGE ---
+        "scan_login_title": "Staff Login",
+        "scan_login_desc": "Enter your assigned PIN to access the scanner.",
+        "scan_pin_plc": "Enter PIN",
+        "scan_btn_login": "Access Scanner",
+        "scan_err_pin": "Invalid PIN. Please try again.",
+        "scan_title": "Ticket Scanner",
+        "scan_logged_in": "Logged in as:",
+        "scan_session_count": "Scans this session:",
+        "scan_btn_dash": "← Dashboard",
+        "scan_mode_entry": "SCAN ENTRY",
+        "scan_mode_exit": "SCAN EXIT",
+        "scan_fix_db": "Fix Database Records?",
+        "scan_btn_override": "Register Entry (+1) & Log Exit",
+        "scan_btn_next": "Scan Next Ticket"
     },
     ar: {
         "nav_dashboard": "لوحة القيادة",
@@ -597,7 +612,22 @@ const translations = {
         "idx_footer": "© 2026 منصات QRGate. جميع الحقوق محفوظة.",
         "idx_btn_open_dash": "افتح لوحة القيادة ←",
         "idx_btn_open_scan": "افتح ماسح البوابات 📱",
-        "idx_btn_open_admin": "افتح لوحة الإدارة 🛠️"
+        "idx_btn_open_admin": "افتح لوحة الإدارة 🛠️",
+// --- SCANNER PAGE (ARABIC) ---
+        "scan_login_title": "تسجيل دخول الموظفين",
+        "scan_login_desc": "أدخل الرمز (PIN) المعين لك للوصول إلى الماسح.",
+        "scan_pin_plc": "أدخل الرمز",
+        "scan_btn_login": "الدخول للماسح",
+        "scan_err_pin": "رمز غير صالح. يرجى المحاولة مرة أخرى.",
+        "scan_title": "ماسح التذاكر",
+        "scan_logged_in": "تم تسجيل الدخول باسم:",
+        "scan_session_count": "عمليات المسح في هذه الجلسة:",
+        "scan_btn_dash": "← لوحة القيادة",
+        "scan_mode_entry": "مسح الدخول",
+        "scan_mode_exit": "مسح الخروج",
+        "scan_fix_db": "إصلاح سجلات قاعدة البيانات؟",
+        "scan_btn_override": "تسجيل الدخول (+1) وتسجيل الخروج",
+        "scan_btn_next": "مسح التذكرة التالية"
     }
 };
 
