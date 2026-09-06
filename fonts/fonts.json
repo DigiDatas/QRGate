@@ -366,6 +366,386 @@
     "fontFamily": "SimpleBoldJutOut",
     "fileName": "SPBLDJUT.TTF",
     "category": "AR"
+  },
+  [
+  {
+    "displayName": "Vibes",
+    "fontFamily": "Vibes",
+    "fileName": "Vibes-Regular.ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "MT ZYRO",
+    "fontFamily": "MTZYRO",
+    "fileName": "ZYRO-Serif.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Anoretha Sweet Demo",
+    "fontFamily": "AnorethaSweetDemo",
+    "fileName": "Anoretha Sweet Demo.ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Anoretha Sweet Italic Demo",
+    "fontFamily": "AnorethaSweetItalicDemo",
+    "fileName": "Anoretha Sweet Italic Demo.ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Blue Mirage DEMO",
+    "fontFamily": "BlueMirageDEMO",
+    "fileName": "Blue Mirage DEMO.ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Sophia Martini",
+    "fontFamily": "SophiaMartini",
+    "fileName": "Sophia Martini.otf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Antariksa",
+    "fontFamily": "Antariksa",
+    "fileName": "Antariksa Regular demo.otf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Bodbug",
+    "fontFamily": "Bodbug",
+    "fileName": "The Bodbug.otf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Nevrada Neue",
+    "fontFamily": "NevradaNeue",
+    "fileName": "Nevrada_Neue.otf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Nevrada Neue",
+    "fontFamily": "NevradaNeue",
+    "fileName": "Nevrada_Neue.ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "The Jorway",
+    "fontFamily": "TheJorway",
+    "fileName": "TheJorwayOblique.otf",
+    "category": "EN"
+  },
+  {
+    "displayName": "The Jorway",
+    "fontFamily": "TheJorway",
+    "fileName": "TheJorwayRegular.otf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Christmas With Love Demo",
+    "fontFamily": "ChristmasWithLoveDemo",
+    "fileName": "Christmas With Love Demo .ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Christmas With Monogram Demo",
+    "fontFamily": "ChristmasWithMonogramDemo",
+    "fileName": "Christmas With Monogram Demo .ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Beautiful Shakila Monogram",
+    "fontFamily": "BeautifulShakilaMonogram",
+    "fileName": "Beautiful Shakila Monogram Demo .ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Shakila Monogram Style",
+    "fontFamily": "ShakilaMonogramStyle",
+    "fileName": "Shakila Monogram Style Demo .ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Dh Vanolines DEMO",
+    "fontFamily": "DhVanolinesDEMO",
+    "fileName": "Dh Vanolines DEMO.otf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Astila",
+    "fontFamily": "Astila",
+    "fileName": "Astila-Regular.ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Christmas Liberty Demo",
+    "fontFamily": "ChristmasLibertyDemo",
+    "fileName": "Christmas Liberty TTF Demo.ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Arialesa",
+    "fontFamily": "Arialesa",
+    "fileName": "Arialesa.ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Akira Rosty With Love",
+    "fontFamily": "AkiraRostyWithLove",
+    "fileName": "Akira Rosty with love.ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Akira Rosty",
+    "fontFamily": "AkiraRosty",
+    "fileName": "Akira Rosty.ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Alander",
+    "fontFamily": "Alander",
+    "fileName": "Alander.otf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Alander",
+    "fontFamily": "Alander",
+    "fileName": "Alander.ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Haloberry",
+    "fontFamily": "Haloberry",
+    "fileName": "Haloberry.otf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Haloberry",
+    "fontFamily": "Haloberry",
+    "fileName": "Haloberry.ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Chasa Marelo DEMO",
+    "fontFamily": "ChasaMareloDEMO",
+    "fileName": "Chasa Marelo DEMO.ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Sirelia",
+    "fontFamily": "Sirelia",
+    "fileName": "Sirelia.otf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Sirelia",
+    "fontFamily": "Sirelia",
+    "fileName": "Sirelia.ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "MoelaniaDEMO",
+    "fontFamily": "MoelaniaDEMO",
+    "fileName": "MoelaniaDEMO.ttf",
+    "category": "EN"
+  },
+  {
+    "displayName": "Aligarh Arabic FREE PERSONAL USE",
+    "fontFamily": "AligarhArabicFREEPERSONALUSE",
+    "fileName": "AligarhArabicFREEPERSONALUSE-Black.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Aligarh Arabic FREE PERSONAL USE",
+    "fontFamily": "AligarhArabicFREEPERSONALUSE",
+    "fileName": "AligarhArabicFREEPERSONALUSE-Bold.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Aligarh Arabic FREE PERSONAL USE",
+    "fontFamily": "AligarhArabicFREEPERSONALUSE",
+    "fileName": "AligarhArabicFREEPERSONALUSE-ExtraBold.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Aligarh Arabic FREE PERSONAL USE",
+    "fontFamily": "AligarhArabicFREEPERSONALUSE",
+    "fileName": "AligarhArabicFREEPERSONALUSE-ExtraLight.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Aligarh Arabic FREE PERSONAL USE",
+    "fontFamily": "AligarhArabicFREEPERSONALUSE",
+    "fileName": "AligarhArabicFREEPERSONALUSE-Light.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Aligarh Arabic FREE PERSONAL USE",
+    "fontFamily": "AligarhArabicFREEPERSONALUSE",
+    "fileName": "AligarhArabicFREEPERSONALUSE-Medium.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Aligarh Arabic FREE PERSONAL USE",
+    "fontFamily": "AligarhArabicFREEPERSONALUSE",
+    "fileName": "AligarhArabicFREEPERSONALUSE-Regular.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Aligarh Arabic FREE PERSONAL USE",
+    "fontFamily": "AligarhArabicFREEPERSONALUSE",
+    "fileName": "AligarhArabicFREEPERSONALUSE-SemiBold.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Aligarh Arabic FREE PERSONAL USE",
+    "fontFamily": "AligarhArabicFREEPERSONALUSE",
+    "fileName": "AligarhArabicFREEPERSONALUSE-Thin.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Naveid Arabic DEMO",
+    "fontFamily": "NaveidArabicDEMO",
+    "fileName": "NaveidArabicDEMO-ExtraBold.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Naveid Arabic DEMO",
+    "fontFamily": "NaveidArabicDEMO",
+    "fileName": "NaveidArabicDEMO-Regular.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Naveid Arabic DEMO",
+    "fontFamily": "NaveidArabicDEMO",
+    "fileName": "NaveidArabicDEMO-Thin.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Tufuli Arabic DEMO",
+    "fontFamily": "TufuliArabicDEMO",
+    "fileName": "TufuliArabicDEMO-Bold.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Tufuli Arabic DEMO",
+    "fontFamily": "TufuliArabicDEMO",
+    "fileName": "TufuliArabicDEMO-Regular.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Tinta Arabic",
+    "fontFamily": "TintaArabic",
+    "fileName": "TintaArabic-Bold.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Tinta Arabic",
+    "fontFamily": "TintaArabic",
+    "fileName": "TintaArabic-Light.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Marhaban Arabic DEMO",
+    "fontFamily": "MarhabanArabicDEMO",
+    "fileName": "MarhabanArabicDEMO-Bold.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Marhaban Arabic DEMO",
+    "fontFamily": "MarhabanArabicDEMO",
+    "fileName": "MarhabanArabicDEMO-BoldOblique.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Fun Play Arabic_DEMO",
+    "fontFamily": "FunPlayArabic_DEMO",
+    "fileName": "FunPlayArabic_DEMO-Bold.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Fun Play Arabic_DEMO",
+    "fontFamily": "FunPlayArabic_DEMO",
+    "fileName": "FunPlayArabic_DEMO-Light.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Fun Play Arabic_DEMO",
+    "fontFamily": "FunPlayArabic_DEMO",
+    "fileName": "FunPlayArabic_DEMO-Regular.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "kaman AC",
+    "fontFamily": "kamanAC",
+    "fileName": "kamanAC-Regular.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "kaman LP",
+    "fontFamily": "kamanLP",
+    "fileName": "kamanLP-Regular.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "kaman MC",
+    "fontFamily": "kamanMC",
+    "fileName": "kamanMC-Regular.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "kaman",
+    "fontFamily": "kaman",
+    "fileName": "kaman-Regular.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "kaman SC",
+    "fontFamily": "kamanSC",
+    "fileName": "kamanSC-Regular.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Dubidam Arabic FREE PERSONAL USE",
+    "fontFamily": "DubidamArabicFREEPERSONALUSE",
+    "fileName": "DubidamArabicFREEPERSONALUSE-Bold.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Dubidam Arabic FREE PERSONAL USE",
+    "fontFamily": "DubidamArabicFREEPERSONALUSE",
+    "fileName": "DubidamArabicFREEPERSONALUSE-Light.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Dubidam Arabic FREE PERSONAL USE",
+    "fontFamily": "DubidamArabicFREEPERSONALUSE",
+    "fileName": "DubidamArabicFREEPERSONALUSE-Regular.otf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Far.Vosta",
+    "fontFamily": "Far.Vosta",
+    "fileName": "Far.Vosta Regular.ttf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Qahiri",
+    "fontFamily": "Qahiri",
+    "fileName": "Qahiri-Regular.ttf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Alkalami",
+    "fontFamily": "Alkalami",
+    "fileName": "Alkalami-Regular.ttf",
+    "category": "AR"
+  },
+  {
+    "displayName": "Marhey",
+    "fontFamily": "Marhey",
+    "fileName": "Marhey-VariableFont_wght.ttf",
+    "category": "AR"
   }
+]
 ]
 
