@@ -19,9 +19,11 @@
 
       <!-- RIGHT HEADER: AUTH BUTTON OR PROFILE ICON DROPDOWN -->
       <div class="relative flex items-center gap-4">
+        <!-- LANGUAGE TOGGLE BUTTON -->
+        <button id="btnLangToggle" onclick="toggleLanguage()" class="border border-slate-700 text-slate-300 hover:text-white px-3 py-1 rounded-full text-xs font-bold transition">عربي</button>
+        
         <div id="authContainer">
-          <!-- Dynamically populated based on login state -->
-          <button onclick="openAuthModal()" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-5 py-2.5 rounded-xl transition shadow-lg shadow-pink-600/35 text-sm">
+          <button onclick="openAuthModal()" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-5 py-2.5 rounded-xl transition shadow-lg shadow-pink-600/35 text-sm" data-i18n="idx_login_btn">
             Sign In / Register
           </button>
         </div>
@@ -53,13 +55,13 @@
   <section class="relative overflow-hidden pt-20 pb-32">
     <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-pink-600/15 rounded-full blur-3xl pointer-events-none"></div>
     <div class="max-w-7xl mx-auto px-6 text-center relative z-10">
-      <span class="inline-block bg-slate-900 border border-slate-800 text-pink-400 text-xs font-semibold px-4 py-1.5 rounded-full mb-6">
+      <span class="inline-block bg-slate-900 border border-slate-800 text-pink-400 text-xs font-semibold px-4 py-1.5 rounded-full mb-6" data-i18n="idx_hero_badge">
         🚀 Next-Gen Access Control & Ticketing Platform
       </span>
       <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight max-w-4xl mx-auto leading-tight mb-6">
-        Manage events, secure gates, and scan badges <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-400">seamlessly around the world.</span>
+        <span data-i18n="idx_hero_title1">Manage events, secure gates, and scan badges</span> <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-400" data-i18n="idx_hero_title2">seamlessly around the world.</span>
       </h1>
-      <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-10">
+      <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-10" data-i18n="idx_hero_desc">
         The ultimate multi-tenant platform for organizers. Real-time scanning, multi-person capacity ticket management, role controls, and secure analytics.
       </p>
       
@@ -156,10 +158,12 @@
     <p>&copy; 2026 QRGate Platforms. All rights reserved.</p>
   </footer>
 
+  <!-- Link to the Global Shared Engine -->
+  <script src="js/core.js"></script>
+
   <script>
-    const SUPABASE_URL = 'https://wpqpqlwjprtwoblhvenw.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_89l1fu6nVSWxGVOH-g1dQw_i99aUXt9';
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Grab the connection from core.js
+    const supabaseClient = window.supabaseClient;
 
     // MODAL CONTROLS
     function openAuthModal() {
@@ -240,24 +244,25 @@
           document.getElementById('adminLinkMenu').classList.remove('hidden');
           // Admin View
           document.getElementById('heroCtaContainer').innerHTML = `
-            <a href="admin.html" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-8 py-4 rounded-xl text-lg transition shadow-xl shadow-indigo-600/25">
+            <a href="admin.html" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-8 py-4 rounded-xl text-lg transition shadow-xl shadow-indigo-600/25" data-i18n="idx_btn_open_admin">
               Open Admin Panel 🛠️
             </a>
-            <a href="events.html" class="bg-pink-600 border border-pink-500 hover:bg-pink-500 text-white font-bold px-8 py-4 rounded-xl text-lg transition shadow-xl">
+            <a href="events.html" class="bg-pink-600 border border-pink-500 hover:bg-pink-500 text-white font-bold px-8 py-4 rounded-xl text-lg transition shadow-xl" data-i18n="idx_menu_dashboard">
               Event Manager Dashboard
             </a>
           `;
         } else {
           // Regular Organizer View
           document.getElementById('heroCtaContainer').innerHTML = `
-            <a href="events.html" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-8 py-4 rounded-xl text-lg transition shadow-xl shadow-pink-600/25">
+            <a href="events.html" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-8 py-4 rounded-xl text-lg transition shadow-xl shadow-pink-600/25" data-i18n="idx_btn_open_dash">
               Open Dashboard →
             </a>
-            <a href="scanner.html" class="bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-200 font-bold px-8 py-4 rounded-xl text-lg transition">
+            <a href="scanner.html" class="bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-200 font-bold px-8 py-4 rounded-xl text-lg transition" data-i18n="idx_btn_open_scan">
               Open Gate Scanner 📱
             </a>
           `;
         }
+        window.applyLanguage(); // Force translation on the newly generated buttons!
       }
     }
     checkAuth();
