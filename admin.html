@@ -441,10 +441,12 @@
     </div>
   </div>
 
+  <!-- Link to the Global Shared Engine -->
+  <script src="js/core.js"></script>
+
   <script>
-    const SUPABASE_URL = 'https://wpqpqlwjprtwoblhvenw.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_89l1fu6nVSWxGVOH-g1dQw_i99aUXt9';
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Grab the secure connection from core.js
+    const supabaseClient = window.supabaseClient;
 
     let allTenantsData = [];
     let allEventsData = [];
