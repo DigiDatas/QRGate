@@ -575,5 +575,29 @@
 .gate-type-btn.active.purple { border-color: #a855f7; background: #faf5ff; color: #7e22ce; }
 .gate-type-btn.active.green { border-color: #22c55e; background: #f0fdf4; color: #15803d; }
 .gate-type-btn.active.blue { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; }
+/* ============ CUSTOM UTILITIES (Replacing Tailwind) ============ */
+.w-full { width: 100% !important; }
+.mb-6 { margin-bottom: 24px !important; }
+.ml-3 { margin-left: 12px !important; }
+.cursor-pointer { cursor: pointer !important; }
+.h-max { height: max-content !important; }
+.font-bold { font-weight: 700 !important; }
+.text-pink-600 { color: #db2777 !important; }
 
+/* Custom Profile Grid Layout */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  width: 100%;
+  max-width: 1152px;
+  margin: 0 auto;
+}
+
+/* Desktop sizing for Profile Grid */
+@media (min-width: 1024px) {
+  .profile-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
 
