@@ -1381,30 +1381,30 @@ function showTicket(id, encodedName, encodedTier, capacity, encodedEventName, ev
           // --- RENDER DEFAULT FALLBACK ---
           ticketContainer.style.width = '340px';
           ticketContainer.style.height = 'auto';
-          ticketContainer.style.background = 'white';
+          ticketContainer.style.background = 'transparent';
           ticketContainer.style.borderRadius = '16px';
           ticketContainer.style.overflow = 'hidden';
           ticketContainer.innerHTML = `
-            <div class="bg-gradient-to-br from-indigo-900 to-indigo-700 text-white p-6 relative">
-              <p class="text-[10px] text-indigo-300 uppercase tracking-widest mb-1 font-bold">Event Pass</p>
-              <h2 id="bpEventName" class="text-2xl font-bold tracking-tight leading-normal pb-2 truncate">${eventName}</h2>
+            <div class="qr-ticket-head">
+              <p class="qr-ticket-sub">Event Pass</p>
+              <h2 id="bpEventName" class="qr-ticket-title">${eventName}</h2>
             </div>
-            <div class="bg-white px-6 pt-6 pb-2 text-slate-800">
-              <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Guest Name</p>
-              <p id="bpGuestName" class="text-lg font-bold text-slate-900 leading-tight mb-4">${guestName}</p>
-              <div class="flex justify-between">
-                 <div><p class="text-[10px] text-slate-400 uppercase font-bold">Tier</p><p id="bpTier" class="text-sm font-bold text-pink-600">${tier || 'General'}</p></div>
-                 <div><p class="text-[10px] text-slate-400 uppercase font-bold">Admit</p><p id="bpCapacity" class="text-sm font-bold text-slate-800">${capacity > 1 ? capacity + ' Persons' : '1 Person'}</p></div>
+            <div class="qr-ticket-body">
+              <p class="qr-meta-label">Guest Name</p>
+              <p id="bpGuestName" class="qr-guest-name">${guestName}</p>
+              <div class="qr-ticket-meta">
+                 <div><p class="qr-meta-label">Tier</p><p id="bpTier" class="qr-meta-val pink">${tier || 'General'}</p></div>
+                 <div><p class="qr-meta-label">Admit</p><p id="bpCapacity" class="qr-meta-val">${capacity > 1 ? capacity + ' Persons' : '1 Person'}</p></div>
               </div>
             </div>
-            <div class="relative h-8 bg-white flex items-center justify-center">
-              <div class="absolute left-[-12px] w-6 h-6 bg-slate-800 rounded-full"></div>
-              <div class="absolute right-[-12px] w-6 h-6 bg-slate-800 rounded-full"></div>
-              <div class="w-full border-t-2 border-dashed border-slate-200 mx-4"></div>
+            <div class="qr-divider">
+              <div class="qr-notch-left"></div>
+              <div class="qr-notch-right"></div>
+              <div class="qr-dash"></div>
             </div>
-            <div class="bg-white px-6 pb-6 flex flex-col items-center">
-              <div id="qrcode" class="p-2 bg-white border-2 border-slate-100 rounded-xl shadow-sm mb-2"></div>
-              <p id="bpTicketId" class="text-[10px] font-mono text-slate-400">${guest ? 'QR-' + String(guest.ticket_number || 0).padStart(3, '0') : '...'}</p>
+            <div class="qr-ticket-foot">
+              <div id="qrcode" class="qr-code-box"></div>
+              <p id="bpTicketId" class="qr-ticket-id">${guest ? 'QR-' + String(guest.ticket_number || 0).padStart(3, '0') : '...'}</p>
             </div>
           `;
           
