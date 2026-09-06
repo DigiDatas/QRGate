@@ -1,4 +1,4 @@
-  /* ============ EXACT TEMPLATE CSS ============ */
+ 
   :root {
     --color-primary: #7C3AED;
     --color-primary-dark: #5B21B6;
@@ -513,5 +513,67 @@
       display: none;
       z-index: 20;
   }
+
+/* ============ PURE CSS MODALS (Replaces Tailwind) ============ */
+.hidden { display: none !important; }
+.modal-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(15,23,42,0.85); z-index: 9999; backdrop-filter: blur(4px); }
+
+/* SaaS Upgrade Modal */
+.upgrade-box { background: #0f172a; border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 24px; width: 100%; max-width: 448px; padding: 32px; position: relative; box-shadow: 0 0 50px -12px rgba(236, 72, 153, 0.3); text-align: center; overflow: hidden; }
+.upgrade-glow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 100%; height: 128px; background: linear-gradient(to bottom, rgba(236, 72, 153, 0.2), transparent); pointer-events: none; }
+.upgrade-close { position: absolute; top: 16px; right: 16px; color: #94a3b8; background: transparent; border: none; transition: color 0.2s; cursor: pointer; }
+.upgrade-close:hover { color: #fff; }
+.upgrade-icon-box { width: 64px; height: 64px; background: linear-gradient(to top right, #ec4899, #4f46e5); border-radius: 16px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px -3px rgba(236, 72, 153, 0.2); }
+.upgrade-title { font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 8px; letter-spacing: -0.025em; }
+.upgrade-title-hl { color: transparent; background-clip: text; -webkit-background-clip: text; background-image: linear-gradient(to right, #f472b6, #818cf8); }
+.upgrade-desc { color: #94a3b8; font-size: 14px; margin-bottom: 24px; line-height: 1.625; }
+.upgrade-features { background: #020617; border: 1px solid #1e293b; border-radius: 12px; padding: 16px; margin-bottom: 24px; text-align: start; }
+.upgrade-features ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; color: #cbd5e1; font-size: 14px; font-weight: 500; }
+.upgrade-features li { display: flex; align-items: center; gap: 12px; }
+.upgrade-features svg { color: #ec4899; width: 20px; height: 20px; flex-shrink: 0; }
+.upgrade-btn-group { display: flex; gap: 12px; margin-top: 8px; }
+.upgrade-btn { width: 100%; font-weight: 700; padding: 14px; border-radius: 12px; transition: 0.2s; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; cursor: pointer; }
+.btn-req-basic { background: #334155; color: #fff; }
+.btn-req-basic:hover { background: #475569; }
+.btn-req-pro { background: linear-gradient(to right, #4f46e5, #2563eb); color: #fff; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.25); }
+.btn-req-prem { background: linear-gradient(to right, #db2777, #9333ea); color: #fff; box-shadow: 0 10px 15px -3px rgba(236, 72, 153, 0.25); }
+
+/* QR Modal */
+.qr-modal-wrap { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 384px; }
+.qr-ticket { width: 340px; background: #fff; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden; position: relative; display: flex; flex-direction: column; }
+.qr-ticket-head { background: linear-gradient(to bottom right, #312e81, #4338ca); color: #fff; padding: 24px; position: relative; }
+.qr-ticket-sub { font-size: 10px; color: #a5b4fc; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 4px; font-weight: 700; }
+.qr-ticket-title { font-size: 24px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.25; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-bottom: 4px; }
+.qr-ticket-body { background: #fff; padding: 24px 24px 8px; color: #1e293b; }
+.qr-guest-name { font-size: 18px; font-weight: 700; color: #0f172a; line-height: 1.25; margin: 0 0 16px 0; }
+.qr-ticket-meta { display: flex; justify-content: space-between; }
+.qr-meta-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; font-weight: 700; margin: 0 0 4px; }
+.qr-meta-val { font-size: 14px; font-weight: 700; margin: 0; color: #1e293b; }
+.qr-meta-val.pink { color: #db2777; }
+.qr-divider { position: relative; height: 32px; background: #fff; display: flex; align-items: center; justify-content: center; }
+.qr-notch-left { position: absolute; left: -12px; width: 24px; height: 24px; background: #0f172a; border-radius: 50%; }
+.qr-notch-right { position: absolute; right: -12px; width: 24px; height: 24px; background: #0f172a; border-radius: 50%; }
+    /* Mobile Preview Modal Background Check */
+    #previewModal:not(.hidden) { background: #0f172a !important; }
+.qr-dash { width: 100%; border-top: 2px dashed #e2e8f0; margin: 0 16px; }
+.qr-ticket-foot { background: #fff; padding: 0 24px 24px; display: flex; flex-direction: column; align-items: center; }
+.qr-code-box { padding: 8px; background: #fff; border: 2px solid #f1f5f9; border-radius: 12px; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); margin-bottom: 8px; }
+.qr-ticket-id { font-size: 10px; font-family: monospace; color: #94a3b8; margin: 0; }
+.qr-action-wrap { display: flex; flex-direction: column; gap: 8px; width: 340px; margin-top: 16px; }
+.qr-btn-row { display: flex; gap: 8px; width: 100%; }
+.qr-action-btn { padding: 12px 16px; border-radius: 12px; flex: 1; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; transition: opacity 0.2s; color: #fff; }
+.qr-action-btn:hover { opacity: 0.8; }
+.qr-btn-wa { background: #25D366; }
+.qr-btn-em { background: #2563eb; }
+.qr-btn-png { background: #db2777; border-radius: 12px 0 0 12px; }
+.qr-btn-pdf { background: #be185d; border-radius: 0 12px 12px 0; }
+.qr-btn-close { background: #1e293b; }
+
+/* Dynamic JS Form Elements */
+.limit-banner { background: var(--color-danger-soft); border: 1px solid var(--color-danger); color: var(--color-danger); padding: 12px; border-radius: 8px; font-size: 12px; font-weight: 700; margin-bottom: 16px; }
+.gate-type-btn { flex: 1; padding: 8px; border-radius: 8px; font-weight: 700; border: 2px solid transparent; background: #f1f5f9; color: #64748b; font-size: 12px; transition: 0.2s; cursor: pointer;}
+.gate-type-btn.active.purple { border-color: #a855f7; background: #faf5ff; color: #7e22ce; }
+.gate-type-btn.active.green { border-color: #22c55e; background: #f0fdf4; color: #15803d; }
+.gate-type-btn.active.blue { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; }
 
 
